@@ -1,0 +1,35 @@
+baseURL: "https://www.nxest.com/idaas"
+languageCode: "zh-CN"
+title: "A book about IDaaS"
+theme: hugo-geekdoc
+pygmentsUseClasses: true
+pygmentsCodeFences: true
+
+# Geekdoc configuration
+disablePathToLower: true
+enableGitInfo: true
+
+# Needed for mermaid shortcodes
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  tableOfContents:
+    startLevel: 1
+    endLevel: 9
+
+params:
+  geekdocToC: 3
+  # (Optional, default true) Show a breadcrumb navigation bar at the top of each docs page.
+  # You can also specify this parameter per page in front matter.
+  geekdocBreadcrumb: false
+
+  # (Optional, default none) Set source repository location
+  # Used for 'Edit this page' links
+  # You can also specify this parameter per page in front matter.
+  geekdocRepo: "https://github.com/l10178/idaas-book"
+
+  # (Optional, default none) Enable "Edit this page" links. Requires 'GeekdocRepo' param
+  # and path must point to 'content' directory of repo.
+  # You can also specify this parameter per page in front matter.
+  geekdocEditPath: edit/master/content
