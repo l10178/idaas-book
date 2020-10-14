@@ -13,3 +13,4 @@ public/
 ## Visual Studio Code
 #######################
 .vscode/
+.gradle/
