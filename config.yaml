@@ -1,4 +1,4 @@
-baseURL: "https://www.nxest.com/idaas"
+baseURL: "https://l10178.github.io/idaas-book/"
 languageCode: "zh-CN"
 title: "A book about IDaaS"
 theme: hugo-geekdoc
