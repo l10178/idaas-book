@@ -8,14 +8,14 @@
 
 A book about identity as a service (IDaaS).
 
-
 ## Development
 
 基于Hugo搭建，主题使用 hugo-geekdoc.
 
-
 ```bash
- # 本地开发
+ # 增加新章节
+ hugo new fold/name.md
+ # 本地启动 Server
  hugo server -D
  # 发布
  hugo
@@ -36,9 +36,11 @@ A book about identity as a service (IDaaS).
 
 * [Hugo](https://gohugo.io/)
 * [hugo-geekdoc](https://github.com/xoxys/hugo-geekdoc)
-* [favicon.io](https://favicon.io)
-* [logos](https://brandhub.io/logos)
+* [Favicon Generator](https://favicon.io)
+* [Logo Generator](https://brandhub.io/logos)
 
 ## License
 
-Licensed under Apache License 2.0. Copyright (c) 2020 [nxest.com](http://www.nxest.com).
+Licensed under Apache License 2.0. Copyright (c) 2020 [idaas.site][].
+
+[idaas.site]: https://www.idaas.site
