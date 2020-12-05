@@ -30,7 +30,7 @@ draft: false
 1. Redhat 开源，稳定质量可靠，一直在演进和更新。
 2. 易开发易扩展，相对 CAS。
 3. 功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。
-4. 标准实现，易集成。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins 等等天然支持。
+4. 标准实现，易集成。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。
 
 为什么不选他：
 

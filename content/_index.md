@@ -1,4 +1,4 @@
-# idaas-book
+# IDaaS Book
 
 [![Build Status](https://travis-ci.com/l10178/idaas-book.svg?branch=master)](https://travis-ci.com/l10178/idaas-book)
 [![Hugo Version](https://img.shields.io/badge/hugo-0.79-blue.svg)](https://gohugo.io)
