@@ -36,6 +36,7 @@ A book about identity as a service (IDaaS).
 
 * [Hugo](https://gohugo.io/)
 * [hugo-geekdoc](https://github.com/xoxys/hugo-geekdoc)
+* [favicon.io](https://favicon.io/)
 
 ## License
 
