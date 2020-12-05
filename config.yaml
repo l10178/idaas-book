@@ -24,6 +24,9 @@ params:
   # You can also specify this parameter per page in front matter.
   geekdocBreadcrumb: false
 
+  # relative to your 'static/' folder.
+  geekdocLogo: "images/logos/logo.png"
+
   # (Optional, default none) Set source repository location
   # Used for 'Edit this page' links
   # You can also specify this parameter per page in front matter.
