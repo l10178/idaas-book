@@ -23,11 +23,11 @@ A book about identity as a service (IDaaS).
 
 ## Roadmap
 
+* IDaaS
 * OAuth2
 * CAS
 * Keycloak
 * Dex
-* IDaaS
 * LDAP/AD/kerberos
 * SAML
 * OIDC
@@ -36,7 +36,8 @@ A book about identity as a service (IDaaS).
 
 * [Hugo](https://gohugo.io/)
 * [hugo-geekdoc](https://github.com/xoxys/hugo-geekdoc)
-* [favicon.io](https://favicon.io/)
+* [favicon.io](https://favicon.io)
+* [logos](https://brandhub.io/logos)
 
 ## License
 
