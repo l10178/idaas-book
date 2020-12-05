@@ -14,7 +14,7 @@ A book about identity as a service (IDaaS).
 
 ```bash
  # 增加新章节
- hugo new fold/name.md
+ hugo new folder/name.md
  # 本地启动 Server
  hugo server -D
  # 发布
