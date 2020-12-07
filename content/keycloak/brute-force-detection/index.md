@@ -10,7 +10,7 @@ Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N �
 
 控制台选择 Realm，设置：Realm Settings -> Security Defenses -> Brute Force Detection。
 
-[![Brute Force Detection](/idaas-book/images/keycloak/brute-force.png)](/idaas-book/images/keycloak/brute-force.png)
+[![Brute Force Detection](./brute-force.png)](./brute-force.png)
 
 - Permanent Lockout
 
@@ -34,7 +34,7 @@ Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N �
 1. 临时锁定用户，达到锁定时长后，会自动解锁。
 2. 管理员在用户列表或用户详情里可以手动解锁。
 
-   [![解除锁定](/idaas-book/images/keycloak/unlock-user.png)](/idaas-book/images/keycloak/unlock-user.png)
+   [![解除锁定](./unlock-user.png)](./unlock-user.png)
 
 ## 注意事项
 
