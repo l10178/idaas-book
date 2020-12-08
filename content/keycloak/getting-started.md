@@ -1,5 +1,5 @@
 ---
-title: 'Keycloak 简介'
+title: "Keycloak 简介"
 date: 2020-09-26T18:54:37+08:00
 draft: false
 ---
@@ -30,11 +30,13 @@ draft: false
 1. Redhat 开源，稳定质量可靠，一直在演进和更新。
 2. 易开发易扩展，相对 CAS。
 3. 功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。
-4. 标准实现，易集成。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。
+4. 标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。
 
 为什么不选他：
 
 1. 没进 [CNCF](https://www.cncf.io/)，相比较而言 [Dex](https://dexidp.io) 的攻势很猛。
+2. 基于 Wildfly 框架，个人感觉挺重，并不适合云原生。Keycloak 官方应该也是意识到这个问题，正在往 Quarkus 转变。
+3. 中文并不友好，这也是为啥有 IDaaS Book 这个项目。
 
 ### 名词对应
 

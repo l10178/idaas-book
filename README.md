@@ -10,7 +10,7 @@ A book about identity as a service (IDaaS).
 
 ## Development
 
-基于Hugo搭建，主题使用 hugo-geekdoc.
+基于 Hugo 搭建，主题使用 hugo-geekdoc.
 
 ```bash
  # 增加新章节
@@ -23,21 +23,22 @@ A book about identity as a service (IDaaS).
 
 ## Roadmap
 
-* IDaaS
-* OAuth2
-* CAS
-* Keycloak
-* Dex
-* LDAP/AD/kerberos
-* SAML
-* OIDC
+- IDaaS
+- OAuth2
+- CAS
+- Keycloak
+- Dex
+- LDAP/AD/kerberos
+- SAML
+- OIDC
 
 ## Thanks
 
-* [Hugo](https://gohugo.io/)
-* [hugo-geekdoc](https://github.com/xoxys/hugo-geekdoc)
-* [Favicon Generator](https://favicon.io)
-* [Logo Generator](https://brandhub.io/logos)
+- [Hugo](https://gohugo.io/)
+- [hugo-geekdoc](https://github.com/xoxys/hugo-geekdoc)
+- [Favicon Generator](https://favicon.io)
+- [Logo Generator](https://brandhub.io/logos)
+- [PNG Minify pngquant](https://pngquant.org/)
 
 ## License
 
