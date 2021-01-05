@@ -36,7 +36,7 @@ Keycloak 提供了基于 OTP（One-Time Password，一次性密码，动态口�
 
 ## 名字解释
 
-**OTP** One-Time Password，一般翻译为一次性密码、动态口令。
+**OTP** One-Time Password，一般翻译为一次性密码、动态口令、动态验证码。
 
 **HOTP** HMAC-based One-Time Password，使用计数方式基于 HMAC 算法加密。算法协议为 [RFC 2104](https://tools.ietf.org/html/rfc2104).
 
