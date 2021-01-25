@@ -1,5 +1,5 @@
 ---
-title: "Keycloak 简介"
+title: 'Keycloak 简介'
 date: 2020-09-26T18:54:37+08:00
 draft: false
 ---
@@ -34,9 +34,8 @@ draft: false
 
 为什么不选他：
 
-1. 没进 [CNCF](https://www.cncf.io/)，相比较而言 [Dex](https://dexidp.io) 的攻势很猛。
-2. 基于 Wildfly 框架，个人感觉挺重，并不适合云原生。Keycloak 官方应该也是意识到这个问题，正在往 Quarkus 转变。
-3. 中文并不友好，这也是为啥有 IDaaS Book 这个项目。
+1. 没进 [CNCF](https://www.cncf.io/)，基于 Wildfly 框架，个人感觉挺重，并不适合云原生。Keycloak 官方应该也是意识到这个问题，正在往 Quarkus 转变。
+2. 中文并不友好，这也是为啥有 IDaaS Book 这个项目。
 
 ### 名词对应
 
