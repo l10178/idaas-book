@@ -17,20 +17,18 @@ A book about identity as a service (IDaaS).
  hugo new folder/name.md
  # 本地启动 Server
  hugo server -D
- # 发布
- hugo
 ```
 
 ## Roadmap
 
 - IDaaS
-- OAuth2
-- CAS
 - Keycloak
+- OAuth2
+- OIDC
+- CAS
 - Dex
 - LDAP/AD/kerberos
 - SAML
-- OIDC
 
 ## Thanks
 
@@ -42,6 +40,6 @@ A book about identity as a service (IDaaS).
 
 ## License
 
-Licensed under Apache License 2.0. Copyright (c) 2020 [idaas.site][].
+Licensed under Apache License 2.0. Copyright (c) 2020 [nxest.com][].
 
-[idaas.site]: https://www.idaas.site
+[nxest.com]: https://www.nxest.com

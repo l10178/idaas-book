@@ -1,4 +1,4 @@
-name: Docker
+name: docker publish
 
 on:
   push:
@@ -10,38 +10,28 @@ on:
   pull_request:
 
 env:
-  # TODO: Change variable to your image's name.
   IMAGE_NAME: idaas-book
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Run tests
-        run: |
-          if [ -f docker-compose.test.yml ]; then
-            docker-compose --file docker-compose.test.yml build
-            docker-compose --file docker-compose.test.yml run sut
-          else
-            docker build . --file Dockerfile
-          fi
-
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
-    # Ensure test job passes before pushing image.
-    needs: test
-
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: true # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.80.0'
+
+      - name: Build
+        run: hugo --minify --baseURL /idaas-book
 
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
