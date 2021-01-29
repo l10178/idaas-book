@@ -35,13 +35,11 @@ ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WF
 
 ## 解决方案
 
-命令行增加环境变量指定不同的服务端口进行导出。
+命令行增加环境变量`-Djboss.socket.binding.port-offset=100`，指定不同的服务端口进行导出。
 
 ```bash
-./standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=dir -Dkeycloak.migration.dir=/tmp -Djboss.http.port=8888 -Djboss.https.port=9999 -Djboss.management.http.port=7777
+kubectl -n keycloak exec -it keycloak-0 -- /opt/jboss/keycloak/bin/standalone.sh -Djboss.socket.binding.port-offset=100 -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=dir -Dkeycloak.migration.dir=/tmp
 ```
-
-当然也可以直接通过 `kubectl exec` 复制 standalone.sh 完整路径执行上面的命令。
 
 导出成功后，Ctrl-C 停止导出的进程，再通过 `kubectl cp` 将文件复制出来。
 

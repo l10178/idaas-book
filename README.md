@@ -40,6 +40,6 @@ A book about identity as a service (IDaaS).
 
 ## License
 
-Licensed under Apache License 2.0. Copyright (c) 2020 [nxest.com][].
+Licensed under Apache License 2.0. Copyright (c) 2020-2021 [nxest.com][].
 
 [nxest.com]: https://www.nxest.com
