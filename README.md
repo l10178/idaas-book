@@ -6,7 +6,8 @@
 [![GitHub contributors](https://img.shields.io/github/contributors/l10178/idaas-book)](https://github.com/l10178/idaas-book/graphs/contributors)
 [![License](https://img.shields.io/github/license/l10178/idaas-book)](LICENSE)
 
-A book about identity as a service (IDaaS).
+A book about identity as a service (IDaaS).  
+一本关于身份即服务的书，翻译和汇总相关专业知识。
 
 ## Development
 
