@@ -4,10 +4,10 @@
 [![Hugo Version](https://img.shields.io/badge/hugo-0.80-blue.svg)](https://gohugo.io)
 [![GitHub release](https://img.shields.io/github/v/release/l10178/idaas-book)](https://github.com/l10178/idaas-book/releases/latest)
 [![GitHub contributors](https://img.shields.io/github/contributors/l10178/idaas-book)](https://github.com/l10178/idaas-book/graphs/contributors)
-[![License](https://img.shields.io/github/license/l10178/idaas-book)](LICENSE)
 
-A book about identity as a service (IDaaS).  
-一本关于身份即服务的书，翻译和汇总相关专业知识。
+A book about identity as a service (IDaaS).
+
+一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关软件。
 
 ## Development
 
@@ -41,6 +41,6 @@ A book about identity as a service (IDaaS).
 
 ## License
 
-Licensed under Apache License 2.0. Copyright (c) 2020-2021 [nxest.com][].
+Licensed under CC BY-NC-SA 4.0. 2020-2021 [nxest.com][].
 
 [nxest.com]: https://www.nxest.com
