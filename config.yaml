@@ -1,6 +1,6 @@
-baseURL: "https://l10178.github.io/idaas-book/"
-languageCode: "zh-CN"
-title: "A book about IDaaS"
+baseURL: 'https://l10178.github.io/idaas-book/'
+languageCode: 'zh-CN'
+title: 'A book about IDaaS'
 theme: hugo-geekdoc
 pygmentsUseClasses: true
 pygmentsCodeFences: true
@@ -25,14 +25,20 @@ params:
   geekdocBreadcrumb: false
 
   # relative to your 'static/' folder.
-  geekdocLogo: "images/logos/logo.png"
+  geekdocLogo: 'images/logos/logo.png'
 
   # (Optional, default none) Set source repository location
   # Used for 'Edit this page' links
   # You can also specify this parameter per page in front matter.
-  geekdocRepo: "https://github.com/l10178/idaas-book"
+  geekdocRepo: 'https://github.com/l10178/idaas-book'
 
   # (Optional, default none) Enable "Edit this page" links. Requires 'GeekdocRepo' param
   # and path must point to 'content' directory of repo.
   # You can also specify this parameter per page in front matter.
-  geekdocEditPath: edit/master/content
+  geekdocEditPath: edit/main/content
+
+  # (Optional, default true) Add an anchor link to headlines.
+  geekdocAnchor: false
+
+  # (Optional, default true) Copy anchor url to clipboard on click.
+  geekdocAnchorCopy: false
