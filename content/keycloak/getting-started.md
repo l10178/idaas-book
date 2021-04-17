@@ -3,6 +3,7 @@ title: 'Keycloak 简介'
 description: "Keycloak IdaaS IAM SSO 简介"
 date: 2020-09-26T18:54:37+08:00
 draft: false
+weight: -1
 ---
 
 [keycloak][] 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。
