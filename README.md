@@ -9,17 +9,6 @@ A book about identity as a service (IDaaS).
 
 一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关软件。
 
-## Development
-
-基于 Hugo 搭建，主题使用 hugo-geekdoc.
-
-```bash
- # 增加新章节
- hugo new folder/name.md
- # 本地启动 Server
- hugo server -D
-```
-
 ## Roadmap
 
 - IDaaS
@@ -34,13 +23,12 @@ A book about identity as a service (IDaaS).
 ## Thanks
 
 - [Hugo](https://gohugo.io/)
-- [hugo-geekdoc](https://github.com/xoxys/hugo-geekdoc)
+- [hugo-geekdoc](https://github.com/thegeeklab/hugo-geekdoc)
 - [Favicon Generator](https://favicon.io)
-- [Logo Generator](https://brandhub.io/logos)
 - [PNG Minify pngquant](https://pngquant.org/)
 
 ## License
 
-Licensed under CC BY-NC-SA 4.0. 2020-2021 [nxest.com][].
+Licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). 2020-2021 [nxest.com][].
 
 [nxest.com]: https://www.nxest.com

@@ -7,10 +7,10 @@
 
 A book about identity as a service (IDaaS).
 
-一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关软件。
+一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件。
 
 ## License
 
-Licensed under CC BY-NC-SA 4.0. 2020-2021 [nxest.com][].
+Licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). 2020-2021 [nxest.com][].
 
 [nxest.com]: https://www.nxest.com
