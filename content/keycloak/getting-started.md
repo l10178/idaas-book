@@ -39,7 +39,7 @@ weight: -1
 1. 没进 [CNCF](https://www.cncf.io/)，基于 Wildfly 框架，个人感觉挺重，并不适合云原生。Keycloak 官方应该也是意识到这个问题，正在往 Quarkus 转变。
 2. 中文并不友好，这也是为啥有 IDaaS Book 这个项目。
 
-### 名词对应
+### 名词解释
 
 **IAM** Identity and Access Management，身份认证和访问控制。
 

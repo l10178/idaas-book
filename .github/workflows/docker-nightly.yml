@@ -1,9 +1,8 @@
 name: docker nightly
 
 on:
-  push:
   schedule:
-    - cron: '0 19 * * *' #每天在国际标准时间19点（北京时间早上3点）
+    - cron: '0 19 * * *' # UTC 19:00
 
 env:
   IMAGE_NAME: idaas-book
