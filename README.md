@@ -17,6 +17,6 @@ A book about identity as a service (IDaaS).
 
 ## License
 
-Licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). 2020-2021 [nxest.com][].
+Licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). 2020-2022 [nxest.com][].
 
 [nxest.com]: https://www.nxest.com
