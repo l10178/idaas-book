@@ -1,0 +1,68 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=description content="Keycloak Admin REST API：用户增加修改删除"><title>用户增删改查 | A book about IDaaS</title><link rel=icon href=/idaas-book/favicon/favicon-32x32.png type=image/x-icon><link rel=stylesheet href=/idaas-book/main.min.css media=screen><link rel=stylesheet href=/idaas-book/custom.css media=screen></head><body><div class=wrapper><input type=checkbox class=hidden id=menu-control><header class=gdoc-header><div class="container flex align-center justify-between"><label for=menu-control class=gdoc-nav__control><svg class="icon menu"><use xlink:href="#menu"/></svg><svg class="icon arrow-back"><use xlink:href="#arrow_back"/></svg></label><a class=gdoc-header__link href=https://l10178.github.io/idaas-book/><span class="gdoc-brand flex align-center"><img class=gdoc-brand__img src=/idaas-book/images/logos/logo.png alt="A book about IDaaS" width=38 height=38>
+A book about IDaaS</span></a></div></header><main class="container flex flex-even"><aside class=gdoc-nav><nav><div class=gdoc-search><svg class="icon search"><use xlink:href="#search"/></svg><input type=text id=gdoc-search-input class=gdoc-search__input placeholder=Search... aria-label=Search maxlength=64><div class="gdoc-search__spinner spinner hidden"></div><ul id=gdoc-search-results class=gdoc-search__list></ul></div><section class=gdoc-nav--main><h2>Navigation</h2><ul class=gdoc-nav__list><li><span class=flex>Keycloak</span><ul class=gdoc-nav__list><li><span class=flex><a href=/idaas-book/keycloak/getting-started/ class=gdoc-nav__entry>Keycloak 简介</a></span></li><li><span class=flex>Admin API</span><ul class=gdoc-nav__list><li><span class=flex><a href=/idaas-book/keycloak/admin-api/user-end2end/ class="gdoc-nav__entry is-active">用户增删改查</a></span></li></ul></li><li><span class=flex>Troubleshooting</span><ul class=gdoc-nav__list><li><span class=flex><a href=/idaas-book/keycloak/troubleshooting/https-required/ class=gdoc-nav__entry>Https Required</a></span></li><li><span class=flex><a href=/idaas-book/keycloak/troubleshooting/export-import-on-k8s/ class=gdoc-nav__entry>Kubernetes中导入导出</a></span></li><li><span class=flex><a href=/idaas-book/keycloak/troubleshooting/liquibase-mysql-group-replication/ class=gdoc-nav__entry>Liquibase MGR</a></span></li></ul></li><li><span class=flex>安全增强功能</span><ul class=gdoc-nav__list><li><span class=flex><a href=/idaas-book/keycloak/security-features/mfa/ class=gdoc-nav__entry>MFA-OTP</a></span></li><li><span class=flex><a href=/idaas-book/keycloak/security-features/password-policies/ class=gdoc-nav__entry>密码策略</a></span></li><li><span class=flex><a href=/idaas-book/keycloak/security-features/brute-force-detection/ class=gdoc-nav__entry>暴力检测</a></span></li></ul></li></ul></li><li><span class=flex>参考资料</span><ul class=gdoc-nav__list><li><span class=flex><a href=/idaas-book/references/windows-ad/ class=gdoc-nav__entry>安装AD域服务并启用LDAPS</a></span></li></ul></li></ul></section><section class=gdoc-nav--more><h2>More</h2><ul class=gdoc-nav__list><li><span class=flex><svg class="icon download"><use xlink:href="#download"/></svg><a href=https://github.com/l10178/idaas-book/releases class=gdoc-nav__entry>Releases</a></span></li><li><span class=flex><svg class="icon github"><use xlink:href="#github"/></svg><a href=https://github.com/l10178/idaas-book class=gdoc-nav__entry>View Source</a></span></li></ul></section></nav></aside><div class=gdoc-page><div class="gdoc-page__header flex flex-wrap justify-between" itemscope itemtype=https://schema.org/Breadcrumb><span></span><span><svg class="icon code"><use xlink:href="#code"/></svg><a href=https://github.com/l10178/idaas-book/edit/main/content/keycloak/admin-api/user-end2end.md>Edit this page</a></span></div><article class=gdoc-markdown><h1>用户增删改查</h1><p>Keycloak Admin REST API，curl 模拟用户增加修改删除的完整例子。</p><div class=highlight><pre class=chroma><code class=language-bash data-lang=bash><span class=cp>#!/bin/bash
+</span><span class=cp></span>
+<span class=nv>HOST_IP</span><span class=o>=</span>127.0.0.1
+<span class=nv>HOST_NAME</span><span class=o>=</span>keycloak.example
+<span class=nv>DEFAULT_REALM</span><span class=o>=</span>master
+<span class=nv>ADMIN_API_URL</span><span class=o>=</span>http://<span class=si>${</span><span class=nv>HOST_IP</span><span class=si>}</span>/auth/admin/realms/<span class=si>${</span><span class=nv>DEFAULT_REALM</span><span class=si>}</span>
+<span class=nv>USER_API_URL</span><span class=o>=</span><span class=si>${</span><span class=nv>ADMIN_API_URL</span><span class=si>}</span>/users
+
+<span class=c1># admin user</span>
+<span class=nv>ADMIN_NAME</span><span class=o>=</span>xxx
+<span class=nv>ADMIN_PWD</span><span class=o>=</span>xxx
+
+parse_json<span class=o>()</span> <span class=o>{</span>
+	<span class=nb>echo</span> <span class=s2>&#34;</span><span class=si>${</span><span class=nv>1</span><span class=p>//</span><span class=se>\&#34;</span><span class=p>/</span><span class=si>}</span><span class=s2>&#34;</span> <span class=p>|</span> sed <span class=s2>&#34;s/.*</span><span class=nv>$2</span><span class=s2>:\([^,}]*\).*/\1/&#34;</span>
+<span class=o>}</span>
+
+<span class=nb>echo</span> <span class=s2>&#34;====Begin test user CRUD====&#34;</span>
+
+<span class=nv>token_url</span><span class=o>=</span>http://<span class=si>${</span><span class=nv>HOST_IP</span><span class=si>}</span>/auth/realms/<span class=si>${</span><span class=nv>DEFAULT_REALM</span><span class=si>}</span>/protocol/openid-connect/token
+<span class=c1># Get token, a json</span>
+<span class=nv>token_json</span><span class=o>=</span><span class=k>$(</span>curl -X POST <span class=se>\
+</span><span class=se></span>	-H <span class=s2>&#34;host:</span><span class=si>${</span><span class=nv>HOST_NAME</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	-H <span class=s2>&#34;Content-Type: application/x-www-form-urlencoded&#34;</span> <span class=se>\
+</span><span class=se></span>	<span class=si>${</span><span class=nv>token_url</span><span class=si>}</span> <span class=se>\
+</span><span class=se></span>	--data <span class=s1>&#39;grant_type=password&#39;</span> <span class=se>\
+</span><span class=se></span>	--data <span class=s1>&#39;client_id=admin-cli&#39;</span> <span class=se>\
+</span><span class=se></span>	--data <span class=s2>&#34;username=</span><span class=si>${</span><span class=nv>ADMIN_NAME</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	--data <span class=s2>&#34;password=</span><span class=si>${</span><span class=nv>ADMIN_PWD</span><span class=si>}</span><span class=s2>&#34;</span><span class=k>)</span>
+
+<span class=c1># get the `access_token` from the json</span>
+<span class=nv>token</span><span class=o>=</span><span class=k>$(</span>parse_json <span class=s2>&#34;</span><span class=nv>$token_json</span><span class=s2>&#34;</span> <span class=s2>&#34;access_token&#34;</span><span class=k>)</span>
+
+<span class=c1># List users</span>
+curl -X GET -H <span class=s2>&#34;Authorization: Bearer </span><span class=si>${</span><span class=nv>token</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	-H <span class=s2>&#34;host:</span><span class=si>${</span><span class=nv>HOST_NAME</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	<span class=si>${</span><span class=nv>USER_API_URL</span><span class=si>}</span> -v
+
+<span class=c1># Add new user</span>
+<span class=nv>username</span><span class=o>=</span>usertest<span class=k>$(</span>date <span class=s2>&#34;+%Y%m%d%H%M%S%s&#34;</span><span class=k>)</span>
+<span class=nv>user</span><span class=o>={</span><span class=se>\&#34;</span>enabled<span class=se>\&#34;</span>:true,<span class=se>\&#34;</span>attributes<span class=se>\&#34;</span>:<span class=o>{}</span>,<span class=se>\&#34;</span>username<span class=se>\&#34;</span>:<span class=se>\&#34;</span><span class=si>${</span><span class=nv>username</span><span class=si>}</span><span class=se>\&#34;</span>,<span class=se>\&#34;</span>emailVerified<span class=se>\&#34;</span>:<span class=se>\&#34;\&#34;</span><span class=o>}</span>
+
+<span class=nb>echo</span> <span class=s2>&#34;Begin create new user </span><span class=si>${</span><span class=nv>username</span><span class=si>}</span><span class=s2>.&#34;</span>
+
+<span class=nv>user_create_rsp</span><span class=o>=</span><span class=k>$(</span>curl -i -s -H <span class=s2>&#34;Authorization: Bearer </span><span class=si>${</span><span class=nv>token</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	-H <span class=s2>&#34;host:</span><span class=si>${</span><span class=nv>HOST_NAME</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	-H <span class=s2>&#34;Content-Type: application/json&#34;</span> <span class=se>\
+</span><span class=se></span>	--data <span class=s2>&#34;</span><span class=si>${</span><span class=nv>user</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	<span class=si>${</span><span class=nv>USER_API_URL</span><span class=si>}</span> --stderr -<span class=k>)</span>
+
+<span class=c1># Get user id full url from response header `Location`</span>
+<span class=c1># &lt; Location: http://xxxx/users/9e901054-bbc7-47db-8a68-4a13474a1080</span>
+<span class=c1># The `tr -d` is to fix `Error curl: (3) URL using bad/illegal format or missing URL`</span>
+<span class=nv>user_id_url</span><span class=o>=</span><span class=k>$(</span><span class=nb>echo</span> <span class=s2>&#34;</span><span class=si>${</span><span class=nv>user_create_rsp</span><span class=si>}</span><span class=s2>&#34;</span> <span class=p>|</span> grep -Fi Location <span class=p>|</span> tr -d <span class=s1>&#39;\r&#39;</span> <span class=p>|</span> awk <span class=s1>&#39;{print $2}&#39;</span><span class=k>)</span>
+
+<span class=c1># Get only the id from the url</span>
+<span class=nv>user_id</span><span class=o>=</span><span class=k>$(</span><span class=nb>echo</span> <span class=si>${</span><span class=nv>user_id_url</span><span class=si>}</span> <span class=p>|</span> awk -F<span class=s1>&#39;/&#39;</span> <span class=s1>&#39;{print $NF}&#39;</span><span class=k>)</span>
+<span class=nb>echo</span> <span class=s2>&#34;User id is </span><span class=si>${</span><span class=nv>user_id</span><span class=si>}</span><span class=s2> .&#34;</span>
+
+<span class=c1># Delete user by id</span>
+curl -X DELETE -H <span class=s2>&#34;Authorization: Bearer </span><span class=si>${</span><span class=nv>token</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	-H <span class=s2>&#34;host:</span><span class=si>${</span><span class=nv>HOST_NAME</span><span class=si>}</span><span class=s2>&#34;</span> <span class=se>\
+</span><span class=se></span>	-H <span class=s2>&#34;Content-Type: application/json&#34;</span> <span class=se>\
+</span><span class=se></span>	<span class=s2>&#34;</span><span class=si>${</span><span class=nv>USER_API_URL</span><span class=si>}</span><span class=s2>/</span><span class=si>${</span><span class=nv>user_id</span><span class=si>}</span><span class=s2>&#34;</span>
+
+<span class=nb>echo</span> <span class=s2>&#34;====End test user CRUD====&#34;</span>
+
+</code></pre></div></article><div class="gdoc-page__footer flex flex-wrap justify-between"></div></div></main><footer class=gdoc-footer><div class="container flex flex-wrap"><span class=gdoc-footer__item>Copyright © 2020-2021 <a href=https://www.nxest.com class=gdoc-footer__link>nxest.com</a>.</span></div></footer></div><script defer src=/idaas-book/js/en.search.min.js></script></body></html>
