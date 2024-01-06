@@ -7,6 +7,6 @@ SSO
 不同平台多种语言的支持，Java、Python、Go、Node.js、Spring、Quarkus 等。 后台管理
 提供了多种语言的后台管理界面，如果想偷懒的话改改图标定制个主题就能拿来用。同时还有 CLI 、SDK 和 RESTful API。 授权服务
 提供基于 RBAC、ABAC、UBAC 等多种策略的授权功能。 其他常用功能
-密码策略、暴力检测、MFA、日志审计。 选型参考 为什么选他：
-Redhat 开源，稳定质量可靠，一直在演进和更新。 易开发易扩展，相对 CAS。 功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。 标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。 为什么不选他：
-没进 CNCF，基于 Wildfly 框架，个人感觉挺重，并不适合云原生。Keycloak 官方应该也是意识到这个问题，正在往 Quarkus 转变。 中文并不友好，这也是为啥有 IDaaS Book 这个项目。 名词解释 IAM Identity and Access Management，身份认证和访问控制。</description></item></channel></rss>
+密码策略、暴力检测、MFA、日志审计。 选型参考 为什么可能选他：
+Redhat 开源，CNCF 项目，稳定质量可靠，一直在演进和更新。 易开发易扩展，相对 CAS，尤其是对于 Java 开发者。 功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。 标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。 为什么可能不选他：
+如果你有定制开发的话，版本升级并不友好，也不太难，因人而异。 中文并不友好，包括界面中的中文翻译其实不符合国人习惯，这也是为啥有 IDaaS Book 这个项目。 名词解释 IAM Identity and Access Management，身份认证和访问控制。</description></item></channel></rss>
