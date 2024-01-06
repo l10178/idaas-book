@@ -27,17 +27,17 @@ weight: -1
 
 ## 选型参考
 
-为什么选他：
+为什么可能选他：
 
-1. Redhat 开源，稳定质量可靠，一直在演进和更新。
-2. 易开发易扩展，相对 CAS。
+1. Redhat 开源，[CNCF](https://www.cncf.io/) 项目，稳定质量可靠，一直在演进和更新。
+2. 易开发易扩展，相对 CAS，尤其是对于 Java 开发者。
 3. 功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。
 4. 标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。
 
-为什么不选他：
+为什么可能不选他：
 
-1. 没进 [CNCF](https://www.cncf.io/)，基于 Wildfly 框架，个人感觉挺重，并不适合云原生。Keycloak 官方应该也是意识到这个问题，正在往 Quarkus 转变。
-2. 中文并不友好，这也是为啥有 IDaaS Book 这个项目。
+1. 如果你有定制开发的话，版本升级并不友好，也不太难，因人而异。
+2. 中文并不友好，包括界面中的中文翻译其实不符合国人习惯，这也是为啥有 IDaaS Book 这个项目。
 
 ### 名词解释
 

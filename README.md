@@ -12,11 +12,9 @@ A book about identity as a service (IDaaS).
 
 - [Hugo](https://gohugo.io/)
 - [hugo-geekdoc](https://github.com/thegeeklab/hugo-geekdoc)
-- [Favicon Generator](https://favicon.io)
-- [PNG Minify pngquant](https://pngquant.org/)
 
 ## License
 
-Licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). 2020-2022 [nxest.com][].
+Licensed under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). 2020-2024 [nxest.com][].
 
 [nxest.com]: https://www.nxest.com
