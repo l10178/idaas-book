@@ -1,16 +1,22 @@
-######################
-## Hugo
-#######################
-public/
+Thumbs.db
+.DS_Store
+.dist
+.tmp
+.lock
+.sass-cache
+.eslintcache
+.stylelintcache
+.netlify
+.hugo_build.lock
+# hugo_stats.json is necessary for doks
+# hugo_stats.json
+node_modules
+public
+resources
+package-lock.json
+# pnpm-lock.yaml
 
-######################
-## Intellij
-#######################
-.idea/
-*.iml
-
-#######################
-## Visual Studio Code
-#######################
-.vscode/
-.gradle/
+.idea
+.vscode
+.impl
+*.log

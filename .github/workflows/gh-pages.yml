@@ -10,21 +10,26 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true # Fetch Hugo themes (true OR recursive)
-          fetch-depth: 0 # Fetch all history for .GitInfo and .Lastmod
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
 
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: '0.80.0'
+    - name: Install dependencies
+      run: npm install
 
-      - name: Build
-        run: hugo --minify --baseURL https://l10178.github.io/idaas-book/
+    - name: Run linters
+      run: npm run lint --if-present
 
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+    - name: Build site
+      run: npm run build
+
+    - name: Deploy github pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./public
+        cname: www.nxest.com
