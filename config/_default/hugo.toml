@@ -1,5 +1,5 @@
 title = "IDaaS Book"
-baseurl = "/"
+baseurl = "/idaas-book"
 canonifyURLs = false
 disableAliases = true
 disableHugoGeneratorInject = true
