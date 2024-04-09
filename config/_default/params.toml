@@ -13,13 +13,13 @@ alertText = '<a class="alert-link stretched-link fw-normal" href="/blog/doks-1-3
 footer = "Give Me a <a class=\"text-muted\" href=\"https://github.com/l10178/idaas-book/\">Star</a>"
 
 [social]
-  twitter = "nxest-com"
+  twitter = "xlabs-club"
 
 # Add-ons
 [add_ons]
   carbonAds = false # false (default) or true
   docSearch = true # false (default) or true
-  plausibleDomain = "nxest.com" # "example.com" (default)
+  plausibleDomain = "xlabs.club" # "example.com" (default)
   keila = false # false (default) or true
 
 # Doks (@hyas/doks-core)
@@ -34,7 +34,7 @@ footer = "Give Me a <a class=\"text-muted\" href=\"https://github.com/l10178/ida
 
   ## Button
   navBarButton = false # false (default) or true
-  navBarButtonUrl = "https://www.nxest.com/idaas-book"
+  navBarButtonUrl = "https://idaas.xlabs.club"
   navBarButtonText = "Get started"
 
   # FlexSearch
@@ -142,7 +142,7 @@ footer = "Give Me a <a class=\"text-muted\" href=\"https://github.com/l10178/ida
   [seo.schemas]
     type = "Organization" # Organization (default) or Person
     logo = "favicon-512x512.png" # Logo of Organization — favicon-512x512.png (default)
-    name = "nxest" # Name of Organization or Person
+    name = "xlabs" # Name of Organization or Person
     sameAs = ["https://github.com/l10178/idaas-book"] # E.g. ["https://github.com/gethyas/hyas", "https://fosstodon.org/@hyas"]
     images = ["cover.png"] # ["cover.png"] (default)
     article = [] # Article sections

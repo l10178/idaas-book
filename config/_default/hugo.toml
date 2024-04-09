@@ -17,7 +17,7 @@ defaultContentLanguage = "zh"
 disableLanguages = ["en"]
 defaultContentLanguageInSubdir = false
 
-copyRight = "Copyright (c) 2020-2024 nxest.com"
+copyRight = "Copyright (c) 2020-2024 xlabs.club"
 
 [build.buildStats]
   enable = true

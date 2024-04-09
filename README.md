@@ -49,7 +49,6 @@ done
 
 本文档采用 [CC BY-NC 4.0][] 许可协议。
 
-[nxest.com]: https://www.nxest.com
 [Hugo]: https://gohugo.io/
 [Doks]: https://github.com/gethyas/doks
 [pngquant]: https://pngquant.org/
