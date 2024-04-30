@@ -22,7 +22,7 @@ jobs:
       uses: peaceiris/actions-hugo@v3
       with:
         hugo-version: '0.125.4'
-        # extended: true
+        extended: true
 
     - name: Install dependencies
       run: npm ci
