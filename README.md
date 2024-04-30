@@ -36,12 +36,6 @@ do
 done
 ```
 
-## 贡献者列表
-
-<a href="https://github.com/l10178/idaas-book/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=l10178/idaas-book" />
-</a>
-
 ## License
 
 本文档采用 [CC BY-NC 4.0][] 许可协议。
