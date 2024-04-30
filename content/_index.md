@@ -1,5 +1,5 @@
 ---
-title : "IDaaS Book"
+title: "IDaaS Book"
 description: "一本关于身份即服务的书"
 lead: "一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件"
 date: 2023-09-07T16:33:54+02:00
