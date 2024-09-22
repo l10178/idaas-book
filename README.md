@@ -41,6 +41,6 @@ done
 本文档采用 [CC BY-NC 4.0][] 许可协议。
 
 [Hugo]: https://gohugo.io/
-[Doks]: https://github.com/gethyas/doks
+[Doks]: https://github.com/thuliteio/doks
 [pngquant]: https://pngquant.org/
 [CC BY-NC 4.0]: https://creativecommons.org/licenses/by-nc/4.0/

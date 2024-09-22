@@ -8,7 +8,8 @@ enableEmoji = true
 enableGitInfo = true
 enableRobotsTXT = true
 languageCode = "zh-CN"
-paginate = 10
+# paginate = 10
+pagination.pagerSize = 10
 rssLimit = 10
 summarylength = 70 # 70 (default)
 
@@ -18,6 +19,8 @@ disableLanguages = ["en"]
 defaultContentLanguageInSubdir = false
 
 copyRight = "Copyright (c) 2020-2024 xlabs.club"
+
+
 
 [build.buildStats]
   enable = true
