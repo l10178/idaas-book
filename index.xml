@@ -1,83 +1,610 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content on IDaaS Book</description><generator>Hugo</generator><language>zh</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Sat, 17 Aug 2024 16:44:59 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak 简介</title><link>https://idaas.xlabs.club/docs/keycloak/getting-started/</link><pubDate>Sat, 26 Sep 2020 18:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/getting-started/</guid><description>keycloak 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。
-主要功能：
-SSO
-单点登录（Single-Sign On），支持 OpenID Connect、OAuth 2.0、SAML 2.0 标准协议。 Identity Brokering and Social Login
-通过配置，可实现对不同身份认证服务的集成，通过这些身份认证服务登录应用。如 GitHub、Google 等，开源社区也有人提供了微信集成方案。 User Federation
-用户联合，提供了对 LDAP、Active Directory、Kerberos 的集成方案。 Client Adapters
-不同平台多种语言的支持，Java、Python、Go、Node.js、Spring、Quarkus 等。 后台管理
-提供了多种语言的后台管理界面，如果想偷懒的话改改图标定制个主题就能拿来用。同时还有 CLI 、SDK 和 RESTful API。 授权服务
-提供基于 RBAC、ABAC、UBAC 等多种策略的授权功能。 其他常用功能
-密码策略、暴力检测、MFA、日志审计。 选型参考 为什么可能选他：
-Redhat 开源，CNCF 项目，稳定质量可靠，一直在演进和更新。 易开发易扩展，相对 CAS，尤其是对于 Java 开发者。 功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。 标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。 为什么可能不选他：
-如果你有定制开发的话，版本升级并不友好，也不太难，因人而异。 中文并不友好，包括界面中的中文翻译其实不符合国人习惯，这也是为啥有 IDaaS Book 这个项目。 名词解释 IAM Identity and Access Management，身份认证和访问控制。
-MFA Multi-Factor Authentication，多重身份认证，多因子认证。</description></item><item><title>Introduction</title><link>https://idaas.xlabs.club/docs/guides/introduction/</link><pubDate>Thu, 07 Sep 2023 16:04:48 +0200</pubDate><guid>https://idaas.xlabs.club/docs/guides/introduction/</guid><description>A book about identity as a service (IDaaS).
-一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件，记录使用中遇到的问题和解决方案。</description></item><item><title>Kubernetes中导入导出</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>问题描述 我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。
-比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。
-./standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=keycloak-export.json出现类似下面错误。
-ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([ (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;), (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;) ]) - failure description: { &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;}, &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; { &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.</description></item><item><title>MFA-OTP</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</guid><description>MFA 即 Multi-Factor Authentication，多重身份认证，多因子认证，多因素认证。当然也包含等保要求中常说的双因子认证 2FA。
-常见的实现如 U 盾、短信、邮件、指纹识别、面部识别等，在账户+密码基础上，进行二次或多次认证，增强数据安全。
-Keycloak 提供了基于 OTP（One-Time Password，一次性密码，动态口令）的开箱即用的解决方案。
-使用步骤 直接上图看效果。
-各个 Realm 默认的浏览器认证流中，OTP 是CONDITIONAL，是一个条件可选项。 为用户配置启用 OTP 认证。 用户登录，未注册设备，要求注册设备。 手机端下载支持的 OTP 软件，如 FreeOTP，Google Authenticator。扫描注册，注册成功后就能看到已经生成一次性口令。 登录时就会要求输入一次性验证码。 注册成功后，可以在管理控制台看到用户注册的设备，用户也可以在自己的账户页面看到注册的设备。如果手机丢了想重新注册，把已有的记录删掉就可以，删掉后下次登录会要求重新注册。
-管理控制台: 自己的账户页面：
-扩展认证方式 如果想自己实现认证方式，官方也提供了详细的 SPI 开发指导，我们根据指导用一天时间实现了一个短信验证码。待开源。
-名字解释 OTP One-Time Password，一般翻译为一次性密码、动态口令、动态验证码。
-HOTP HMAC-based One-Time Password，使用计数方式基于 HMAC 算法加密。算法协议为 RFC 2104.
-TOTP Time-based One-Time Password，基于时间戳算法，是时间同步，基于客户端的动态口令和服务器的时间比对，一般每 N 秒产生一个新口令，要求客户端和服务器能够保持正确的时钟，客户端和服务端基于时间计算的动态口令才能一致。算法协议为 RFC 6238.
-开源实现
-FreeOTP。 Google Authenticator。</description></item><item><title>安装AD域服务并启用LDAPS</title><link>https://idaas.xlabs.club/docs/references/windows-ad/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/references/windows-ad/</guid><description>说明：此步骤仅仅是为了如何快速搭建起一个测试版 Windows AD 服务，不可用于生产。
-前置条件 安装 Windows AD 域控服务器，需要提前准备：
-Windows Server 2008 及更新版本操作系统，如 4 核 8G 内存，60G 硬盘的主机一台。 提前规划好域名，比如本示例为 iam.nxest.local. Windows Server 不同版本略有差异，但是基本要做的就是下面几项：
-启用功能：角色和功能里添加 Windows AD 域服务。 配置：配置 AD 域名、管理员密码等基本信息。 Windows Server 2012 步骤如下 点击开始菜单，找到“服务器管理器”，打开，显示如下界面。 点击右上角 管理&amp;gt;“添加角色和功能”按钮，弹出如下界面。 选择“基于角色或基于功能的安装”，然后点“下一步”。 服务器选择这里选择默认的，假如你需要针对其它主机安装 AD 角色，这里可以选择你需要的主机，点击“下一步”。 这里勾选“Active Directory 域服务”。 当勾选这个选项时，会弹出对话框，点“添加功能”，在功能这个选项卡直接点下一步，一直下一步直到最后一步点击安装。 安装成功后我们点击“关闭”，但这还没有完全安装成功，还需要继续配置。点击服务器右上角的“功能按钮”, 弹出继续配置 AD 的对话框。 根据提示，添加新林，输入准备好的域名。 林功能级别选择最高的版本。 输入 NetBIOS 域名，都是简称，一般是你准备的域名的第一位。 下一步，默认即可。
-下一步，先决条件检查，可能花费 10 分钟左右，请耐心等待。 检查通过后才能点击安装。 安装完成后，会提示注销重启，如果未提示重启，请手动重启下服务器。 用户管理 安装完成后，可通过“Active Directory 用户和计算机”管理用户。此功能可通过控制面板或菜单搜索到。
-打开后即可在 Users 下右键创建组和用户，请根据需要提前划分分组，增加用户。</description></item><item><title>密码策略</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</guid><description>密码策略，常见的如密码最小长度、必须包含特殊字符、密码不能与历史密码相同等。控制用户在修改密码时，新密码必须满足一定的条件，从而增强密码安全。
-Keycloak 内置了丰富的密码策略，满足常用的需求，不过默认都是不启用的，需要管理员主动设置。
-启用方式，单击 Authentication 菜单，选择 Password Policy 选项卡。 在右侧下拉列表框中选择要添加的策略。根据策略提示设置不同的参数，保存。
-密码策略只对新创建用户，或者用户修改密码生效，对已有用户不生效。如果想更快生效，就强制用户必须修改密码，在用户的 Required User Actions 里增加 Update Password 。
-密码策略类型 HashAlgorithm
-哈希算法，密码加密算法，以此算法存储，可根据官方指导自己实现算法。
-Hashing Iterations
-哈希次数，指定密码在存储或验证之前被哈希的次数。 多次哈希防止数据库泄露后，密码被暴力破解。哈希次数越多安全性越高，性能越差。
-Minimum Length
-密码最小长度。加大密码长度才是最有效的安全措施，什么大小写数字都是骗人的。
-Digits
-密码里必须包含 N 个数字。
-Lowercase Characters
-密码里必须包含 N 个小写字母。
-Uppercase Characters
-密码里必须包含 N 个大写字母。
-Special Characters
-密码里必须包含 N 个特殊字符，特殊字符如 ?!#%$ 。
-Not Username
-不能是当前用户名。
-Not Email
-不能是当前用户的邮箱。
-Regular Expression
-正则表达式，用 java.util.regex.Pattern 解析。
-Expire Password
-密码有效期，过期时间， N 天。超过这个时间后，用户必须修改密码。
-Not Recently Used
-密码历史，不能是最近使用过的 N 个密码。</description></item><item><title>Https Required</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>问题描述 以 Http 方式登录，页面错误提示如下。
-We're sorry... HTTPS required.
-问题原因 keycloak 各个 Realm 默认的登录设置里，Require SSL 为 external requests，对于外部请求，必须是 Https。 非外部请求，也就是私有地址，可以是 http，如：localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x。 详细参考官方文档说明。
-解决方案 配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。
-如果只是测试环境，可以修改 Realm 的设置，Require SSL 改为 none。
-修改数据方式
-update REALM set ssl_required=&amp;#39;NONE&amp;#39; where id = &amp;#39;master&amp;#39;;K8S 命令行调用 keycloak 官方 admin 工具 kcadm 修改
-# login with a admin user kubectl exec -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password admin-password # update your realm config kubectl exec -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.</description></item><item><title>Liquibase MGR</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>问题描述 Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。
-查看 keycloak 启动日志，错误信息大致如下。
-INFO [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (ServerService Thread Pool -- 66) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (ServerService Thread Pool -- 66) Change Set META-INF/jpa-changelog-1.0.0.Final.xml:: 1.0.0.Final-KEYCLOAK-5461::sthorger@redhat.com failed. Error: Table &amp;#39;APPLICATION_DEFAULT_ROLES&amp;#39; already exists [Failed SQL: CREATE TABLE keycloak.APPLICATION_DEFAULT_ROLES (APPLICATION_ID VARCHAR(36) NOT NULL, ROLE_ID VARCHAR(36) NOT NULL)] FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.RuntimeException: Failed to update database INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal查看 MySQL 日志，看到如下错误。</description></item><item><title>暴力检测</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</link><pubDate>Fri, 04 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</guid><description>Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N 次锁定。
-启用暴力检测 控制台选择 Realm，设置：Realm Settings -&amp;gt; Security Defenses -&amp;gt; Brute Force Detection。
-Permanent Lockout
-ON 表示永久锁定。
-OFF 表示临时锁定。
-Max Login Failures
-登录失败达到多少次时，锁定账号。
-Quick Login Check Milli Seconds
-快速登录检测，两次登录请求之间的时间间隔（单位毫秒）小于该值时，则认定为快速登录。
-Minimum Quick Login Wait
-一旦被认定为快速登录，该账号将被临时锁定为该配置项配置的时长。
-解除锁定 临时锁定用户，达到锁定时长后，会自动解锁。
-管理员在用户列表或用户详情里可以手动解锁。
-注意事项 失败次数统计仅与登录账号相关，与会话无关，关闭重启浏览器，次数不会重置。 用户锁定后，给出的错误提示还是默认的用户名密码错误，就是不想让攻击者知道用户暂时被禁用了。</description></item><item><title>用户增删改查</title><link>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</guid><description>Keycloak Admin REST API，curl 模拟用户增加修改删除的完整例子。
-#!/bin/bash HOST_IP=127.0.0.1 HOST_NAME=keycloak.example DEFAULT_REALM=master ADMIN_API_URL=http://${HOST_IP}/auth/admin/realms/${DEFAULT_REALM} USER_API_URL=${ADMIN_API_URL}/users # admin user ADMIN_NAME=xxx ADMIN_PWD=xxx parse_json() { echo &amp;#34;${1//\&amp;#34;/}&amp;#34; | sed &amp;#34;s/.*$2:\([^,}]*\).*/\1/&amp;#34; } echo &amp;#34;====Begin test user CRUD====&amp;#34; token_url=http://${HOST_IP}/auth/realms/${DEFAULT_REALM}/protocol/openid-connect/token # Get token, a json token_json=$(curl -X POST \ -H &amp;#34;host:${HOST_NAME}&amp;#34; \ -H &amp;#34;Content-Type: application/x-www-form-urlencoded&amp;#34; \ ${token_url} \ --data &amp;#39;grant_type=password&amp;#39; \ --data &amp;#39;client_id=admin-cli&amp;#39; \ --data &amp;#34;username=${ADMIN_NAME}&amp;#34; \ --data &amp;#34;password=${ADMIN_PWD}&amp;#34;) # get the `access_token` from the json token=$(parse_json &amp;#34;$token_json&amp;#34; &amp;#34;access_token&amp;#34;) # List users curl -X GET -H &amp;#34;Authorization: Bearer ${token}&amp;#34; \ -H &amp;#34;host:${HOST_NAME}&amp;#34; \ ${USER_API_URL} -v # Add new user username=usertest$(date &amp;#34;+%Y%m%d%H%M%S%s&amp;#34;) user={\&amp;#34;enabled\&amp;#34;:true,\&amp;#34;attributes\&amp;#34;:{},\&amp;#34;username\&amp;#34;:\&amp;#34;${username}\&amp;#34;,\&amp;#34;emailVerified\&amp;#34;:\&amp;#34;\&amp;#34;} echo &amp;#34;Begin create new user ${username}.</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content on IDaaS Book</description><generator>Hugo</generator><language>zh</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Sun, 22 Sep 2024 12:00:11 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak 简介</title><link>https://idaas.xlabs.club/docs/keycloak/getting-started/</link><pubDate>Sat, 26 Sep 2020 18:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/getting-started/</guid><description>&lt;p>&lt;a href="https://www.keycloak.org">keycloak&lt;/a> 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。&lt;/p>
+&lt;p>主要功能：&lt;/p>
+&lt;ul>
+&lt;li>SSO&lt;br>
+单点登录（Single-Sign On），支持 OpenID Connect、OAuth 2.0、SAML 2.0 标准协议。&lt;/li>
+&lt;li>Identity Brokering and Social Login&lt;br>
+通过配置，可实现对不同身份认证服务的集成，通过这些身份认证服务登录应用。如 GitHub、Google 等，开源社区也有人提供了微信集成方案。&lt;/li>
+&lt;li>User Federation&lt;br>
+用户联合，提供了对 LDAP、Active Directory、Kerberos 的集成方案。&lt;/li>
+&lt;li>Client Adapters&lt;br>
+不同平台多种语言的支持，Java、Python、Go、Node.js、Spring、Quarkus 等。&lt;/li>
+&lt;li>后台管理&lt;br>
+提供了多种语言的后台管理界面，如果想偷懒的话改改图标定制个主题就能拿来用。同时还有 CLI 、SDK 和 RESTful API。&lt;/li>
+&lt;li>授权服务&lt;br>
+提供基于 RBAC、ABAC、UBAC 等多种策略的授权功能。&lt;/li>
+&lt;li>其他常用功能&lt;br>
+密码策略、暴力检测、MFA、日志审计。&lt;/li>
+&lt;/ul>
+&lt;h2 id="选型参考">选型参考&lt;/h2>
+&lt;p>为什么可能选他：&lt;/p>
+&lt;ol>
+&lt;li>Redhat 开源，&lt;a href="https://www.cncf.io/">CNCF&lt;/a> 项目，稳定质量可靠，一直在演进和更新。&lt;/li>
+&lt;li>易开发易扩展，相对 CAS，尤其是对于 Java 开发者。&lt;/li>
+&lt;li>功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。&lt;/li>
+&lt;li>标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。&lt;/li>
+&lt;/ol>
+&lt;p>为什么可能不选他：&lt;/p>
+&lt;ol>
+&lt;li>如果你有定制开发的话，版本升级并不友好，也不太难，因人而异。&lt;/li>
+&lt;li>中文并不友好，包括界面中的中文翻译其实不符合国人习惯，这也是为啥有 IDaaS Book 这个项目。&lt;/li>
+&lt;/ol>
+&lt;h3 id="名词解释">名词解释&lt;/h3>
+&lt;p>&lt;strong>IAM&lt;/strong> Identity and Access Management，身份认证和访问控制。&lt;/p>
+&lt;p>&lt;strong>MFA&lt;/strong> Multi-Factor Authentication，多重身份认证，多因子认证。&lt;/p></description></item><item><title>Introduction</title><link>https://idaas.xlabs.club/docs/guides/introduction/</link><pubDate>Thu, 07 Sep 2023 16:04:48 +0200</pubDate><guid>https://idaas.xlabs.club/docs/guides/introduction/</guid><description>&lt;p>A book about identity as a service (IDaaS).&lt;/p>
+&lt;p>一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件，记录使用中遇到的问题和解决方案。&lt;/p></description></item><item><title>Kubernetes中导入导出</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
+&lt;p>我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。&lt;/p>
+&lt;p>比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame is-terminal not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">./standalone.sh -Dkeycloak.migration.action&lt;span class="o">=&lt;/span>&lt;span class="nb">export&lt;/span> -Dkeycloak.migration.provider&lt;span class="o">=&lt;/span>singleFile -Dkeycloak.migration.file&lt;span class="o">=&lt;/span>keycloak-export.json&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/figure>
+&lt;/div>
+&lt;p>出现类似下面错误。&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([
+ (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;),
+ (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;)
+]) - failure description: {
+ &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;},
+ &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; {
+ &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.wildfly.management.http.extensible.shutdown&amp;#34;],
+ &amp;#34;Services that may be the cause:&amp;#34; =&amp;gt; [&amp;#34;jboss.remoting.remotingConnectorInfoService.http-remoting-connector&amp;#34;]
+ }
+}&lt;/code>&lt;/pre>
+ &lt;/figure>
+&lt;/div>
+&lt;h2 id="问题原因">问题原因&lt;/h2>
+&lt;p>根据错误提示，端口被占用，原因是 keycloak 导出脚本也会启动 Wildfly 服务，默认的 http、https、management 等的端口已经被占用。&lt;/p></description></item><item><title>MFA-OTP</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</guid><description>&lt;p>&lt;strong>MFA&lt;/strong> 即 Multi-Factor Authentication，多重身份认证，多因子认证，多因素认证。当然也包含等保要求中常说的双因子认证 2FA。&lt;/p>
+&lt;p>常见的实现如 U 盾、短信、邮件、指纹识别、面部识别等，在账户+密码基础上，进行二次或多次认证，增强数据安全。&lt;/p>
+&lt;p>Keycloak 提供了基于 OTP（One-Time Password，一次性密码，动态口令）的开箱即用的解决方案。&lt;/p>
+&lt;h2 id="使用步骤">使用步骤&lt;/h2>
+&lt;p>直接上图看效果。&lt;/p>
+&lt;ol>
+&lt;li>各个 Realm 默认的浏览器认证流中，OTP 是&lt;code>CONDITIONAL&lt;/code>，是一个条件可选项。
+&lt;a href="./browser-otp.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/browser-otp_hu12120228026187848527.webp"
+ width="1400"
+ height="622"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="browser"id="h-rh-i-0"
+/>&lt;/a>&lt;/li>
+&lt;li>为用户配置启用 OTP 认证。
+&lt;a href="./required-otp.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/required-otp_hu6593641579294950690.webp"
+ width="799"
+ height="702"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="User OTP"id="h-rh-i-1"
+/>&lt;/a>&lt;/li>
+&lt;li>用户登录，未注册设备，要求注册设备。
+&lt;a href="./register-otp.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/register-otp_hu12669578073784448439.webp"
+ width="701"
+ height="901"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="Register"id="h-rh-i-2"
+/>&lt;/a>&lt;/li>
+&lt;li>手机端下载支持的 OTP 软件，如 FreeOTP，Google Authenticator。扫描注册，注册成功后就能看到已经生成一次性口令。
+&lt;a href="./freeotp.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/freeotp_hu8655660619675262284.webp"
+ width="631"
+ height="582"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="FreeeOTP APP"id="h-rh-i-3"
+/>&lt;/a>&lt;/li>
+&lt;li>登录时就会要求输入一次性验证码。
+&lt;a href="./login-otp.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/login-otp_hu6974089926450257796.webp"
+ width="863"
+ height="551"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="Login"id="h-rh-i-4"
+/>&lt;/a>&lt;/li>
+&lt;li>注册成功后，可以在管理控制台看到用户注册的设备，用户也可以在自己的账户页面看到注册的设备。如果手机丢了想重新注册，把已有的记录删掉就可以，删掉后下次登录会要求重新注册。&lt;br>
+管理控制台:
+&lt;a href="./admin-otp.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/admin-otp_hu9166579955508478061.webp"
+ width="1415"
+ height="723"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="Admin OTP"id="h-rh-i-5"
+/>&lt;/a>
+自己的账户页面：&lt;br>
+&lt;a href="./account-otp.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/account-otp_hu14173684843865636988.webp"
+ width="1196"
+ height="344"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="Account OTP"id="h-rh-i-6"
+/>&lt;/a>&lt;/li>
+&lt;/ol>
+&lt;h2 id="扩展认证方式">扩展认证方式&lt;/h2>
+&lt;p>如果想自己实现认证方式，官方也提供了详细的 SPI 开发指导，我们根据指导用一天时间实现了一个短信验证码。待开源。&lt;/p>
+&lt;h2 id="名字解释">名字解释&lt;/h2>
+&lt;p>&lt;strong>OTP&lt;/strong> One-Time Password，一般翻译为一次性密码、动态口令、动态验证码。&lt;/p>
+&lt;p>&lt;strong>HOTP&lt;/strong> HMAC-based One-Time Password，使用计数方式基于 HMAC 算法加密。算法协议为 &lt;a href="https://tools.ietf.org/html/rfc2104">RFC 2104&lt;/a>.&lt;/p>
+&lt;p>&lt;strong>TOTP&lt;/strong> Time-based One-Time Password，基于时间戳算法，是时间同步，基于客户端的动态口令和服务器的时间比对，一般每 N 秒产生一个新口令，要求客户端和服务器能够保持正确的时钟，客户端和服务端基于时间计算的动态口令才能一致。算法协议为 &lt;a href="https://tools.ietf.org/html/rfc6238">RFC 6238&lt;/a>.&lt;/p>
+&lt;p>开源实现&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/freeotp">FreeOTP&lt;/a>。&lt;/li>
+&lt;li>&lt;a href="https://github.com/google/google-authenticator">Google Authenticator&lt;/a>。&lt;/li>
+&lt;/ul></description></item><item><title>安装AD域服务并启用LDAPS</title><link>https://idaas.xlabs.club/docs/references/windows-ad/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/references/windows-ad/</guid><description>&lt;p>说明：此步骤仅仅是为了如何快速搭建起一个测试版 Windows AD 服务，不可用于生产。&lt;/p>
+&lt;h2 id="前置条件">前置条件&lt;/h2>
+&lt;p>安装 Windows AD 域控服务器，需要提前准备：&lt;/p>
+&lt;ol>
+&lt;li>Windows Server 2008 及更新版本操作系统，如 4 核 8G 内存，60G 硬盘的主机一台。&lt;/li>
+&lt;li>提前规划好域名，比如本示例为 iam.nxest.local.&lt;/li>
+&lt;/ol>
+&lt;p>Windows Server 不同版本略有差异，但是基本要做的就是下面几项：&lt;/p>
+&lt;ol>
+&lt;li>启用功能：角色和功能里添加 Windows AD 域服务。&lt;/li>
+&lt;li>配置：配置 AD 域名、管理员密码等基本信息。&lt;/li>
+&lt;/ol>
+&lt;h2 id="windows-server-2012-步骤如下">Windows Server 2012 步骤如下&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>点击开始菜单，找到“服务器管理器”，打开，显示如下界面。
+&lt;a href="./ad-001.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-001_hu2885924325126620244.webp"
+ width="764"
+ height="499"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-0"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>点击右上角 管理&amp;gt;“添加角色和功能”按钮，弹出如下界面。
+&lt;a href="./ad-002.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-002_hu2779803820000959365.webp"
+ width="1466"
+ height="729"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-1"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>选择“基于角色或基于功能的安装”，然后点“下一步”。
+&lt;a href="./ad-003.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-003_hu15787995524625310584.webp"
+ width="1192"
+ height="834"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-2"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>服务器选择这里选择默认的，假如你需要针对其它主机安装 AD 角色，这里可以选择你需要的主机，点击“下一步”。
+&lt;a href="./ad-004.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-004_hu16351046052913653848.webp"
+ width="1194"
+ height="838"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-3"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>这里勾选“Active Directory 域服务”。
+&lt;a href="./ad-005.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-005_hu12978229761743645565.webp"
+ width="1185"
+ height="835"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-4"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>当勾选这个选项时，会弹出对话框，点“添加功能”，在功能这个选项卡直接点下一步，一直下一步直到最后一步点击安装。
+&lt;a href="./ad-006.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-006_hu8847225282935321592.webp"
+ width="1197"
+ height="828"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-5"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>安装成功后我们点击“关闭”，但这还没有完全安装成功，还需要继续配置。点击服务器右上角的“功能按钮”, 弹出继续配置 AD 的对话框。
+&lt;a href="./ad-007.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-007_hu5783537646947793504.webp"
+ width="1459"
+ height="741"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-6"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>根据提示，添加新林，输入准备好的域名。
+&lt;a href="./ad-008.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-008_hu11771723065931555645.webp"
+ width="1157"
+ height="829"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-7"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>林功能级别选择最高的版本。
+&lt;a href="./ad-009.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-009_hu12197180797476366321.webp"
+ width="1167"
+ height="825"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-8"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>输入 NetBIOS 域名，都是简称，一般是你准备的域名的第一位。
+&lt;a href="./ad-010.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-010_hu16135420283361101531.webp"
+ width="1143"
+ height="826"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-9"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>下一步，默认即可。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>下一步，先决条件检查，可能花费 10 分钟左右，请耐心等待。
+&lt;a href="./ad-012.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-012_hu15276944811886404499.webp"
+ width="1173"
+ height="834"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-10"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>检查通过后才能点击安装。
+&lt;a href="./ad-013.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/references/windows-ad/ad-013_hu8239216188876857895.webp"
+ width="1164"
+ height="826"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="AD"id="h-rh-i-11"
+/>&lt;/a>&lt;/p></description></item><item><title>密码策略</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</guid><description>&lt;p>密码策略，常见的如密码最小长度、必须包含特殊字符、密码不能与历史密码相同等。控制用户在修改密码时，新密码必须满足一定的条件，从而增强密码安全。&lt;/p>
+&lt;p>Keycloak 内置了丰富的密码策略，满足常用的需求，不过默认都是不启用的，需要管理员主动设置。&lt;/p>
+&lt;p>启用方式，单击 &lt;code>Authentication&lt;/code> 菜单，选择 &lt;code>Password Policy&lt;/code> 选项卡。 在右侧下拉列表框中选择要添加的策略。根据策略提示设置不同的参数，保存。&lt;/p>
+&lt;p>密码策略只对新创建用户，或者用户修改密码生效，对已有用户不生效。如果想更快生效，就强制用户必须修改密码，在用户的 &lt;code>Required User Actions&lt;/code> 里增加 &lt;code>Update Password&lt;/code> 。&lt;/p>
+&lt;h2 id="密码策略类型">密码策略类型&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>HashAlgorithm&lt;/p>
+&lt;p>哈希算法，密码加密算法，以此算法存储，可根据官方指导自己实现算法。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Hashing Iterations&lt;/p>
+&lt;p>哈希次数，指定密码在存储或验证之前被哈希的次数。
+多次哈希防止数据库泄露后，密码被暴力破解。哈希次数越多安全性越高，性能越差。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Minimum Length&lt;/p>
+&lt;p>密码最小长度。加大密码长度才是最有效的安全措施，什么大小写数字都是骗人的。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Digits&lt;/p>
+&lt;p>密码里必须包含 N 个数字。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Lowercase Characters&lt;/p>
+&lt;p>密码里必须包含 N 个小写字母。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Uppercase Characters&lt;/p>
+&lt;p>密码里必须包含 N 个大写字母。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Special Characters&lt;/p>
+&lt;p>密码里必须包含 N 个特殊字符，特殊字符如 &lt;code>?!#%$&lt;/code> 。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Not Username&lt;/p>
+&lt;p>不能是当前用户名。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Not Email&lt;/p>
+&lt;p>不能是当前用户的邮箱。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Regular Expression&lt;/p>
+&lt;p>正则表达式，用 &lt;code>java.util.regex.Pattern&lt;/code> 解析。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Expire Password&lt;/p>
+&lt;p>密码有效期，过期时间， N 天。超过这个时间后，用户必须修改密码。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Not Recently Used&lt;/p>
+&lt;p>密码历史，不能是最近使用过的 N 个密码。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Password Blacklist&lt;/p></description></item><item><title>Https Required</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
+&lt;p>以 Http 方式登录，页面错误提示如下。&lt;/p>
+&lt;p>&lt;code>We're sorry... HTTPS required.&lt;/code>&lt;/p>
+&lt;h2 id="问题原因">问题原因&lt;/h2>
+&lt;p>keycloak 各个 Realm 默认的登录设置里，&lt;code>Require SSL&lt;/code> 为 &lt;code>external requests&lt;/code>，对于外部请求，必须是 Https。
+非外部请求，也就是私有地址，可以是 http，如：&lt;code>localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x&lt;/code>。
+详细参考&lt;a href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl">官方文档说明&lt;/a>。&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>如果只是测试环境，可以修改 Realm 的设置，&lt;code>Require SSL&lt;/code> 改为 &lt;code>none&lt;/code>。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>修改数据方式&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">update&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">REALM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">set&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ssl_required&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;NONE&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">where&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">id&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;master&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/figure>
+&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;p>K8S 命令行调用 keycloak 官方 admin 工具 kcadm 修改&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame is-terminal not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># login with a admin user&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl &lt;span class="nb">exec&lt;/span> -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password admin-password
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># update your realm config&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl &lt;span class="nb">exec&lt;/span> -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s &lt;span class="nv">sslRequired&lt;/span>&lt;span class="o">=&lt;/span>none&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/figure>
+&lt;/div>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol></description></item><item><title>Liquibase MGR</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
+&lt;p>Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。&lt;/p>
+&lt;p>查看 keycloak 启动日志，错误信息大致如下。&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">INFO [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (ServerService Thread Pool -- 66) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (ServerService Thread Pool -- 66) Change Set META-INF/jpa-changelog-1.0.0.Final.xml::
+1.0.0.Final-KEYCLOAK-5461::sthorger@redhat.com failed. Error: Table &amp;#39;APPLICATION_DEFAULT_ROLES&amp;#39; already exists [Failed SQL: CREATE TABLE keycloak.APPLICATION_DEFAULT_ROLES (APPLICATION_ID VARCHAR(36) NOT NULL, ROLE_ID VARCHAR(36) NOT NULL)]
+FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.RuntimeException: Failed to update database
+INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal&lt;/code>&lt;/pre>
+ &lt;/figure>
+&lt;/div>
+&lt;p>查看 MySQL 日志，看到如下错误。&lt;/p></description></item><item><title>暴力检测</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</link><pubDate>Fri, 04 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</guid><description>&lt;p>Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N 次锁定。&lt;/p>
+&lt;h2 id="启用暴力检测">启用暴力检测&lt;/h2>
+&lt;p>控制台选择 Realm，设置：Realm Settings -&amp;gt; Security Defenses -&amp;gt; Brute Force Detection。&lt;/p>
+&lt;p>&lt;a href="./brute-force.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/brute-force_hu7739500571624549538.webp"
+ width="1108"
+ height="667"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="Brute Force Detection"id="h-rh-i-0"
+/>&lt;/a>&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Permanent Lockout&lt;/p>
+&lt;p>ON 表示永久锁定。&lt;br>
+OFF 表示临时锁定。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Max Login Failures&lt;/p>
+&lt;p>登录失败达到多少次时，锁定账号。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Quick Login Check Milli Seconds&lt;/p>
+&lt;p>快速登录检测，两次登录请求之间的时间间隔（单位毫秒）小于该值时，则认定为快速登录。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Minimum Quick Login Wait&lt;/p>
+&lt;p>一旦被认定为快速登录，该账号将被临时锁定为该配置项配置的时长。&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="解除锁定">解除锁定&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>临时锁定用户，达到锁定时长后，会自动解锁。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>管理员在用户列表或用户详情里可以手动解锁。&lt;/p>
+&lt;p>&lt;a href="./unlock-user.png">
+
+&lt;img
+ src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/unlock-user_hu16307795136657189630.webp"
+ width="1144"
+ height="787"
+ decoding="async"
+ fetchpriority="auto"
+ loading="lazy"
+ alt="解除锁定"id="h-rh-i-1"
+/>&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="注意事项">注意事项&lt;/h2>
+&lt;ol>
+&lt;li>失败次数统计仅与登录账号相关，与会话无关，关闭重启浏览器，次数不会重置。&lt;/li>
+&lt;li>用户锁定后，给出的错误提示还是默认的用户名密码错误，就是不想让攻击者知道用户暂时被禁用了。&lt;/li>
+&lt;/ol></description></item><item><title>用户增删改查</title><link>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</guid><description>&lt;p>Keycloak Admin REST API，curl 模拟用户增加修改删除的完整例子。&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame is-terminal not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/bash
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">HOST_IP&lt;/span>&lt;span class="o">=&lt;/span>127.0.0.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="o">=&lt;/span>keycloak.example
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">DEFAULT_REALM&lt;/span>&lt;span class="o">=&lt;/span>master
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ADMIN_API_URL&lt;/span>&lt;span class="o">=&lt;/span>http://&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_IP&lt;/span>&lt;span class="si">}&lt;/span>/auth/admin/realms/&lt;span class="si">${&lt;/span>&lt;span class="nv">DEFAULT_REALM&lt;/span>&lt;span class="si">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">ADMIN_API_URL&lt;/span>&lt;span class="si">}&lt;/span>/users
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># admin user&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ADMIN_NAME&lt;/span>&lt;span class="o">=&lt;/span>xxx
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ADMIN_PWD&lt;/span>&lt;span class="o">=&lt;/span>xxx
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">parse_json&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">//&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="p">/&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="p">|&lt;/span> sed &lt;span class="s2">&amp;#34;s/.*&lt;/span>&lt;span class="nv">$2&lt;/span>&lt;span class="s2">:\([^,}]*\).*/\1/&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;====Begin test user CRUD====&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">token_url&lt;/span>&lt;span class="o">=&lt;/span>http://&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_IP&lt;/span>&lt;span class="si">}&lt;/span>/auth/realms/&lt;span class="si">${&lt;/span>&lt;span class="nv">DEFAULT_REALM&lt;/span>&lt;span class="si">}&lt;/span>/protocol/openid-connect/token
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Get token, a json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">token_json&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>curl -X POST &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;Content-Type: application/x-www-form-urlencoded&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">token_url&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s1">&amp;#39;grant_type=password&amp;#39;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s1">&amp;#39;client_id=admin-cli&amp;#39;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s2">&amp;#34;username=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">ADMIN_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s2">&amp;#34;password=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">ADMIN_PWD&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># get the `access_token` from the json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">token&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>parse_json &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$token_json&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;access_token&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># List users&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">curl -X GET -H &lt;span class="s2">&amp;#34;Authorization: Bearer &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">token&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="si">}&lt;/span> -v
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Add new user&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">username&lt;/span>&lt;span class="o">=&lt;/span>usertest&lt;span class="k">$(&lt;/span>date &lt;span class="s2">&amp;#34;+%Y%m%d%H%M%S%s&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user&lt;/span>&lt;span class="o">={&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>enabled&lt;span class="se">\&amp;#34;&lt;/span>:true,&lt;span class="se">\&amp;#34;&lt;/span>attributes&lt;span class="se">\&amp;#34;&lt;/span>:&lt;span class="o">{}&lt;/span>,&lt;span class="se">\&amp;#34;&lt;/span>username&lt;span class="se">\&amp;#34;&lt;/span>:&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">username&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>,&lt;span class="se">\&amp;#34;&lt;/span>emailVerified&lt;span class="se">\&amp;#34;&lt;/span>:&lt;span class="se">\&amp;#34;\&amp;#34;&lt;/span>&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Begin create new user &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">username&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">.&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user_create_rsp&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>curl -i -s -H &lt;span class="s2">&amp;#34;Authorization: Bearer &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">token&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="si">}&lt;/span> --stderr -&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Get user id full url from response header `Location`&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># &amp;lt; Location: http://xxxx/users/9e901054-bbc7-47db-8a68-4a13474a1080&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># The `tr -d` is to fix `Error curl: (3) URL using bad/illegal format or missing URL`&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user_id_url&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_create_rsp&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="p">|&lt;/span> grep -Fi Location &lt;span class="p">|&lt;/span> tr -d &lt;span class="s1">&amp;#39;\r&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> awk &lt;span class="s1">&amp;#39;{print $2}&amp;#39;&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Get only the id from the url&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user_id&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">user_id_url&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="p">|&lt;/span> awk -F&lt;span class="s1">&amp;#39;/&amp;#39;&lt;/span> &lt;span class="s1">&amp;#39;{print $NF}&amp;#39;&lt;/span>&lt;span class="k">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;User id is &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_id&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> .&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Delete user by id&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">curl -X DELETE -H &lt;span class="s2">&amp;#34;Authorization: Bearer &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">token&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> &lt;span class="se">\
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_id&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;====End test user CRUD====&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/figure>
+&lt;/div></description></item></channel></rss>

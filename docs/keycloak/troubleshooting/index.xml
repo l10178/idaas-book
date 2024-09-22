@@ -1,13 +1,103 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Troubleshooting on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Troubleshooting on IDaaS Book</description><generator>Hugo</generator><language>zh</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Sat, 17 Aug 2024 16:44:59 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes中导入导出</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>问题描述 我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。
-比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。
-./standalone.sh -Dkeycloak.migration.action=export -Dkeycloak.migration.provider=singleFile -Dkeycloak.migration.file=keycloak-export.json出现类似下面错误。
-ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([ (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;), (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;) ]) - failure description: { &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;}, &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; { &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.</description></item><item><title>Https Required</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>问题描述 以 Http 方式登录，页面错误提示如下。
-We're sorry... HTTPS required.
-问题原因 keycloak 各个 Realm 默认的登录设置里，Require SSL 为 external requests，对于外部请求，必须是 Https。 非外部请求，也就是私有地址，可以是 http，如：localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x。 详细参考官方文档说明。
-解决方案 配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。
-如果只是测试环境，可以修改 Realm 的设置，Require SSL 改为 none。
-修改数据方式
-update REALM set ssl_required=&amp;#39;NONE&amp;#39; where id = &amp;#39;master&amp;#39;;K8S 命令行调用 keycloak 官方 admin 工具 kcadm 修改
-# login with a admin user kubectl exec -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password admin-password # update your realm config kubectl exec -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.</description></item><item><title>Liquibase MGR</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>问题描述 Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。
-查看 keycloak 启动日志，错误信息大致如下。
-INFO [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (ServerService Thread Pool -- 66) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (ServerService Thread Pool -- 66) Change Set META-INF/jpa-changelog-1.0.0.Final.xml:: 1.0.0.Final-KEYCLOAK-5461::sthorger@redhat.com failed. Error: Table &amp;#39;APPLICATION_DEFAULT_ROLES&amp;#39; already exists [Failed SQL: CREATE TABLE keycloak.APPLICATION_DEFAULT_ROLES (APPLICATION_ID VARCHAR(36) NOT NULL, ROLE_ID VARCHAR(36) NOT NULL)] FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.RuntimeException: Failed to update database INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal查看 MySQL 日志，看到如下错误。</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Troubleshooting on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Troubleshooting on IDaaS Book</description><generator>Hugo</generator><language>zh</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Sun, 22 Sep 2024 12:00:11 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes中导入导出</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
+&lt;p>我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。&lt;/p>
+&lt;p>比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame is-terminal not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">./standalone.sh -Dkeycloak.migration.action&lt;span class="o">=&lt;/span>&lt;span class="nb">export&lt;/span> -Dkeycloak.migration.provider&lt;span class="o">=&lt;/span>singleFile -Dkeycloak.migration.file&lt;span class="o">=&lt;/span>keycloak-export.json&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/figure>
+&lt;/div>
+&lt;p>出现类似下面错误。&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([
+ (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;),
+ (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;)
+]) - failure description: {
+ &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;},
+ &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; {
+ &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.wildfly.management.http.extensible.shutdown&amp;#34;],
+ &amp;#34;Services that may be the cause:&amp;#34; =&amp;gt; [&amp;#34;jboss.remoting.remotingConnectorInfoService.http-remoting-connector&amp;#34;]
+ }
+}&lt;/code>&lt;/pre>
+ &lt;/figure>
+&lt;/div>
+&lt;h2 id="问题原因">问题原因&lt;/h2>
+&lt;p>根据错误提示，端口被占用，原因是 keycloak 导出脚本也会启动 Wildfly 服务，默认的 http、https、management 等的端口已经被占用。&lt;/p></description></item><item><title>Https Required</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
+&lt;p>以 Http 方式登录，页面错误提示如下。&lt;/p>
+&lt;p>&lt;code>We're sorry... HTTPS required.&lt;/code>&lt;/p>
+&lt;h2 id="问题原因">问题原因&lt;/h2>
+&lt;p>keycloak 各个 Realm 默认的登录设置里，&lt;code>Require SSL&lt;/code> 为 &lt;code>external requests&lt;/code>，对于外部请求，必须是 Https。
+非外部请求，也就是私有地址，可以是 http，如：&lt;code>localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x&lt;/code>。
+详细参考&lt;a href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl">官方文档说明&lt;/a>。&lt;/p>
+&lt;h2 id="解决方案">解决方案&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>如果只是测试环境，可以修改 Realm 的设置，&lt;code>Require SSL&lt;/code> 改为 &lt;code>none&lt;/code>。&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>修改数据方式&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">update&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">REALM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">set&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ssl_required&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;NONE&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">where&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">id&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;master&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/figure>
+&lt;/div>
+&lt;/li>
+&lt;li>
+&lt;p>K8S 命令行调用 keycloak 官方 admin 工具 kcadm 修改&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame is-terminal not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># login with a admin user&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl &lt;span class="nb">exec&lt;/span> -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password admin-password
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># update your realm config&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl &lt;span class="nb">exec&lt;/span> -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s &lt;span class="nv">sslRequired&lt;/span>&lt;span class="o">=&lt;/span>none&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
+ &lt;/figure>
+&lt;/div>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;/ol></description></item><item><title>Liquibase MGR</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
+&lt;p>Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。&lt;/p>
+&lt;p>查看 keycloak 启动日志，错误信息大致如下。&lt;/p>
+
+
+
+&lt;div class="expressive-code">
+ &lt;figure class="frame not-content">
+ &lt;figcaption class="header">
+ &lt;span class="title">&lt;/span>
+ &lt;/figcaption>
+ &lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">INFO [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (ServerService Thread Pool -- 66) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (ServerService Thread Pool -- 66) Change Set META-INF/jpa-changelog-1.0.0.Final.xml::
+1.0.0.Final-KEYCLOAK-5461::sthorger@redhat.com failed. Error: Table &amp;#39;APPLICATION_DEFAULT_ROLES&amp;#39; already exists [Failed SQL: CREATE TABLE keycloak.APPLICATION_DEFAULT_ROLES (APPLICATION_ID VARCHAR(36) NOT NULL, ROLE_ID VARCHAR(36) NOT NULL)]
+FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.RuntimeException: Failed to update database
+INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal&lt;/code>&lt;/pre>
+ &lt;/figure>
+&lt;/div>
+&lt;p>查看 MySQL 日志，看到如下错误。&lt;/p></description></item></channel></rss>
