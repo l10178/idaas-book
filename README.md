@@ -7,7 +7,16 @@
 
 A book about identity as a service (IDaaS).
 
-一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件，记录使用中遇到的问题和解决方案。
+一本关于 IDaaS 身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件，记录使用中遇到的问题和解决方案，让 IDaaS 领域相关的问题更容易理解。
+
+## 前言
+
+为什么写这本书，因为大佬的世界和普通人是割裂的，有人讲协议，有人讲实现，有人讲未来的实现，普通人很难理解。
+
+为什么叫 Book，和我以往的博客体系有什么区别，因为我想系统性的总结关于此类的问题和实践经验，从原理到实践应该是体系化的。
+
+本项目的主语言是中文，因为英文已经被人写了一个遍了，实在是没法超越，不如老老实实的承认人家写的好，咱只是翻译。
+如果你在搜索 keycloak 中文、CAS 中文、oauth2 中文，可能会进入本项目，如果不幸这里没有你想要的内容，请提交 issue 或 PR。
 
 ## 贡献者指南
 
@@ -26,21 +35,10 @@ npm run create blog/k8s.md
 npm run build
 ```
 
-如果文章中包含图片，提交 Git 前推荐使用 [pngquant][] 先进行无损压缩。
-
-```bash
-# 选择自己的文件夹
-for file in $(ls *.png)
-do
-  pngquant $file --force --output $file
-done
-```
-
 ## License
 
 本文档采用 [CC BY-NC 4.0][] 许可协议。
 
 [Hugo]: https://gohugo.io/
 [Doks]: https://github.com/thuliteio/doks
-[pngquant]: https://pngquant.org/
 [CC BY-NC 4.0]: https://creativecommons.org/licenses/by-nc/4.0/
