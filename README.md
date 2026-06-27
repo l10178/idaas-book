@@ -5,40 +5,40 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/l10178/idaas-book)
 [![GitHub release](https://img.shields.io/github/v/release/l10178/idaas-book)](https://github.com/l10178/idaas-book/releases/latest)
 
-A book about identity as a service (IDaaS).
+## 关于本书
 
-一本关于 IDaaS 身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件，记录使用中遇到的问题和解决方案，让 IDaaS 领域相关的问题更容易理解。
+一本关于 **IDaaS（Identity as a Service，身份即服务）** 的完整技术书籍，共 5 个部分、24 章，约 15 万字。
 
-## 前言
+本书从 IAM 基础原理出发，系统性地讲解 OAuth 2.0、OpenID Connect、SAML 2.0、LDAP、SCIM 等核心协议，深入剖析 SSO、MFA、身份联邦等核心能力，对比 Keycloak、CAS、Dex 等开源方案，并覆盖 Kubernetes 生产部署、授权模型、零信任和去中心化身份等高级主题。
 
-为什么写这本书，因为大佬的世界和普通人是割裂的，有人讲协议，有人讲实现，有人讲未来的实现，普通人很难理解。
+## 内容结构
 
-为什么叫 Book，和我以往的博客体系有什么区别，因为我想系统性的总结关于此类的问题和实践经验，从原理到实践应该是体系化的。
+| 部分 | 内容 |
+|------|------|
+| 第一部分：IDaaS 基础 | IDaaS 定义与演进、IAM 核心概念、AuthN vs AuthZ、身份生命周期 |
+| 第二部分：协议与标准 | OAuth 2.0、OpenID Connect、SAML 2.0、LDAP、SCIM |
+| 第三部分：核心能力 | SSO、MFA、身份联邦与代理、审计与合规 |
+| 第四部分：实现与实践 | Keycloak 架构、Apereo CAS、Dex、IDaaS 方案对比、集成模式、K8s 部署 |
+| 第五部分：高级主题 | 授权模型、安全最佳实践、性能扩展、去中心化身份、零信任 |
+| 附录 | IDaaS 核心术语速查表 |
 
-本项目的主语言是中文，因为英文已经被人写了一个遍了，实在是没法超越，不如老老实实的承认人家写的好，咱只是翻译。
-如果你在搜索 keycloak 中文、CAS 中文、oauth2 中文，可能会进入本项目，如果不幸这里没有你想要的内容，请提交 issue 或 PR。
+## 本地开发
 
-## 贡献者指南
-
-本项目使用 [Hugo][] 开发，使用 [Doks][] 作为 Hugo 主题，一切内容都是 Markdown，专心写文字即可。
-
-本地开发时需要先安装 Nodejs 和 Hugo。
+本项目使用 [Hugo](https://gohugo.io/) 开发，使用 [Doks](https://github.com/thuliteio/doks) 作为 Hugo 主题。
 
 ```bash
-# 安装 npm 依赖包，注意此过程需要连接 github 下载 hugo
+# 安装 npm 依赖包
 npm install
-# 启动 Web，然后浏览器访问 http://localhost:1313/即可浏览效果
+# 启动本地开发服务器 http://localhost:1313/
 npm run dev
-# 创建新页面
-npm run create blog/k8s.md
-# 编译结果
+# 编译生产版本
 npm run build
 ```
 
+## 贡献
+
+如果你发现了错误或有改进建议，欢迎提交 Issue 或 Pull Request。
+
 ## License
 
-本文档采用 [CC BY-NC 4.0][] 许可协议。
-
-[Hugo]: https://gohugo.io/
-[Doks]: https://github.com/thuliteio/doks
-[CC BY-NC 4.0]: https://creativecommons.org/licenses/by-nc/4.0/
+本书采用 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) 许可协议。
