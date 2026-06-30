@@ -8,6 +8,7 @@ enableEmoji = true
 enableGitInfo = true
 enableRobotsTXT = true
 languageCode = "zh-CN"
+locale = "zh-CN"
 # paginate = 10
 pagination.pagerSize = 10
 rssLimit = 10
@@ -50,7 +51,7 @@ rel  = "sitemap"
   priority = 0.5
 
 [caches]
-  [caches.getjson]
+  [caches.getresource]
     dir = ":cacheDir/:project"
     maxAge = "30m"
 
@@ -60,8 +61,8 @@ rel  = "sitemap"
   tag = "tags"
 
 [permalinks]
-  blog = "/blog/:slugorfilename/"
-  docs = "/docs/:sections[1:]/:slugorfilename/"
+  blog = "/blog/:slugorcontentbasename/"
+  docs = "/docs/:sections[1:]/:slugorcontentbasename/"
 
 [minify.tdewolff.html]
   keepWhitespace = false

@@ -1,10 +1,8 @@
-const autoprefixer = require('autoprefixer');
 const purgecss = require('@fullhuman/postcss-purgecss');
 const whitelister = require('purgecss-whitelister');
 
 module.exports = {
     plugins: [
-        autoprefixer(),
         purgecss({
             content: ['./hugo_stats.json'],
             extractors: [
@@ -23,22 +21,22 @@ module.exports = {
                 'data-bs-theme',
                 'data-dark-mode',
                 'data-global-alert',
-                'data-pane', // tabs.js
+                'data-pane',
                 'data-popper-placement',
                 'data-sizes',
-                'data-toggle-tab', // tabs.js
+                'data-toggle-tab',
                 'id',
                 'size',
                 'type'
             ],
             safelist: [
                 'active',
-                'btn-clipboard', // clipboards.js
-                'clipboard', // clipboards.js
+                'btn-clipboard',
+                'clipboard',
                 'disabled',
                 'hidden',
-                'modal-backdrop', // search-modal.js
-                'selected', // search-modal.js
+                'modal-backdrop',
+                'selected',
                 'show',
                 'img-fluid',
                 'blur-up',
