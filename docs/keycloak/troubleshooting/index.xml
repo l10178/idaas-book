@@ -1,40 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Troubleshooting on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Troubleshooting on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 30 Jun 2026 18:45:09 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes中导入导出</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
-&lt;p&gt;我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。&lt;/p&gt;
-&lt;p&gt;比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame is-terminal not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;./standalone.sh -Dkeycloak.migration.action&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt; -Dkeycloak.migration.provider&lt;span class="o"&gt;=&lt;/span&gt;singleFile -Dkeycloak.migration.file&lt;span class="o"&gt;=&lt;/span&gt;keycloak-export.json&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;p&gt;出现类似下面错误。&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code class="language-log" data-lang="log"&gt;ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([
- (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;),
- (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;)
-]) - failure description: {
- &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;},
- &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; {
- &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.wildfly.management.http.extensible.shutdown&amp;#34;],
- &amp;#34;Services that may be the cause:&amp;#34; =&amp;gt; [&amp;#34;jboss.remoting.remotingConnectorInfoService.http-remoting-connector&amp;#34;]
- }
-}&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
-&lt;p&gt;根据错误提示，端口被占用，原因是 keycloak 导出脚本也会启动 Wildfly 服务，默认的 http、https、management 等的端口已经被占用。&lt;/p&gt;</description></item><item><title>Https Required</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 常见问题排查 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Keycloak 常见问题排查 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 30 Jun 2026 20:13:15 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTPS Required / 反向代理问题</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;以 Http 方式登录，页面错误提示如下。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;We're sorry... HTTPS required.&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
@@ -82,7 +46,7 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Liquibase MGR</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+&lt;/ol&gt;</description></item><item><title>Liquibase 与 MySQL 组复制冲突</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。&lt;/p&gt;
 &lt;p&gt;查看 keycloak 启动日志，错误信息大致如下。&lt;/p&gt;
 
@@ -100,4 +64,40 @@ FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.Runtim
 INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;查看 MySQL 日志，看到如下错误。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;查看 MySQL 日志，看到如下错误。&lt;/p&gt;</description></item><item><title>Kubernetes 中导入导出迁移</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。&lt;/p&gt;
+&lt;p&gt;比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame is-terminal not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;./standalone.sh -Dkeycloak.migration.action&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt; -Dkeycloak.migration.provider&lt;span class="o"&gt;=&lt;/span&gt;singleFile -Dkeycloak.migration.file&lt;span class="o"&gt;=&lt;/span&gt;keycloak-export.json&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;出现类似下面错误。&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code class="language-log" data-lang="log"&gt;ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([
+ (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;),
+ (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;)
+]) - failure description: {
+ &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;},
+ &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; {
+ &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.wildfly.management.http.extensible.shutdown&amp;#34;],
+ &amp;#34;Services that may be the cause:&amp;#34; =&amp;gt; [&amp;#34;jboss.remoting.remotingConnectorInfoService.http-remoting-connector&amp;#34;]
+ }
+}&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
+&lt;p&gt;根据错误提示，端口被占用，原因是 keycloak 导出脚本也会启动 Wildfly 服务，默认的 http、https、management 等的端口已经被占用。&lt;/p&gt;</description></item></channel></rss>
