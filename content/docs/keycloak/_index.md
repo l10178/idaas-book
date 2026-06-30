@@ -10,7 +10,7 @@ menu:
   docs:
     parent: ""
     identifier: "keycloak-22e9ba8aefa7ef9891199cf8db3a08cd"
-weight: 20
+weight: 60
 toc: true
 sidebar:
   collapsed: false

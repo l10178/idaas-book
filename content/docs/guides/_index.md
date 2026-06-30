@@ -1,5 +1,5 @@
 ---
-title: "Guides"
+title: "快速入门"
 description: ""
 summary: ""
 date: 2023-09-07T16:06:50+02:00
@@ -10,7 +10,7 @@ menu:
   docs:
     parent: ""
     identifier: "guides-4e0d0e0f89f7decc11eaad4ae9193018"
-weight: 10
+weight: 5
 toc: true
 sidebar:
   collapsed: true
