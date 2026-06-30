@@ -2,8 +2,8 @@
 title: "参考资料"
 description: "IDaaS 相关参考资料"
 summary: ""
-date: 2023-09-07T16:12:37+02:00
-lastmod: 2023-09-07T16:12:37+02:00
+date: 2024-04-01T00:00:00+08:00
+lastmod: 2024-04-01T00:00:00+08:00
 draft: false
 images: []
 menu:
@@ -13,5 +13,5 @@ menu:
 weight: 70
 toc: true
 sidebar:
-  collapsed: true
+  collapsed: false
 ---

@@ -13,12 +13,12 @@ toc: true
 
 ## 17.1 IDaaS 市场格局
 
-2024 年的 IDaaS 市场可分为以下几个阵营：
+当前 IDaaS 市场可分为以下几个阵营：
 
 ```
                │ 云原生产品
     Okta       │  Auth0 (Okta)    自建/私有化
-    Azure AD   │  Ping Identity   Keycloak
+    Entra ID   │  Ping Identity   Keycloak
     Google CI  │  ForgeRock       Gluu
     腾讯云IDaaS│  JumpCloud        Casdoor
                │
@@ -27,7 +27,7 @@ toc: true
          (快)                    (可控)
 ```
 
-> 注：ForgeRock 已于 2023 年被 Ping Identity 收购，二者现同属一家。
+> 注：ForgeRock 已于 2023 年被 Ping Identity 收购，二者现同属一家；Microsoft 已将 Azure AD 更名为 Entra ID。
 
 ## 17.2 开源方案对比
 
@@ -39,7 +39,7 @@ toc: true
 
 **核心优势**：
 - 功能最全面的开源 IAM
-- Red Hat 背书，CNCF 孵化项目
+- Red Hat 背书，社区活跃、长期演进
 - 丰富的协议支持（OIDC、SAML 2.0、OAuth 2.0）
 - 活跃的社区和生态
 - SPI 机制支持深度定制

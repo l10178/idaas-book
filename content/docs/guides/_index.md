@@ -1,9 +1,9 @@
 ---
 title: "快速入门"
-description: ""
+description: "IDaaS 一书简介与阅读指南"
 summary: ""
-date: 2023-09-07T16:06:50+02:00
-lastmod: 2023-09-07T16:06:50+02:00
+date: 2024-04-01T00:00:00+08:00
+lastmod: 2024-04-01T00:00:00+08:00
 draft: false
 images: []
 menu:
@@ -13,5 +13,5 @@ menu:
 weight: 5
 toc: true
 sidebar:
-  collapsed: true
+  collapsed: false
 ---

@@ -3,7 +3,7 @@ title: "Keycloak 与第三方开源软件集成"
 description: "Keycloak 单点登录集成实战：Grafana / GitLab / Jenkins / NGINX Ingress / Kubernetes / Vault / Harbor / MinIO / Nextcloud 等常见开源软件通过 OIDC / OAuth2 Proxy 对接 Keycloak"
 date: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 20
+weight: 15
 menu:
   docs:
     parent: "keycloak-22e9ba8aefa7ef9891199cf8db3a08cd"

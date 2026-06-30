@@ -47,7 +47,7 @@ CAS 使用"装配线"模式处理认证请求：
     这是什么服务？           用户如何认证？
 ```
 
-CAS 6.x 基于 Spring Boot / Spring Cloud，整个系统高度模块化。
+CAS 6.x 基于 Spring Boot / Spring Cloud，整个系统高度模块化。当前 Apereo CAS 主线已演进到 7.x（基于 Spring Boot 3.x、要求 Java 17+），6.x 已逐步停止维护，新项目建议直接基于 7.x LTS。
 
 ### 核心组件
 
@@ -95,8 +95,10 @@ CAS 协议是 CAS 自有的 SSO 协议（不要与 CAS 软件混淆）。
 
 CAS 提供 Docker 基础镜像，但通常需要基于 Overlay 自定义：
 
+> 下例以 6.6 仅为写法示意；6.6 已进入维护尾声，生产请改用当前 7.x LTS 镜像，并按 7.x 的 Spring Boot 3 / Java 17+ 要求调整 Overlay。
+
 ```dockerfile
-FROM apereo/cas:6.6
+FROM apereo/cas:6.6    # 示例，生产建议升级到 7.x LTS
 
 # 复制配置文件
 COPY etc/cas/config/ /etc/cas/config/

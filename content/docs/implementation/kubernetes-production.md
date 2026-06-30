@@ -21,16 +21,18 @@ toc: true
 | Keycloak Operator | 生产环境 | 云原生、自动管理 | 学习曲线 |
 | 手动 YAML | 特殊需求 | 完全控制 | 运维负担大 |
 
-**推荐**：生产环境使用 Keycloak Operator（对 Keycloak 22+ 版本原生支持更好）。
+**推荐**：生产环境使用 Keycloak Operator（原生支持 Quarkus 发行版，建议跟随当前稳定版）。
 
 ## 19.2 使用 Keycloak Operator
+
+> 版本提示：下文示例中的 Keycloak 与 Operator 版本号（如 `24.0`）仅为写法示意。Keycloak 迭代很快，部署时请到 [keycloak.org](https://www.keycloak.org/downloads) 与 [keycloak-k8s-resources](https://github.com/keycloak/keycloak-k8s-resources) 取**当前最新稳定版**的镜像 tag 与 Operator 资源 URL，并保持 Operator 版本与 Keycloak 镜像一致。
 
 ### 安装 Operator
 
 ```bash
-# 安装 Operator（请使用与下文 Keycloak 镜像版本匹配的 Operator tag，如 24.0.x）
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/24.0.5/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/24.0.5/kubernetes/keycloak-operator.yml
+# 安装 Operator（请使用与下文 Keycloak 镜像版本匹配的 Operator tag，如当前最新稳定版的 x.y.z）
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/<VERSION>/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/<VERSION>/kubernetes/keycloak-operator.yml
 # 或通过 OperatorHub / OLM 安装，确保 Operator 版本与 Keycloak 镜像版本一致
 ```
 
@@ -46,7 +48,7 @@ metadata:
     app: keycloak
 spec:
   instances: 3
-  image: quay.io/keycloak/keycloak:24.0
+  image: quay.io/keycloak/keycloak:<VERSION>   # 替换为当前最新稳定版 tag
   hostname:
     hostname: auth.example.com
   http:

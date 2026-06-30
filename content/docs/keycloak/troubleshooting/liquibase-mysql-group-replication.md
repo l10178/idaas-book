@@ -1,7 +1,7 @@
 ---
 title: "Liquibase 与 MySQL 组复制冲突"
 description: "Keycloak 在 MySQL Group Replication 下 Liquibase 数据库迁移失败的排查与解决方案：锁表与迁移串行化"
-date: 2020-12-08T23:50:37+08:00
+date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 2
 menu:
@@ -15,14 +15,13 @@ toc: true
 
 Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。
 
-查看 keycloak 启动日志，错误信息大致如下。
+查看 Keycloak 启动日志，错误信息大致如下（Quarkus 版日志形如）。
 
 ```log
-INFO  [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (ServerService Thread Pool -- 66) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
-ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (ServerService Thread Pool -- 66) Change Set META-INF/jpa-changelog-1.0.0.Final.xml::
+ERROR [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (executor-thread-1) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (executor-thread-1) Change Set META-INF/jpa-changelog-1.0.0.Final.xml::
 1.0.0.Final-KEYCLOAK-5461::sthorger@redhat.com failed.  Error: Table 'APPLICATION_DEFAULT_ROLES' already exists [Failed SQL: CREATE TABLE keycloak.APPLICATION_DEFAULT_ROLES (APPLICATION_ID VARCHAR(36) NOT NULL, ROLE_ID VARCHAR(36) NOT NULL)]
-FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.RuntimeException: Failed to update database
-INFO  [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal
+ERROR [org.keycloak.services] (executor-thread-1) java.lang.RuntimeException: Failed to update database
 ```
 
 查看 MySQL 日志，看到如下错误。
@@ -58,5 +57,5 @@ CREATE TABLE `DATABASECHANGELOG` (
   `LABELS` varchar(255) DEFAULT NULL,
   `DEPLOYMENT_ID` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`ID`,`AUTHOR`,`FILENAME`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```

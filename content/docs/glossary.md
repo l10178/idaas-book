@@ -1,7 +1,7 @@
 ---
 title: "附录：术语表"
 description: "IDaaS 核心术语速查表"
-date: 2024-01-01T00:00:00+08:00
+date: 2024-05-05T00:00:00+08:00
 draft: false
 weight: 99
 menu:
@@ -34,6 +34,10 @@ toc: true
 | **WebAuthn** | Web Authentication | W3C 的 Web 认证 API（Recommendation） |
 | **DID** | Decentralized Identifier | 去中心化标识符（W3C Recommendation，2021） |
 | **VC** | Verifiable Credential | 可验证凭证（W3C Recommendation；1.1: 2022，2.0: 2024） |
+| **Device Flow** | OAuth 2.0 Device Authorization Grant | 设备授权流（RFC 8628），适用于无浏览器或输入受限的设备 |
+| **OpenID4VCI** | OpenID for Verifiable Credential Issuance | 基于 OAuth 2.0 的可验证凭证签发协议 |
+| **OpenID4VP** | OpenID for Verifiable Presentations | 基于 OAuth 2.0 的可验证凭证出示协议，EUDI 钱包核心协议之一 |
+| **mDL** | mobile Driver's License | 移动驾照（ISO 18013-5），可验证凭证在物理身份上的现实落地 |
 
 ## 认证与授权
 
@@ -47,6 +51,7 @@ toc: true
 | **TOTP** | Time-based One-Time Password | 基于时间的一次性密码 |
 | **HOTP** | HMAC-based One-Time Password | 基于计数的一次性密码 |
 | **OTP** | One-Time Password | 一次性密码 |
+| **Passkey** | | 通行密钥，FIDO2/WebAuthn 的消费者友好名称，私钥可在用户设备间端到端加密同步（iCloud Keychain / Google Password Manager 等） |
 | **AMR** | Authentication Methods Reference | 认证方法引用（OIDC Claim） |
 | **ACR** | Authentication Context Class Reference | 认证强度级别引用（OIDC Claim） |
 | **RBAC** | Role-Based Access Control | 基于角色的访问控制 |
@@ -90,7 +95,7 @@ toc: true
 
 | 术语 | 说明 |
 |-----|------|
-| **Keycloak** | Red Hat 主导开源的 IAM/IDaaS 平台，CNCF 孵化项目 |
+| **Keycloak** | Red Hat 主导开源的 IAM/IDaaS 平台，企业自建身份中台的事实标准之一 |
 | **CAS** | Apereo CAS，教育领域广泛使用的 SSO 服务器 |
 | **Dex** | 最初由 CoreOS 开发、现由 dexidp 社区维护的轻量级 OIDC 身份代理 |
 | **OpenLDAP** | 开源 LDAP 实现 |
@@ -98,7 +103,7 @@ toc: true
 | **AD FS** | Active Directory Federation Services |
 | **Okta** | 商业 IDaaS 领导者 |
 | **Auth0** | 面向开发者的 IDaaS（已被 Okta 收购） |
-| **Azure AD** | 微软的云身份服务（现 Microsoft Entra ID） |
+| **Azure AD** | 微软的云身份服务，2023 年起更名为 Microsoft Entra ID |
 | **OPA** | Open Policy Agent，CNCF 毕业项目，通用策略引擎 |
 | **OpenFGA** | 开源 ReBAC 实现，CNCF Sandbox（截至本稿） |
 | **Zitadel** | 云原生开源 IAM |
@@ -113,6 +118,7 @@ toc: true
 | **CSRF** | Cross-Site Request Forgery，跨站请求伪造 |
 | **XSS** | Cross-Site Scripting，跨站脚本攻击 |
 | **OWASP** | Open Web Application Security Project |
+| **ZKP** | Zero-Knowledge Proof，零知识证明：不泄露信息本身即可证明某事实的密码学方法 |
 | **GDPR** | 欧盟通用数据保护条例 |
 | **等保 2.0** | 中国网络安全等级保护 2.0 |
 | **SOC 2** | 服务组织控制 2 报告（安全审计标准） |

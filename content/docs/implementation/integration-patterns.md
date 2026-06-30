@@ -61,7 +61,7 @@ toc: true
 # docker-compose.yaml
 services:
   oauth2-proxy:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.5.0
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.5.0   # 示例版本，部署时请改用最新稳定 tag
     command:
       - --provider=oidc
       - --oidc-issuer-url=https://idp.example.com/realms/myrealm
@@ -192,9 +192,11 @@ spec:
 
 ## 18.5 SDK 模式
 
-直接使用 IDaaS 提供的 SDK 集成：
+直接使用各生态的 OIDC/OAuth 2.0 库集成。
 
-### Keycloak 适配器
+> 自 Keycloak 24+ 起，官方已弃用/移除各语言的专用 **Keycloak Adapter**（`keycloak-spring-boot-adapter` 等），推荐改用框架自带的标准 OIDC 客户端。下面以 Spring Security 的 OIDC 集成为例，它正是 Keycloak 适配器的现代替代。
+
+### Spring Security OIDC 集成（替代已弃用的 Keycloak 适配器）
 
 ```java
 // Spring Boot + Keycloak
@@ -223,7 +225,7 @@ public class SecurityConfig {
 许多语言的通用 OIDC 库：
 
 - **Java**：Spring Security OAuth 2.0 Client、Nimbus JOSE + JWT
-- **Go**：`coreos/go-oidc`、`ory/fosite`
+- **Go**：`coreos/go-oidc`、`zitadel/oidc`、`ory/fosite`
 - **Python**：`flask-oidc`、`django-oidc-provider`
 - **Node.js**：`openid-client`
 - **Rust**：`openidconnect-rs`

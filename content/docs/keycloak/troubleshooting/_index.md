@@ -3,7 +3,7 @@ title: "Keycloak 常见问题排查"
 description: "Keycloak 生产常见问题与排查：HTTPS/反向代理要求、Liquibase 与 MySQL 组复制冲突、Kubernetes 导入导出迁移、缓存与集群排查"
 date: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 20
+weight: 16
 menu:
   docs:
     parent: "keycloak-22e9ba8aefa7ef9891199cf8db3a08cd"

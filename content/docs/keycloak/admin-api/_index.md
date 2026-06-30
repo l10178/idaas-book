@@ -3,7 +3,7 @@ title: "Keycloak Admin REST API 调用"
 description: "Keycloak Admin REST API 实战：认证鉴权、Realm/Client/User/Role/Group 增删改查、curl 与各语言 SDK 示例、分页与批量操作、权限模型与最佳实践"
 date: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 20
+weight: 12
 menu:
   docs:
     parent: "keycloak-22e9ba8aefa7ef9891199cf8db3a08cd"
@@ -171,7 +171,7 @@ kc.realm("myrealm").users().create(user);
 - **最小权限**：为自动化客户端单独建 Client，授予 `realm-management` 中需要的角色，避免使用 `admin` 账号。
 - **跨 Realm 管理**：管理 `master` Realm 的 token 可操作任意 Realm；也可在每个 Realm 内建 `realm-admin` 角色组实现委托管理。
 - **幂等创建**：用户名/邮箱唯一约束，创建前先 `?username=xxx` 查询，避免 409。
-- **批量操作**：Admin API 无原生批量端点，循环调用即可；大批量导入建议用 `kc.sh import --file users.json` 离线导入。
+- **批量操作**：Admin API 无原生批量端点，循环调用即可。大批量导入建议编写一次性脚本走 Admin REST API；`kc.sh import` 接收的是**整份 Realm JSON**（含 users 段），不能用来导入独立的 `users.json`。
 - **审计**：所有 Admin API 调用默认产生 `admin_event`，可在 Realm → Events 中开启保存，便于追溯谁在什么时间改了什么。
 - **HTTPS**：生产必须通过反代终结 TLS，禁止明文传输 token。
 

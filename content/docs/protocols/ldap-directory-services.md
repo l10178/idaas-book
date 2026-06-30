@@ -223,12 +223,12 @@ App → LDAP → IDaaS → AD/LDAP
 
 ### StartTLS
 
-在普通 LDAP 连接（端口 389）上通过 StartTLS 扩展升级到 TLS。
+在普通 LDAP 连接（端口 389）上通过 StartTLS 扩展升级到 TLS。但 StartTLS 存在降级风险，RFC 9325 等建议优先使用专用端口的 LDAPS；新部署若无端口限制应直接用 LDAPS，仅在必须复用 389 端口时才考虑 StartTLS。
 
 ### TLS 最佳实践
 
 - 使用有效证书（非自签名）
-- 证书有效期不超过 1 年
+- 证书有效期遵循 CA/B Forum 趋势（公开信任证书已普遍缩短至 90 天内，内部 CA 1 年以内）
 - 客户端验证服务端证书（不跳过验证）
 
 ## 8.7 性能优化

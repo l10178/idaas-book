@@ -3,7 +3,7 @@ title: "Keycloak 主题定制"
 description: "Keycloak 主题（Themes）定制实战：login/account/admin/email 四类主题、FreeMarker 模板结构、message bundle 国际化与中文化、CSS/JS 资源覆盖、Keycloakify（React）现代方案、打包部署与缓存刷新"
 date: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 20
+weight: 11
 menu:
   docs:
     parent: "keycloak-22e9ba8aefa7ef9891199cf8db3a08cd"

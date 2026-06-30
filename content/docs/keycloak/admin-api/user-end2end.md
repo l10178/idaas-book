@@ -1,7 +1,7 @@
 ---
 title: "用户增删改查端到端"
 description: "Keycloak Admin REST API 实战：用 curl 完成获取 token、列出用户、创建用户、解析 Location 头、删除用户的完整端到端流程"
-date: 2021-04-17T12:50:38+08:00
+date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 1
 menu:
@@ -13,13 +13,15 @@ toc: true
 
 Keycloak Admin REST API，curl 模拟用户增加修改删除的完整例子。
 
+> 以下示例以 Keycloak 17+（Quarkus 发行版）为准，默认上下文路径为 `/`，故 URL **不带** `/auth` 前缀。若你的部署用 `http-relative-path=/auth` 兼容了旧客户端，请在每条 URL 前补回 `/auth`。`localhost:8080` 仅用于本地演示，生产请改用 `https://<域名>`。
+
 ```bash
 #!/bin/bash
 
 HOST_IP=127.0.0.1
 HOST_NAME=keycloak.example
 DEFAULT_REALM=master
-ADMIN_API_URL=http://${HOST_IP}/auth/admin/realms/${DEFAULT_REALM}
+ADMIN_API_URL=http://${HOST_IP}/admin/realms/${DEFAULT_REALM}
 USER_API_URL=${ADMIN_API_URL}/users
 
 # admin user
@@ -32,7 +34,7 @@ parse_json() {
 
 echo "====Begin test user CRUD===="
 
-token_url=http://${HOST_IP}/auth/realms/${DEFAULT_REALM}/protocol/openid-connect/token
+token_url=http://${HOST_IP}/realms/${DEFAULT_REALM}/protocol/openid-connect/token
 # Get token, a json
 token_json=$(curl -X POST \
  -H "host:${HOST_NAME}" \

@@ -18,7 +18,7 @@ sidebar:
 
 ## 本章导读
 
-[Keycloak][] 是 Red Hat 主导开源、CNCF 孵化的 IAM（身份认证与访问控制）解决方案，凭借对 OAuth 2.0、OpenID Connect、SAML 2.0、LDAP 等标准的完整实现，成为企业落地 IDaaS 的事实标准之一。本书在[第四部分 · 实现与实践]({{< relref "docs/implementation/keycloak-architecture.md" >}})已经从架构层面深度解析了 Keycloak 的内核；本章则从**实战**角度出发，把工程中最常被问到、最容易踩坑的五大主题独立成章：
+[Keycloak][] 是 Red Hat 主导开源的 IAM（身份认证与访问控制）解决方案，凭借对 OAuth 2.0、OpenID Connect、SAML 2.0、LDAP 等标准的完整实现，成为企业落地 IDaaS 的事实标准之一。本书在[第四部分 · 实现与实践]({{< relref "docs/implementation/keycloak-architecture.md" >}})已经从架构层面深度解析了 Keycloak 的内核；本章则从**实战**角度出发，把工程中最常被问到、最容易踩坑的五大主题独立成章：
 
 1. **主题定制** —— 如何让登录页、账户中心、管理控制台、邮件模板贴合企业品牌与中文习惯。
 2. **Admin REST API 调用** —— 如何用脚本/SDK 自动化管理：Realm、Client、User、Role 的增删改查。

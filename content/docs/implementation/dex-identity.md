@@ -209,7 +209,7 @@ spec:
     spec:
       containers:
       - name: dex
-        image: ghcr.io/dexidp/dex:v2.38.0
+        image: ghcr.io/dexidp/dex:v2.38.0   # 示例版本，部署时请改用最新稳定 tag
         args: ["dex", "serve", "/etc/dex/config.yaml"]
         ports:
         - containerPort: 5556

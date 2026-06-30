@@ -1,9 +1,9 @@
 ---
 title: "Keycloak 高级特性"
-description: "Keycloak 高级特性：SPI 扩展机制、认证流（Authentication Flow）编排、事件总线与审计、身份联邦与 Brokering、多租户、密钥轮换、Keycloak X / Quarkus 迁移"
+description: "Keycloak 高级特性：SPI 扩展机制、认证流（Authentication Flow）编排、事件总线与审计、身份联邦与 Brokering、多租户、密钥轮换、Quarkus 迁移"
 date: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 20
+weight: 14
 menu:
   docs:
     parent: "keycloak-22e9ba8aefa7ef9891199cf8db3a08cd"
@@ -172,9 +172,9 @@ Realm 使用非对称密钥签名 OIDC Token。生产应建立轮换机制：
 - 旧密钥保留一个 token 有效期，再下线，避免签发中的 token 验证失败。
 - 对接方应使用 **JWKS URL**（`/realms/{realm}/protocol/openid-connect/certs`）自动获取公钥，**不要硬编码公钥**。
 
-## Keycloak X / Quarkus 迁移要点
+## 从 WildFly 迁移到 Quarkus 要点
 
-Keycloak 17+ 已从 WildFly 迁移到 Quarkus（Keycloak X）：
+Keycloak 17+ 已从 WildFly 迁移到 Quarkus（旧称 Keycloak X 的实验性分支已合入主线，WildFly 发行版自 17 起不再提供）：
 
 - 配置改用 `keycloak.conf` / 环境变量（`KC_*`），替代旧 `standalone.xml`。
 - 默认上下文 `/`（无 `/auth`），可通过 `http-relative-path=/auth` 兼容旧客户端。
