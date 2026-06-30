@@ -15,23 +15,25 @@ toc: true
 
 | 术语 | 全称 | 说明 |
 |-----|------|------|
-| **OAuth 2.0** | Open Authorization 2.0 | 授权框架（RFC 6749），不是认证协议 |
+| **OAuth 2.0** | OAuth 2.0 Authorization Framework | 授权框架（RFC 6749），不是认证协议；OAuth 并非 "Open Authorization" 的缩写，名称即 OAuth |
 | **OIDC** | OpenID Connect | 基于 OAuth 2.0 的身份认证协议 |
-| **SAML 2.0** | Security Assertion Markup Language 2.0 | 基于 XML 的身份联邦协议 |
-| **SCIM** | System for Cross-domain Identity Management | 跨域身份管理协议（RFC 7643/7644） |
+| **SAML 2.0** | Security Assertion Markup Language 2.0 | 基于 XML 的身份联邦协议（OASIS 标准，2005） |
+| **SCIM** | System for Cross-domain Identity Management | 跨域身份管理协议（RFC 7642 概念 / 7643 Schema / 7644 Protocol） |
 | **JWT** | JSON Web Token | JSON 格式的安全令牌（RFC 7519） |
-| **JWS** | JSON Web Signature | JWT 的签名规范 |
-| **JWE** | JSON Web Encryption | JWT 的加密规范 |
+| **JWS** | JSON Web Signature | JSON 签名通用规范（RFC 7515），JWT 常用其作签名 |
+| **JWE** | JSON Web Encryption | JSON 加密通用规范（RFC 7516） |
+| **JWK** | JSON Web Key | JSON 密钥表示（RFC 7517） |
+| **JWA** | JSON Web Algorithms | JSON 签名/加密算法（RFC 7518） |
 | **LDAP** | Lightweight Directory Access Protocol | 轻量级目录访问协议 |
 | **TLS** | Transport Layer Security | 传输层安全协议 |
 | **mTLS** | Mutual TLS | 双向 TLS 认证 |
 | **PKCE** | Proof Key for Code Exchange | OAuth 2.0 授权码增强（RFC 7636） |
 | **DPoP** | Demonstrating Proof of Possession | Token 持有证明（RFC 9449） |
 | **SLO** | Single Logout | 单点登出 |
-| **FIDO2** | Fast IDentity Online 2 | 无密码认证标准 |
-| **WebAuthn** | Web Authentication | W3C 的 Web 认证 API |
-| **DID** | Decentralized Identifier | 去中心化标识符（W3C 标准） |
-| **VC** | Verifiable Credential | 可验证凭证（W3C 标准） |
+| **FIDO2** | Fast IDentity Online 2 | 无密码认证标准，= WebAuthn（W3C）+ CTAP2（FIDO Alliance） |
+| **WebAuthn** | Web Authentication | W3C 的 Web 认证 API（Recommendation） |
+| **DID** | Decentralized Identifier | 去中心化标识符（W3C Recommendation，2021） |
+| **VC** | Verifiable Credential | 可验证凭证（W3C Recommendation；1.1: 2022，2.0: 2024） |
 
 ## 认证与授权
 
@@ -88,17 +90,17 @@ toc: true
 
 | 术语 | 说明 |
 |-----|------|
-| **Keycloak** | Red Hat 开源的 IAM/IDaaS 平台，CNCF 项目 |
+| **Keycloak** | Red Hat 主导开源的 IAM/IDaaS 平台，CNCF 孵化项目 |
 | **CAS** | Apereo CAS，教育领域广泛使用的 SSO 服务器 |
-| **Dex** | CoreOS 开发的轻量级 OIDC 身份代理 |
+| **Dex** | 最初由 CoreOS 开发、现由 dexidp 社区维护的轻量级 OIDC 身份代理 |
 | **OpenLDAP** | 开源 LDAP 实现 |
 | **AD** | Active Directory，微软目录服务 |
 | **AD FS** | Active Directory Federation Services |
 | **Okta** | 商业 IDaaS 领导者 |
 | **Auth0** | 面向开发者的 IDaaS（已被 Okta 收购） |
 | **Azure AD** | 微软的云身份服务（现 Microsoft Entra ID） |
-| **OPA** | Open Policy Agent，CNCF 策略引擎 |
-| **OpenFGA** | 开源 ReBAC 实现，CNCF Sandbox |
+| **OPA** | Open Policy Agent，CNCF 毕业项目，通用策略引擎 |
+| **OpenFGA** | 开源 ReBAC 实现，CNCF Sandbox（截至本稿） |
 | **Zitadel** | 云原生开源 IAM |
 
 ## 安全概念

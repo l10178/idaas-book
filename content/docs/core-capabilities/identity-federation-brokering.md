@@ -62,11 +62,11 @@ SAML 是联邦的"第一语言"：
 
 ### OIDC 联邦
 
-OIDC Federation 规范正在标准化中。目前主要依赖：
+**OpenID Federation 1.0 已于 2024 年 12 月由 OpenID Foundation 发布为最终规范（Final Specification）**，定义了通过信任锚（Trust Anchor）与实体声明（Entity Statements）实现的自动化联邦信任模型。其核心机制包括：
 
-- **自动发现**（`.well-known/openid-configuration`）
+- **联邦级发现**（`.well-known/openid-federation`）与**实体声明**、信任链验证（区别于普通 OIDC 单 IdP 发现的 `.well-known/openid-configuration`）
 - **显式注册**（手动或动态客户端注册）
-- **信任框架**（Trust Framework）——如 Open Banking 的信任模型
+- **信任框架**（Trust Framework）——如 Open Banking Brazil、eduGAIN 的 OIDC 化方案
 
 ## 12.3 身份代理详解
 

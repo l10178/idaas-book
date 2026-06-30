@@ -40,15 +40,16 @@ IDaaS 的性能瓶颈往往在数据库。
 **索引策略**：
 
 ```sql
--- Keycloak 中最频繁的查询路径
+-- Keycloak 中最频繁的查询路径（示例基于 JPA schema，实际表/列名随版本而变，
+-- 且 Keycloak 默认已为多数查询列建好索引，手动建索引前请先确认避免重复）
 -- 查找用户的 Session
 CREATE INDEX idx_user_session_user ON USER_SESSION(USER_ID);
 
 -- 查找 Realm 的 Session
 CREATE INDEX idx_user_session_realm ON USER_SESSION(REALM_ID);
 
--- Client Session 关联
-CREATE INDEX idx_client_session_session ON CLIENT_SESSION(SESSION_ID);
+-- Client Session 关联到 User Session（外键为 USER_SESSION_ID）
+CREATE INDEX idx_client_session_user_session ON CLIENT_SESSION(USER_SESSION_ID);
 
 -- 离线 Token 查找
 CREATE INDEX idx_offline_user_session ON OFFLINE_USER_SESSION(USER_SESSION_ID);
@@ -59,9 +60,10 @@ CREATE INDEX idx_offline_user_session ON OFFLINE_USER_SESSION(USER_SESSION_ID);
 ```
 db-pool-initial-size: 10
 db-pool-min-size: 10
-db-pool-max-size: 合理的最大连接数
-  = 节点数 × 工作线程 / 4
-  = 3 × 200 / 4 = 150
+db-pool-max-size: 单节点合理的最大连接数
+  ≈ 该节点的并发工作线程数（受 DB 总连接上限 / 节点数 约束）
+  例：DB 最大连接 600，3 节点，则单节点上限 ≈ 600 / 3 × 0.7 ≈ 140
+  （确保 节点数 × 单节点池上限 ≤ 数据库 max_connections 的合理比例，如 60–70%）
 ```
 
 ### 读写分离
@@ -139,10 +141,10 @@ Keycloak 的水平扩展是"共享数据库 + 分布式缓存"模型：
 
 ### Session 处理
 
-Keycloak 默认使用分布式 Session（存储在 Infinispan 中，所有节点可见）：
+Keycloak 用 Infinispan 缓存 user/client/offline session。要实现多节点共享需配置 distributed 缓存 + 集群发现，并设置足够的 `owners`（默认值在多副本下不一定满足高可用，生产需调高）；realm/client/user 等缓存则多为 local + Infinispan invalidation 模式（写时发失效广播让其他节点丢弃本地条目，而非复制数据）：
 
-- 用户登录到节点 1，Session 在缓存中
-- 后续请求到达节点 2，从缓存加载 Session
+- 用户登录到节点 1，Session 写入 distributed 缓存
+- 后续请求到达节点 2，从缓存加载 Session（依赖正确的集群发现与 owner 副本数）
 
 对于极高可用性要求，可以考虑：
 - 无 Session 模式（仅使用 Token，无服务端 Session）
@@ -179,13 +181,13 @@ export const options = {
 const BASE_URL = 'https://auth.example.com';
 
 export default function () {
-  // 获取登录页面
-  let loginPage = http.get(`${BASE_URL}/realms/test/protocol/openid-connect/auth`, {
-    'client_id': 'test-client',
-    'redirect_uri': 'https://app.example.com/callback',
-    'response_type': 'code',
-    'scope': 'openid',
-  });
+  // 获取登录页面（k6 的 http.get 第二个参数是 params 对象，不是 query string，
+  // 因此 OIDC 参数必须拼进 URL）
+  const authUrl = `${BASE_URL}/realms/test/protocol/openid-connect/auth` +
+    `?client_id=test-client` +
+    `&redirect_uri=${encodeURIComponent('https://app.example.com/callback')}` +
+    `&response_type=code&scope=openid`;
+  let loginPage = http.get(authUrl);
 
   // 提取 form action URL
   // ... 解析并提交登录表单 ...

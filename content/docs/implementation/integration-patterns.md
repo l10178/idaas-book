@@ -68,7 +68,7 @@ services:
       - --client-id=my-app
       - --client-secret=xxx
       - --cookie-secret=generate-a-random-secret
-      - --email-domain=*
+      # 不设置 --email-domain 以允许所有域；如需精确控制，用 --allowed-email-domains=example.com
       - --upstream=http://my-app:8080
       - --http-address=0.0.0.0:4180
     ports:
@@ -112,8 +112,9 @@ app.get('/api/proxy/*', async (req, res) => {
     req.session.refreshToken = newToken.refresh_token;
   }
   
-  // 代理请求到后端，携带 Access Token
-  const response = await fetch(`https://backend-api${req.path}`, {
+  // 代理请求到后端，携带 Access Token（剥离 /api/proxy 前缀）
+  const backendPath = req.path.replace('/api/proxy', '');
+  const response = await fetch(`https://backend-api${backendPath}`, {
     headers: { Authorization: `Bearer ${req.session.accessToken}` }
   });
   
@@ -168,7 +169,7 @@ spec:
   jwtRules:
   - issuer: https://idp.example.com/realms/myrealm
     jwksUri: https://idp.example.com/realms/myrealm/protocol/openid-connect/certs
-    forwardOriginalToken: true  # 将原始 JWT 传递给后端
+    forwardOriginalToken: true  # 将原始 JWT 传递给后端（后端仍应自行校验 audience/issuer/过期，不可盲目信任网关）
 ---
 # Istio AuthorizationPolicy
 apiVersion: security.istio.io/v1beta1
@@ -183,7 +184,7 @@ spec:
   rules:
   - from:
     - source:
-        requestPrincipals: ["*"]  # 任何有效 JWT 都可访问
+        requestPrincipals: ["*"]  # 匹配任意已认证 principal（JWT 有效性由 RequestAuthentication 强制校验）
     to:
     - operation:
         methods: ["GET", "POST"]
@@ -233,7 +234,7 @@ public class SecurityConfig {
 |---------|---------|------|
 | 现代 Web 应用 | OIDC + PKCE | 标准化、安全、SPA 友好 |
 | SPA（无 BFF） | OIDC + PKCE | 安全处理 Token |
-| 移动 App | OIDC + PKCE + ASWebAuth/Chrome Custom Tabs | 安全浏览器 |
+| 移动 App | OIDC 授权码 + PKCE，经系统浏览器/Custom Tab（iOS ASWebAuthenticationSession / Android Custom Tab） | 安全浏览器（RFC 8252） |
 | 服务间 API | OAuth 2.0 Client Credentials | M2M 认证 |
 | 遗留企业应用 | SAML 2.0 | 兼容性 |
 | 物联网设备 | OAuth 2.0 Device Flow | 输入受限 |

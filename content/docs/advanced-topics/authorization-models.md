@@ -14,10 +14,11 @@ toc: true
 ## 20.1 授权模型的演进
 
 ```
-1980s    1990s    2000s    2010s    2020s
-  │        │        │        │        │
- DAC      MAC      RBAC     ABAC    ReBAC
-(自主)   (强制)   (角色)   (属性)  (关系)
+1960s-70s  1970s-80s  1990s-2000s   2000s-2010s    2019
+   │          │          │              │             │
+  DAC        MAC       RBAC           ABAC         ReBAC
+(自主)     (强制)    (角色)         (属性)      (关系)
+                    NIST 2004     XACML 2003   Google Zanzibar
 
 复杂度递增，精细度递增
 ```
@@ -145,20 +146,25 @@ allow if {
 ReBAC 的理论基础来自 Google 的 Zanzibar 论文（2019）。核心思想是用**关系图**来表达权限：
 
 ```
-关系: (主体, 关系, 客体)
+关系元组: object⟨relation⟩→user / user_set     即 (客体, 关系, 主体)
+（object 是被保护的资源，relation 是关系/权限名，user 或 user_set 是被授权的主体）
 
-示例:
-- (Alice, owner, Document:123)
-- (Document:123, parent, Folder:projects)
-- (Bob, editor, Document:123)
-- (Charlie, viewer, Folder:projects)
+示例（Zanzibar 记法）:
+- document:123⟨owner⟩→user:Alice
+- document:123⟨parent⟩→folder:projects
+- document:123⟨editor⟩→user:Bob
+- folder:projects⟨viewer⟩→user:Charlie
+
+userset 重写规则（权限由显式定义的重写规则推导，而非关系本身自动继承）:
+document:⟨viewer⟩ → document:⟨viewer⟩ ∪ (document.parent:⟨viewer⟩)
+即：文档的 viewer = 直接 viewer ∪ 其父文件夹的 viewer
 
 权限推导:
-Charlie 能看 Document:123 吗？
-→ Charlie 是 Folder:projects 的 viewer
-→ Document:123 的 parent 是 Folder:projects
-→ viewer 权限从 Folder 继承到 Document
-→ 因此 Charlie 可以看 Document:123 ✓
+Charlie 能看 document:123 吗？
+→ Charlie 是 folder:projects 的 viewer
+→ document:123 的 parent 是 folder:projects
+→ 经重写规则，folder:projects 的 viewer 被纳入 document:123 的 viewer
+→ 因此 Charlie 可以看 document:123 ✓
 ```
 
 ### ReBAC 的核心概念
@@ -169,7 +175,7 @@ Charlie 能看 Document:123 吗？
 
 ### 开源实现
 
-- **OpenFGA**（原 Auth0 FGA）：ReBAC 开源实现，CNCF Sandbox 项目
+- **OpenFGA**（原 Auth0 FGA）：ReBAC 开源实现，CNCF Sandbox 项目（截至本稿）
 - **SpiceDB**（authzed）：受 Zanzibar 启发的权限数据库
 - **Ory Keto**：Ory 生态的权限服务
 

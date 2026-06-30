@@ -25,7 +25,7 @@ CAS 的定位是：**专注于 Web SSO 的认证服务器**，提供了丰富的
 | 设计哲学 | 高度可配置，Assembly Line | 开箱即用，约定优于配置 |
 | 扩展方式 | 依赖注入，丰富的模块 | SPI 机制 |
 | 用户管理 | 委派给外部源 | 自有用户存储 + 联合 |
-| 协议支持 | CAS、SAML、OIDC、OAuth、WS-Fed | SAML、OIDC、OAuth、SAML |
+| 协议支持 | CAS 协议、SAML 2.0、OIDC、OAuth 2.0、WS-Federation | OIDC、OAuth 2.0、SAML 2.0（不原生支持 WS-Fed）|
 | 文档质量 | 一般 | 好 |
 | 社区 | 教育+研究机构为主 | 更广泛的企业社区 |
 | 容器化友好度 | 需要定制构建 | 原生支持 |
@@ -54,7 +54,7 @@ CAS 6.x 基于 Spring Boot / Spring Cloud，整个系统高度模块化。
 **Central Authentication Service (CAS Server)**：
 - 基于 Spring Webflow 的 Web 应用
 - 通过 WAR Overlay 方式部署
-- 支持 100+ 认证处理器
+- 内置丰富的认证处理器（LDAP、JDBC、X.509、多种 MFA、社交 IdP 等）
 
 **Service Registry**：
 - 管理哪些服务可以使用 CAS
@@ -87,9 +87,9 @@ CAS 协议是 CAS 自有的 SSO 协议（不要与 CAS 软件混淆）。
 
 ### CAS v1 / v2 / v3 协议区别
 
-- **CAS v1**：仅返回用户 principal
-- **CAS v2**：XML 响应，支持属性
-- **CAS v3**：增加了 PGT（Proxy Granting Ticket），支持代理认证
+- **CAS v1**：仅返回用户 principal（纯文本）
+- **CAS v2**：XML 响应，支持属性，并引入 PGT/PT 代理认证机制
+- **CAS v3**：支持 JSON 响应，属性语义增强，代理认证链（proxy chain）完善
 
 ## 15.5 Docker 部署
 

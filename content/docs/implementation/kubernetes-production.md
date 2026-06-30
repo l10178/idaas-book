@@ -28,9 +28,10 @@ toc: true
 ### 安装 Operator
 
 ```bash
-# 安装 Operator
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.5/kubernetes/keycloak-operator.yml
+# 安装 Operator（请使用与下文 Keycloak 镜像版本匹配的 Operator tag，如 24.0.x）
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/24.0.5/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/24.0.5/kubernetes/keycloak-operator.yml
+# 或通过 OperatorHub / OLM 安装，确保 Operator 版本与 Keycloak 镜像版本一致
 ```
 
 ### 部署 Keycloak
@@ -49,10 +50,9 @@ spec:
   hostname:
     hostname: auth.example.com
   http:
-    httpEnabled: false
-    tlsSecret: keycloak-tls-secret
+    httpEnabled: true        # Ingress/LB 终结 TLS 后以明文转发到 Keycloak
   ingress:
-    enabled: false  # 使用独立的 Ingress 配置
+    enabled: false  # 使用独立的 Ingress 配置（在 Ingress 层终结 TLS）
   db:
     vendor: postgres
     host: postgres-postgresql.keycloak-db.svc.cluster.local
@@ -65,7 +65,7 @@ spec:
       name: keycloak-db-secret
       key: password
   proxy:
-    headers: xforwarded  # 反向代理后的设置
+    headers: xforwarded  # 信任外部 Ingress/LB 转发的 X-Forwarded-* 头
   cache:
     configMapFile:
       name: keycloak-cache-config
@@ -80,7 +80,11 @@ spec:
       value: INFO
     - name: metrics-enabled
       value: "true"
+    - name: health-enabled
+      value: "true"   # 启用 /health/* 端点（见 19.5 健康检查）
 ```
+
+> 拓扑说明：上面采用「Ingress/LB 终结 TLS → 明文转发到 Keycloak」的常见部署，故 `httpEnabled: true` + `proxy.headers: xforwarded`；若改为「Keycloak 自身终结 TLS」，则 `httpEnabled: false` + `http.tlsSecret` 指定证书，通常不再需要 `proxy.headers`（除非前面还有一层 LB 转发头）。两种拓扑二选一，不要混用。
 
 ### 数据库配置
 
@@ -108,7 +112,7 @@ helm install keycloak bitnami/keycloak \
   --set auth.adminUser=admin \
   --set auth.adminPassword=<password> \
   --set production=true \
-  --set proxy=edge \
+  --set proxyHeaders=xforwarded \   # Keycloak 24+ 用 proxyHeaders 取代已废弃的 proxy=edge
   --set replicaCount=2 \
   --set postgresql.enabled=false \
   --set externalDatabase.host=postgres-host \
@@ -149,6 +153,8 @@ spec:
 
 ### 健康检查
 
+> 需先启用健康端点：Operator CR 的 `additionalOptions` 设 `health-enabled: "true"`，或环境变量 `KC_HEALTH_ENABLED=true`，否则 `/health/*` 返回 404、probe 失败。端点位于 management 端口 9000。
+
 ```yaml
 livenessProbe:
   httpGet:
@@ -180,31 +186,12 @@ additionalOptions:
 
 ### Session 清理
 
-Keycloak 自动清理过期 Session（`authenticationSessions`），但建议配置 cron job 定期清理离线 Token：
+Keycloak 会自动清理过期的 Session 与离线 Token，主要通过内置配置项控制，无需手写清理脚本：
 
-```yaml
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: keycloak-session-cleanup
-spec:
-  schedule: "0 2 * * *"
-  jobTemplate:
-    spec:
-      template:
-        spec:
-          containers:
-          - name: cleanup
-            image: bitnami/kubectl
-            command:
-            - /bin/sh
-            - -c
-            - |
-              kubectl exec -n keycloak deployment/keycloak -- \
-                /opt/keycloak/bin/kcadm.sh set-password \
-                --config /tmp/kcadm.config \
-                || true
-```
+- `KC_OFFLINE_SESSION_MAX_LIFESPAN` / `KC_OFFLINE_SESSION_IDLE_TIMEOUT`：离线会话的最大寿命与空闲超时，到期后由 Keycloak 内部任务自动清理。
+- `KC_SESSION_MAX_LIFESPAN` / `KC_SESSION_IDLE_TIMEOUT`：普通会话的最大寿命与空闲超时。
+
+如需手动维护个别会话，通过 Admin REST API（如 `DELETE /admin/realms/{realm}/sessions/{session}`）。早期草稿中曾误用 `kcadm.sh set-password` 清理 Session——该命令实际是重置用户密码，与 Session 清理无关，请勿照搬。
 
 ## 19.6 备份策略
 
@@ -245,7 +232,7 @@ spec:
 
 ### Keycloak 自身的导出
 
-通过 Admin API 也可以导出 Realm 配置：
+通过 Admin API 也可以导出 Realm 配置（该接口为**异步任务**，返回任务状态后需轮询取回导出结果）：
 
 ```bash
 curl -X POST "https://auth.example.com/admin/realms/myrealm/partial-export" \
@@ -258,17 +245,17 @@ curl -X POST "https://auth.example.com/admin/realms/myrealm/partial-export" \
 
 ### Prometheus Metrics
 
-Keycloak 22+ 支持直接暴露 Prometheus 指标：
+Keycloak 22+ 支持直接暴露 Prometheus 指标（需 `KC_METRICS_ENABLED=true`），端点为**全局**路径：
 
 ```
 https://auth.example.com/metrics
-或
-https://auth.example.com/realms/{realm}/metrics
 ```
+
+> 注意：Keycloak 不存在 `/realms/{realm}/metrics` 这类按 Realm 暴露的 metrics 端点。
 
 ### Grafana Dashboard
 
-推荐导入 Keycloak 社区维护的 Grafana Dashboard（ID: 10441）。
+推荐导入与 Keycloak 版本匹配的社区 Grafana Dashboard——Keycloak 22+ 改用 Micrometer 指标命名（`keycloak_*` 前缀），需选择对应版本的 dashboard，旧版（如 ID 10441）可能指标不匹配。
 
 ### 关键告警规则
 

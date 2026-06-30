@@ -100,7 +100,7 @@ toc: true
 
 **防重放攻击**：使用 Nonce、时间戳、Token 有效期。
 
-**防钓鱼**：FIDO2 的 origin 绑定使 Token 只能在特定域名使用。
+**防钓鱼**：FIDO2/WebAuthn 的凭据与 Relying Party ID（rpId，依赖方域名 eTLD+1）绑定，并校验 origin，使认证断言（assertion）只能在对应域名使用，钓鱼站点无法重放（WebAuthn 不签发 Token，产物是带签名的 assertion）。
 
 **凭证存储**：密码必须单向哈希（bcrypt、scrypt、Argon2），绝不能明文或可逆加密存储。
 

@@ -134,7 +134,7 @@ Microsoft Active Directory 是最广泛部署的目录服务。了解 AD 对于 
 
 ### AD 用户认证
 
-AD 默认使用 Kerberos 进行认证，但也支持 NTLM（向后兼容）：
+AD 域登录默认使用 Kerberos 进行认证，但也支持 NTLM（向后兼容）：
 
 ```
 Kerberos 认证流程（简化版）：
@@ -148,10 +148,10 @@ Kerberos 认证流程（简化版）：
 
 ### AD + LDAP
 
-AD 通过 LDAP 暴露目录查询接口。IDaaS 系统通常通过 LDAP（而不是 Kerberos）与 AD 交互进行用户同步。
+AD 通过 LDAP 暴露目录查询接口。LDAP 协议本身通过 **bind 操作**完成认证，可以是简单 bind（DN + 密码）或 SASL bind（如 GSS-SPNEGO/Kerberos）；AD 域登录默认走 Kerberos，而 LDAP 认证两者皆可。IDaaS 系统通常通过 LDAP（而不是 Kerberos）与 AD 交互进行用户同步。
 
 ```
-# 在 AD 中搜索用户
+# 在 AD 中搜索用户（memberOf 反向查询为 AD 特有，标准 LDAP 需配置 memberOf overlay）
 ldapsearch -H ldaps://dc.example.com \
   -D "CN=Administrator,CN=Users,DC=example,DC=com" \
   -w password \
@@ -179,7 +179,7 @@ ldapsearch -x -H ldap://localhost -b "dc=example,dc=com"
 
 ### 389 Directory Server
 
-Red Hat 家族的选择，Keycloak 文档中推荐的 LDAP 实现。
+由 389 Project 社区维护（源自 Red Hat/Fedora），Keycloak 文档列为推荐的 LDAP 实现之一。
 
 ### ApacheDS
 

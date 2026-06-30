@@ -13,7 +13,7 @@ toc: true
 
 ## 14.1 Keycloak 的设计哲学
 
-Keycloak 是 Red Hat 开源的 IAM 解决方案，CNCF 孵化项目。它的设计哲学可概括为：
+Keycloak 是 Red Hat 主导开源的 IAM 解决方案，CNCF 孵化项目。它的设计哲学可概括为：
 
 1. **开箱即用**：快速部署，即可使用完整 SSO、社交登录、MFA
 2. **标准优先**：完整实现 OAuth 2.0、OIDC、SAML 2.0
@@ -144,7 +144,7 @@ Keycloak 使用 Infinispan 作为分布式缓存层：
 | authenticationSessions | 认证中的会话 | 中 |
 | offlineSessions | 离线令牌 | 中 |
 | loginFailures | 登录失败计数 | 低 |
-| work | 工作队列 | 管理 |
+| work | 跨节点 invalidation/通知 | 管理 |
 
 ### 缓存拓扑
 
@@ -183,7 +183,7 @@ cache-embedded-default-max-entries=10000
 
 1. **共享数据库**：所有节点连接同一个数据库实例
 2. **IP 组播或替代发现**：节点之间能互相发现
-3. **共享缓存**：InfiniSpan 分布式缓存或外部 Infinispan 集群
+3. **共享缓存**：Infinispan 分布式缓存或外部 Infinispan 集群
 
 ### 关键配置
 
@@ -207,14 +207,13 @@ proxy-address-forwarding=true
 
 ### 数据库
 
-- 连接池大小：等于 Keycloak 节点数 × 每节点 HTTP 工作线程 × 0.25
+- 单节点连接池大小约为该节点 HTTP 工作线程数的 0.25–0.5 倍；数据库侧允许的最大连接数需按 节点数 × 单节点池大小 预留
 - 索引优化：确保 `USER_SESSION`、`CLIENT_SESSION` 等大表有合适索引
 - 定期清理过期 Session：`keycloak` 有内置定时任务
 
 ### 缓存
 
-- 用户缓存 TTL 调整（默认 10 分钟）
-- Realm 缓存 TTL 调整（默认 3600 秒）
+- realms/users 缓存默认不过期（lifespan=-1），依靠跨节点 invalidation 维持一致性，如需限制可显式设置 lifespan；keys 缓存默认有较短 lifespan 以支持签名密钥轮换
 - 集群环境下缓存一致性检查
 
 ### JVM 调优

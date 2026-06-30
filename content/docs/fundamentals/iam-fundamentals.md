@@ -56,7 +56,7 @@ IAM 的四大核心要素：
 
 **关系数据库**：扁平表结构，灵活查询。适合需要复杂关联查询的场景。
 
-**云目录**：如 Azure AD、Google Cloud Identity。原生支持云应用，弹性伸缩。
+**云目录**：如 Microsoft Entra ID（原 Azure AD）、Google Cloud Identity。原生支持云应用，弹性伸缩。
 
 **图数据库**：如 Neo4j。适合复杂的身份关系建模，如组织架构、权限继承链。
 
@@ -74,7 +74,7 @@ AAA 是 IAM 最经典的三要素模型：
      └──────┬───────┘
             │
      ┌──────▼───────┐
-     │  你做了什么？  │  ← Accounting（审计）
+     │  你做了什么？  │  ← Accounting（记账/审计）
      └──────────────┘
 ```
 
@@ -104,11 +104,11 @@ AAA 是 IAM 最经典的三要素模型：
 | MAC | 强制标签 | 安全标签匹配 | 军用/Military |
 | RBAC | 角色 | Subject → Role → Permission | 企业应用 |
 | ABAC | 属性 | Subject.Attr + Object.Attr + Env.Attr → Decision | 动态场景 |
-| PBAC | 策略 | Policy = Rule1 + Rule2 + ... | 合规场景 |
+| PBAC | 策略 | Policy = Rule1 + Rule2 + ... | 复杂策略化场景（ABAC 可视为 PBAC 的一种具体形式） |
 
 ### 审计（Accounting/Audit）
 
-解决"你做了什么"的问题。审计记录包含：谁（Who）、什么时间（When）、从哪里（Where）、做了什么（What）、结果如何（Result）、通过哪个客户端（Client）。
+解决"你做了什么"的问题。AAA 中的 Accounting 原意为"记账/计费"——记录资源使用情况以便计费与追溯；在 IAM/IDaaS 语境下通常引申为审计（Audit），即记录"谁在何时做了什么"。审计记录包含：谁（Who）、什么时间（When）、从哪里（Where）、做了什么（What）、结果如何（Result）、通过哪个客户端（Client）。
 
 ## 2.4 IAM 架构模型
 

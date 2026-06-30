@@ -43,7 +43,7 @@ IdP 是必需的中间人              没有必需的中间人
 
 ## 23.3 DID（Decentralized Identifier，去中心化标识符）
 
-DID 是 W3C 标准，是一种新型的全球唯一标识符，不由任何中心机构签发。
+DID 是 W3C 推荐标准（DID Core 1.0，2021 年成为 W3C Recommendation），是一种新型的全球唯一标识符，不由任何中心机构签发。
 
 ### DID 的格式
 
@@ -76,7 +76,7 @@ did:example:123456789abcdefghi
 {
   "@context": "https://www.w3.org/ns/did/v1",
   "id": "did:example:123456789abcdefghi",
-  "authentication": [
+  "verificationMethod": [
     {
       "id": "did:example:123#keys-1",
       "type": "Ed25519VerificationKey2020",
@@ -84,6 +84,7 @@ did:example:123456789abcdefghi
       "publicKeyMultibase": "zH3C2AVvLMv6gmMNam3uVAjZpfkcJCwDwnZn6z3wXmqPV"
     }
   ],
+  "authentication": ["did:example:123#keys-1"],
   "service": [
     {
       "id": "did:example:123#vcs",
@@ -169,14 +170,14 @@ VC 是物理世界凭证（护照、驾照、学位证）的数字等价物：
 
 "我持有有效的驾照" → 只证明"持有驾照"这个事实，不暴露具体驾照号码、地址等信息。
 
-这是通过零知识证明（ZKP）技术实现的。BBS+ 签名方案和 CL 签名是两种主要的实现方式。
+选择性披露有两类主流技术路线：(1) 基于 ZKP 的签名方案——BBS+（对应 W3C BBS Cryptosuite / BBS-BLS 签名）和 CL 签名（Idemix/Hyperledger Indy 生态）；(2) 基于哈希披露的非 ZKP 方案——**SD-JWT**（IETF 标准化中，已被欧盟 EUDI Wallet 采纳为可验证凭证格式之一）。
 
 ### 可撤销
 
 签发者可以撤销已签发的 VC（类似于驾照吊销）。撤销方式包括：
 
 - **撤销列表（Revocation List）**：定期发布的二进制位图
-- **状态列表 2021（StatusList2021）**：更高效的位图方法
+- **Bitstring Status List**（曾名 StatusList2021）：基于压缩位图的高效撤销/状态机制，是 VC 2.0 推荐方式
 - **累加器（Accumulator）**：零知识友好的撤销方式
 
 ### 过期与续期
@@ -185,7 +186,7 @@ VC 可以设置有效期，过期后需要签发者重新签发。
 
 ## 23.6 欧盟 eIDAS 2.0 与 EUDI Wallet
 
-欧盟正在通过 eIDAS 2.0 法规推动数字身份钱包（EUDI Wallet）的普及。要求：
+欧盟已通过 eIDAS 2.0 法规（Regulation (EU) 2024/2980，对 910/2014 的修订）推动数字身份钱包（EUDI Wallet）的普及，并分阶段强制公私部门接受。要求：
 
 - 每个成员国提供数字身份钱包
 - 钱包能存储和出示可验证凭证
@@ -217,7 +218,7 @@ VC 可以设置有效期，过期后需要签发者重新签发。
 ## 23.8 当前挑战
 
 1. **用户体验**：管理私钥对普通用户来说仍然困难
-2. **标准化仍在进行中**：VC 2.0、DID Core 等标准仍在演进
+2. **标准化仍在演进**：DID Core 1.0（2021 Recommendation）、VC Data Model 1.1（2022）与 2.0（2024 Recommendation）核心已成正式推荐标准；而选择性披露、BBS、状态机制、可验证凭证 API 等配套规范仍在演进
 3. **恢复机制**：设备丢失后如何安全地恢复身份？
 4. **法规合规**：GDPR 的被遗忘权与区块链的不可篡改性之间的矛盾
 5. **大规模采用**：从"早期采用者"到"主流"还有很长的路

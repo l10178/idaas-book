@@ -23,7 +23,7 @@ App2: PUT /rest/user/create {"userName": "..."}
 App3: SOAP <CreateUser><Name>...</Name></CreateUser>
 ```
 
-**SCIM（System for Cross-domain Identity Management）** 就是为了结束这种混乱而生的标准。它是由 IETF 制定的 HTTP 协议（RFC 7642/7643/7644），使用 JSON 作为数据格式。
+**SCIM（System for Cross-domain Identity Management）** 就是为了结束这种混乱而生的标准。它由 IETF 制定，共三份 RFC：**RFC 7642**（定义、概念与概述）、**RFC 7643**（Core Schema，含 User/Group 资源与 JSON 编码）、**RFC 7644**（Protocol，REST API 与 PATCH 语义）。
 
 ## 9.2 SCIM 的核心概念
 
@@ -170,7 +170,7 @@ GET    /Schemas                — 可用 Schema
 
 ### 搜索与过滤
 
-SCIM 支持强大的过滤语法：
+SCIM 支持强大的过滤语法（RFC 7644 §3.4.2），比较运算符包括：`eq`/`ne`/`co`(contains)/`sw`(starts with)/`ew`(ends with)/`pr`(present)/`gt`/`ge`/`lt`/`le`，逻辑运算符 `and`/`or`/`not`，可用括号分组：
 
 ```
 # 精确匹配
@@ -179,16 +179,19 @@ GET /Users?filter=userName eq "zhangsan@example.com"
 # 前缀匹配
 GET /Users?filter=userName sw "zhang"
 
-# 包含判断
+# 存在性判断（pr = present）
+GET /Users?filter=emails pr
+
+# 包含判断（多值属性子元素过滤）
 GET /Users?filter=emails[type eq "work"].value co "example.com"
 
 # 复合条件
 GET /Users?filter=userType eq "员工" and active eq true
 
-# 组成员查询
-GET /Users?filter=groups[value eq "group-id"]
+# 组成员查询（标准写法用点号访问子属性）
+GET /Users?filter=groups.value eq "group-id"
 
-# 分页
+# 分页（startIndex 从 1 开始，即 1-based）
 GET /Users?startIndex=1&count=100
 
 # 选择性返回属性
@@ -200,7 +203,7 @@ GET /Users?excludedAttributes=password,securityQuestions
 
 ### PATCH 操作
 
-PATCH 是 SCIM 最精妙的设计之一，支持 JSON Patch（RFC 6902）：
+PATCH 是 SCIM 最精妙的设计之一。**SCIM 定义了自己的 PATCH 操作语义（RFC 7644 §3.5.2），与 RFC 6902 的 JSON Patch 不同**——它支持 `add`/`replace`/`remove` 三个操作，并使用 SCIM 自身的 path 过滤语法（如 `emails[type eq "home"]`），path 用 SCIM 表达式而非 JSON Pointer。约束：`remove` 操作必须提供 `path`；`add`/`replace` 可省略 `path`（此时 value 作用于整个资源或整个扩展对象）。
 
 ```json
 // 添加新属性
@@ -227,7 +230,7 @@ PATCH /Users/user-123
   ]
 }
 
-// 移除属性
+// 移除属性（remove 必须带 path）
 {
   "Operations": [
     {

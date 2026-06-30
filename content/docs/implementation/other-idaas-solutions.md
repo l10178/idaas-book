@@ -27,6 +27,8 @@ toc: true
          (快)                    (可控)
 ```
 
+> 注：ForgeRock 已于 2023 年被 Ping Identity 收购，二者现同属一家。
+
 ## 17.2 开源方案对比
 
 ### Keycloak
@@ -37,7 +39,7 @@ toc: true
 
 **核心优势**：
 - 功能最全面的开源 IAM
-- Red Hat 背书，CNCF 项目
+- Red Hat 背书，CNCF 孵化项目
 - 丰富的协议支持（OIDC、SAML 2.0、OAuth 2.0）
 - 活跃的社区和生态
 - SPI 机制支持深度定制
@@ -60,6 +62,7 @@ toc: true
 - UI 现代、用户体验好
 - 原生支持多种语言（包括中文）
 - 支持 OAuth 2.0、OIDC、SAML、CAS
+- 内置 Casbin 作为授权引擎，与 Casdoor 同源
 - 活跃的中国社区
 
 **不足**：
@@ -104,7 +107,7 @@ toc: true
 ### Zitadel
 
 **类型**：云原生 IAM
-**语言**：Go + Angular
+**语言**：Go（后端）+ TypeScript/React（前端，早期 Angular 已迁移）
 **许可证**：Apache 2.0
 
 **核心优势**：
@@ -118,6 +121,29 @@ toc: true
 - 文档仍需完善
 - 缺少大型生产案例
 
+### Authentik
+
+**类型**：灵活的开源 IAM
+**语言**：Python（Django）后端 + Go（outpost 代理）+ TypeScript 前端
+**许可证**：MIT
+
+**核心优势**：
+- 可视化流程构建器（Flow），自定义认证流程门槛低
+- 内置 LDAP Outpost / 反向代理 outpost，支持作为 SAML 2.0 / OIDC / OAuth2 / LDAP IdP
+- 多租户、精细的 RBAC 与表达式策略
+
+**不足**：
+- 资源占用相对较高
+- 社区与文档成熟度不及 Keycloak
+
+### ORY 体系
+
+**类型**：API-first 的组合式开源身份与授权栈
+**语言**：Go
+**许可证**：Apache 2.0
+
+由四个独立微服务组成：`Kratos`（身份/注册/登录）、`Hydra`（OAuth2/OIDC Server）、`Oathkeeper`（反向代理/访问网关）、`Keto`（权限/ReBAC）。强调 API 优先、无内置 UI、按需组合，适合需要细粒度控制、与自研前端深度集成的团队；代价是上手与集成成本较高。
+
 ## 17.3 商业方案概览
 
 ### Okta
@@ -126,14 +152,14 @@ IDaaS 品类的开创者和市场领导者。
 
 **优势**：
 - 最成熟的 IDaaS 产品
-- 预置 7000+ 应用集成
+- OIN 集成目录含数千应用预置集成
 - 强大的自适应 MFA
 - 企业级 SLA（99.99%）
 - Workflows（身份编排自动化）
 
 **不足**：
 - 价格高（每用户每月 $2-$15+）
-- 数据存储在美国（数据主权问题）
+- 数据驻留受 Okta 区域限制（支持多 region 部署，但需确认所选 region 满足合规要求）
 - 供应商锁定风险
 
 ### Microsoft Entra ID（原 Azure AD）
@@ -163,7 +189,7 @@ IDaaS 品类的开创者和市场领导者。
 
 **不足**：
 - 自被 Okta 收购后定价变化
-- 数据主权同样在美国
+- 数据驻留受 Okta 区域限制（支持多 region，需确认合规）
 - 自定义程度有上限
 
 ### 中国 IDaaS 方案

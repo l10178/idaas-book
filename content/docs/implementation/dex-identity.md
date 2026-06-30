@@ -13,7 +13,7 @@ toc: true
 
 ## 16.1 Dex 的设计定位
 
-Dex 是 CoreOS（现 Red Hat）开发的身份代理，专门为 Kubernetes 生态设计。它的定位非常精准：
+Dex 最初由 CoreOS 开发，现由 dexidp 社区维护（CNCF 生态相关），专门为 Kubernetes 生态设计。它的定位非常精准：
 
 > **Dex 不是一个完整的 IAM 系统，它是一个 OIDC 身份代理。**
 
@@ -161,19 +161,20 @@ Dex 支持的连接器：
 
 ### kubectl 配置
 
+> 注意：Kubernetes client-go 的 `auth-provider` 字段已自 v1.26 起被移除，旧式 `auth-provider: oidc` 在新版 kubectl 中不再可用，应改用 `exec` 插件调用 `kubelogin`。
+
 ```yaml
-# ~/.kube/config
+# ~/.kube/config（基于 exec 插件 + kubelogin）
 users:
   - name: zhangsan
     user:
-      auth-provider:
-        name: oidc
-        config:
-          client-id: kubernetes
-          client-secret: generated-client-secret
-          idp-issuer-url: https://dex.example.com
-          refresh-token: <refresh_token>
-          id-token: <id_token>
+      exec:
+        apiVersion: client.authentication.k8s.io/v1
+        command: kubelogin
+        args:
+          - get-token
+          - --oidc-issuer-url=https://dex.example.com
+          - --oidc-client-id=kubernetes
 ```
 
 ### 使用 kubelogin
@@ -240,11 +241,12 @@ Dex 支持多种存储后端：
 | 存储 | 适合场景 |
 |-----|---------|
 | Kubernetes CRD | Kubernetes 原生部署 |
-| etcd | 高性能，Kubernetes 生态 |
 | PostgreSQL | 企业级可靠性 |
 | MySQL | 常见企业数据库 |
 | SQLite3 | 单节点，测试环境 |
 | Memory | 仅测试 |
+
+> 注：Dex 早期版本曾提供 etcd 存储，新版（v2.31+）已移除，当前版本不再支持 etcd 作为 storage 后端。
 
 ## 16.6 Dex vs Keycloak 选择决策
 

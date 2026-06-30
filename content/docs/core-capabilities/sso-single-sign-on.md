@@ -94,7 +94,7 @@ toc: true
 5. App2 创建自己的本地 Session
 
 关键设计：
-- IdP 有一个全局的 SSO Session（Cookie，SameSite）
+- IdP 有一个全局的 SSO Session（Cookie，建议设置 `HttpOnly; Secure; SameSite=Lax`，跨站点 SSO 场景下用 `SameSite=None; Secure`）
 - 每个应用有自己的本地 Session
 - 登出时需要同时清除应用本地 Session 和 IdP 的 SSO Session
 ```
@@ -125,7 +125,7 @@ SSO 的"另一面"：如何处理登出？
 ### 登出最佳实践
 
 - IdP Session 和 App Session 都要设有效期
-- App Session 比 Access Token 有效期短
+- Access Token 有效期应较短（如 5–15 分钟），App Session 可较长并通过 Refresh Token 静默续期；Refresh Token 有效期应长于 Access Token 但不超过 IdP SSO Session 有效期
 - 使用 Refresh Token 的静默刷新，减少用户感知
 - 重要操作前重新评估认证状态（Step-up Auth）
 
