@@ -1,0 +1,175 @@
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-regular.woff2 as=font type=font/woff2 crossorigin><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-500.woff2 as=font type=font/woff2 crossorigin><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-700.woff2 as=font type=font/woff2 crossorigin><link rel=stylesheet href="/main.cbebbbeae3ed63040979228eabddd75e772504cf2c708bfc75e7f1e8b9a3a6d3cef70654a816805c07ed3f529d55e9e7c51ada8bd025276b7b0cb124ad770a7b.css" integrity="sha512-y+u76uPtYwQJeSKOq93XXnclBM8scIv8defx6LmjptPO9wZUqBaAXAftP1KdVennxRrai9AlJ2t7DLEkrXcKew==" crossorigin=anonymous><noscript><style>img.lazyload{display:none}</style></noscript><base href=https://idaas.xlabs.club/docs/protocols/scim-protocol/><link rel=canonical href=https://idaas.xlabs.club/docs/protocols/scim-protocol/><title>第9章：SCIM 协议 — IDaaS Book</title><meta name=description content="跨域身份管理系统（SCIM 2.0）协议深度解读：用户和组的标准化配置与管理"><link rel=icon href=/favicon.ico sizes=32x32><link rel=icon href=/favicon.svg type=image/png><link rel=apple-touch-icon href=/apple-touch-icon.png sizes=180x180 type=image/png><link rel=icon href=/favicon-192x192.png sizes=192x192 type=image/png><link rel=icon href=/favicon-512x512.png sizes=512x512 type=image/png><link rel=manifest href=/manifest.webmanifest><meta property="og:title" content="第9章：SCIM 协议"><meta property="og:description" content="跨域身份管理系统（SCIM 2.0）协议深度解读：用户和组的标准化配置与管理"><meta property="og:type" content="article"><meta property="og:url" content="https://idaas.xlabs.club/docs/protocols/scim-protocol/"><meta property="og:image" content="https://idaas.xlabs.club/cover.png"><meta property="article:section" content="docs"><meta property="article:published_time" content="2024-02-05T00:00:00+08:00"><meta property="article:modified_time" content="2026-06-30T18:45:09+08:00"><meta property="og:site_name" content="IDaaS Book"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://idaas.xlabs.club/cover.png"><meta name=twitter:title content="第9章：SCIM 协议"><meta name=twitter:description content="跨域身份管理系统（SCIM 2.0）协议深度解读：用户和组的标准化配置与管理"><meta name=twitter:site content="@xlabs-club"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":"https://idaas.xlabs.club/","name":"Idaa S 身份即服务 —— 一本完整的书","position":1},{"@type":"ListItem","item":"https://idaas.xlabs.club/docs/","name":"Docs","position":2},{"@type":"ListItem","item":"https://idaas.xlabs.club/docs/protocols/","name":"第二部分：协议与标准","position":3},{"@type":"ListItem","name":"第9章： Scim 协议","position":4}]}</script></head><body class="single section docs"><h2 id=91-为什么需要-scim>9.1 为什么需要 SCIM？</h2><p>OAuth 2.0 和 OIDC 解决了认证和授权问题，SAML 解决了联邦 SSO 问题，但它们都没有回答一个问题：如何标准化地创建、更新和删除用户？</p><p>在 SCIM 出现之前，每个系统都有自己的用户 API：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>App1: POST /api/v1/users {&#34;name&#34;: &#34;...&#34;}     ← 每种格式都不一样
+App2: PUT /rest/user/create {&#34;userName&#34;: &#34;...&#34;}
+App3: SOAP &lt;CreateUser&gt;&lt;Name&gt;...&lt;/Name&gt;&lt;/CreateUser&gt;</code></pre></figure></div><p><strong>SCIM（System for Cross-domain Identity Management）</strong> 就是为了结束这种混乱而生的标准。它由 IETF 制定，共三份 RFC：<strong>RFC 7642</strong>（定义、概念与概述）、<strong>RFC 7643</strong>（Core Schema，含 User/Group 资源与 JSON 编码）、<strong>RFC 7644</strong>（Protocol，REST API 与 PATCH 语义）。</p><h2 id=92-scim-的核心概念>9.2 SCIM 的核心概念</h2><h3 id=核心数据模型>核心数据模型</h3><p>SCIM 定义了核心资源类型：</p><h4 id=user-资源>User 资源</h4><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;schemas&#34;</span><span class=p>:</span> <span class=p>[</span><span class=s2>&#34;urn:ietf:params:scim:schemas:core:2.0:User&#34;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;id&#34;</span><span class=p>:</span> <span class=s2>&#34;2819c223-7f76-453a-919d-413861904646&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;externalId&#34;</span><span class=p>:</span> <span class=s2>&#34;employee-12345&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;userName&#34;</span><span class=p>:</span> <span class=s2>&#34;zhangsan@example.com&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;formatted&#34;</span><span class=p>:</span> <span class=s2>&#34;张三&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;familyName&#34;</span><span class=p>:</span> <span class=s2>&#34;张&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;givenName&#34;</span><span class=p>:</span> <span class=s2>&#34;三&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;displayName&#34;</span><span class=p>:</span> <span class=s2>&#34;张三&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;nickName&#34;</span><span class=p>:</span> <span class=s2>&#34;小张&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;profileUrl&#34;</span><span class=p>:</span> <span class=s2>&#34;https://connect.example.com/zhangsan&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;title&#34;</span><span class=p>:</span> <span class=s2>&#34;高级工程师&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;userType&#34;</span><span class=p>:</span> <span class=s2>&#34;员工&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;preferredLanguage&#34;</span><span class=p>:</span> <span class=s2>&#34;zh-CN&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;locale&#34;</span><span class=p>:</span> <span class=s2>&#34;zh-CN&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;timezone&#34;</span><span class=p>:</span> <span class=s2>&#34;Asia/Shanghai&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;active&#34;</span><span class=p>:</span> <span class=kc>true</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;emails&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;zhangsan@example.com&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;work&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;primary&#34;</span><span class=p>:</span> <span class=kc>true</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;phoneNumbers&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;+86-13800138000&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;mobile&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;groups&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;e9e30dba-f08f-4109-8486-d5c6a331660a&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;$ref&#34;</span><span class=p>:</span> <span class=s2>&#34;/Groups/e9e30dba-f08f-4109-8486-d5c6a331660a&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;display&#34;</span><span class=p>:</span> <span class=s2>&#34;工程师组&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;roles&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;admin&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;display&#34;</span><span class=p>:</span> <span class=s2>&#34;管理员&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;meta&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;resourceType&#34;</span><span class=p>:</span> <span class=s2>&#34;User&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;created&#34;</span><span class=p>:</span> <span class=s2>&#34;2024-01-01T08:00:00Z&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;lastModified&#34;</span><span class=p>:</span> <span class=s2>&#34;2024-01-15T09:30:00Z&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;location&#34;</span><span class=p>:</span> <span class=s2>&#34;/Users/2819c223-7f76-453a-919d-413861904646&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;version&#34;</span><span class=p>:</span> <span class=s2>&#34;W/\&#34;3694e05e9dff592\&#34;&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div></figure></div><h4 id=group-资源>Group 资源</h4><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;schemas&#34;</span><span class=p>:</span> <span class=p>[</span><span class=s2>&#34;urn:ietf:params:scim:schemas:core:2.0:Group&#34;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;id&#34;</span><span class=p>:</span> <span class=s2>&#34;e9e30dba-f08f-4109-8486-d5c6a331660a&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;displayName&#34;</span><span class=p>:</span> <span class=s2>&#34;工程师组&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;members&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;2819c223-7f76-453a-919d-413861904646&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;$ref&#34;</span><span class=p>:</span> <span class=s2>&#34;/Users/2819c223-7f76-453a-919d-413861904646&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;display&#34;</span><span class=p>:</span> <span class=s2>&#34;张三&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;meta&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;resourceType&#34;</span><span class=p>:</span> <span class=s2>&#34;Group&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;created&#34;</span><span class=p>:</span> <span class=s2>&#34;2024-01-01T08:00:00Z&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;lastModified&#34;</span><span class=p>:</span> <span class=s2>&#34;2024-01-15T09:30:00Z&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div></figure></div><h3 id=schema-扩展>Schema 扩展</h3><p>SCIM 支持通过扩展 Schema 添加自定义属性：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;schemas&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;urn:ietf:params:scim:schemas:core:2.0:User&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;urn:example:params:scim:schemas:extension:custom:1.0:User&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;userName&#34;</span><span class=p>:</span> <span class=s2>&#34;zhangsan@example.com&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;urn:ietf:params:scim:schemas:extension:enterprise:2.0:User&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;employeeNumber&#34;</span><span class=p>:</span> <span class=s2>&#34;EMP-12345&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;costCenter&#34;</span><span class=p>:</span> <span class=s2>&#34;CC-Beijing-01&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;organization&#34;</span><span class=p>:</span> <span class=s2>&#34;技术部&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;division&#34;</span><span class=p>:</span> <span class=s2>&#34;平台研发&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;department&#34;</span><span class=p>:</span> <span class=s2>&#34;基础架构&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;manager&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;manager-id&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;displayName&#34;</span><span class=p>:</span> <span class=s2>&#34;李四&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>},</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;urn:example:params:scim:schemas:extension:custom:1.0:User&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;accessLevel&#34;</span><span class=p>:</span> <span class=s2>&#34;vip&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;region&#34;</span><span class=p>:</span> <span class=s2>&#34;north-china&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div></figure></div><p>Enterprise User 扩展（<code>urn:ietf:params:scim:schemas:extension:enterprise:2.0:User</code>）是预定义的扩展，包含企业常见的属性：<code>employeeNumber</code>、<code>organization</code>、<code>department</code>、<code>manager</code> 等。</p><h2 id=93-scim-操作>9.3 SCIM 操作</h2><h3 id=restful-api>RESTful API</h3><p>SCIM 使用标准的 RESTful API 风格：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>GET    /Users              — 搜索用户（支持过滤、排序、分页）
+POST   /Users              — 创建用户
+GET    /Users/{id}         — 获取特定用户
+PUT    /Users/{id}         — 完整替换用户
+PATCH  /Users/{id}         — 部分更新用户
+DELETE /Users/{id}         — 删除用户
+
+GET    /Groups             — 搜索组
+POST   /Groups             — 创建组
+GET    /Groups/{id}        — 获取特定组
+PATCH  /Groups/{id}        — 更新组（包括修改组成员）
+DELETE /Groups/{id}        — 删除组
+
+GET    /ServiceProviderConfig  — 服务提供方配置
+GET    /ResourceTypes          — 可用资源类型
+GET    /Schemas                — 可用 Schema</code></pre></figure></div><h3 id=搜索与过滤>搜索与过滤</h3><p>SCIM 支持强大的过滤语法（RFC 7644 §3.4.2），比较运算符包括：<code>eq</code>/<code>ne</code>/<code>co</code>(contains)/<code>sw</code>(starts with)/<code>ew</code>(ends with)/<code>pr</code>(present)/<code>gt</code>/<code>ge</code>/<code>lt</code>/<code>le</code>，逻辑运算符 <code>and</code>/<code>or</code>/<code>not</code>，可用括号分组：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code># 精确匹配
+GET /Users?filter=userName eq &#34;zhangsan@example.com&#34;
+
+# 前缀匹配
+GET /Users?filter=userName sw &#34;zhang&#34;
+
+# 存在性判断（pr = present）
+GET /Users?filter=emails pr
+
+# 包含判断（多值属性子元素过滤）
+GET /Users?filter=emails[type eq &#34;work&#34;].value co &#34;example.com&#34;
+
+# 复合条件
+GET /Users?filter=userType eq &#34;员工&#34; and active eq true
+
+# 组成员查询（标准写法用点号访问子属性）
+GET /Users?filter=groups.value eq &#34;group-id&#34;
+
+# 分页（startIndex 从 1 开始，即 1-based）
+GET /Users?startIndex=1&amp;count=100
+
+# 选择性返回属性
+GET /Users?attributes=userName,name,emails
+
+# 排除属性
+GET /Users?excludedAttributes=password,securityQuestions</code></pre></figure></div><h3 id=patch-操作>PATCH 操作</h3><p>PATCH 是 SCIM 最精妙的设计之一。<strong>SCIM 定义了自己的 PATCH 操作语义（RFC 7644 §3.5.2），与 RFC 6902 的 JSON Patch 不同</strong>——它支持 <code>add</code>/<code>replace</code>/<code>remove</code> 三个操作，并使用 SCIM 自身的 path 过滤语法（如 <code>emails[type eq "home"]</code>），path 用 SCIM 表达式而非 JSON Pointer。约束：<code>remove</code> 操作必须提供 <code>path</code>；<code>add</code>/<code>replace</code> 可省略 <code>path</code>（此时 value 作用于整个资源或整个扩展对象）。</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><div class=highlight><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=c1>// 添加新属性
+</span></span></span><span class=line><span class=cl><span class=err>PATCH</span> <span class=err>/Users/user</span><span class=mi>-123</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;schemas&#34;</span><span class=p>:</span> <span class=p>[</span><span class=s2>&#34;urn:ietf:params:scim:api:messages:2.0:PatchOp&#34;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;Operations&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;op&#34;</span><span class=p>:</span> <span class=s2>&#34;add&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;path&#34;</span><span class=p>:</span> <span class=s2>&#34;emails&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=p>[{</span><span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;zhangsan@personal.com&#34;</span><span class=p>,</span> <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;home&#34;</span><span class=p>}]</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 替换属性
+</span></span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;Operations&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;op&#34;</span><span class=p>:</span> <span class=s2>&#34;replace&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;path&#34;</span><span class=p>:</span> <span class=s2>&#34;title&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;value&#34;</span><span class=p>:</span> <span class=s2>&#34;资深工程师&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// 移除属性（remove 必须带 path）
+</span></span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nt>&#34;Operations&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;op&#34;</span><span class=p>:</span> <span class=s2>&#34;remove&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>      <span class=nt>&#34;path&#34;</span><span class=p>:</span> <span class=s2>&#34;emails[type eq \&#34;home\&#34;]&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div></figure></div><h2 id=94-实际集成场景>9.4 实际集成场景</h2><h3 id=场景一hr-系统--idaas>场景一：HR 系统 → IDaaS</h3><p>最常见的 SCIM 应用场景：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>HR 系统（Workday/PeopleSoft）
+    │
+    │ SCIM 2.0 Bootstrap
+    ▼
+IDaaS（自动创建用户）
+    │
+    │ SCIM / 自定义 API
+    ▼
+下游应用（Slack、GitHub、Jira...）</code></pre></figure></div><p>当员工在 HR 系统中被录用时：</p><ol><li>HR 系统通过 SCIM 将新员工推送到 IDaaS</li><li>IDaaS 根据规则自动创建账户、分配组</li><li>IDaaS 通过 SCIM 或应用连接器将用户同步到下游应用</li></ol><h3 id=场景二idaas--saas-应用>场景二：IDaaS → SaaS 应用</h3><p>IDaaS 通过 SCIM 向 SaaS 应用提供用户：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>IDaaS → SCIM → Salesforce (预置用户)
+IDaaS → SCIM → Google Workspace (预置用户)
+IDaaS → SCIM → Microsoft 365 (预置用户)</code></pre></figure></div><h3 id=去预置de-provisioning>去预置（De-provisioning）</h3><p>SCIM 同样用于离职用户的清理：</p><ul><li>PATCH <code>/Users/{id}</code> <code>{"active": false}</code> — 暂停用户</li><li>DELETE <code>/Users/{id}</code> — 删除用户</li></ul><h2 id=95-实现-scim-服务端>9.5 实现 SCIM 服务端</h2><p>如果要自己实现 SCIM 服务端，核心组件包括：</p><ol><li><strong>资源定义</strong>：User、Group 的资源 Schema</li><li><strong>过滤解析器</strong>：解析 SCIM filter 语法</li><li><strong>排序和分页</strong>：支持 SCIM 风格的排序和分页</li><li><strong>PATCH 解释器</strong>：解析和执行 PATCH 操作</li><li><strong>ETag 支持</strong>：版本控制，乐观锁</li><li><strong>错误处理</strong>：SCIM 标准错误格式</li></ol><p><strong>推荐做法</strong>：使用成熟的库，而不是从头实现。Java 生态中，可以使用 Apache SCIMple 或 WSO2 Charon；Go 生态中可以使用 <code>github.com/elimity-com/scim</code>。</p><h2 id=96-安全考量>9.6 安全考量</h2><ol><li><strong>认证</strong>：SCIM 端点必须认证，通常使用 Bearer Token（OAuth 2.0）。</li><li><strong>TLS 必须启用</strong>：所有 SCIM 通信必须通过 HTTPS。</li><li><strong>授权</strong>：分离读权限和写权限，不同的 SCIM 使用者应有不同的权限。</li><li><strong>速率限制</strong>：防止批量操作导致系统过载。</li><li><strong>审计日志</strong>：记录所有 SCIM 操作的审计日志。</li><li><strong>敏感属性保护</strong>：不要在 SCIM 响应中返回密码、加密密钥等敏感信息。</li></ol><h2 id=97-小结>9.7 小结</h2><p>SCIM 2.0 是 IDaaS 世界中"用户配置"的标准语言。它将身份管理从"手工操作"和"定制脚本"升级为标准化、自动化的 API 调用。对于 IDaaS 平台选型，SCIM 支持的质量——尤其对标标准用户 Schema、过滤语法、PATCH 操作——是评估的重要维度。</p><p>This line is from <code>./layouts/_default/single.html</code>.</p><script async src=/js/bootstrap.c673c84373e66019f7895efc74b3b3b940071832aaa8a85e73218087d535e71b.js integrity="sha256-xnPIQ3PmYBn3iV78dLOzuUAHGDKqqKhecyGAh9U15xs="></script><script async src=/js/app.e7d20ccb7d77f6f38a3bfb54b89e1f71b044d2122fde5645cdf7291fc237a862.js integrity="sha256-59IMy3139vOKO/tUuJ4fcbBE0hIv3lZFzfcpH8I3qGI="></script></body></html>

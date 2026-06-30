@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第三部分：核心能力 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/</link><description>Recent content in 第三部分：核心能力 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/core-capabilities/index.xml" rel="self" type="application/rss+xml"/><item><title>第10章：单点登录（SSO）</title><link>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</link><pubDate>Fri, 01 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</guid><description>&lt;h2 id="101-sso-的核心理念"&gt;10.1 SSO 的核心理念&lt;/h2&gt;
+&lt;p&gt;单点登录（Single Sign-On, SSO）的核心承诺：&lt;strong&gt;用户只需认证一次，即可访问所有被授权的应用。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这不仅是用户体验的改善，更是安全性提升。原因很简单：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;用户只需要记住一个强密码（而不是 N 个弱密码或同一个密码用 N 遍）&lt;/li&gt;
+&lt;li&gt;认证策略集中管理（强制 MFA、密码策略统一执行）&lt;/li&gt;
+&lt;li&gt;会话可以集中管理和吊销&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="102-sso-的三种实现模式"&gt;10.2 SSO 的三种实现模式&lt;/h2&gt;
+&lt;h3 id="模式一中心化-sso"&gt;模式一：中心化 SSO&lt;/h3&gt;
+&lt;p&gt;所有用户和应用都注册在同一个中心 IAM 系统中。&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt; ┌─────────────────┐
+ │ IAM/IDaaS │
+ │ (认证中心) │
+ └───┬───┬───┬─────┘
+ │ │ │
+ ┌──────┘ │ └──────┐
+ ▼ ▼ ▼
+ [App1] [App2] [App3]&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;实现方式：通常通过 OIDC 或 SAML 2.0。
+代表：Keycloak 单域部署。&lt;/p&gt;
+&lt;h3 id="模式二联邦-ssofederated-sso"&gt;模式二：联邦 SSO（Federated SSO）&lt;/h3&gt;
+&lt;p&gt;多个身份域之间建立信任关系：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt; [IdP A] ←──信任──→ [IdP B]
+ │ │
+ ┌─────┴──┐ ┌────┴──┐
+ [App1] [App2] [App3] [App4]&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;用户无论在哪个 IdP 认证，都能访问信任域中的任何应用。&lt;/p&gt;</description></item><item><title>第11章：多因素认证（MFA）</title><link>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</guid><description>&lt;h2 id="111-密码已死"&gt;11.1 密码已死？&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;密码就像是蟑螂——你灭不掉它，但你可以让它不再那么讨厌。&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;2024 年的现实是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;大量数据泄露涉及凭证窃取与滥用（Verizon DBIR 多年报告持续将凭证滥用列为最主要攻击途径之一）&lt;/li&gt;
+&lt;li&gt;用户平均有 100+ 个在线账户，但只使用约 5 个不同的密码&lt;/li&gt;
+&lt;li&gt;即使是最强的密码策略，用户也会想方设法绕过（如 Password123!）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;MFA（Multi-Factor Authentication）不是可选项，&lt;strong&gt;是必需品&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id="112-认证因素分类"&gt;11.2 认证因素分类&lt;/h2&gt;
+&lt;p&gt;三种基础因素：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;因素类型&lt;/th&gt;
+					&lt;th&gt;说明&lt;/th&gt;
+					&lt;th&gt;示例&lt;/th&gt;
+					&lt;th&gt;安全性&lt;/th&gt;
+					&lt;th&gt;便利性&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;知识&lt;/td&gt;
+					&lt;td&gt;你知道什么&lt;/td&gt;
+					&lt;td&gt;密码、PIN、安全问题&lt;/td&gt;
+					&lt;td&gt;★★&lt;/td&gt;
+					&lt;td&gt;★★★★★&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;持有&lt;/td&gt;
+					&lt;td&gt;你拥有什么&lt;/td&gt;
+					&lt;td&gt;手机、YubiKey、Token&lt;/td&gt;
+					&lt;td&gt;★★★★&lt;/td&gt;
+					&lt;td&gt;★★★★&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;固有&lt;/td&gt;
+					&lt;td&gt;你是什么&lt;/td&gt;
+					&lt;td&gt;指纹、面部、虹膜&lt;/td&gt;
+					&lt;td&gt;★★★★★&lt;/td&gt;
+					&lt;td&gt;★★★★&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;行为&lt;/td&gt;
+					&lt;td&gt;你怎么做&lt;/td&gt;
+					&lt;td&gt;击键模式、步态&lt;/td&gt;
+					&lt;td&gt;★★★&lt;/td&gt;
+					&lt;td&gt;★★★★★&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="什么叫多因素"&gt;什么叫&amp;quot;多因素&amp;quot;？&lt;/h3&gt;
+&lt;p&gt;关键理解：&lt;strong&gt;两个密码不是 MFA，密码+短信验证码才是 MFA。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;MFA 要求使用至少两个&lt;strong&gt;不同类型&lt;/strong&gt;的因素。密码 + 确认密码 = 单因素。密码 + TOTP = 双因素。&lt;/p&gt;
+&lt;h2 id="113-常用-mfa-方案深度对比"&gt;11.3 常用 MFA 方案深度对比&lt;/h2&gt;
+&lt;h3 id="totptime-based-one-time-password"&gt;TOTP（Time-based One-Time Password）&lt;/h3&gt;
+&lt;p&gt;基于时间的动态口令，每 30 秒生成一个新的 6 位数字。&lt;/p&gt;</description></item><item><title>第12章：身份联邦与代理</title><link>https://idaas.xlabs.club/docs/core-capabilities/identity-federation-brokering/</link><pubDate>Sun, 03 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/identity-federation-brokering/</guid><description>&lt;h2 id="121-概念辨析"&gt;12.1 概念辨析&lt;/h2&gt;
+&lt;h3 id="身份联邦identity-federation"&gt;身份联邦（Identity Federation）&lt;/h3&gt;
+&lt;p&gt;多个组织或域之间建立信任关系，允许用户在各自的身份域中认证，但可以访问信任域中的资源。&lt;/p&gt;
+&lt;p&gt;关键特征：&lt;strong&gt;跨组织边界&lt;/strong&gt;，&lt;strong&gt;通过信任建立&lt;/strong&gt;，&lt;strong&gt;身份数据源分布在多个组织&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id="身份代理identity-broker"&gt;身份代理（Identity Broker）&lt;/h3&gt;
+&lt;p&gt;一个中心服务（Broker）作为多个外部 IdP 的前端代理，统一对外提供服务。&lt;/p&gt;
+&lt;p&gt;关键特征：&lt;strong&gt;中心化&lt;/strong&gt;，&lt;strong&gt;一对多&lt;/strong&gt;，&lt;strong&gt;身份数据仍在外部 IdP&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id="身份联合user-federation"&gt;身份联合（User Federation）&lt;/h3&gt;
+&lt;p&gt;IDaaS 系统从外部身份源（如 LDAP）导入或实时查询用户。&lt;/p&gt;
+&lt;p&gt;关键特征：&lt;strong&gt;IDaaS 拉取外部数据&lt;/strong&gt;，&lt;strong&gt;用户在外部系统管理&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id="122-身份联邦详解"&gt;12.2 身份联邦详解&lt;/h2&gt;
+&lt;h3 id="联邦的信任模型"&gt;联邦的信任模型&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;企业A 企业B
+┌─────────────┐ ┌─────────────┐
+│ 员工目录 │ │ 员工目录 │
+│ IdP-A │←─── 信任关系 ────→│ IdP-B │
+│ │ │ │
+│ [App-A1] │ │ [App-B1] │
+│ [App-A2] │ │ [App-B2] │
+└─────────────┘ └─────────────┘
+
+企业 A 的员工访问企业 B 的应用时：
+1. 用户通过 IdP-A 认证（自己的企业）
+2. IdP-A 和 IdP-B 之间存在信任
+3. IdP-B 接受 IdP-A 的断言
+4. 用户无缝访问 App-B1&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="saml-联邦"&gt;SAML 联邦&lt;/h3&gt;
+&lt;p&gt;SAML 是联邦的&amp;quot;第一语言&amp;quot;：&lt;/p&gt;</description></item><item><title>第13章：审计与合规</title><link>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</link><pubDate>Mon, 04 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</guid><description>&lt;h2 id="131-审计的价值"&gt;13.1 审计的价值&lt;/h2&gt;
+&lt;p&gt;身份审计不仅仅是&amp;quot;记录日志&amp;quot;，它是安全运营的三大支柱之一：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt; 安全三角
+ ┌──────────┐
+认证 ──┤ ├── 授权
+ │ 审计 │
+ └──────────┘&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;审计回答：&lt;strong&gt;谁，在何时，从哪里，做了什么，结果如何？&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这对应了身份安全的最后一道防线——如果认证和授权都失效，审计日志是事后追溯的唯一依据。&lt;/p&gt;
+&lt;h2 id="132-审计事件分类"&gt;13.2 审计事件分类&lt;/h2&gt;
+&lt;p&gt;IDaaS 系统应记录的事件类型：&lt;/p&gt;
+&lt;h3 id="认证事件"&gt;认证事件&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;事件&lt;/th&gt;
+					&lt;th&gt;关键字段&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登录成功&lt;/td&gt;
+					&lt;td&gt;用户、时间、IP、设备、认证方式&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登录失败&lt;/td&gt;
+					&lt;td&gt;用户、时间、IP、失败原因&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登出&lt;/td&gt;
+					&lt;td&gt;用户、时间、登出方式&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;MFA 成功/失败&lt;/td&gt;
+					&lt;td&gt;用户、时间、MFA 方式&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Token 签发&lt;/td&gt;
+					&lt;td&gt;用户、客户端、Scope、Token 类型&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Token 吊销&lt;/td&gt;
+					&lt;td&gt;用户、客户端、吊销原因&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;会话过期&lt;/td&gt;
+					&lt;td&gt;用户、会话 ID、过期原因&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="授权事件"&gt;授权事件&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;事件&lt;/th&gt;
+					&lt;th&gt;关键字段&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;权限授予/撤销&lt;/td&gt;
+					&lt;td&gt;操作人、目标用户、权限内容&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;角色变更&lt;/td&gt;
+					&lt;td&gt;操作人、目标用户、角色变化&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;访问被拒绝&lt;/td&gt;
+					&lt;td&gt;用户、资源、操作、拒绝原因&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="管理事件"&gt;管理事件&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;事件&lt;/th&gt;
+					&lt;th&gt;关键字段&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;用户创建/删除/禁用&lt;/td&gt;
+					&lt;td&gt;操作人、目标用户&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;密码重置&lt;/td&gt;
+					&lt;td&gt;操作人、目标用户&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;策略变更&lt;/td&gt;
+					&lt;td&gt;操作人、策略名、变化内容&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;客户端创建/修改&lt;/td&gt;
+					&lt;td&gt;操作人、客户端 ID&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;配置变更&lt;/td&gt;
+					&lt;td&gt;操作人、配置项、变化内容&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;权限提升&lt;/td&gt;
+					&lt;td&gt;操作人、提升方式、持续时间&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="133-审计日志设计"&gt;13.3 审计日志设计&lt;/h2&gt;
+&lt;h3 id="日志结构"&gt;日志结构&lt;/h3&gt;
+&lt;p&gt;标准化的审计日志应包含：&lt;/p&gt;</description></item></channel></rss>

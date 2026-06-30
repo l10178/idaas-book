@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第五部分：高级主题 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/</link><description>Recent content in 第五部分：高级主题 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/advanced-topics/index.xml" rel="self" type="application/rss+xml"/><item><title>第20章：授权模型深度对比</title><link>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</link><pubDate>Wed, 01 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</guid><description>&lt;h2 id="201-授权模型的演进"&gt;20.1 授权模型的演进&lt;/h2&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;1960s-70s 1970s-80s 1990s-2000s 2000s-2010s 2019
+ │ │ │ │ │
+ DAC MAC RBAC ABAC ReBAC
+(自主) (强制) (角色) (属性) (关系)
+ NIST 2004 XACML 2003 Google Zanzibar
+
+复杂度递增，精细度递增&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h2 id="202-rbac基于角色的访问控制"&gt;20.2 RBAC（基于角色的访问控制）&lt;/h2&gt;
+&lt;h3 id="核心模型"&gt;核心模型&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;用户 ──→ 角色 ──→ 权限
+
+Alice → [经理] → [审批报销, 查看团队报表]
+Bob → [员工] → [提交报销, 查看自己的报表]&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="rbac-的三个层次"&gt;RBAC 的三个层次&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;RBAC0（基础 RBAC）&lt;/strong&gt;：用户 → 角色 → 权限
+&lt;strong&gt;RBAC1（层次 RBAC）&lt;/strong&gt;：角色之间有继承关系&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt; [员工]
+ │
+ ┌──────┴──────┐
+ │ │
+ [组长] [专员]
+ │
+ [经理]
+ │
+ [总监]&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;&lt;strong&gt;RBAC2（约束 RBAC）&lt;/strong&gt;：角色互斥（SoD）、基数限制、先决条件&lt;/p&gt;</description></item><item><title>第21章：IDaaS 安全最佳实践</title><link>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</link><pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</guid><description>&lt;h2 id="211-安全总则"&gt;21.1 安全总则&lt;/h2&gt;
+&lt;p&gt;IDaaS 是安全基础设施的核心，它保护着所有应用的入口。如果 IDaaS 被攻破，攻击者就拿到了&amp;quot;万能钥匙&amp;quot;。&lt;/p&gt;
+&lt;p&gt;因此，IDaaS 自身的安全必须比它所保护的应用更高一个等级。&lt;/p&gt;
+&lt;h2 id="212-密码安全"&gt;21.2 密码安全&lt;/h2&gt;
+&lt;h3 id="密码哈希"&gt;密码哈希&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;绝对必须使用单向哈希&lt;/strong&gt;，绝不能明文或可逆加密存储密码&lt;/li&gt;
+&lt;li&gt;推荐算法顺序：&lt;strong&gt;Argon2id &amp;gt; bcrypt &amp;gt; scrypt &amp;gt; PBKDF2&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Argon2 是 2015 年密码哈希竞赛（PHC）的获胜者，Argon2id 是其推荐的抗侧信道混合变体（RFC 9106 推荐使用 Argon2id），内存硬（Memory-hard），抗 ASIC 攻击&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="密码策略"&gt;密码策略&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;最小长度 ≥ 12 字符（长度比复杂度更重要）&lt;/li&gt;
+&lt;li&gt;检查密码是否在已知泄露密码库中（Have I Been Pwned API）&lt;/li&gt;
+&lt;li&gt;密码历史检查（不能与最近 5 次相同）&lt;/li&gt;
+&lt;li&gt;但不要强制每 90 天换密码（NIST SP 800-63B 已取消此建议）&lt;/li&gt;
+&lt;li&gt;只在怀疑凭证泄露时要求更改&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="密码传输"&gt;密码传输&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;登录表单必须通过 HTTPS POST&lt;/li&gt;
+&lt;li&gt;绝不在 URL 参数中传输密码&lt;/li&gt;
+&lt;li&gt;使用 Content-Security-Policy 头防止 XSS&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="213-token-安全"&gt;21.3 Token 安全&lt;/h2&gt;
+&lt;h3 id="access-token"&gt;Access Token&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;短有效期（5-15 分钟）&lt;/li&gt;
+&lt;li&gt;使用非对称签名（RS256/ES256），资源服务器用公钥验证&lt;/li&gt;
+&lt;li&gt;包含 audience（aud）限制可用范围&lt;/li&gt;
+&lt;li&gt;使用 DPoP 或 mTLS 绑定 Token 到客户端&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="refresh-token"&gt;Refresh Token&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Rotation：每次使用后发放新 Token，旧 Token 立即失效&lt;/li&gt;
+&lt;li&gt;Reuse Detection：同一 Refresh Token 被使用两次即视为泄露，立即吊销该令牌链（该用户/该客户端的相关令牌）&lt;/li&gt;
+&lt;li&gt;存储在 HttpOnly Secure Cookie 中（Web）或 Keychain/Keystore（移动）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="id-token"&gt;ID Token&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;只在客户端验证，绝不应发送给资源服务器&lt;/li&gt;
+&lt;li&gt;验证清单：签名、iss、aud、exp、iat、nonce&lt;/li&gt;
+&lt;li&gt;使用 Pairwise Subject Identifier 防止跨应用用户追踪&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="214-会话安全"&gt;21.4 会话安全&lt;/h2&gt;
+&lt;h3 id="cookie-属性"&gt;Cookie 属性&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;Set-Cookie: session_id=xxx;
+ Secure; # 仅通过 HTTPS 传输
+ HttpOnly; # JavaScript 不可访问（防 XSS 窃取）
+ SameSite=Lax; # CSRF 纵深防御之一；最强为 SameSite=Strict（但影响跨站回跳）
+ Path=/;
+ Max-Age=3600; # 短生命周期
+ Domain=auth.example.com # 限定在认证域&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注：&lt;code&gt;SameSite&lt;/code&gt; 是 CSRF 纵深防御的一环，不应作为唯一防线；主流浏览器已默认 &lt;code&gt;Lax+POST&lt;/code&gt; 限制，仍需配合 CSRF Token / Origin / &lt;code&gt;Sec-Fetch-Site&lt;/code&gt; 校验。&lt;/p&gt;</description></item><item><title>第22章：性能与扩展性</title><link>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</link><pubDate>Fri, 03 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</guid><description>&lt;h2 id="221-idaas-的性能模型"&gt;22.1 IDaaS 的性能模型&lt;/h2&gt;
+&lt;p&gt;IDaaS 系统的负载特征：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;读多写少&lt;/strong&gt;：认证操作远多于管理操作（100:1 或更高）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;突发性强&lt;/strong&gt;：工作日早晨的登录高峰&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;延迟敏感&lt;/strong&gt;：用户等待认证的时间忍受度极低（期望 &amp;lt; 500ms）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;状态管理&lt;/strong&gt;：Session 和 Token 需要分布式存储&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="关键性能指标"&gt;关键性能指标&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;指标&lt;/th&gt;
+					&lt;th&gt;目标值&lt;/th&gt;
+					&lt;th&gt;说明&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登录延迟（P50）&lt;/td&gt;
+					&lt;td&gt;&amp;lt; 200ms&lt;/td&gt;
+					&lt;td&gt;正常情况&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登录延迟（P95）&lt;/td&gt;
+					&lt;td&gt;&amp;lt; 500ms&lt;/td&gt;
+					&lt;td&gt;高峰情况&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登录延迟（P99）&lt;/td&gt;
+					&lt;td&gt;&amp;lt; 1s&lt;/td&gt;
+					&lt;td&gt;极端情况&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Token 签发延迟&lt;/td&gt;
+					&lt;td&gt;&amp;lt; 50ms&lt;/td&gt;
+					&lt;td&gt;不含用户认证&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Token Introspection&lt;/td&gt;
+					&lt;td&gt;&amp;lt; 10ms&lt;/td&gt;
+					&lt;td&gt;资源服务器高频调用&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;可用性&lt;/td&gt;
+					&lt;td&gt;99.99%&lt;/td&gt;
+					&lt;td&gt;年停机 &amp;lt; 52 分钟&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="222-数据库优化"&gt;22.2 数据库优化&lt;/h2&gt;
+&lt;p&gt;IDaaS 的性能瓶颈往往在数据库。&lt;/p&gt;
+&lt;h3 id="查询优化"&gt;查询优化&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;索引策略&lt;/strong&gt;：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- Keycloak 中最频繁的查询路径（示例基于 JPA schema，实际表/列名随版本而变，
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- 且 Keycloak 默认已为多数查询列建好索引，手动建索引前请先确认避免重复）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- 查找用户的 Session
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;CREATE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;INDEX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;idx_user_session_user&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;ON&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;USER_SESSION&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;USER_ID&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- 查找 Realm 的 Session
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;CREATE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;INDEX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;idx_user_session_realm&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;ON&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;USER_SESSION&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;REALM_ID&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- Client Session 关联到 User Session（外键为 USER_SESSION_ID）
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;CREATE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;INDEX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;idx_client_session_user_session&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;ON&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;CLIENT_SESSION&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;USER_SESSION_ID&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;-- 离线 Token 查找
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;CREATE&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;INDEX&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;idx_offline_user_session&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;ON&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;OFFLINE_USER_SESSION&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;USER_SESSION_ID&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="连接池"&gt;连接池&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;db-pool-initial-size: 10
+db-pool-min-size: 10
+db-pool-max-size: 单节点合理的最大连接数
+ ≈ 该节点的并发工作线程数（受 DB 总连接上限 / 节点数 约束）
+ 例：DB 最大连接 600，3 节点，则单节点上限 ≈ 600 / 3 × 0.7 ≈ 140
+ （确保 节点数 × 单节点池上限 ≤ 数据库 max_connections 的合理比例，如 60–70%）&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="读写分离"&gt;读写分离&lt;/h3&gt;
+&lt;p&gt;对于大规模部署（&amp;gt;100K 用户）：&lt;/p&gt;</description></item><item><title>第23章：去中心化身份与可验证凭证</title><link>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</link><pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</guid><description>&lt;h2 id="231-当前身份模型的根本缺陷"&gt;23.1 当前身份模型的根本缺陷&lt;/h2&gt;
+&lt;p&gt;当前的&amp;quot;中心化 + 联邦&amp;quot;身份模型有三个根本问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;身份数据被平台控制&lt;/strong&gt;：用户的数据存在各个 IdP 上，用户没有真正的所有权。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;身份孤岛&lt;/strong&gt;：每个平台的用户身份独立存在，无法跨平台携带。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;隐私不足&lt;/strong&gt;：用户登录行为被 IdP 完全可见（IdP 知道你访问了哪些应用）。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;去中心化身份（Decentralized Identity）试图从根本上改变这种模式。&lt;/p&gt;
+&lt;h2 id="232-去中心化身份的核心理念"&gt;23.2 去中心化身份的核心理念&lt;/h2&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;传统模型： 去中心化模型：
+ 
+ [IdP] 持有你的数据 你持有你的数据
+ │ │
+ ├── [App1] ├── [App1]
+ ├── [App2] vs. ├── [App2]
+ └── [App3] └── [App3]
+ 
+IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;核心理念：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;用户拥有并控制自己的身份数据&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;无需依赖中心化的身份提供方&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;选择性披露&lt;/strong&gt;：用户决定分享哪些信息&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;零知识证明&lt;/strong&gt;：可以在不泄露信息的情况下证明某件事&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="233-diddecentralized-identifier去中心化标识符"&gt;23.3 DID（Decentralized Identifier，去中心化标识符）&lt;/h2&gt;
+&lt;p&gt;DID 是 W3C 推荐标准（DID Core 1.0，2021 年成为 W3C Recommendation），是一种新型的全球唯一标识符，不由任何中心机构签发。&lt;/p&gt;
+&lt;h3 id="did-的格式"&gt;DID 的格式&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;did:example:123456789abcdefghi
+│ │ │
+│ │ └── 方法特定标识符
+│ └────────── DID 方法（指定了如何解析 DID）
+└────────────── Scheme（固定为 did）&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="did-方法"&gt;DID 方法&lt;/h3&gt;
+&lt;p&gt;不同的 DID 方法对应不同的底层技术：&lt;/p&gt;</description></item><item><title>第24章：零信任与身份驱动安全</title><link>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</link><pubDate>Sun, 05 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</guid><description>&lt;h2 id="241-从城堡到零信任"&gt;24.1 从城堡到零信任&lt;/h2&gt;
+&lt;h3 id="传统安全模型城堡与护城河"&gt;传统安全模型：城堡与护城河&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt; 防火墙
+ ┌───────────────────────┐
+ │ 内网（安全） │
+ │ [应用] [数据库] [文件] │
+ ┌───┐ │ │
+ │员工│──→│ VPN 接入 │
+ └───┘ └───────────────────────┘
+ ×
+ 外网 = 不安全
+
+问题：
+- 一旦进入内网，几乎可以为所欲为
+- VPN 凭据泄露 = 整个网络沦陷
+- 边界越来越模糊（SaaS、远程办公、多云）&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="零信任核心原则"&gt;零信任核心原则&lt;/h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;永远不信任，始终验证&amp;rdquo;（Never Trust, Always Verify）&lt;/p&gt;
+&lt;p&gt;（这一口号源自 John Kindervag / Forrester 2010 的零信任早期表述；NIST SP 800-207 将其具化为：不基于网络位置给予隐式信任、显式验证、最小权限、假设已沦陷等原则。）&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;零信任不是一种产品，而是一种安全架构理念：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;传统安全&lt;/th&gt;
+					&lt;th&gt;零信任安全&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;信任但验证&lt;/td&gt;
+					&lt;td&gt;从不信任，始终验证&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;基于位置（内网=安全）&lt;/td&gt;
+					&lt;td&gt;基于身份和上下文&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;一次性认证&lt;/td&gt;
+					&lt;td&gt;持续评估&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;网络分段&lt;/td&gt;
+					&lt;td&gt;微隔离&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;边界防御&lt;/td&gt;
+					&lt;td&gt;假设边界已被攻破&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="242-身份零信任的基石"&gt;24.2 身份：零信任的基石&lt;/h2&gt;
+&lt;p&gt;在零信任架构中，身份取代 IP 地址成为新的安全边界：&lt;/p&gt;</description></item></channel></rss>

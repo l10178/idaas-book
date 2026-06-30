@@ -1,0 +1,72 @@
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-regular.woff2 as=font type=font/woff2 crossorigin><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-500.woff2 as=font type=font/woff2 crossorigin><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-700.woff2 as=font type=font/woff2 crossorigin><link rel=stylesheet href="/main.cbebbbeae3ed63040979228eabddd75e772504cf2c708bfc75e7f1e8b9a3a6d3cef70654a816805c07ed3f529d55e9e7c51ada8bd025276b7b0cb124ad770a7b.css" integrity="sha512-y+u76uPtYwQJeSKOq93XXnclBM8scIv8defx6LmjptPO9wZUqBaAXAftP1KdVennxRrai9AlJ2t7DLEkrXcKew==" crossorigin=anonymous><noscript><style>img.lazyload{display:none}</style></noscript><base href=https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/><link rel=canonical href=https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/><title>第24章：零信任与身份驱动安全 — IDaaS Book</title><meta name=description content="零信任架构中的身份：从边界安全到身份驱动的安全模型"><link rel=icon href=/favicon.ico sizes=32x32><link rel=icon href=/favicon.svg type=image/png><link rel=apple-touch-icon href=/apple-touch-icon.png sizes=180x180 type=image/png><link rel=icon href=/favicon-192x192.png sizes=192x192 type=image/png><link rel=icon href=/favicon-512x512.png sizes=512x512 type=image/png><link rel=manifest href=/manifest.webmanifest><meta property="og:title" content="第24章：零信任与身份驱动安全"><meta property="og:description" content="零信任架构中的身份：从边界安全到身份驱动的安全模型"><meta property="og:type" content="article"><meta property="og:url" content="https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/"><meta property="og:image" content="https://idaas.xlabs.club/cover.png"><meta property="article:section" content="docs"><meta property="article:published_time" content="2024-05-05T00:00:00+08:00"><meta property="article:modified_time" content="2026-06-30T18:45:09+08:00"><meta property="og:site_name" content="IDaaS Book"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://idaas.xlabs.club/cover.png"><meta name=twitter:title content="第24章：零信任与身份驱动安全"><meta name=twitter:description content="零信任架构中的身份：从边界安全到身份驱动的安全模型"><meta name=twitter:site content="@xlabs-club"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":"https://idaas.xlabs.club/","name":"Idaa S 身份即服务 —— 一本完整的书","position":1},{"@type":"ListItem","item":"https://idaas.xlabs.club/docs/","name":"Docs","position":2},{"@type":"ListItem","item":"https://idaas.xlabs.club/docs/advanced-topics/","name":"第五部分：高级主题","position":3},{"@type":"ListItem","name":"第24章：零信任与身份驱动安全","position":4}]}</script></head><body class="single section docs"><h2 id=241-从城堡到零信任>24.1 从城堡到零信任</h2><h3 id=传统安全模型城堡与护城河>传统安全模型：城堡与护城河</h3><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>                      防火墙
+           ┌───────────────────────┐
+           │     内网（安全）       │
+           │  [应用] [数据库] [文件] │
+  ┌───┐   │                       │
+  │员工│──→│  VPN 接入              │
+  └───┘   └───────────────────────┘
+                      ×
+                 外网 = 不安全
+
+问题：
+- 一旦进入内网，几乎可以为所欲为
+- VPN 凭据泄露 = 整个网络沦陷
+- 边界越来越模糊（SaaS、远程办公、多云）</code></pre></figure></div><h3 id=零信任核心原则>零信任核心原则</h3><blockquote><p>&ldquo;永远不信任，始终验证&rdquo;（Never Trust, Always Verify）</p><p>（这一口号源自 John Kindervag / Forrester 2010 的零信任早期表述；NIST SP 800-207 将其具化为：不基于网络位置给予隐式信任、显式验证、最小权限、假设已沦陷等原则。）</p></blockquote><p>零信任不是一种产品，而是一种安全架构理念：</p><table><thead><tr><th>传统安全</th><th>零信任安全</th></tr></thead><tbody><tr><td>信任但验证</td><td>从不信任，始终验证</td></tr><tr><td>基于位置（内网=安全）</td><td>基于身份和上下文</td></tr><tr><td>一次性认证</td><td>持续评估</td></tr><tr><td>网络分段</td><td>微隔离</td></tr><tr><td>边界防御</td><td>假设边界已被攻破</td></tr></tbody></table><h2 id=242-身份零信任的基石>24.2 身份：零信任的基石</h2><p>在零信任架构中，身份取代 IP 地址成为新的安全边界：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>传统访问决策：                    零信任访问决策：
+                                
+请求来自 10.0.0.5？             请求者是谁？
+↓ Yes → 允许                     ↓ 张三，工程师，Android设备
+                                状态：通过 MFA，设备合规
+                                ↓ 访问策略：允许读取，拒绝写入
+                                ↓ 允许</code></pre></figure></div><h3 id=身份驱动的零信任>身份驱动的零信任</h3><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>用户请求访问资源
+       │
+       ▼
+┌─────────────────────────────┐
+│      策略引擎 (PE/PA/PEP)      │
+│                              │
+│  评估维度：                   │
+│  ├── 用户身份 (Who)          │
+│  ├── 设备状态 (What Device)  │
+│  ├── 认证强度 (How Auth)     │
+│  ├── 访问上下文 (Context)    │
+│  ├── 资源敏感度 (What)       │
+│  ├── 行为分析 (Behavior)     │
+│  └── 威胁情报 (Threat Intel) │
+│                              │
+│  决策：允许 / 拒绝 / MFA / 审计│
+└─────────────────────────────┘</code></pre></figure></div><h2 id=243-零信任的核心技术支柱>24.3 零信任的核心技术支柱</h2><h3 id=支柱一强身份认证>支柱一：强身份认证</h3><ul><li>MFA 是基线（不是可选项）</li><li>优先使用 FIDO2/WebAuthn（抗钓鱼）</li><li>自适应认证根据风险调整强度</li><li>设备健康认证（设备指纹 + MDM 状态）</li></ul><h3 id=支柱二最小权限访问>支柱二：最小权限访问</h3><ul><li>默认拒绝</li><li>即时访问（JIT）：需要时临时授予，用完即回收</li><li>权限定期审查</li><li>网络微隔离（应用间也做认证）</li></ul><h3 id=支柱三持续验证>支柱三：持续验证</h3><ul><li>不是"登录一次，永远信任"</li><li>持续评估访问会话的安全性</li><li>风险变化时主动吊销 Session/Token</li><li>异常行为检测</li></ul><h3 id=支柱四加密无处不在>支柱四：加密无处不在</h3><ul><li>数据在任何地方都加密（传输中、存储中、使用中）</li><li>mTLS 用于服务间通信</li><li>密钥管理和轮换自动化</li></ul><h2 id=244-零信任架构参考模型>24.4 零信任架构参考模型</h2><h3 id=nist-sp-800-207>NIST SP 800-207</h3><p>NIST SP 800-207（2020-08）定义的零信任架构（ZTA）核心逻辑组件为 <strong>PE / PA / PEP</strong>（注意：NIST 用的是 PE/PA/PEP，而非 XACML 的 PDP/PEP/PIP 术语，二者概念相通但术语不同，不应混用）：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>                          ┌──────────────────────┐
+                          │  PA (Policy Admin)   │
+                          │  据决策下发允许/拒绝  │
+                          │  /会话令牌给 PEP     │
+                          └─────────▲────────────┘
+                                    │ 决策
+                          ┌─────────┴────────────┐
+                          │  PE (Policy Engine)  │
+   各数据源 ──trust algo──→│  依据信任算法决策     │
+   (身份/CDM/威胁情报/      └──────────────────────┘
+    活动日志/合规)
+                                    │
+┌──────────┐                ┌───────┴──────────────┐
+│  PEP     │◄───────────────│  执行决策             │
+│(策略执行点)│               └──────────────────────┘
+└────┬─────┘
+     │
+┌────┴─────┐    ┌──────────┐
+│ 资源     │    │ 身份系统  │
+│(数据/应用)│    │(IAM/PAM) │
+└──────────┘    └──────────┘</code></pre></figure></div><ul><li><strong>PE</strong>（Policy Engine，策略引擎）：基于信任算法与各数据源做出访问决策</li><li><strong>PA</strong>（Policy Administrator，策略管理器）：依据 PE 的决策向 PEP 下发允许/拒绝命令或会话令牌</li><li><strong>PEP</strong>（Policy Enforcement Point，策略执行点）：位于资源前后，执行访问决策</li><li><strong>数据源</strong>：身份与凭证管理系统、CDM（持续诊断与缓解）、威胁情报、活动日志、企业合规等（承担 XACML 中 PIP 的角色）</li></ul><h3 id=google-beyondcorp>Google BeyondCorp</h3><p>Google 的零信任实现（BeyondCorp，2014–2017 系列论文）：</p><ul><li>不再依赖内网 VPN</li><li>通过访问代理（Access Proxy，PEP）在公共网络上以用户与设备身份做访问决策，全程加密</li><li>基于设备和用户身份的访问控制</li></ul><h3 id=云原生零信任>云原生零信任</h3><p>在 Kubernetes 环境中的零信任实践：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>[Ingress Gateway]
+       │
+       ▼
+[Service Mesh (Istio/Linkerd)]
+  ├── mTLS 自动加密
+  ├── 基于身份的授权策略
+  └── 流量监控
+       │
+       ▼
+[工作负载（Pod）]</code></pre></figure></div><h2 id=245-idaas-与零信任的交汇>24.5 IDaaS 与零信任的交汇</h2><p>IDaaS 是零信任架构中的核心"身份系统"：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>零信任架构                  IDaaS 提供的能力
+─────────────────────────────────────────────
+强认证               ←      MFA、FIDO2、Passkey
+身份属性             ←      用户属性、组、角色
+设备信任             ←      设备注册、设备属性
+自适应策略           ←      风险评分、上下文感知
+持续验证             ←      CAE、Token 吊销
+审计追踪             ←      认证审计、访问日志</code></pre></figure></div><h2 id=246-实施路线图>24.6 实施路线图</h2><p>零信任是一个旅程，不是一次项目：</p><h3 id=阶段-1基础0-6-个月>阶段 1：基础（0-6 个月）</h3><ul><li>部署 MFA（所有用户，优先管理员）</li><li>盘点所有身份和资产</li><li>建立基础的设备清单</li></ul><h3 id=阶段-2增强6-18-个月>阶段 2：增强（6-18 个月）</h3><ul><li>实现 SSO，减少密码使用</li><li>部署设备信任（MDM 集成）</li><li>网络微隔离</li><li>开始身份审计</li></ul><h3 id=阶段-3成熟18-36-个月>阶段 3：成熟（18-36 个月）</h3><ul><li>实现自适应认证</li><li>持续访问评估</li><li>自动化权限管理（JIT Access）</li><li>全面的审计和异常检测</li><li>数据分类和标签</li></ul><h3 id=阶段-4优化36-个月>阶段 4：优化（36 个月+）</h3><ul><li>AI/ML 驱动的异常检测</li><li>自动化的策略优化</li><li>无密码认证</li><li>全链路身份可视化</li></ul><h2 id=247-常见误区>24.7 常见误区</h2><ol><li><strong>买一个"零信任产品"就实现了零信任</strong>：零信任是架构理念，不是单一产品。</li><li><strong>实现零信任就不需要边界安全</strong>：纵深防御仍有价值，零信任是增强而非替代。</li><li><strong>零信任 = 取消 VPN</strong>：VPN 可以被零信任方案替代，但这是结果而非定义。</li><li><strong>零信任会让用户体验变差</strong>：好的实现通过 SSO + 自适应 MFA 实际上改善了体验。</li><li><strong>小型企业不需要零信任</strong>：小型企业也是攻击目标，MFA + 最小权限应该普遍采用。</li></ol><h2 id=248-小结>24.8 小结</h2><p>身份是零信任架构的核心。&ldquo;不再通过 IP 地址信任一个设备或用户，而是通过强身份认证、最小权限访问、持续验证来确保每一次访问的安全&rdquo;——这就是从边界安全到身份驱动安全的范式转变。IDaaS 是实现这一转变的关键基础设施。零信任的实施是一场马拉松，不是短跑，但每一步前进都在提升整体安全水位。</p><p>This line is from <code>./layouts/_default/single.html</code>.</p><script async src=/js/bootstrap.c673c84373e66019f7895efc74b3b3b940071832aaa8a85e73218087d535e71b.js integrity="sha256-xnPIQ3PmYBn3iV78dLOzuUAHGDKqqKhecyGAh9U15xs="></script><script async src=/js/app.e7d20ccb7d77f6f38a3bfb54b89e1f71b044d2122fde5645cdf7291fc237a862.js integrity="sha256-59IMy3139vOKO/tUuJ4fcbBE0hIv3lZFzfcpH8I3qGI="></script></body></html>

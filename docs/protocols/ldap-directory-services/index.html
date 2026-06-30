@@ -1,0 +1,62 @@
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=viewport content="width=device-width,initial-scale=1"><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-regular.woff2 as=font type=font/woff2 crossorigin><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-500.woff2 as=font type=font/woff2 crossorigin><link rel=preload href=https://idaas.xlabs.club/fonts/vendor/jost/jost-v4-latin-700.woff2 as=font type=font/woff2 crossorigin><link rel=stylesheet href="/main.cbebbbeae3ed63040979228eabddd75e772504cf2c708bfc75e7f1e8b9a3a6d3cef70654a816805c07ed3f529d55e9e7c51ada8bd025276b7b0cb124ad770a7b.css" integrity="sha512-y+u76uPtYwQJeSKOq93XXnclBM8scIv8defx6LmjptPO9wZUqBaAXAftP1KdVennxRrai9AlJ2t7DLEkrXcKew==" crossorigin=anonymous><noscript><style>img.lazyload{display:none}</style></noscript><base href=https://idaas.xlabs.club/docs/protocols/ldap-directory-services/><link rel=canonical href=https://idaas.xlabs.club/docs/protocols/ldap-directory-services/><title>第8章：LDAP 与目录服务 — IDaaS Book</title><meta name=description content="LDAP 协议原理、目录服务架构、Active Directory 集成与最佳实践"><link rel=icon href=/favicon.ico sizes=32x32><link rel=icon href=/favicon.svg type=image/png><link rel=apple-touch-icon href=/apple-touch-icon.png sizes=180x180 type=image/png><link rel=icon href=/favicon-192x192.png sizes=192x192 type=image/png><link rel=icon href=/favicon-512x512.png sizes=512x512 type=image/png><link rel=manifest href=/manifest.webmanifest><meta property="og:title" content="第8章：LDAP 与目录服务"><meta property="og:description" content="LDAP 协议原理、目录服务架构、Active Directory 集成与最佳实践"><meta property="og:type" content="article"><meta property="og:url" content="https://idaas.xlabs.club/docs/protocols/ldap-directory-services/"><meta property="og:image" content="https://idaas.xlabs.club/cover.png"><meta property="article:section" content="docs"><meta property="article:published_time" content="2024-02-04T00:00:00+08:00"><meta property="article:modified_time" content="2026-06-30T18:45:09+08:00"><meta property="og:site_name" content="IDaaS Book"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://idaas.xlabs.club/cover.png"><meta name=twitter:title content="第8章：LDAP 与目录服务"><meta name=twitter:description content="LDAP 协议原理、目录服务架构、Active Directory 集成与最佳实践"><meta name=twitter:site content="@xlabs-club"><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","item":"https://idaas.xlabs.club/","name":"Idaa S 身份即服务 —— 一本完整的书","position":1},{"@type":"ListItem","item":"https://idaas.xlabs.club/docs/","name":"Docs","position":2},{"@type":"ListItem","item":"https://idaas.xlabs.club/docs/protocols/","name":"第二部分：协议与标准","position":3},{"@type":"ListItem","name":"第8章： Ldap 与目录服务","position":4}]}</script></head><body class="single section docs"><h2 id=81-目录服务概述>8.1 目录服务概述</h2><p>目录服务是一种专门为读操作优化的分布式数据库，用于存储组织化的、层次化的信息。在 IDaaS 中，目录服务是最重要的身份数据存储方式之一。</p><h3 id=为什么不是关系数据库>为什么不是关系数据库？</h3><table><thead><tr><th>特性</th><th>目录服务</th><th>关系数据库</th></tr></thead><tbody><tr><td>读/写比例</td><td>100:1 或更高</td><td>变化多样</td></tr><tr><td>数据模型</td><td>层次化（树状）</td><td>关系化（表）</td></tr><tr><td>查询语言</td><td>LDAP Filter</td><td>SQL</td></tr><tr><td>性能优化</td><td>索引和缓存优先</td><td>事务和一致性</td></tr><tr><td>数据结构</td><td>灵活 Schema</td><td>固定 Schema</td></tr><tr><td>典型用途</td><td>身份查找、认证</td><td>业务数据处理</td></tr><tr><td>扩展方式</td><td>只读副本</td><td>读写分离</td></tr></tbody></table><p>目录服务是为"查找"而生的：员工查找、组查找、认证等操作要求极低的延迟和极高的读并发，这正是目录服务的设计目标。</p><h2 id=82-ldap-协议基础>8.2 LDAP 协议基础</h2><h3 id=ldap-数据模型>LDAP 数据模型</h3><p>LDAP 数据以<strong>树状结构</strong>（Directory Information Tree, DIT）组织：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>              dc=example,dc=com
+              │
+    ┌─────────┼─────────┐
+    │         │         │
+ou=users   ou=groups  ou=services
+    │         │
+cn=张三    cn=engineers</code></pre></figure></div><p>每个节点称为一个 <strong>Entry</strong>（条目），具有：</p><ul><li><strong>DN（Distinguished Name）</strong>：唯一标识符，如 <code>cn=张三,ou=users,dc=example,dc=com</code></li><li><strong>ObjectClass</strong>：定义条目类型（如 <code>person</code>, <code>organizationalPerson</code>, <code>inetOrgPerson</code>）</li><li><strong>Attributes</strong>：属性（如 <code>mail</code>, <code>uid</code>, <code>userPassword</code>）</li></ul><h3 id=常见-objectclass>常见 ObjectClass</h3><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>top
+├── person
+│   ├── organizationalPerson
+│   │   └── inetOrgPerson（最常用，包含 mail, uid 等现代属性）
+│   └── residentialPerson
+├── groupOfNames（静态组）
+├── groupOfUniqueNames（静态组，uniqueMember 替代 member）
+└── organizationalUnit</code></pre></figure></div><h3 id=ldap-操作>LDAP 操作</h3><table><thead><tr><th>操作</th><th>描述</th></tr></thead><tbody><tr><td>Bind</td><td>认证连接到 LDAP 服务器</td></tr><tr><td>Search</td><td>查询目录（最常用操作）</td></tr><tr><td>Compare</td><td>比较某个属性值</td></tr><tr><td>Add</td><td>添加新条目</td></tr><tr><td>Delete</td><td>删除条目</td></tr><tr><td>Modify</td><td>修改条目属性</td></tr><tr><td>ModifyDN</td><td>重命名或移动条目</td></tr><tr><td>Unbind</td><td>断开连接</td></tr></tbody></table><h3 id=ldap-search>LDAP Search</h3><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>ldapsearch -H ldaps://ldap.example.com \
+  -D &#34;cn=admin,dc=example,dc=com&#34; \
+  -w password \
+  -b &#34;ou=users,dc=example,dc=com&#34; \
+  &#34;(&amp;(objectClass=inetOrgPerson)(department=engineering))&#34; \
+  cn mail uid
+
+参数说明：
+  -H: LDAP 服务器 URI
+  -D: Bind DN（管理员 DN）
+  -w: 密码
+  -b: 搜索 Base
+  &#34;(&amp;(...)(...))&#34;: LDAP Filter
+  cn mail uid: 要返回的属性</code></pre></figure></div><h3 id=ldap-filter-语法>LDAP Filter 语法</h3><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>运算符：
+&amp;  — AND
+|  — OR
+!  — NOT
+=  — 相等
+&gt;= — 大于等于
+&lt;= — 小于等于
+~= — 约等于
+*  — 通配符
+
+示例：
+&#34;(objectClass=person)&#34;                     — 所有人员条目
+&#34;(&amp;(objectClass=person)(department=IT))&#34;   — IT 部门的人员
+&#34;(|(department=IT)(department=HR))&#34;        — IT 或 HR 人员
+&#34;(!(department=IT))&#34;                       — 非 IT 人员
+&#34;(cn=张*)&#34;                                 — 姓张的（CN 以&#34;张&#34;开头）
+&#34;(mail=*@example.com)&#34;                     — example.com 邮箱用户</code></pre></figure></div><h2 id=83-active-directory>8.3 Active Directory</h2><p>Microsoft Active Directory 是最广泛部署的目录服务。了解 AD 对于 IDaaS 实践至关重要，因为大多数企业仍在使用 AD 管理员工身份。</p><h3 id=ad-核心概念>AD 核心概念</h3><ul><li><strong>Domain（域）</strong>：AD 的基本管理单位</li><li><strong>Domain Controller（DC，域控制器）</strong>：运行 AD 域服务</li><li><strong>OU（Organizational Unit，组织单位）</strong>：用于组织对象和应用组策略</li><li><strong>Group Policy（组策略）</strong>：集中管理的安全策略（密码策略、审计策略等）</li><li><strong>Global Catalog（全局编录）</strong>：整个林中所有对象的子集缓存，用于跨域搜索</li><li><strong>Forest（林）</strong>：多个共享 Schema 的域树的集合</li><li><strong>Trust（信任关系）</strong>：域/林之间的信任关系</li></ul><h3 id=ad-用户认证>AD 用户认证</h3><p>AD 域登录默认使用 Kerberos 进行认证，但也支持 NTLM（向后兼容）：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>Kerberos 认证流程（简化版）：
+1. 客户端 → KDC：AS_REQ（请求 TGT）
+2. KDC → 客户端：AS_REP（返回 TGT）
+3. 客户端 → KDC：TGS_REQ（用 TGT 请求服务票据）
+4. KDC → 客户端：TGS_REP（返回服务票据）
+5. 客户端 → 服务：AP_REQ（呈现服务票据）
+6. 服务验证票据，建立认证上下文</code></pre></figure></div><h3 id=ad--ldap>AD + LDAP</h3><p>AD 通过 LDAP 暴露目录查询接口。LDAP 协议本身通过 <strong>bind 操作</strong>完成认证，可以是简单 bind（DN + 密码）或 SASL bind（如 GSS-SPNEGO/Kerberos）；AD 域登录默认走 Kerberos，而 LDAP 认证两者皆可。IDaaS 系统通常通过 LDAP（而不是 Kerberos）与 AD 交互进行用户同步。</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code># 在 AD 中搜索用户（memberOf 反向查询为 AD 特有，标准 LDAP 需配置 memberOf overlay）
+ldapsearch -H ldaps://dc.example.com \
+  -D &#34;CN=Administrator,CN=Users,DC=example,DC=com&#34; \
+  -w password \
+  -b &#34;DC=example,DC=com&#34; \
+  &#34;(&amp;(objectClass=user)(memberOf=CN=Engineers,OU=Groups,DC=example,DC=com))&#34; \
+  sAMAccountName mail displayName</code></pre></figure></div><h2 id=84-开源-ldap-实现>8.4 开源 LDAP 实现</h2><h3 id=openldap>OpenLDAP</h3><p>最广泛使用的开源 LDAP 服务器。</p><div class=expressive-code><figure class="frame is-terminal not-content"><figcaption class=header><span class=title></span></figcaption><div class=highlight><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 安装</span>
+</span></span><span class=line><span class=cl>apt install slapd ldap-utils
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 配置基础 DN 和管理员密码</span>
+</span></span><span class=line><span class=cl>dpkg-reconfigure slapd
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 验证</span>
+</span></span><span class=line><span class=cl>ldapsearch -x -H ldap://localhost -b <span class=s2>&#34;dc=example,dc=com&#34;</span></span></span></code></pre></div></figure></div><h3 id=389-directory-server>389 Directory Server</h3><p>由 389 Project 社区维护（源自 Red Hat/Fedora），Keycloak 文档列为推荐的 LDAP 实现之一。</p><h3 id=apacheds>ApacheDS</h3><p>纯 Java 实现的 LDAP 服务器，适合嵌入 Java 应用。</p><h2 id=85-idaas-中的-ldap-集成模式>8.5 IDaaS 中的 LDAP 集成模式</h2><h3 id=模式一ldap-作为用户联合源user-federation>模式一：LDAP 作为用户联合源（User Federation）</h3><p>IDaaS 平台连接到 LDAP，将 LDAP 用户导入（或实时查询）：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>IDaaS ←─ LDAP(S) ─→ LDAP Server (AD/OpenLDAP)</code></pre></figure></div><p>用户仍在 LDAP 中管理，IDaaS 只是"消费"这些用户。</p><h3 id=模式二ldap-同步--本地缓存>模式二：LDAP 同步 + 本地缓存</h3><p>定时同步 LDAP 用户到 IDaaS 自己的存储：</p><ul><li>用户属性发生变化时同步（增量同步）</li><li>新增/禁用/删除用户时同步</li><li>保留同步日志和错误处理</li></ul><h3 id=模式三idaas-作为-ldap-代理>模式三：IDaaS 作为 LDAP 代理</h3><p>应用连接到 IDaaS 暴露的 LDAP 端点，IDaaS 后端再代理到真正的 LDAP：</p><div class=expressive-code><figure class="frame not-content"><figcaption class=header><span class=title></span></figcaption><pre tabindex=0><code>App → LDAP → IDaaS → AD/LDAP</code></pre></figure></div><p>这对于兼容只支持 LDAP 的遗留应用非常有用。</p><h2 id=86-ldaps-与-starttls>8.6 LDAPS 与 StartTLS</h2><h3 id=ldapsldap-over-ssl>LDAPS（LDAP over SSL）</h3><p>使用专用端口（636），在整个连接期间全程加密。这是生产环境的推荐方式。</p><h3 id=starttls>StartTLS</h3><p>在普通 LDAP 连接（端口 389）上通过 StartTLS 扩展升级到 TLS。</p><h3 id=tls-最佳实践>TLS 最佳实践</h3><ul><li>使用有效证书（非自签名）</li><li>证书有效期不超过 1 年</li><li>客户端验证服务端证书（不跳过验证）</li></ul><h2 id=87-性能优化>8.7 性能优化</h2><ol><li><strong>合理设计索引</strong>：对频繁搜索的属性建立索引（uid, mail, member 等）。</li><li><strong>限制搜索范围</strong>：搜索结果数量限制 + 搜索时间限制。</li><li><strong>分页查询</strong>：使用 Simple Paged Results Control（RFC 2696）。</li><li><strong>读写分离</strong>：主服务器负责写，只读副本负责查询。</li><li><strong>连接池</strong>：客户端使用连接池，避免频繁建立和断开连接。</li><li><strong>缓存</strong>：合理利用 LDAP 服务器和客户端的缓存。</li></ol><h2 id=88-小结>8.8 小结</h2><p>LDAP 和目录服务是 IDaaS 世界的基础设施层。对于大多数企业来说，Active Directory 仍然是员工的权威身份源。IDaaS 系统的核心能力之一就是与这些目录服务无缝集成——既能让用户继续使用已有的域账号，又能将身份管理能力扩展到云原生应用。</p><p>This line is from <code>./layouts/_default/single.html</code>.</p><script async src=/js/bootstrap.c673c84373e66019f7895efc74b3b3b940071832aaa8a85e73218087d535e71b.js integrity="sha256-xnPIQ3PmYBn3iV78dLOzuUAHGDKqqKhecyGAh9U15xs="></script><script async src=/js/app.e7d20ccb7d77f6f38a3bfb54b89e1f71b044d2122fde5645cdf7291fc237a862.js integrity="sha256-59IMy3139vOKO/tUuJ4fcbBE0hIv3lZFzfcpH8I3qGI="></script></body></html>

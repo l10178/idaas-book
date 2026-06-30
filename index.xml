@@ -1,610 +1,683 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content on IDaaS Book</description><generator>Hugo</generator><language>zh</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Wed, 25 Sep 2024 23:34:37 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak 简介</title><link>https://idaas.xlabs.club/docs/keycloak/getting-started/</link><pubDate>Sat, 26 Sep 2020 18:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/getting-started/</guid><description>&lt;p>&lt;a href="https://www.keycloak.org">keycloak&lt;/a> 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。&lt;/p>
-&lt;p>主要功能：&lt;/p>
-&lt;ul>
-&lt;li>SSO&lt;br>
-单点登录（Single-Sign On），支持 OpenID Connect、OAuth 2.0、SAML 2.0 标准协议。&lt;/li>
-&lt;li>Identity Brokering and Social Login&lt;br>
-通过配置，可实现对不同身份认证服务的集成，通过这些身份认证服务登录应用。如 GitHub、Google 等，开源社区也有人提供了微信集成方案。&lt;/li>
-&lt;li>User Federation&lt;br>
-用户联合，提供了对 LDAP、Active Directory、Kerberos 的集成方案。&lt;/li>
-&lt;li>Client Adapters&lt;br>
-不同平台多种语言的支持，Java、Python、Go、Node.js、Spring、Quarkus 等。&lt;/li>
-&lt;li>后台管理&lt;br>
-提供了多种语言的后台管理界面，如果想偷懒的话改改图标定制个主题就能拿来用。同时还有 CLI 、SDK 和 RESTful API。&lt;/li>
-&lt;li>授权服务&lt;br>
-提供基于 RBAC、ABAC、UBAC 等多种策略的授权功能。&lt;/li>
-&lt;li>其他常用功能&lt;br>
-密码策略、暴力检测、MFA、日志审计。&lt;/li>
-&lt;/ul>
-&lt;h2 id="选型参考">选型参考&lt;/h2>
-&lt;p>为什么可能选他：&lt;/p>
-&lt;ol>
-&lt;li>Redhat 开源，&lt;a href="https://www.cncf.io/">CNCF&lt;/a> 项目，稳定质量可靠，一直在演进和更新。&lt;/li>
-&lt;li>易开发易扩展，相对 CAS，尤其是对于 Java 开发者。&lt;/li>
-&lt;li>功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。&lt;/li>
-&lt;li>标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。&lt;/li>
-&lt;/ol>
-&lt;p>为什么可能不选他：&lt;/p>
-&lt;ol>
-&lt;li>如果你有定制开发的话，版本升级并不友好，也不太难，因人而异。&lt;/li>
-&lt;li>中文并不友好，包括界面中的中文翻译其实不符合国人习惯，这也是为啥有 IDaaS Book 这个项目。&lt;/li>
-&lt;/ol>
-&lt;h3 id="名词解释">名词解释&lt;/h3>
-&lt;p>&lt;strong>IAM&lt;/strong> Identity and Access Management，身份认证和访问控制。&lt;/p>
-&lt;p>&lt;strong>MFA&lt;/strong> Multi-Factor Authentication，多重身份认证，多因子认证。&lt;/p></description></item><item><title>Introduction</title><link>https://idaas.xlabs.club/docs/guides/introduction/</link><pubDate>Thu, 07 Sep 2023 16:04:48 +0200</pubDate><guid>https://idaas.xlabs.club/docs/guides/introduction/</guid><description>&lt;p>A book about identity as a service (IDaaS).&lt;/p>
-&lt;p>一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件，记录使用中遇到的问题和解决方案。&lt;/p></description></item><item><title>Kubernetes中导入导出</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
-&lt;p>我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。&lt;/p>
-&lt;p>比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。&lt;/p>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS 身份即服务 —— 一本完整的书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS 身份即服务 —— 一本完整的书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 30 Jun 2026 18:45:09 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak 简介</title><link>https://idaas.xlabs.club/docs/keycloak/getting-started/</link><pubDate>Sat, 26 Sep 2020 18:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/getting-started/</guid><description>&lt;p&gt;&lt;a href="https://www.keycloak.org"&gt;keycloak&lt;/a&gt; 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。&lt;/p&gt;
+&lt;p&gt;主要功能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;SSO&lt;br&gt;
+单点登录（Single-Sign On），支持 OpenID Connect、OAuth 2.0、SAML 2.0 标准协议。&lt;/li&gt;
+&lt;li&gt;Identity Brokering and Social Login&lt;br&gt;
+通过配置，可实现对不同身份认证服务的集成，通过这些身份认证服务登录应用。如 GitHub、Google 等，开源社区也有人提供了微信集成方案。&lt;/li&gt;
+&lt;li&gt;User Federation&lt;br&gt;
+用户联合，提供了对 LDAP、Active Directory、Kerberos 的集成方案。&lt;/li&gt;
+&lt;li&gt;Client Adapters&lt;br&gt;
+不同平台多种语言的支持，Java、Python、Go、Node.js、Spring、Quarkus 等。&lt;/li&gt;
+&lt;li&gt;后台管理&lt;br&gt;
+提供了多种语言的后台管理界面，如果想偷懒的话改改图标定制个主题就能拿来用。同时还有 CLI 、SDK 和 RESTful API。&lt;/li&gt;
+&lt;li&gt;授权服务&lt;br&gt;
+提供基于 RBAC、ABAC、UBAC 等多种策略的授权功能。&lt;/li&gt;
+&lt;li&gt;其他常用功能&lt;br&gt;
+密码策略、暴力检测、MFA、日志审计。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="选型参考"&gt;选型参考&lt;/h2&gt;
+&lt;p&gt;为什么可能选他：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Redhat 开源，&lt;a href="https://www.cncf.io/"&gt;CNCF&lt;/a&gt; 项目，稳定质量可靠，一直在演进和更新。&lt;/li&gt;
+&lt;li&gt;易开发易扩展，相对 CAS，尤其是对于 Java 开发者。&lt;/li&gt;
+&lt;li&gt;功能丰富易用，如果只是要一个简单的 IAM，几乎是开箱即用。&lt;/li&gt;
+&lt;li&gt;标准实现，易集成，大厂背书。Kubernetes、Grafana、Kibana、Rancher、Vault、Harbor、Jenkins、Activiti 等等天然支持。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;为什么可能不选他：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如果你有定制开发的话，版本升级并不友好，也不太难，因人而异。&lt;/li&gt;
+&lt;li&gt;中文并不友好，包括界面中的中文翻译其实不符合国人习惯，这也是为啥有 IDaaS Book 这个项目。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="名词解释"&gt;名词解释&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;IAM&lt;/strong&gt; Identity and Access Management，身份认证和访问控制。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;MFA&lt;/strong&gt; Multi-Factor Authentication，多重身份认证，多因子认证。&lt;/p&gt;</description></item><item><title>Introduction</title><link>https://idaas.xlabs.club/docs/guides/introduction/</link><pubDate>Thu, 07 Sep 2023 16:04:48 +0200</pubDate><guid>https://idaas.xlabs.club/docs/guides/introduction/</guid><description>&lt;p&gt;A book about identity as a service (IDaaS).&lt;/p&gt;
+&lt;p&gt;一本关于身份即服务的书，翻译和汇总 IAM、IDaaS、OAuth2 等相关专业知识，介绍相关的 keycloak、CAS、Dex 等软件，记录使用中遇到的问题和解决方案。&lt;/p&gt;</description></item><item><title>第1章：什么是 IDaaS</title><link>https://idaas.xlabs.club/docs/fundamentals/what-is-idaas/</link><pubDate>Mon, 01 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/what-is-idaas/</guid><description>&lt;h2 id="11-定义"&gt;1.1 定义&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;IDaaS&lt;/strong&gt;（Identity as a Service，身份即服务）是将身份管理能力以云服务形式交付的一种架构模式。它涵盖了用户身份的创建、维护、认证、授权和审计的全生命周期管理，通过标准化的 API 和协议向应用系统提供统一的身份服务。&lt;/p&gt;
+&lt;p&gt;Gartner 将 IDaaS 定义为：&amp;ldquo;通过云端交付的、综合性的身份和访问管理服务，包括身份治理与管理（IGA）、访问管理（AM）和特权访问管理（PAM）等功能。&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;从技术角度看，IDaaS 解决的是这样一个核心问题：在一个应用数量爆炸、部署环境异构的世界里，如何让正确的人，在正确的时间，以正确的方式，访问正确的资源？&lt;/p&gt;
+&lt;h2 id="12-为什么需要-idaas"&gt;1.2 为什么需要 IDaaS&lt;/h2&gt;
+&lt;h3 id="121-传统-iam-的困境"&gt;1.2.1 传统 IAM 的困境&lt;/h3&gt;
+&lt;p&gt;在 IDaaS 出现之前，企业通常采用本地部署的 IAM 系统。这些系统存在以下痛点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;部署周期长&lt;/strong&gt;：从采购硬件、安装软件到配置集成，动辄数月。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;维护成本高&lt;/strong&gt;：需要专业的 IAM 工程师持续运维，升级频繁且风险高。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;扩展困难&lt;/strong&gt;：当业务快速增长或需要接入新应用时，传统 IAM 的扩展能力捉襟见肘。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;集成复杂&lt;/strong&gt;：每个应用都有自己的用户系统和认证方式，形成了大量的身份孤岛。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;安全风险集中&lt;/strong&gt;：自建的 IAM 系统一旦被攻破，所有接入应用都将面临风险。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="122-数字化转型的推动"&gt;1.2.2 数字化转型的推动&lt;/h3&gt;
+&lt;p&gt;以下趋势催生了 IDaaS 的快速发展：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;SaaS 应用爆发&lt;/strong&gt;：企业平均使用超过 100 个 SaaS 应用，每个应用都需要独立的身份管理。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;多云和混合云&lt;/strong&gt;：应用分布在多个云平台和数据中心，需要统一的身份层。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;远程办公常态化&lt;/strong&gt;：员工从任何地点、任何设备访问企业资源，安全边界消失。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;零信任安全架构&lt;/strong&gt;：从&amp;quot;信任但验证&amp;quot;转向&amp;quot;永不信任，始终验证&amp;quot;。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;合规要求加严&lt;/strong&gt;：GDPR、个人信息保护法等对身份数据的管理提出了更高要求。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="123-idaas-的核心价值"&gt;1.2.3 IDaaS 的核心价值&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;价值维度&lt;/th&gt;
+					&lt;th&gt;传统 IAM&lt;/th&gt;
+					&lt;th&gt;IDaaS&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;部署时间&lt;/td&gt;
+					&lt;td&gt;3-12 个月&lt;/td&gt;
+					&lt;td&gt;数天到数周&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;运维成本&lt;/td&gt;
+					&lt;td&gt;高（需专职团队）&lt;/td&gt;
+					&lt;td&gt;低（服务商承担）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;可扩展性&lt;/td&gt;
+					&lt;td&gt;受限于硬件&lt;/td&gt;
+					&lt;td&gt;弹性伸缩&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;协议支持&lt;/td&gt;
+					&lt;td&gt;有限，更新慢&lt;/td&gt;
+					&lt;td&gt;持续更新，紧跟标准&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;集成生态&lt;/td&gt;
+					&lt;td&gt;需定制开发&lt;/td&gt;
+					&lt;td&gt;预置数千连接器&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;安全更新&lt;/td&gt;
+					&lt;td&gt;手动打补丁&lt;/td&gt;
+					&lt;td&gt;自动更新&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;高可用&lt;/td&gt;
+					&lt;td&gt;自建灾备&lt;/td&gt;
+					&lt;td&gt;多区域 SLA 保障&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="13-idaas-的演进历程"&gt;1.3 IDaaS 的演进历程&lt;/h2&gt;
+&lt;h3 id="第一阶段目录服务时代1990s-2000s"&gt;第一阶段：目录服务时代（1990s-2000s）&lt;/h3&gt;
+&lt;p&gt;以 Microsoft Active Directory 和 LDAP 目录服务为代表。这个阶段的身份管理主要是&amp;quot;企业内部的员工账号管理&amp;quot;，认证协议以 Kerberos、NTLM 为主，目录访问以 LDAP 为主。身份管理的范畴局限于企业内网，外部用户和合作伙伴的身份管理极其有限。&lt;/p&gt;</description></item><item><title>第2章：IAM 核心理念</title><link>https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/</link><pubDate>Tue, 02 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/</guid><description>&lt;h2 id="21-iam-的定义与范畴"&gt;2.1 IAM 的定义与范畴&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;IAM&lt;/strong&gt;（Identity and Access Management，身份与访问管理）是信息安全领域的基础性学科，涵盖确保&amp;quot;正确的个体在正确的时间以正确的原因访问正确的资源&amp;quot;所需的所有策略、流程和技术。&lt;/p&gt;
+&lt;p&gt;IAM 的四大核心要素：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;身份（Identity）&lt;/strong&gt;：谁在请求访问？人、设备、服务还是应用？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;认证（Authentication）&lt;/strong&gt;：如何证明你是你声称的那个人？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;授权（Authorization）&lt;/strong&gt;：你能做什么？能访问什么资源？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;审计（Audit）&lt;/strong&gt;：谁在什么时候做了什么？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="22-身份数字世界的通行证"&gt;2.2 身份：数字世界的通行证&lt;/h2&gt;
+&lt;h3 id="221-什么是数字身份"&gt;2.2.1 什么是数字身份&lt;/h3&gt;
+&lt;p&gt;数字身份是一组与实体（人、设备、服务）关联的属性集合，用于在信息系统中唯一标识和描述该实体。&lt;/p&gt;
+&lt;p&gt;一个典型的用户数字身份包含：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;标识符（Identifier）&lt;/strong&gt;：用户名、邮箱、手机号、员工编号&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;属性（Attributes）&lt;/strong&gt;：姓名、部门、职位、角色、组成员关系&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;凭证（Credentials）&lt;/strong&gt;：密码哈希、证书、生物特征模板&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;元数据（Metadata）&lt;/strong&gt;：创建时间、最后登录时间、账户状态&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="222-身份的类型"&gt;2.2.2 身份的类型&lt;/h3&gt;
+&lt;p&gt;在 IAM 系统中，身份并非只有&amp;quot;人类用户&amp;quot;一种类型：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;身份类型&lt;/th&gt;
+					&lt;th&gt;示例&lt;/th&gt;
+					&lt;th&gt;特征&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;员工身份&lt;/td&gt;
+					&lt;td&gt;全职/兼职员工&lt;/td&gt;
+					&lt;td&gt;由 HR 系统驱动，有组织归属&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;合作伙伴身份&lt;/td&gt;
+					&lt;td&gt;供应商、顾问&lt;/td&gt;
+					&lt;td&gt;外部组织成员，访问权限受限&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;客户身份&lt;/td&gt;
+					&lt;td&gt;终端用户&lt;/td&gt;
+					&lt;td&gt;大规模，CIAM 场景&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;服务身份&lt;/td&gt;
+					&lt;td&gt;API 调用、微服务&lt;/td&gt;
+					&lt;td&gt;无人工交互，机器身份&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;设备身份&lt;/td&gt;
+					&lt;td&gt;IoT 设备、移动设备&lt;/td&gt;
+					&lt;td&gt;设备指纹、证书认证&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;临时身份&lt;/td&gt;
+					&lt;td&gt;访客、实习生&lt;/td&gt;
+					&lt;td&gt;有时间限制，权限最小化&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="223-身份存储目录服务"&gt;2.2.3 身份存储：目录服务&lt;/h3&gt;
+&lt;p&gt;身份数据需要持久化存储。常见的存储方式：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;LDAP 目录&lt;/strong&gt;：树状结构，读取性能优异，写入性能一般。适合员工身份存储。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;关系数据库&lt;/strong&gt;：扁平表结构，灵活查询。适合需要复杂关联查询的场景。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;云目录&lt;/strong&gt;：如 Microsoft Entra ID（原 Azure AD）、Google Cloud Identity。原生支持云应用，弹性伸缩。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;图数据库&lt;/strong&gt;：如 Neo4j。适合复杂的身份关系建模，如组织架构、权限继承链。&lt;/p&gt;</description></item><item><title>第3章：认证与授权深度辨析</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;我已经登录了，为什么还不能访问这个页面？&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这是 IAM 工程师最常听到的问题之一。用户将&amp;quot;能够登录&amp;quot;等同于&amp;quot;能访问所有功能&amp;quot;，这恰恰混淆了认证和授权的本质区别。&lt;/p&gt;
+&lt;p&gt;让我们用机场的比喻来理解：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;认证&lt;/strong&gt;：出示身份证件，证明&amp;quot;我是张三&amp;quot;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;授权&lt;/strong&gt;：出示登机牌，证明&amp;quot;我被允许乘坐CA1234航班&amp;quot;&lt;/li&gt;
+&lt;li&gt;有身份证（已认证）但没有登机牌（未授权），你上不了飞机&lt;/li&gt;
+&lt;li&gt;有登机牌（已授权）但没有身份证（未认证），你同样上不了飞机&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="32-认证authenticationauthn"&gt;3.2 认证（Authentication，AuthN）&lt;/h2&gt;
+&lt;h3 id="321-认证的核心问题"&gt;3.2.1 认证的核心问题&lt;/h3&gt;
+&lt;p&gt;认证回答三个递进的问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;这个用户存在吗？&lt;/strong&gt;（身份识别）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;这个用户是他声称的那个人吗？&lt;/strong&gt;（身份验证）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;当前是否已经验证过？&lt;/strong&gt;（会话管理）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="322-认证方式分类"&gt;3.2.2 认证方式分类&lt;/h3&gt;
+&lt;h4 id="基于知识的认证"&gt;基于知识的认证&lt;/h4&gt;
+&lt;p&gt;用户知道什么。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;静态密码&lt;/strong&gt;：最传统的方式，问题在于用户喜欢弱密码、复用密码、写密码在便签上。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;安全问题&lt;/strong&gt;：你第一个宠物的名字？这类问题的答案往往比密码更容易被猜中或通过社交工程获取。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;图片密码&lt;/strong&gt;：选择正确的图片组合，在移动端有一定应用场景。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="基于持有的认证"&gt;基于持有的认证&lt;/h4&gt;
+&lt;p&gt;用户拥有什么。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;短信/邮箱验证码&lt;/strong&gt;：最普及，但短信验证码存在 SS7 协议攻击风险。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;硬件 Token&lt;/strong&gt;：U-Key、YubiKey。物理设备，安全性高，但有丢失风险和分发的物流成本。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;软件 Token&lt;/strong&gt;：TOTP（Google Authenticator、Authy）或推送通知认证。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;智能卡&lt;/strong&gt;：带有芯片的卡片，常见于大型企业和政府机构。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="基于固有的认证"&gt;基于固有的认证&lt;/h4&gt;
+&lt;p&gt;用户是什么。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;指纹识别&lt;/strong&gt;：方便，但指纹可以被复制，且皮肤状态影响识别率。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;面部识别&lt;/strong&gt;：Apple Face ID 是标杆实现，普通摄像头的安全性存疑。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;虹膜识别&lt;/strong&gt;：精度极高但设备昂贵。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;声纹识别&lt;/strong&gt;：可远程使用，但录音回放和 AI 合成构成威胁。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;行为生物识别&lt;/strong&gt;：击键模式、鼠标轨迹、持手机的角度。无感知认证，正在快速发展。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="323-认证的技术实现"&gt;3.2.3 认证的技术实现&lt;/h3&gt;
+&lt;h4 id="基于-session-的认证"&gt;基于 Session 的认证&lt;/h4&gt;
 
 
 
-&lt;div class="expressive-code">
- &lt;figure class="frame is-terminal not-content">
- &lt;figcaption class="header">
- &lt;span class="title">&lt;/span>
- &lt;/figcaption>
- &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">./standalone.sh -Dkeycloak.migration.action&lt;span class="o">=&lt;/span>&lt;span class="nb">export&lt;/span> -Dkeycloak.migration.provider&lt;span class="o">=&lt;/span>singleFile -Dkeycloak.migration.file&lt;span class="o">=&lt;/span>keycloak-export.json&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
- &lt;/figure>
-&lt;/div>
-&lt;p>出现类似下面错误。&lt;/p>
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;1. 用户提交用户名和密码
+2. 服务端验证通过，创建 Session，返回 Session ID（Cookie）
+3. 后续请求携带 Cookie，服务端查找 Session 验证&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;特点：有状态，服务端存储 Session；可即时吊销；扩展困难（Session 同步）。&lt;/p&gt;
+&lt;h4 id="基于-token-的认证"&gt;基于 Token 的认证&lt;/h4&gt;
 
 
 
-&lt;div class="expressive-code">
- &lt;figure class="frame not-content">
- &lt;figcaption class="header">
- &lt;span class="title">&lt;/span>
- &lt;/figcaption>
- &lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([
- (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;),
- (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;)
-]) - failure description: {
- &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;},
- &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; {
- &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.wildfly.management.http.extensible.shutdown&amp;#34;],
- &amp;#34;Services that may be the cause:&amp;#34; =&amp;gt; [&amp;#34;jboss.remoting.remotingConnectorInfoService.http-remoting-connector&amp;#34;]
- }
-}&lt;/code>&lt;/pre>
- &lt;/figure>
-&lt;/div>
-&lt;h2 id="问题原因">问题原因&lt;/h2>
-&lt;p>根据错误提示，端口被占用，原因是 keycloak 导出脚本也会启动 Wildfly 服务，默认的 http、https、management 等的端口已经被占用。&lt;/p></description></item><item><title>MFA-OTP</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</guid><description>&lt;p>&lt;strong>MFA&lt;/strong> 即 Multi-Factor Authentication，多重身份认证，多因子认证，多因素认证。当然也包含等保要求中常说的双因子认证 2FA。&lt;/p>
-&lt;p>常见的实现如 U 盾、短信、邮件、指纹识别、面部识别等，在账户+密码基础上，进行二次或多次认证，增强数据安全。&lt;/p>
-&lt;p>Keycloak 提供了基于 OTP（One-Time Password，一次性密码，动态口令）的开箱即用的解决方案。&lt;/p>
-&lt;h2 id="使用步骤">使用步骤&lt;/h2>
-&lt;p>直接上图看效果。&lt;/p>
-&lt;ol>
-&lt;li>各个 Realm 默认的浏览器认证流中，OTP 是&lt;code>CONDITIONAL&lt;/code>，是一个条件可选项。
-&lt;a href="./browser-otp.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/browser-otp_hu12120228026187848527.webp"
- width="1400"
- height="622"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="browser"id="h-rh-i-0"
-/>&lt;/a>&lt;/li>
-&lt;li>为用户配置启用 OTP 认证。
-&lt;a href="./required-otp.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/required-otp_hu6593641579294950690.webp"
- width="799"
- height="702"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="User OTP"id="h-rh-i-1"
-/>&lt;/a>&lt;/li>
-&lt;li>用户登录，未注册设备，要求注册设备。
-&lt;a href="./register-otp.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/register-otp_hu12669578073784448439.webp"
- width="701"
- height="901"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Register"id="h-rh-i-2"
-/>&lt;/a>&lt;/li>
-&lt;li>手机端下载支持的 OTP 软件，如 FreeOTP，Google Authenticator。扫描注册，注册成功后就能看到已经生成一次性口令。
-&lt;a href="./freeotp.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/freeotp_hu8655660619675262284.webp"
- width="631"
- height="582"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="FreeeOTP APP"id="h-rh-i-3"
-/>&lt;/a>&lt;/li>
-&lt;li>登录时就会要求输入一次性验证码。
-&lt;a href="./login-otp.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/login-otp_hu6974089926450257796.webp"
- width="863"
- height="551"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Login"id="h-rh-i-4"
-/>&lt;/a>&lt;/li>
-&lt;li>注册成功后，可以在管理控制台看到用户注册的设备，用户也可以在自己的账户页面看到注册的设备。如果手机丢了想重新注册，把已有的记录删掉就可以，删掉后下次登录会要求重新注册。&lt;br>
-管理控制台:
-&lt;a href="./admin-otp.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/admin-otp_hu9166579955508478061.webp"
- width="1415"
- height="723"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Admin OTP"id="h-rh-i-5"
-/>&lt;/a>
-自己的账户页面：&lt;br>
-&lt;a href="./account-otp.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/account-otp_hu14173684843865636988.webp"
- width="1196"
- height="344"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Account OTP"id="h-rh-i-6"
-/>&lt;/a>&lt;/li>
-&lt;/ol>
-&lt;h2 id="扩展认证方式">扩展认证方式&lt;/h2>
-&lt;p>如果想自己实现认证方式，官方也提供了详细的 SPI 开发指导，我们根据指导用一天时间实现了一个短信验证码。待开源。&lt;/p>
-&lt;h2 id="名字解释">名字解释&lt;/h2>
-&lt;p>&lt;strong>OTP&lt;/strong> One-Time Password，一般翻译为一次性密码、动态口令、动态验证码。&lt;/p>
-&lt;p>&lt;strong>HOTP&lt;/strong> HMAC-based One-Time Password，使用计数方式基于 HMAC 算法加密。算法协议为 &lt;a href="https://tools.ietf.org/html/rfc2104">RFC 2104&lt;/a>.&lt;/p>
-&lt;p>&lt;strong>TOTP&lt;/strong> Time-based One-Time Password，基于时间戳算法，是时间同步，基于客户端的动态口令和服务器的时间比对，一般每 N 秒产生一个新口令，要求客户端和服务器能够保持正确的时钟，客户端和服务端基于时间计算的动态口令才能一致。算法协议为 &lt;a href="https://tools.ietf.org/html/rfc6238">RFC 6238&lt;/a>.&lt;/p>
-&lt;p>开源实现&lt;/p>
-&lt;ul>
-&lt;li>&lt;a href="https://github.com/freeotp">FreeOTP&lt;/a>。&lt;/li>
-&lt;li>&lt;a href="https://github.com/google/google-authenticator">Google Authenticator&lt;/a>。&lt;/li>
-&lt;/ul></description></item><item><title>安装AD域服务并启用LDAPS</title><link>https://idaas.xlabs.club/docs/references/windows-ad/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/references/windows-ad/</guid><description>&lt;p>说明：此步骤仅仅是为了如何快速搭建起一个测试版 Windows AD 服务，不可用于生产。&lt;/p>
-&lt;h2 id="前置条件">前置条件&lt;/h2>
-&lt;p>安装 Windows AD 域控服务器，需要提前准备：&lt;/p>
-&lt;ol>
-&lt;li>Windows Server 2008 及更新版本操作系统，如 4 核 8G 内存，60G 硬盘的主机一台。&lt;/li>
-&lt;li>提前规划好域名，比如本示例为 iam.nxest.local.&lt;/li>
-&lt;/ol>
-&lt;p>Windows Server 不同版本略有差异，但是基本要做的就是下面几项：&lt;/p>
-&lt;ol>
-&lt;li>启用功能：角色和功能里添加 Windows AD 域服务。&lt;/li>
-&lt;li>配置：配置 AD 域名、管理员密码等基本信息。&lt;/li>
-&lt;/ol>
-&lt;h2 id="windows-server-2012-步骤如下">Windows Server 2012 步骤如下&lt;/h2>
-&lt;ol>
-&lt;li>
-&lt;p>点击开始菜单，找到“服务器管理器”，打开，显示如下界面。
-&lt;a href="./ad-001.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-001_hu2885924325126620244.webp"
- width="764"
- height="499"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-0"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>点击右上角 管理&amp;gt;“添加角色和功能”按钮，弹出如下界面。
-&lt;a href="./ad-002.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-002_hu2779803820000959365.webp"
- width="1466"
- height="729"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-1"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>选择“基于角色或基于功能的安装”，然后点“下一步”。
-&lt;a href="./ad-003.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-003_hu15787995524625310584.webp"
- width="1192"
- height="834"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-2"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>服务器选择这里选择默认的，假如你需要针对其它主机安装 AD 角色，这里可以选择你需要的主机，点击“下一步”。
-&lt;a href="./ad-004.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-004_hu16351046052913653848.webp"
- width="1194"
- height="838"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-3"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>这里勾选“Active Directory 域服务”。
-&lt;a href="./ad-005.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-005_hu12978229761743645565.webp"
- width="1185"
- height="835"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-4"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>当勾选这个选项时，会弹出对话框，点“添加功能”，在功能这个选项卡直接点下一步，一直下一步直到最后一步点击安装。
-&lt;a href="./ad-006.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-006_hu8847225282935321592.webp"
- width="1197"
- height="828"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-5"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>安装成功后我们点击“关闭”，但这还没有完全安装成功，还需要继续配置。点击服务器右上角的“功能按钮”, 弹出继续配置 AD 的对话框。
-&lt;a href="./ad-007.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-007_hu5783537646947793504.webp"
- width="1459"
- height="741"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-6"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>根据提示，添加新林，输入准备好的域名。
-&lt;a href="./ad-008.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-008_hu11771723065931555645.webp"
- width="1157"
- height="829"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-7"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>林功能级别选择最高的版本。
-&lt;a href="./ad-009.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-009_hu12197180797476366321.webp"
- width="1167"
- height="825"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-8"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>输入 NetBIOS 域名，都是简称，一般是你准备的域名的第一位。
-&lt;a href="./ad-010.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-010_hu16135420283361101531.webp"
- width="1143"
- height="826"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-9"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>下一步，默认即可。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>下一步，先决条件检查，可能花费 10 分钟左右，请耐心等待。
-&lt;a href="./ad-012.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-012_hu15276944811886404499.webp"
- width="1173"
- height="834"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-10"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>检查通过后才能点击安装。
-&lt;a href="./ad-013.png">
-
-&lt;img
- src="https://idaas.xlabs.club/docs/references/windows-ad/ad-013_hu8239216188876857895.webp"
- width="1164"
- height="826"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="AD"id="h-rh-i-11"
-/>&lt;/a>&lt;/p></description></item><item><title>密码策略</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</guid><description>&lt;p>密码策略，常见的如密码最小长度、必须包含特殊字符、密码不能与历史密码相同等。控制用户在修改密码时，新密码必须满足一定的条件，从而增强密码安全。&lt;/p>
-&lt;p>Keycloak 内置了丰富的密码策略，满足常用的需求，不过默认都是不启用的，需要管理员主动设置。&lt;/p>
-&lt;p>启用方式，单击 &lt;code>Authentication&lt;/code> 菜单，选择 &lt;code>Password Policy&lt;/code> 选项卡。 在右侧下拉列表框中选择要添加的策略。根据策略提示设置不同的参数，保存。&lt;/p>
-&lt;p>密码策略只对新创建用户，或者用户修改密码生效，对已有用户不生效。如果想更快生效，就强制用户必须修改密码，在用户的 &lt;code>Required User Actions&lt;/code> 里增加 &lt;code>Update Password&lt;/code> 。&lt;/p>
-&lt;h2 id="密码策略类型">密码策略类型&lt;/h2>
-&lt;ul>
-&lt;li>
-&lt;p>HashAlgorithm&lt;/p>
-&lt;p>哈希算法，密码加密算法，以此算法存储，可根据官方指导自己实现算法。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Hashing Iterations&lt;/p>
-&lt;p>哈希次数，指定密码在存储或验证之前被哈希的次数。
-多次哈希防止数据库泄露后，密码被暴力破解。哈希次数越多安全性越高，性能越差。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Minimum Length&lt;/p>
-&lt;p>密码最小长度。加大密码长度才是最有效的安全措施，什么大小写数字都是骗人的。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Digits&lt;/p>
-&lt;p>密码里必须包含 N 个数字。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Lowercase Characters&lt;/p>
-&lt;p>密码里必须包含 N 个小写字母。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Uppercase Characters&lt;/p>
-&lt;p>密码里必须包含 N 个大写字母。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Special Characters&lt;/p>
-&lt;p>密码里必须包含 N 个特殊字符，特殊字符如 &lt;code>?!#%$&lt;/code> 。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Not Username&lt;/p>
-&lt;p>不能是当前用户名。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Not Email&lt;/p>
-&lt;p>不能是当前用户的邮箱。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Regular Expression&lt;/p>
-&lt;p>正则表达式，用 &lt;code>java.util.regex.Pattern&lt;/code> 解析。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Expire Password&lt;/p>
-&lt;p>密码有效期，过期时间， N 天。超过这个时间后，用户必须修改密码。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Not Recently Used&lt;/p>
-&lt;p>密码历史，不能是最近使用过的 N 个密码。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Password Blacklist&lt;/p></description></item><item><title>Https Required</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
-&lt;p>以 Http 方式登录，页面错误提示如下。&lt;/p>
-&lt;p>&lt;code>We're sorry... HTTPS required.&lt;/code>&lt;/p>
-&lt;h2 id="问题原因">问题原因&lt;/h2>
-&lt;p>keycloak 各个 Realm 默认的登录设置里，&lt;code>Require SSL&lt;/code> 为 &lt;code>external requests&lt;/code>，对于外部请求，必须是 Https。
-非外部请求，也就是私有地址，可以是 http，如：&lt;code>localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x&lt;/code>。
-详细参考&lt;a href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl">官方文档说明&lt;/a>。&lt;/p>
-&lt;h2 id="解决方案">解决方案&lt;/h2>
-&lt;ol>
-&lt;li>
-&lt;p>配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>如果只是测试环境，可以修改 Realm 的设置，&lt;code>Require SSL&lt;/code> 改为 &lt;code>none&lt;/code>。&lt;/p>
-&lt;ul>
-&lt;li>
-&lt;p>修改数据方式&lt;/p>
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;1. 用户提交用户名和密码
+2. 服务端验证通过，签发 Token（JWT）
+3. 客户端存储 Token，后续请求在 Authorization 头中携带
+4. 服务端验证 Token 签名和有效期&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;特点：无状态，服务端不需要存储；水平扩展友好；吊销需要额外机制（黑名单、短有效期）。&lt;/p&gt;</description></item><item><title>第4章：身份生命周期管理</title><link>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</link><pubDate>Thu, 04 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</guid><description>&lt;h2 id="41-身份生命周期的阶段"&gt;4.1 身份生命周期的阶段&lt;/h2&gt;
+&lt;p&gt;每个数字身份都会经历从诞生到终结的完整旅程：&lt;/p&gt;
 
 
 
-&lt;div class="expressive-code">
- &lt;figure class="frame not-content">
- &lt;figcaption class="header">
- &lt;span class="title">&lt;/span>
- &lt;/figcaption>
- &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-sql" data-lang="sql">&lt;span class="line">&lt;span class="cl">&lt;span class="k">update&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">REALM&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">set&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">ssl_required&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;NONE&amp;#39;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="k">where&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">id&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;master&amp;#39;&lt;/span>&lt;span class="p">;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
- &lt;/figure>
-&lt;/div>
-&lt;/li>
-&lt;li>
-&lt;p>K8S 命令行调用 keycloak 官方 admin 工具 kcadm 修改&lt;/p>
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt; 创建 ──→ 管理 ──→ 变更 ──→ 注销
+ │ │ │ │
+ │ │ │ └── 永久删除或归档
+ │ │ └─────────── 角色变更、部门调动
+ │ └──────────────────── 权限调整、密码重置
+ └───────────────────────────── 入职、注册&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="阶段一身份创建provisioning"&gt;阶段一：身份创建（Provisioning）&lt;/h3&gt;
+&lt;p&gt;新身份的产生通常由以下事件触发：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;员工入职&lt;/strong&gt;：HR 系统中创建新员工记录 → 自动创建 IAM 账户&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;新用户注册&lt;/strong&gt;：用户自助注册（CIAM 场景）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;合作伙伴入驻&lt;/strong&gt;：外部组织成员获得访问权限&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;服务账户创建&lt;/strong&gt;：新应用或微服务需要机器身份&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;创建过程的关键要素：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;身份源（Identity Source）&lt;/strong&gt;：谁说了算？HR 系统、CRM、AD、手动？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;身份映射&lt;/strong&gt;：源系统的字段如何映射到目标系统的属性？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;初始权限&lt;/strong&gt;：新身份应该有什么权限？（最小权限原则）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;通知机制&lt;/strong&gt;：如何告知用户账号信息和首次登录方式？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id="阶段二身份认证与使用authentication--usage"&gt;阶段二：身份认证与使用（Authentication &amp;amp; Usage）&lt;/h3&gt;
+&lt;p&gt;这是用户日常与 IAM 系统交互的阶段。用户使用凭证进行认证，IAM 系统根据策略授予相应的访问权限。具体的认证和授权机制在前两章已有详细讨论。&lt;/p&gt;
+&lt;h3 id="阶段三身份变更identity-modification"&gt;阶段三：身份变更（Identity Modification）&lt;/h3&gt;
+&lt;p&gt;身份在存续期间会经历各种变更：&lt;/p&gt;
+&lt;h4 id="属性变更"&gt;属性变更&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;姓名变更（结婚、法律改名）&lt;/li&gt;
+&lt;li&gt;邮箱变更&lt;/li&gt;
+&lt;li&gt;手机号变更&lt;/li&gt;
+&lt;li&gt;职位、部门、上级变更&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="权限变更"&gt;权限变更&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;调岗导致的权限变更&lt;/li&gt;
+&lt;li&gt;晋升导致的权限增加&lt;/li&gt;
+&lt;li&gt;项目参与导致的临时权限&lt;/li&gt;
+&lt;li&gt;离职前的权限逐步回收&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id="凭证变更"&gt;凭证变更&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;密码重置&lt;/li&gt;
+&lt;li&gt;MFA 设备更换&lt;/li&gt;
+&lt;li&gt;证书更新&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;变更管理的核心原则&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>第5章：OAuth 2.0 深度解读</title><link>https://idaas.xlabs.club/docs/protocols/oauth2-deep-dive/</link><pubDate>Thu, 01 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2-deep-dive/</guid><description>&lt;h2 id="51-设计哲学"&gt;5.1 设计哲学&lt;/h2&gt;
+&lt;p&gt;OAuth 2.0（RFC 6749）是由 IETF 制定的授权框架，它的核心使命简单而明确：&lt;strong&gt;让用户可以在不向第三方应用暴露自己密码的情况下，授权该应用访问自己在服务提供商处的受保护资源。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id="oauth-20-解决的真实问题"&gt;OAuth 2.0 解决的真实问题&lt;/h3&gt;
+&lt;p&gt;想象一个场景：你想让一个照片冲印应用访问你存在云盘上的照片。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;没有 OAuth 的糟糕做法&lt;/strong&gt;：你给冲印应用你的云盘用户名和密码。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;冲印应用可以冒充你做任何事（不是只读照片，还能删除文件、修改设置）&lt;/li&gt;
+&lt;li&gt;你无法限制冲印应用的权限范围&lt;/li&gt;
+&lt;li&gt;你改密码后，冲印应用就失效了，但你得在所有第三方应用上重设&lt;/li&gt;
+&lt;li&gt;冲印应用的服务器被黑，你的密码就泄露了&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;OAuth 2.0 的做法&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;冲印应用重定向你到云盘的授权页面&lt;/li&gt;
+&lt;li&gt;你（在云盘的页面上）登录并确认&amp;quot;允许冲印应用读取照片&amp;quot;&lt;/li&gt;
+&lt;li&gt;云盘给冲印应用发一个访问令牌（Access Token），只能读照片，有效期 1 小时&lt;/li&gt;
+&lt;li&gt;冲印应用用这个令牌访问你的照片&lt;/li&gt;
+&lt;li&gt;你随时可以在云盘上撤销这个授权&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="52-核心角色"&gt;5.2 核心角色&lt;/h2&gt;
+&lt;p&gt;OAuth 2.0 定义了四个核心角色：&lt;/p&gt;
 
 
 
-&lt;div class="expressive-code">
- &lt;figure class="frame is-terminal not-content">
- &lt;figcaption class="header">
- &lt;span class="title">&lt;/span>
- &lt;/figcaption>
- &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># login with a admin user&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl &lt;span class="nb">exec&lt;/span> -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password admin-password
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># update your realm config&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl &lt;span class="nb">exec&lt;/span> -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s &lt;span class="nv">sslRequired&lt;/span>&lt;span class="o">=&lt;/span>none&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
- &lt;/figure>
-&lt;/div>
-&lt;/li>
-&lt;/ul>
-&lt;/li>
-&lt;/ol></description></item><item><title>Liquibase MGR</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述">问题描述&lt;/h2>
-&lt;p>Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。&lt;/p>
-&lt;p>查看 keycloak 启动日志，错误信息大致如下。&lt;/p>
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;资源所有者（Resource Owner）
+ │ 通常是终端用户
+ │ 拥有受保护资源的数据
+ ▼
+客户端（Client）
+ │ 第三方应用，想访问资源
+ │ 
+ ▼
+授权服务器（Authorization Server）
+ │ 认证资源所有者，发放令牌
+ │ 
+ ▼
+资源服务器（Resource Server）
+ 托管受保护资源的服务&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h2 id="53-授权模式grant-types"&gt;5.3 授权模式（Grant Types）&lt;/h2&gt;
+&lt;p&gt;OAuth 2.0 定义了四种核心授权模式，加上 PKCE 扩展和 Device Flow：&lt;/p&gt;
+&lt;h3 id="531-授权码模式authorization-code"&gt;5.3.1 授权码模式（Authorization Code）&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;这是最安全、最广泛使用的模式&lt;/strong&gt;。核心特征是用户浏览器不直接接触 Access Token。&lt;/p&gt;</description></item><item><title>第6章：OpenID Connect</title><link>https://idaas.xlabs.club/docs/protocols/openid-connect/</link><pubDate>Fri, 02 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/openid-connect/</guid><description>&lt;h2 id="61-oauth-20-缺了什么"&gt;6.1 OAuth 2.0 缺了什么？&lt;/h2&gt;
+&lt;p&gt;OAuth 2.0 解决的是&lt;strong&gt;授权&lt;/strong&gt;问题——我允许这个应用访问我的资源。但它没有解决&lt;strong&gt;认证&lt;/strong&gt;问题——这个用户是谁？&lt;/p&gt;
+&lt;p&gt;很多开发者早期犯的错误是用 OAuth 2.0 来做认证：&lt;/p&gt;
 
 
 
-&lt;div class="expressive-code">
- &lt;figure class="frame not-content">
- &lt;figcaption class="header">
- &lt;span class="title">&lt;/span>
- &lt;/figcaption>
- &lt;pre tabindex="0">&lt;code class="language-log" data-lang="log">INFO [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (ServerService Thread Pool -- 66) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
-ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (ServerService Thread Pool -- 66) Change Set META-INF/jpa-changelog-1.0.0.Final.xml::
-1.0.0.Final-KEYCLOAK-5461::sthorger@redhat.com failed. Error: Table &amp;#39;APPLICATION_DEFAULT_ROLES&amp;#39; already exists [Failed SQL: CREATE TABLE keycloak.APPLICATION_DEFAULT_ROLES (APPLICATION_ID VARCHAR(36) NOT NULL, ROLE_ID VARCHAR(36) NOT NULL)]
-FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.RuntimeException: Failed to update database
-INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal&lt;/code>&lt;/pre>
- &lt;/figure>
-&lt;/div>
-&lt;p>查看 MySQL 日志，看到如下错误。&lt;/p></description></item><item><title>暴力检测</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</link><pubDate>Fri, 04 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</guid><description>&lt;p>Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N 次锁定。&lt;/p>
-&lt;h2 id="启用暴力检测">启用暴力检测&lt;/h2>
-&lt;p>控制台选择 Realm，设置：Realm Settings -&amp;gt; Security Defenses -&amp;gt; Brute Force Detection。&lt;/p>
-&lt;p>&lt;a href="./brute-force.png">
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;&amp;#34;用户通过 OAuth 登录了，所以我知道他是谁&amp;#34;&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;但这不安全，因为：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;OAuth 2.0 没有定义用户身份的标准化传递方式&lt;/li&gt;
+&lt;li&gt;Access Token 不包含用户身份信息（或者每个实现各不相同）&lt;/li&gt;
+&lt;li&gt;没有标准化的发现机制&lt;/li&gt;
+&lt;li&gt;没有会话管理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;OpenID Connect（OIDC）&lt;/strong&gt; 就是 OAuth 2.0 之上的一个薄层，专门解决认证问题。&lt;/p&gt;
+&lt;h2 id="62-oidc-的核心概念"&gt;6.2 OIDC 的核心概念&lt;/h2&gt;
+&lt;p&gt;OIDC = OAuth 2.0 + 身份认证 + JWT&lt;/p&gt;
+&lt;p&gt;OIDC 在 OAuth 2.0 基础上增加了：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ID Token&lt;/strong&gt;（JWT 格式）：携带用户身份信息的安全令牌&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;UserInfo 端点&lt;/strong&gt;：获取用户额外属性的标准接口&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;发现文档&lt;/strong&gt;：自动发现服务器配置的标准机制&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;会话管理&lt;/strong&gt;：登录、登出、会话状态&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="id-token-vs-access-token"&gt;ID Token vs Access Token&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;特性&lt;/th&gt;
+					&lt;th&gt;ID Token&lt;/th&gt;
+					&lt;th&gt;Access Token&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;用途&lt;/td&gt;
+					&lt;td&gt;认证（这是谁）&lt;/td&gt;
+					&lt;td&gt;授权（能做什么）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;受众&lt;/td&gt;
+					&lt;td&gt;客户端应用&lt;/td&gt;
+					&lt;td&gt;资源服务器&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;格式&lt;/td&gt;
+					&lt;td&gt;JWT&lt;/td&gt;
+					&lt;td&gt;JWT 或不透明字符串&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;包含用户信息&lt;/td&gt;
+					&lt;td&gt;是&lt;/td&gt;
+					&lt;td&gt;不一定&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;应该发送给资源服务器？&lt;/td&gt;
+					&lt;td&gt;不&lt;/td&gt;
+					&lt;td&gt;是&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="63-id-token-深度解析"&gt;6.3 ID Token 深度解析&lt;/h2&gt;
+&lt;h3 id="jwt-结构"&gt;JWT 结构&lt;/h3&gt;
+&lt;p&gt;JWT（JSON Web Token，RFC 7519）由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>第7章：SAML 2.0</title><link>https://idaas.xlabs.club/docs/protocols/saml2/</link><pubDate>Sat, 03 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2/</guid><description>&lt;h2 id="71-历史与现状"&gt;7.1 历史与现状&lt;/h2&gt;
+&lt;p&gt;SAML（Security Assertion Markup Language）是由 OASIS 标准组织制定的基于 XML 的身份联邦协议。SAML 2.0 于 2005 年发布，是 Web 浏览器 SSO 的行业先驱。&lt;/p&gt;
+&lt;p&gt;尽管 OIDC 在新应用中的采用率已远超 SAML，但 SAML 2.0 在企业级应用中依然占有重要地位。特别是在以下场景：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;金融、政府、教育等传统行业&lt;/li&gt;
+&lt;li&gt;大型企业的遗留应用&lt;/li&gt;
+&lt;li&gt;需要与 Microsoft AD FS 集成的场景&lt;/li&gt;
+&lt;li&gt;教育和研究联邦（如 eduGAIN、InCommon，基于 Shibboleth）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="saml-vs-oidc-的历史视角"&gt;SAML vs OIDC 的历史视角&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;&lt;/th&gt;
+					&lt;th&gt;SAML 2.0&lt;/th&gt;
+					&lt;th&gt;OIDC&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;发布时间&lt;/td&gt;
+					&lt;td&gt;2005&lt;/td&gt;
+					&lt;td&gt;2014&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;数据格式&lt;/td&gt;
+					&lt;td&gt;XML&lt;/td&gt;
+					&lt;td&gt;JSON&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;签名方式&lt;/td&gt;
+					&lt;td&gt;XML DSig&lt;/td&gt;
+					&lt;td&gt;JWS&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;加密方式&lt;/td&gt;
+					&lt;td&gt;XML Enc&lt;/td&gt;
+					&lt;td&gt;JWE&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;绑定协议&lt;/td&gt;
+					&lt;td&gt;重定向、POST、Artifact 等&lt;/td&gt;
+					&lt;td&gt;HTTP（Redirect/POST，含 form_post/jwt response mode）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;移动端支持&lt;/td&gt;
+					&lt;td&gt;差&lt;/td&gt;
+					&lt;td&gt;好&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;SPA 支持&lt;/td&gt;
+					&lt;td&gt;差&lt;/td&gt;
+					&lt;td&gt;好&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;复杂度&lt;/td&gt;
+					&lt;td&gt;高&lt;/td&gt;
+					&lt;td&gt;低&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;行业采用&lt;/td&gt;
+					&lt;td&gt;传统企业&lt;/td&gt;
+					&lt;td&gt;现代应用&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>第8章：LDAP 与目录服务</title><link>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</link><pubDate>Sun, 04 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</guid><description>&lt;h2 id="81-目录服务概述"&gt;8.1 目录服务概述&lt;/h2&gt;
+&lt;p&gt;目录服务是一种专门为读操作优化的分布式数据库，用于存储组织化的、层次化的信息。在 IDaaS 中，目录服务是最重要的身份数据存储方式之一。&lt;/p&gt;
+&lt;h3 id="为什么不是关系数据库"&gt;为什么不是关系数据库？&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;特性&lt;/th&gt;
+					&lt;th&gt;目录服务&lt;/th&gt;
+					&lt;th&gt;关系数据库&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;读/写比例&lt;/td&gt;
+					&lt;td&gt;100:1 或更高&lt;/td&gt;
+					&lt;td&gt;变化多样&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;数据模型&lt;/td&gt;
+					&lt;td&gt;层次化（树状）&lt;/td&gt;
+					&lt;td&gt;关系化（表）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;查询语言&lt;/td&gt;
+					&lt;td&gt;LDAP Filter&lt;/td&gt;
+					&lt;td&gt;SQL&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;性能优化&lt;/td&gt;
+					&lt;td&gt;索引和缓存优先&lt;/td&gt;
+					&lt;td&gt;事务和一致性&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;数据结构&lt;/td&gt;
+					&lt;td&gt;灵活 Schema&lt;/td&gt;
+					&lt;td&gt;固定 Schema&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;典型用途&lt;/td&gt;
+					&lt;td&gt;身份查找、认证&lt;/td&gt;
+					&lt;td&gt;业务数据处理&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;扩展方式&lt;/td&gt;
+					&lt;td&gt;只读副本&lt;/td&gt;
+					&lt;td&gt;读写分离&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;目录服务是为&amp;quot;查找&amp;quot;而生的：员工查找、组查找、认证等操作要求极低的延迟和极高的读并发，这正是目录服务的设计目标。&lt;/p&gt;
+&lt;h2 id="82-ldap-协议基础"&gt;8.2 LDAP 协议基础&lt;/h2&gt;
+&lt;h3 id="ldap-数据模型"&gt;LDAP 数据模型&lt;/h3&gt;
+&lt;p&gt;LDAP 数据以&lt;strong&gt;树状结构&lt;/strong&gt;（Directory Information Tree, DIT）组织：&lt;/p&gt;
 
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/brute-force_hu7739500571624549538.webp"
- width="1108"
- height="667"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Brute Force Detection"id="h-rh-i-0"
-/>&lt;/a>&lt;/p>
-&lt;ul>
-&lt;li>
-&lt;p>Permanent Lockout&lt;/p>
-&lt;p>ON 表示永久锁定。&lt;br>
-OFF 表示临时锁定。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Max Login Failures&lt;/p>
-&lt;p>登录失败达到多少次时，锁定账号。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Quick Login Check Milli Seconds&lt;/p>
-&lt;p>快速登录检测，两次登录请求之间的时间间隔（单位毫秒）小于该值时，则认定为快速登录。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Minimum Quick Login Wait&lt;/p>
-&lt;p>一旦被认定为快速登录，该账号将被临时锁定为该配置项配置的时长。&lt;/p>
-&lt;/li>
-&lt;/ul>
-&lt;h2 id="解除锁定">解除锁定&lt;/h2>
-&lt;ol>
-&lt;li>
-&lt;p>临时锁定用户，达到锁定时长后，会自动解锁。&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>管理员在用户列表或用户详情里可以手动解锁。&lt;/p>
-&lt;p>&lt;a href="./unlock-user.png">
 
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/unlock-user_hu16307795136657189630.webp"
- width="1144"
- height="787"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="解除锁定"id="h-rh-i-1"
-/>&lt;/a>&lt;/p>
-&lt;/li>
-&lt;/ol>
-&lt;h2 id="注意事项">注意事项&lt;/h2>
-&lt;ol>
-&lt;li>失败次数统计仅与登录账号相关，与会话无关，关闭重启浏览器，次数不会重置。&lt;/li>
-&lt;li>用户锁定后，给出的错误提示还是默认的用户名密码错误，就是不想让攻击者知道用户暂时被禁用了。&lt;/li>
-&lt;/ol></description></item><item><title>用户增删改查</title><link>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</guid><description>&lt;p>Keycloak Admin REST API，curl 模拟用户增加修改删除的完整例子。&lt;/p>
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt; dc=example,dc=com
+ │
+ ┌─────────┼─────────┐
+ │ │ │
+ou=users ou=groups ou=services
+ │ │
+cn=张三 cn=engineers&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;每个节点称为一个 &lt;strong&gt;Entry&lt;/strong&gt;（条目），具有：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;DN（Distinguished Name）&lt;/strong&gt;：唯一标识符，如 &lt;code&gt;cn=张三,ou=users,dc=example,dc=com&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ObjectClass&lt;/strong&gt;：定义条目类型（如 &lt;code&gt;person&lt;/code&gt;, &lt;code&gt;organizationalPerson&lt;/code&gt;, &lt;code&gt;inetOrgPerson&lt;/code&gt;）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Attributes&lt;/strong&gt;：属性（如 &lt;code&gt;mail&lt;/code&gt;, &lt;code&gt;uid&lt;/code&gt;, &lt;code&gt;userPassword&lt;/code&gt;）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id="常见-objectclass"&gt;常见 ObjectClass&lt;/h3&gt;
 
 
 
-&lt;div class="expressive-code">
- &lt;figure class="frame is-terminal not-content">
- &lt;figcaption class="header">
- &lt;span class="title">&lt;/span>
- &lt;/figcaption>
- &lt;div class="highlight">&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">&lt;span class="cp">#!/bin/bash
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="cp">&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">HOST_IP&lt;/span>&lt;span class="o">=&lt;/span>127.0.0.1
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="o">=&lt;/span>keycloak.example
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">DEFAULT_REALM&lt;/span>&lt;span class="o">=&lt;/span>master
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ADMIN_API_URL&lt;/span>&lt;span class="o">=&lt;/span>http://&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_IP&lt;/span>&lt;span class="si">}&lt;/span>/auth/admin/realms/&lt;span class="si">${&lt;/span>&lt;span class="nv">DEFAULT_REALM&lt;/span>&lt;span class="si">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">ADMIN_API_URL&lt;/span>&lt;span class="si">}&lt;/span>/users
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># admin user&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ADMIN_NAME&lt;/span>&lt;span class="o">=&lt;/span>xxx
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">ADMIN_PWD&lt;/span>&lt;span class="o">=&lt;/span>xxx
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">parse_json&lt;span class="o">()&lt;/span> &lt;span class="o">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">1&lt;/span>&lt;span class="p">//&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="p">/&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="p">|&lt;/span> sed &lt;span class="s2">&amp;#34;s/.*&lt;/span>&lt;span class="nv">$2&lt;/span>&lt;span class="s2">:\([^,}]*\).*/\1/&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;====Begin test user CRUD====&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">token_url&lt;/span>&lt;span class="o">=&lt;/span>http://&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_IP&lt;/span>&lt;span class="si">}&lt;/span>/auth/realms/&lt;span class="si">${&lt;/span>&lt;span class="nv">DEFAULT_REALM&lt;/span>&lt;span class="si">}&lt;/span>/protocol/openid-connect/token
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Get token, a json&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">token_json&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>curl -X POST &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;Content-Type: application/x-www-form-urlencoded&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">token_url&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s1">&amp;#39;grant_type=password&amp;#39;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s1">&amp;#39;client_id=admin-cli&amp;#39;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s2">&amp;#34;username=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">ADMIN_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s2">&amp;#34;password=&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">ADMIN_PWD&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># get the `access_token` from the json&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">token&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>parse_json &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="nv">$token_json&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="s2">&amp;#34;access_token&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># List users&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">curl -X GET -H &lt;span class="s2">&amp;#34;Authorization: Bearer &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">token&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="si">}&lt;/span> -v
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Add new user&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">username&lt;/span>&lt;span class="o">=&lt;/span>usertest&lt;span class="k">$(&lt;/span>date &lt;span class="s2">&amp;#34;+%Y%m%d%H%M%S%s&amp;#34;&lt;/span>&lt;span class="k">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user&lt;/span>&lt;span class="o">={&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>enabled&lt;span class="se">\&amp;#34;&lt;/span>:true,&lt;span class="se">\&amp;#34;&lt;/span>attributes&lt;span class="se">\&amp;#34;&lt;/span>:&lt;span class="o">{}&lt;/span>,&lt;span class="se">\&amp;#34;&lt;/span>username&lt;span class="se">\&amp;#34;&lt;/span>:&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">username&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>,&lt;span class="se">\&amp;#34;&lt;/span>emailVerified&lt;span class="se">\&amp;#34;&lt;/span>:&lt;span class="se">\&amp;#34;\&amp;#34;&lt;/span>&lt;span class="o">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;Begin create new user &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">username&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">.&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user_create_rsp&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>curl -i -s -H &lt;span class="s2">&amp;#34;Authorization: Bearer &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">token&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> --data &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="si">}&lt;/span> --stderr -&lt;span class="k">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Get user id full url from response header `Location`&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># &amp;lt; Location: http://xxxx/users/9e901054-bbc7-47db-8a68-4a13474a1080&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># The `tr -d` is to fix `Error curl: (3) URL using bad/illegal format or missing URL`&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user_id_url&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_create_rsp&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="p">|&lt;/span> grep -Fi Location &lt;span class="p">|&lt;/span> tr -d &lt;span class="s1">&amp;#39;\r&amp;#39;&lt;/span> &lt;span class="p">|&lt;/span> awk &lt;span class="s1">&amp;#39;{print $2}&amp;#39;&lt;/span>&lt;span class="k">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Get only the id from the url&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">user_id&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="k">$(&lt;/span>&lt;span class="nb">echo&lt;/span> &lt;span class="si">${&lt;/span>&lt;span class="nv">user_id_url&lt;/span>&lt;span class="si">}&lt;/span> &lt;span class="p">|&lt;/span> awk -F&lt;span class="s1">&amp;#39;/&amp;#39;&lt;/span> &lt;span class="s1">&amp;#39;{print $NF}&amp;#39;&lt;/span>&lt;span class="k">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;User id is &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_id&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2"> .&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># Delete user by id&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">curl -X DELETE -H &lt;span class="s2">&amp;#34;Authorization: Bearer &lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">token&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;host:&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">HOST_NAME&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> -H &lt;span class="s2">&amp;#34;Content-Type: application/json&amp;#34;&lt;/span> &lt;span class="se">\
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="se">&lt;/span> &lt;span class="s2">&amp;#34;&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">USER_API_URL&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">/&lt;/span>&lt;span class="si">${&lt;/span>&lt;span class="nv">user_id&lt;/span>&lt;span class="si">}&lt;/span>&lt;span class="s2">&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> &lt;span class="s2">&amp;#34;====End test user CRUD====&amp;#34;&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>
- &lt;/figure>
-&lt;/div></description></item></channel></rss>
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;top
+├── person
+│ ├── organizationalPerson
+│ │ └── inetOrgPerson（最常用，包含 mail, uid 等现代属性）
+│ └── residentialPerson
+├── groupOfNames（静态组）
+├── groupOfUniqueNames（静态组，uniqueMember 替代 member）
+└── organizationalUnit&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="ldap-操作"&gt;LDAP 操作&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;操作&lt;/th&gt;
+					&lt;th&gt;描述&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Bind&lt;/td&gt;
+					&lt;td&gt;认证连接到 LDAP 服务器&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Search&lt;/td&gt;
+					&lt;td&gt;查询目录（最常用操作）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Compare&lt;/td&gt;
+					&lt;td&gt;比较某个属性值&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Add&lt;/td&gt;
+					&lt;td&gt;添加新条目&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Delete&lt;/td&gt;
+					&lt;td&gt;删除条目&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Modify&lt;/td&gt;
+					&lt;td&gt;修改条目属性&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;ModifyDN&lt;/td&gt;
+					&lt;td&gt;重命名或移动条目&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Unbind&lt;/td&gt;
+					&lt;td&gt;断开连接&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="ldap-search"&gt;LDAP Search&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;ldapsearch -H ldaps://ldap.example.com \
+ -D &amp;#34;cn=admin,dc=example,dc=com&amp;#34; \
+ -w password \
+ -b &amp;#34;ou=users,dc=example,dc=com&amp;#34; \
+ &amp;#34;(&amp;amp;(objectClass=inetOrgPerson)(department=engineering))&amp;#34; \
+ cn mail uid
+
+参数说明：
+ -H: LDAP 服务器 URI
+ -D: Bind DN（管理员 DN）
+ -w: 密码
+ -b: 搜索 Base
+ &amp;#34;(&amp;amp;(...)(...))&amp;#34;: LDAP Filter
+ cn mail uid: 要返回的属性&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="ldap-filter-语法"&gt;LDAP Filter 语法&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;运算符：
+&amp;amp; — AND
+| — OR
+! — NOT
+= — 相等
+&amp;gt;= — 大于等于
+&amp;lt;= — 小于等于
+~= — 约等于
+* — 通配符
+
+示例：
+&amp;#34;(objectClass=person)&amp;#34; — 所有人员条目
+&amp;#34;(&amp;amp;(objectClass=person)(department=IT))&amp;#34; — IT 部门的人员
+&amp;#34;(|(department=IT)(department=HR))&amp;#34; — IT 或 HR 人员
+&amp;#34;(!(department=IT))&amp;#34; — 非 IT 人员
+&amp;#34;(cn=张*)&amp;#34; — 姓张的（CN 以&amp;#34;张&amp;#34;开头）
+&amp;#34;(mail=*@example.com)&amp;#34; — example.com 邮箱用户&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h2 id="83-active-directory"&gt;8.3 Active Directory&lt;/h2&gt;
+&lt;p&gt;Microsoft Active Directory 是最广泛部署的目录服务。了解 AD 对于 IDaaS 实践至关重要，因为大多数企业仍在使用 AD 管理员工身份。&lt;/p&gt;</description></item></channel></rss>
