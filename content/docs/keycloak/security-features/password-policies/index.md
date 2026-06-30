@@ -1,7 +1,14 @@
 ---
 title: "密码策略"
+description: "Keycloak 密码策略（Password Policy）配置：最小长度、大小写、特殊字符、不与用户名/历史密码相同、定期过期等，提升口令安全"
 date: 2020-12-14T23:54:37+08:00
 draft: false
+weight: 1
+menu:
+  docs:
+    parent: "keycloak-security-features"
+    identifier: "keycloak-password-policies"
+toc: true
 ---
 
 密码策略，常见的如密码最小长度、必须包含特殊字符、密码不能与历史密码相同等。控制用户在修改密码时，新密码必须满足一定的条件，从而增强密码安全。

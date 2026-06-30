@@ -1,7 +1,14 @@
 ---
-title: "Https Required"
+title: "HTTPS Required / 反向代理问题"
+description: "Keycloak 报 HTTPS required 或 Invalid redirect_uri 的排查：反向代理 X-Forwarded-* 头与 proxy-address-forwarding 配置"
 date: 2020-12-10T23:59:00+08:00
 draft: false
+weight: 1
+menu:
+  docs:
+    parent: "keycloak-troubleshooting"
+    identifier: "keycloak-ts-https"
+toc: true
 ---
 
 ## 问题描述

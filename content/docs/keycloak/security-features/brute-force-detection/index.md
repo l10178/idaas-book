@@ -1,7 +1,14 @@
 ---
-title: "暴力检测"
+title: "暴力破解检测"
+description: "Keycloak Brute Force Detection 暴力破解检测：登录连续失败 N 次自动锁定账户、指数退避、清理会话及管理员手动解锁"
 date: 2020-12-04T23:54:37+08:00
 draft: false
+weight: 2
+menu:
+  docs:
+    parent: "keycloak-security-features"
+    identifier: "keycloak-brute-force"
+toc: true
 ---
 
 Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N 次锁定。

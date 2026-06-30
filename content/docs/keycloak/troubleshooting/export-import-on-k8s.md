@@ -1,7 +1,14 @@
 ---
-title: "Kubernetes中导入导出"
+title: "Kubernetes 中导入导出迁移"
+description: "Keycloak 在 Kubernetes 环境下 Realm 导入导出与迁移：Helm/Operator 配置、volume 挂载与命令行导入的踩坑与方案"
 date: 2021-01-10T23:59:00+08:00
 draft: false
+weight: 3
+menu:
+  docs:
+    parent: "keycloak-troubleshooting"
+    identifier: "keycloak-ts-export"
+toc: true
 ---
 
 ## 问题描述

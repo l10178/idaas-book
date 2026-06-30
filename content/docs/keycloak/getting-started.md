@@ -1,9 +1,14 @@
 ---
 title: "Keycloak 简介"
-description: "Keycloak IdaaS IAM SSO 简介"
+description: "Keycloak 开源 IAM/IDaaS 简介：SSO、社交登录、用户联合、Client Adapters、授权服务、密码策略与 MFA 等核心功能总览与选型参考"
 date: 2020-09-26T18:54:37+08:00
 draft: false
-weight: -1
+weight: 1
+menu:
+  docs:
+    parent: "keycloak-22e9ba8aefa7ef9891199cf8db3a08cd"
+    identifier: "keycloak-getting-started"
+toc: true
 ---
 
 [keycloak][] 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。
