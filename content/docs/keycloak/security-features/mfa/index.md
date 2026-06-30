@@ -1,7 +1,14 @@
 ---
-title: "MFA-OTP"
+title: "MFA / OTP 多因子认证"
+description: "Keycloak 多因子认证（MFA/OTP）配置：基于 TOTP 的动态口令、FreeOTP/Google Authenticator 扫码注册、登录验证与设备管理"
 date: 2020-12-14T23:54:37+08:00
 draft: false
+weight: 3
+menu:
+  docs:
+    parent: "keycloak-security-features"
+    identifier: "keycloak-mfa"
+toc: true
 ---
 
 **MFA** 即 Multi-Factor Authentication，多重身份认证，多因子认证，多因素认证。当然也包含等保要求中常说的双因子认证 2FA。

@@ -1,8 +1,14 @@
 ---
-title: "用户增删改查"
-description: "Keycloak Admin REST API：用户增加修改删除"
+title: "用户增删改查端到端"
+description: "Keycloak Admin REST API 实战：用 curl 完成获取 token、列出用户、创建用户、解析 Location 头、删除用户的完整端到端流程"
 date: 2021-04-17T12:50:38+08:00
 draft: false
+weight: 1
+menu:
+  docs:
+    parent: "keycloak-admin-api"
+    identifier: "keycloak-user-end2end"
+toc: true
 ---
 
 Keycloak Admin REST API，curl 模拟用户增加修改删除的完整例子。

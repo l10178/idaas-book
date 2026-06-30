@@ -1,7 +1,14 @@
 ---
-title: "Liquibase MGR"
+title: "Liquibase 与 MySQL 组复制冲突"
+description: "Keycloak 在 MySQL Group Replication 下 Liquibase 数据库迁移失败的排查与解决方案：锁表与迁移串行化"
 date: 2020-12-08T23:50:37+08:00
 draft: false
+weight: 2
+menu:
+  docs:
+    parent: "keycloak-troubleshooting"
+    identifier: "keycloak-ts-liquibase"
+toc: true
 ---
 
 ## 问题描述
