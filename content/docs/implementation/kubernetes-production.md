@@ -1,6 +1,6 @@
 ---
 title: "第19章：Kubernetes 生产环境部署"
-description: "Keycloak 在 Kubernetes 上的生产级部署：Operator、Helm、高可用、备份与监控"
+description: "Keycloak 在 Kubernetes 上的生产级部署：Operator、Helm、高可用、备份恢复、监控指标与反向代理配置"
 date: 2024-04-06T00:00:00+08:00
 draft: false
 weight: 46
@@ -21,19 +21,39 @@ toc: true
 | Keycloak Operator | 生产环境 | 云原生、自动管理 | 学习曲线 |
 | 手动 YAML | 特殊需求 | 完全控制 | 运维负担大 |
 
-**推荐**：生产环境使用 Keycloak Operator（原生支持 Quarkus 发行版，建议跟随当前稳定版）。
+**推荐**：生产环境优先使用 Keycloak Operator（原生支持 Quarkus 发行版，建议跟随当前稳定版）。如果组织已经有成熟 Helm 交付体系，可以使用 Helm，但要把数据库、反向代理、健康检查、监控和升级回滚纳入同一套发布流程。
+
+### 生产部署快速决策表
+
+| 问题 | 推荐做法 | 风险提示 |
+|-----|---------|---------|
+| Operator 还是 Helm？ | 长期运行、需要自动化滚动升级和 CRD 管理时优先 Operator；短期 PoC 或已有 Helm 平台可选 Helm | 不要同时用 Operator 和 Helm 管理同一个 Keycloak 实例，控制面会打架 |
+| 数据库放哪里？ | 使用外部 PostgreSQL 或云数据库，独立备份与监控 | Operator 不负责创建和维护生产数据库；把数据库塞进同一个无状态发布包，迟早会在恢复演练里交学费 |
+| TLS 在哪里终结？ | 通常在 Ingress/LB 终结 TLS，Keycloak 仅解析可信代理头 | `proxy.headers: xforwarded` 只应信任受控代理；不要把 management 端口暴露到公网 |
+| 版本如何选择？ | Keycloak 镜像、Operator 资源和 CRD 使用同一稳定版本，并先在预发环境演练升级 | 跳版本升级前先读 release notes 和迁移指南，准备数据库备份与回滚窗口 |
 
 ## 19.2 使用 Keycloak Operator
 
-> 版本提示：下文示例中的 Keycloak 与 Operator 版本号（如 `24.0`）仅为写法示意。Keycloak 迭代很快，部署时请到 [keycloak.org](https://www.keycloak.org/downloads) 与 [keycloak-k8s-resources](https://github.com/keycloak/keycloak-k8s-resources) 取**当前最新稳定版**的镜像 tag 与 Operator 资源 URL，并保持 Operator 版本与 Keycloak 镜像一致。
+> 版本提示：Keycloak 官方下载页与 GitHub Release 显示当前稳定版为 `26.6.4`（2026-07-01 检查）；官方 Operator 安装文档同样提供 `26.6.4` 的 `keycloak-k8s-resources` 示例。Keycloak 迭代很快，部署时请到 [keycloak.org/downloads](https://www.keycloak.org/downloads)、[Keycloak Releases](https://github.com/keycloak/keycloak/releases) 与 [Operator 安装文档](https://www.keycloak.org/operator/installation) 复核**当前最新稳定版**，并保持 Operator 版本与 Keycloak 镜像一致。
 
 ### 安装 Operator
 
 ```bash
-# 安装 Operator（请使用与下文 Keycloak 镜像版本匹配的 Operator tag，如当前最新稳定版的 x.y.z）
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/<VERSION>/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/<VERSION>/kubernetes/keycloak-operator.yml
-# 或通过 OperatorHub / OLM 安装，确保 Operator 版本与 Keycloak 镜像版本一致
+# 安装 Operator（示例使用 26.6.4；生产环境请先确认该版本仍是当前稳定版）
+VERSION=26.6.4
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
+kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+kubectl create namespace keycloak
+kubectl -n keycloak apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloak-operator.yml
+# 官方推荐在 Kubernetes 环境优先通过 Operator Lifecycle Manager（OLM）安装；裸 Kubernetes 也可按上面的 kubectl 方式安装。
+```
+
+安装后至少确认 CRD、Operator Pod 和版本：
+
+```bash
+kubectl get crd | grep k8s.keycloak.org
+kubectl -n keycloak rollout status deploy/keycloak-operator
+kubectl -n keycloak logs deploy/keycloak-operator --tail=50
 ```
 
 ### 部署 Keycloak
@@ -48,7 +68,7 @@ metadata:
     app: keycloak
 spec:
   instances: 3
-  image: quay.io/keycloak/keycloak:<VERSION>   # 替换为当前最新稳定版 tag
+  image: quay.io/keycloak/keycloak:26.6.4   # 示例版本；上线前复核当前稳定版
   hostname:
     hostname: auth.example.com
   http:
@@ -86,7 +106,7 @@ spec:
       value: "true"   # 启用 /health/* 端点（见 19.5 健康检查）
 ```
 
-> 拓扑说明：上面采用「Ingress/LB 终结 TLS → 明文转发到 Keycloak」的常见部署，故 `httpEnabled: true` + `proxy.headers: xforwarded`；若改为「Keycloak 自身终结 TLS」，则 `httpEnabled: false` + `http.tlsSecret` 指定证书，通常不再需要 `proxy.headers`（除非前面还有一层 LB 转发头）。两种拓扑二选一，不要混用。
+> 拓扑说明：上面采用「Ingress/LB 终结 TLS → 明文转发到 Keycloak」的常见部署，故 `httpEnabled: true` + `proxy.headers: xforwarded`；若改为「Keycloak 自身终结 TLS」，则 `httpEnabled: false` + `http.tlsSecret` 指定证书，通常不再需要 `proxy.headers`（除非前面还有一层 LB 转发头）。两种拓扑二选一，不要混用。Keycloak 官方反向代理文档还强调：只代理 8443（或启用 HTTP 后的 8080）业务端口，不要把 9000 management 端口暴露给外部调用者，健康检查和 metrics 应在集群内采集。
 
 ### 数据库配置
 
@@ -371,7 +391,20 @@ spec:
     kind: ClusterIssuer
 ```
 
-## 19.10 小结
+## 19.10 生产上线检查清单
+
+上线前至少完成以下检查，避免“能登录一次”被误判为生产就绪：
+
+- [ ] Keycloak 镜像、Operator CRD 与 Operator Deployment 使用同一稳定版本；升级前已读 release notes。
+- [ ] 外部 PostgreSQL 已启用备份、恢复演练、连接池上限和慢查询监控。
+- [ ] Realm、Client、Identity Provider、认证流等配置有导出或 IaC 管理方式。
+- [ ] Ingress/LB 的 TLS 终结与 `proxy.headers` 配置一致，只信任受控代理来源。
+- [ ] 9000 management 端口仅供集群内健康检查和 Prometheus 抓取，不对公网开放。
+- [ ] 多副本、反亲和、PDB、资源 requests/limits 和滚动升级策略已验证。
+- [ ] 监控覆盖登录失败率、请求延迟、Pod 重启、数据库连接池、证书过期和磁盘/备份状态。
+- [ ] 回滚方案包含数据库备份点、旧版本镜像、旧 Operator 资源和变更冻结窗口。
+
+## 19.11 小结
 
 生产环境下 Keycloak 的 Kubernetes 部署，核心关注点：
 - 使用 Operator 简化运维
