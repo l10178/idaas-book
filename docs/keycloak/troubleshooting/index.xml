@@ -1,34 +1,21 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 常见问题排查 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Keycloak 常见问题排查 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 30 Jun 2026 20:44:18 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTPS Required / 反向代理问题</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Thu, 10 Dec 2020 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 常见问题排查 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Keycloak 常见问题排查 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 30 Jun 2026 21:16:37 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTPS Required / 反向代理问题</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;以 Http 方式登录，页面错误提示如下。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;We're sorry... HTTPS required.&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
-&lt;p&gt;keycloak 各个 Realm 默认的登录设置里，&lt;code&gt;Require SSL&lt;/code&gt; 为 &lt;code&gt;external requests&lt;/code&gt;，对于外部请求，必须是 Https。
+&lt;p&gt;Keycloak 各个 Realm 默认的登录设置里，&lt;code&gt;Require SSL&lt;/code&gt; 为 &lt;code&gt;external requests&lt;/code&gt;，对于外部请求，必须是 Https。
 非外部请求，也就是私有地址，可以是 http，如：&lt;code&gt;localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x&lt;/code&gt;。
 详细参考&lt;a href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl"&gt;官方文档说明&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id="解决方案"&gt;解决方案&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。&lt;/p&gt;
+&lt;p&gt;生产环境推荐在反向代理 / Ingress 上终结 TLS，并让 Keycloak 以 &lt;code&gt;proxy=passthrough&lt;/code&gt;（或 &lt;code&gt;edge&lt;/code&gt;/&lt;code&gt;reencrypt&lt;/code&gt; 视场景）感知前端协议，详见 &lt;a href="https://idaas.xlabs.club/docs/keycloak/security-features/"&gt;安全增强功能&lt;/a&gt;。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;如果只是测试环境，可以修改 Realm 的设置，&lt;code&gt;Require SSL&lt;/code&gt; 改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;修改数据方式&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-sql" data-lang="sql"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="k"&gt;update&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;REALM&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;set&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;ssl_required&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;NONE&amp;#39;&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="k"&gt;where&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="n"&gt;id&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;master&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;K8S 命令行调用 keycloak 官方 admin 工具 kcadm 修改&lt;/p&gt;
+&lt;p&gt;K8S 命令行调用 Keycloak 官方 admin 工具 &lt;code&gt;kcadm&lt;/code&gt; 修改（Quarkus 版默认上下文路径为 &lt;code&gt;/&lt;/code&gt;，已无 &lt;code&gt;/auth&lt;/code&gt; 前缀）：&lt;/p&gt;
 
 
 
@@ -38,17 +25,16 @@
  &lt;span class="title"&gt;&lt;/span&gt;
  &lt;/figcaption&gt;
  &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# login with a admin user&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl &lt;span class="nb"&gt;exec&lt;/span&gt; -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080/auth --realm master --user admin --password admin-password
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl &lt;span class="nb"&gt;exec&lt;/span&gt; -it keycloak-pod -- /opt/keycloak/bin/kcadm.sh config credentials --server http://localhost:8080 --realm master --user admin --password admin-password
 &lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# update your realm config&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl &lt;span class="nb"&gt;exec&lt;/span&gt; -it keycloak-pod -- /opt/jboss/keycloak/bin/kcadm.sh update realms/master -s &lt;span class="nv"&gt;sslRequired&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;none&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl &lt;span class="nb"&gt;exec&lt;/span&gt; -it keycloak-pod -- /opt/keycloak/bin/kcadm.sh update realms/master -s &lt;span class="nv"&gt;sslRequired&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;none&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ol&gt;</description></item><item><title>Liquibase 与 MySQL 组复制冲突</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Tue, 08 Dec 2020 23:50:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+&lt;li&gt;
+&lt;p&gt;也可以直接在管理控制台 → Realm → Realm Settings → Login → Require SSL 处改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;</description></item><item><title>Liquibase 与 MySQL 组复制冲突</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。&lt;/p&gt;
-&lt;p&gt;查看 keycloak 启动日志，错误信息大致如下。&lt;/p&gt;
+&lt;p&gt;查看 Keycloak 启动日志，错误信息大致如下（Quarkus 版日志形如）。&lt;/p&gt;
 
 
 
@@ -57,16 +43,34 @@
  &lt;figcaption class="header"&gt;
  &lt;span class="title"&gt;&lt;/span&gt;
  &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code class="language-log" data-lang="log"&gt;INFO [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (ServerService Thread Pool -- 66) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
-ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (ServerService Thread Pool -- 66) Change Set META-INF/jpa-changelog-1.0.0.Final.xml::
+ &lt;pre tabindex="0"&gt;&lt;code class="language-log" data-lang="log"&gt;ERROR [org.keycloak.connections.jpa.updater.liquibase.LiquibaseJpaUpdaterProvider] (executor-thread-1) Initializing database schema. Using changelog META-INF/jpa-changelog-master.xml
+ERROR [org.keycloak.connections.jpa.updater.liquibase.conn.DefaultLiquibaseConnectionProvider] (executor-thread-1) Change Set META-INF/jpa-changelog-1.0.0.Final.xml::
 1.0.0.Final-KEYCLOAK-5461::sthorger@redhat.com failed. Error: Table &amp;#39;APPLICATION_DEFAULT_ROLES&amp;#39; already exists [Failed SQL: CREATE TABLE keycloak.APPLICATION_DEFAULT_ROLES (APPLICATION_ID VARCHAR(36) NOT NULL, ROLE_ID VARCHAR(36) NOT NULL)]
-FATAL [org.keycloak.services] (ServerService Thread Pool -- 66) java.lang.RuntimeException: Failed to update database
-INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requested via an OS signal&lt;/code&gt;&lt;/pre&gt;
+ERROR [org.keycloak.services] (executor-thread-1) java.lang.RuntimeException: Failed to update database&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;查看 MySQL 日志，看到如下错误。&lt;/p&gt;</description></item><item><title>Kubernetes 中导入导出迁移</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Sun, 10 Jan 2021 23:59:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
-&lt;p&gt;我的 keycloak 集群是跑在 Kubernetes 上，初始化了一些配置想完整的导出来。&lt;/p&gt;
-&lt;p&gt;比如按照官方的指导文档，在 keycloak pod 内用下面的命令导出。&lt;/p&gt;
+&lt;p&gt;查看 MySQL 日志，看到如下错误。&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code class="language-log" data-lang="log"&gt;[ERROR] Plugin group_replication reported: &amp;#39;Table DATABASECHANGELOG does not have any PRIMARY KEY. This is not compatible with Group Replication&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
+&lt;p&gt;根据 MySQL 日志，很明确了是因为 DATABASECHANGELOG 没有主键。MySQL group replication 要求表必须有主键或者非 Null 的唯一索引。&lt;/p&gt;</description></item><item><title>Kubernetes 中导入导出迁移</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;本文以 &lt;strong&gt;Keycloak Quarkus 发行版（17+）&lt;/strong&gt; 为准。Keycloak 17 起官方已移除 WildFly 发行版，旧版用 &lt;code&gt;standalone.sh -Dkeycloak.migration.action=export&lt;/code&gt; 的导出方式不再适用，统一改用 &lt;code&gt;kc.sh export&lt;/code&gt; / &lt;code&gt;kc.sh import&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;Keycloak 集群跑在 Kubernetes 上，初始化了一些配置，想完整地导出来备份或迁移。&lt;/p&gt;
+&lt;h2 id="解决方案"&gt;解决方案&lt;/h2&gt;
+&lt;h3 id="命令行导出"&gt;命令行导出&lt;/h3&gt;
+&lt;p&gt;Quarkus 版本使用 &lt;code&gt;kc.sh export&lt;/code&gt; 一次性导出整个 Realm。&lt;code&gt;export&lt;/code&gt; 子命令以「仅导出」模式启动，不会常驻监听端口，因此&lt;strong&gt;无需&lt;/strong&gt;像旧 WildFly 版本那样设置端口偏移规避端口冲突。&lt;/p&gt;
+&lt;p&gt;导出为单个文件：&lt;/p&gt;
 
 
 
@@ -75,29 +79,22 @@ INFO [org.jboss.as.server] (Thread-2) WFLYSRV0220: Server shutdown has been requ
  &lt;figcaption class="header"&gt;
  &lt;span class="title"&gt;&lt;/span&gt;
  &lt;/figcaption&gt;
- &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;./standalone.sh -Dkeycloak.migration.action&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;export&lt;/span&gt; -Dkeycloak.migration.provider&lt;span class="o"&gt;=&lt;/span&gt;singleFile -Dkeycloak.migration.file&lt;span class="o"&gt;=&lt;/span&gt;keycloak-export.json&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl -n keycloak &lt;span class="nb"&gt;exec&lt;/span&gt; -it keycloak-0 -- /opt/keycloak/bin/kc.sh &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --file /tmp/keycloak-export.json --realm myrealm&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;出现类似下面错误。&lt;/p&gt;
+&lt;p&gt;导出为目录（每个 Realm 一个文件）：&lt;/p&gt;
 
 
 
 &lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
+ &lt;figure class="frame is-terminal not-content"&gt;
  &lt;figcaption class="header"&gt;
  &lt;span class="title"&gt;&lt;/span&gt;
  &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code class="language-log" data-lang="log"&gt;ERROR [org.jboss.as.controller.management-operation] (Controller Boot Thread) WFLYCTL0013: Operation (&amp;#34;add&amp;#34;) failed - address: ([
- (&amp;#34;core-service&amp;#34; =&amp;gt; &amp;#34;management&amp;#34;),
- (&amp;#34;management-interface&amp;#34; =&amp;gt; &amp;#34;http-interface&amp;#34;)
-]) - failure description: {
- &amp;#34;WFLYCTL0080: Failed services&amp;#34; =&amp;gt; {&amp;#34;org.wildfly.management.http.extensible&amp;#34; =&amp;gt; &amp;#34;java.net.BindException: Address already in use /127.0.0.1:9990&amp;#34;},
- &amp;#34;WFLYCTL0288: One or more services were unable to start due to one or more indirect dependencies not being available.&amp;#34; =&amp;gt; {
- &amp;#34;Services that were unable to start:&amp;#34; =&amp;gt; [&amp;#34;org.wildfly.management.http.extensible.shutdown&amp;#34;],
- &amp;#34;Services that may be the cause:&amp;#34; =&amp;gt; [&amp;#34;jboss.remoting.remotingConnectorInfoService.http-remoting-connector&amp;#34;]
- }
-}&lt;/code&gt;&lt;/pre&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl -n keycloak -it &lt;span class="nb"&gt;exec&lt;/span&gt; keycloak-0 -- /opt/keycloak/bin/kc.sh &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="se"&gt;\
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --dir /tmp/export --realm myrealm&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
-&lt;p&gt;根据错误提示，端口被占用，原因是 keycloak 导出脚本也会启动 Wildfly 服务，默认的 http、https、management 等的端口已经被占用。&lt;/p&gt;</description></item></channel></rss>
+&lt;blockquote&gt;
+&lt;p&gt;若不指定 &lt;code&gt;--realm&lt;/code&gt;，则导出&lt;strong&gt;除 &lt;code&gt;master&lt;/code&gt; 外&lt;/strong&gt;的所有 Realm；&lt;code&gt;master&lt;/code&gt; Realm 不参与导出。&lt;/p&gt;</description></item></channel></rss>

@@ -168,7 +168,7 @@
 &lt;h4 id="基于持有的认证"&gt;基于持有的认证&lt;/h4&gt;
 &lt;p&gt;用户拥有什么。&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;短信/邮箱验证码&lt;/strong&gt;：最普及，但短信验证码存在 SS7 协议攻击风险。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;短信/邮箱验证码&lt;/strong&gt;：最普及，但短信验证码存在 SS7 协议攻击与 SIM 劫持（SIM-swap）风险，NIST SP 800-63B 与 OWASP 均已不再将其作为强认证因素，新项目建议优先 TOTP、推送或 Passkey。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;硬件 Token&lt;/strong&gt;：U-Key、YubiKey。物理设备，安全性高，但有丢失风险和分发的物流成本。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;软件 Token&lt;/strong&gt;：TOTP（Google Authenticator、Authy）或推送通知认证。&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;智能卡&lt;/strong&gt;：带有芯片的卡片，常见于大型企业和政府机构。&lt;/li&gt;
@@ -197,23 +197,7 @@
 3. 后续请求携带 Cookie，服务端查找 Session 验证&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;特点：有状态，服务端存储 Session；可即时吊销；扩展困难（Session 同步）。&lt;/p&gt;
-&lt;h4 id="基于-token-的认证"&gt;基于 Token 的认证&lt;/h4&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt;1. 用户提交用户名和密码
-2. 服务端验证通过，签发 Token（JWT）
-3. 客户端存储 Token，后续请求在 Authorization 头中携带
-4. 服务端验证 Token 签名和有效期&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;p&gt;特点：无状态，服务端不需要存储；水平扩展友好；吊销需要额外机制（黑名单、短有效期）。&lt;/p&gt;</description></item><item><title>第4章：身份生命周期管理</title><link>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</link><pubDate>Thu, 04 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</guid><description>&lt;h2 id="41-身份生命周期的阶段"&gt;4.1 身份生命周期的阶段&lt;/h2&gt;
+&lt;p&gt;特点：有状态，服务端存储 Session；可即时吊销；扩展困难（Session 同步）。&lt;/p&gt;</description></item><item><title>第4章：身份生命周期管理</title><link>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</link><pubDate>Thu, 04 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</guid><description>&lt;h2 id="41-身份生命周期的阶段"&gt;4.1 身份生命周期的阶段&lt;/h2&gt;
 &lt;p&gt;每个数字身份都会经历从诞生到终结的完整旅程：&lt;/p&gt;
 
 
