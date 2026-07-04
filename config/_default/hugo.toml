@@ -7,7 +7,6 @@ disableHugoGeneratorInject = true
 enableEmoji = true
 enableGitInfo = true
 enableRobotsTXT = true
-languageCode = "zh-CN"
 locale = "zh-CN"
 # paginate = 10
 pagination.pagerSize = 10
