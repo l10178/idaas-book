@@ -132,7 +132,7 @@ spec:
     spec:
       containers:
       - name: oauth2-proxy
-        image: quay.io/oauth2-proxy/oauth2-proxy:v7.5.1
+        image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.0
         args:
         - --provider=keycloak-oidc
         - --oidc-issuer-url=https://kc.example.com/realms/myrealm
@@ -151,8 +151,8 @@ kind: Ingress
 metadata:
   name: app
   annotations:
-    nginx.ingress.kubernetes.io/auth-url: "https://oauth2-proxy.kube-system.svc/oauth2/auth"
-    nginx.ingress.kubernetes.io/auth-signin: "https://kc.example.com/oauth2/start?rd=$scheme://$host$request_uri"
+    nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
 spec:
   rules:
   - host: app.example.com
@@ -164,6 +164,36 @@ spec:
 ```
 
 > 这是「网关层 SSO」模式：业务代码无需感知身份，鉴权在入口完成。详见 [第18章 · 集成模式]({{< relref "docs/implementation/integration-patterns.md" >}})。
+
+### Keycloak + oauth2-proxy 生产排错清单
+
+`oauth2-proxy` 与 Keycloak 对接时，高频问题往往不是「OIDC 不通」，而是 issuer、audience、回调地址或反向代理头不一致。上线前建议按下表逐项核对：
+
+| 症状 / 报错 | 常见根因 | 修正方式 |
+|-------------|----------|----------|
+| `expected audience` / `invalid aud`，日志里只有 `account` | Keycloak access token 的 `aud` 没有包含 oauth2-proxy 的 `client_id` | 在 Keycloak Client 增加 **Audience mapper**，把 `Included Client Audience` 设为 `oauth2-proxy`；或在 oauth2-proxy 显式配置 `--oidc-extra-audience`。 |
+| 登录后反复跳转 / `csrf cookie not found` | `redirect_url`、Ingress `auth-signin`、Cookie Domain / SameSite 与实际访问域名不一致 | `redirect_url` 固定为外部入口 `https://app.example.com/oauth2/callback`；Ingress 使用 `$host` 与 `$escaped_request_uri`；跨子域共享时再设置 `--cookie-domain=.example.com`。 |
+| `/oauth2/auth` 返回 401，但用户已登录 | 业务 Ingress 没把认证响应头传给后端，或 oauth2-proxy 未开启 header 输出 | oauth2-proxy 开启 `--set-xauthrequest=true`；NGINX Ingress 用 `auth-response-headers` 透传 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups`。 |
+| Keycloak 回调到 `http://` 或错误 host | Keycloak / oauth2-proxy 后面有反向代理，但 `X-Forwarded-*` 头或 proxy 配置缺失 | 入口层保留 `X-Forwarded-Proto`、`X-Forwarded-Host`；Keycloak 侧按生产反向代理章节配置 hostname/proxy headers。 |
+| Keycloak 17+ 后 issuer 不匹配 | 仍沿用旧 WildFly 路径 `/auth/realms/<realm>` | 新部署默认使用 `https://kc.example.com/realms/<realm>`；只有旧版本或保留兼容路径时才使用 `/auth/realms/<realm>`。 |
+
+一个较稳的最小配置如下，重点是 issuer、audience、PKCE、cookie secret 与 header 输出都显式写清：
+
+```bash
+oauth2-proxy \
+  --provider=keycloak-oidc \
+  --oidc-issuer-url=https://kc.example.com/realms/myrealm \
+  --client-id=oauth2-proxy \
+  --client-secret=$OAUTH2_PROXY_CLIENT_SECRET \
+  --redirect-url=https://app.example.com/oauth2/callback \
+  --cookie-secret=$OAUTH2_PROXY_COOKIE_SECRET \
+  --email-domain='*' \
+  --code-challenge-method=S256 \
+  --set-xauthrequest=true \
+  --set-authorization-header=true
+```
+
+验证顺序不要反：先访问 `https://kc.example.com/realms/myrealm/.well-known/openid-configuration` 确认 issuer；再登录一次并解码 access token，确认 `aud` 包含 `oauth2-proxy`；最后用浏览器开发者工具检查 `/oauth2/callback` 是否设置了同站点可用的 cookie。生产回滚最简单：移除业务 Ingress 的认证注解或 Traefik ForwardAuth middleware，保留 oauth2-proxy Deployment 以便排查，不要在事故中先删 Keycloak Client。
 
 ## Vault
 
