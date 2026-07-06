@@ -2,6 +2,7 @@
 title: "第18章：集成模式与实践"
 description: "IDaaS 集成的常见模式：网关模式、BFF 模式、Sidecar 模式、SDK 模式"
 date: 2024-04-05T00:00:00+08:00
+lastmod: 2026-07-06T00:00:00+08:00
 draft: false
 weight: 45
 menu:
@@ -61,9 +62,9 @@ toc: true
 # docker-compose.yaml
 services:
   oauth2-proxy:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.5.0   # 示例版本，部署时请改用最新稳定 tag
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3   # 示例版本，部署时请改用最新稳定 tag
     command:
-      - --provider=oidc
+      - --provider=oidc   # 对接 Keycloak 也可用 --provider=keycloak-oidc（oauth2-proxy v7.3+），提供 Keycloak 专用默认值
       - --oidc-issuer-url=https://idp.example.com/realms/myrealm
       - --client-id=my-app
       - --client-secret=xxx
