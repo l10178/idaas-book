@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS 身份即服务 —— 一本完整的书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS 身份即服务 —— 一本完整的书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Wed, 01 Jul 2026 21:46:37 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTPS Required / 反向代理问题</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS 身份即服务 —— 一本完整的书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS 身份即服务 —— 一本完整的书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Sat, 04 Jul 2026 23:03:14 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTPS Required / 反向代理问题</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;以 Http 方式登录，页面错误提示如下。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;We're sorry... HTTPS required.&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
@@ -412,7 +412,7 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href="https://github.com/freeotp"&gt;FreeOTP&lt;/a&gt;。&lt;/li&gt;
 &lt;li&gt;&lt;a href="https://github.com/google/google-authenticator"&gt;Google Authenticator&lt;/a&gt;。&lt;/li&gt;
-&lt;/ul&gt;</description></item><item><title>简介与阅读指南</title><link>https://idaas.xlabs.club/docs/guides/introduction/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/guides/introduction/</guid><description>&lt;p&gt;这是一本关于**身份即服务（IDaaS）**的中文开源技术书。从 IAM 基础原理，到 OAuth 2.0 / OIDC / SAML 协议深度解读；从 Keycloak、CAS、Dex 开源方案剖析，到 Kubernetes 生产部署与零信任架构——试图把原理、协议、工程实践与前沿趋势串联成一条主线。&lt;/p&gt;
+&lt;/ul&gt;</description></item><item><title>Keycloak + oauth2-proxy 保护内部应用：Ingress 与 ForwardAuth 配置清单</title><link>https://idaas.xlabs.club/blog/keycloak-oauth2-proxy-ingress-forwardauth/</link><pubDate>Sat, 04 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/blog/keycloak-oauth2-proxy-ingress-forwardauth/</guid><description>一份面向内部应用的 Keycloak + oauth2-proxy 网关层 SSO 配置清单，覆盖 NGINX Ingress、Traefik ForwardAuth、常见报错和回滚。</description></item><item><title>简介与阅读指南</title><link>https://idaas.xlabs.club/docs/guides/introduction/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/guides/introduction/</guid><description>&lt;p&gt;这是一本关于**身份即服务（IDaaS）**的中文开源技术书。从 IAM 基础原理，到 OAuth 2.0 / OIDC / SAML 协议深度解读；从 Keycloak、CAS、Dex 开源方案剖析，到 Kubernetes 生产部署与零信任架构——试图把原理、协议、工程实践与前沿趋势串联成一条主线。&lt;/p&gt;
 &lt;h2 id="适合谁读"&gt;适合谁读&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;🆕 &lt;strong&gt;IDaaS / IAM 初学者&lt;/strong&gt;：想建立完整的身份领域知识体系&lt;/li&gt;
@@ -449,98 +449,4 @@ OFF 表示临时锁定。&lt;/p&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;想直接动手：从 &lt;a href="https://idaas.xlabs.club/docs/keycloak/"&gt;Keycloak 实战指南&lt;/a&gt; 的「简介」开始，配合 &lt;a href="https://idaas.xlabs.club/docs/implementation/keycloak-architecture/"&gt;第14章&lt;/a&gt; 的架构解析即可快速搭出一套可用的 IDaaS。完整目录见站点首页。&lt;/p&gt;</description></item><item><title>Keycloak 主题定制</title><link>https://idaas.xlabs.club/docs/keycloak/themes/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/themes/</guid><description>&lt;p&gt;Keycloak 的界面层由 &lt;strong&gt;Themes（主题）&lt;/strong&gt; 驱动，基于 FreeMarker（FTL）模板渲染。通过自定义主题，可以让登录页、账户中心、管理控制台和邮件通知贴合企业品牌，并修正官方中文翻译不符合国人习惯的问题。本节先讲传统的 FTL 主题结构、定制流程与生产部署实践，再介绍现代替代方案 &lt;a href="https://github.com/keycloakify/keycloakify"&gt;Keycloakify&lt;/a&gt;——用 React 编写主题，并给出两者选型对比。&lt;/p&gt;
-&lt;h2 id="主题类型"&gt;主题类型&lt;/h2&gt;
-&lt;p&gt;Keycloak 内置四类主题，可分别独立覆盖：&lt;/p&gt;
-&lt;table&gt;
-	&lt;thead&gt;
-			&lt;tr&gt;
-					&lt;th&gt;主题类型&lt;/th&gt;
-					&lt;th&gt;作用域&lt;/th&gt;
-					&lt;th&gt;对应 URL&lt;/th&gt;
-					&lt;th&gt;说明&lt;/th&gt;
-			&lt;/tr&gt;
-	&lt;/thead&gt;
-	&lt;tbody&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;login&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;登录 / 注册 / OTP / 忘记密码等认证流程页&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;/realms/{realm}/protocol/openid-connect/auth&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;最常定制的一类&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;account&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;用户账户自助中心&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;/realms/{realm}/account&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;用户管理凭证、设备、会话&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;admin&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;管理控制台（Angular SPA）&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;/admin&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;仅能微调，不建议深度改&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;email&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;邮件正文模板&lt;/td&gt;
-					&lt;td&gt;邮件通知&lt;/td&gt;
-					&lt;td&gt;纯文本/HTML 模板&lt;/td&gt;
-			&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;blockquote&gt;
-&lt;p&gt;自 Keycloak 17（Quarkus）起，Account Console v2 已迁移为基于 React 的 SPA，仅支持通过主题资源做有限覆盖；登录主题仍是 FreeMarker，定制自由度最高。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id="主题目录结构"&gt;主题目录结构&lt;/h2&gt;
-&lt;p&gt;一个自定义主题的目录结构如下：&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt;themes/
-└── mybrand/ # 主题名
- ├── login/ # 类型：login
- │ ├── theme.properties # 主题元信息
- │ ├── resources/
- │ │ ├── css/
- │ │ │ └── styles.css
- │ │ ├── js/
- │ │ │ └── script.js
- │ │ └── img/
- │ │ └── logo.png
- │ └── *.ftl # 覆盖的 FreeMarker 模板（按需）
- ├── account/
- │ └── theme.properties
- └── email/
- ├── theme.properties
- └── html/
- └── email-verification.ftl&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;h3 id="themeproperties"&gt;theme.properties&lt;/h3&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-properties" data-lang="properties"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 主题元信息&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;parent&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;keycloak # 继承官方 base 主题，只覆盖差异&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;import&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;common/keycloak # 引入公共资源&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 样式与脚本&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;styles&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;css/login.css css/styles.css&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;scripts&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;js/script.js&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c1"&gt;# 自定义变量&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;brandName&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;我的企业&lt;/span&gt;
-&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="na"&gt;logoUrl&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;https://example.com/logo.png&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;p&gt;&lt;code&gt;parent=keycloak&lt;/code&gt; 是关键技巧：&lt;strong&gt;只覆盖你要改的文件，其余自动继承&lt;/strong&gt;官方主题，升级 Keycloak 时改动面最小。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;想直接动手：从 &lt;a href="https://idaas.xlabs.club/docs/keycloak/"&gt;Keycloak 实战指南&lt;/a&gt; 的「简介」开始，配合 &lt;a href="https://idaas.xlabs.club/docs/implementation/keycloak-architecture/"&gt;第14章&lt;/a&gt; 的架构解析即可快速搭出一套可用的 IDaaS。完整目录见站点首页。&lt;/p&gt;</description></item></channel></rss>
