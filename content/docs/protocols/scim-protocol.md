@@ -303,6 +303,68 @@ SCIM 同样用于离职用户的清理：
 5. **审计日志**：记录所有 SCIM 操作的审计日志。
 6. **敏感属性保护**：不要在 SCIM 响应中返回密码、加密密钥等敏感信息。
 
-## 9.7 小结
+## 9.7 SCIM 用户生命周期管理实践
 
-SCIM 2.0 是 IDaaS 世界中"用户配置"的标准语言。它将身份管理从"手工操作"和"定制脚本"升级为标准化、自动化的 API 调用。对于 IDaaS 平台选型，SCIM 支持的质量——尤其对标标准用户 Schema、过滤语法、PATCH 操作——是评估的重要维度。
+SCIM 的价值不只在于标准化 API，更在于它能够将身份生命周期的关键动作系统化。结合[第 4 章]({{< relref "docs/fundamentals/identity-lifecycle.md" >}})的生命周期模型，下面把 SCIM 操作映射到每个阶段。
+
+### 生命周期与 SCIM 操作对照
+
+| 生命周期阶段 | 触发事件 | SCIM 操作 | 典型载荷 |
+|-------------|---------|-----------|---------|
+| 创建（Joiner） | 员工入职 / 新用户注册 | `POST /Users` | 完整 User 资源（含 `active: true`，分配 Group） |
+| 使用（Active） | 日常登录认证 | 不直接涉及 SCIM | 认证走 OIDC/SAML，属性通过 SCIM 按需同步 |
+| 变更（Mover） | 调岗、升职、改名 | `PATCH /Users/{id}` | 更新 `title`、`department`、`manager`、Group 成员 |
+| 暂停（Leave） | 离职交接期 / 临时停权 | `PATCH /Users/{id}` | `{"active": false}` |
+| 注销（Leaver） | 正式离职 | `DELETE /Users/{id}` | 无载荷（或先 PATCH 停用，N 天后 DELETE） |
+
+> SCIM 的 `active` 字段是软开关。建议的离职流程：先 `PATCH active=false` 立即阻断访问，保留数据供审计和交接；确认无误后再 `DELETE`。不要直接从 `active: true` 跳到 `DELETE`。
+
+### 预置（Provisioning）检查清单
+
+SCIM 预置不只是调一个 API，需要把上游数据源和目标系统的 Schema、权限、异常处理都串起来：
+
+- [ ] **Schema 对齐**：源系统字段（如 HR 的 `employeeId`）映射到 SCIM `externalId` 或 Enterprise Extension 的 `employeeNumber`；不在标准 Schema 中的字段用自定义 Extension。
+- [ ] **唯一标识策略**：`userName` 和 `externalId` 都必须唯一。建议 `userName` 用企业邮箱（保证全局唯一），`externalId` 用工号。
+- [ ] **初始 Group 分配**：创建用户时同步加入组织架构 Group，避免"裸账号"——刚入职就能访问不应该访问的资源。
+- [ ] **幂等性**：创建前先 `GET /Users?filter=userName eq "..."` 查重，防止重入造成重复账号。
+- [ ] **错误处理**：SCIM 返回 `409 Conflict`（userName 重复）或 `400 Bad Request`（Schema 违规）时，记录日志并通知管理员，不要让同步任务静默失败。
+- [ ] **速率控制**：大批量入职（如校招季）时分批推送，遵守 SCIM 服务端的 rate limit，并在失败时按退避策略重试。
+
+### 去预置（Deprovisioning）检查清单
+
+去预置比预置更容易出事故——删错、漏删、删了但下游没同步：
+
+- [ ] **两步执行**：先 `PATCH active=false` 停用，观察确认无异常后再 `DELETE`；对核心系统增加人工确认环节。
+- [ ] **级联清理**：确认下游应用也删除了对应用户。如果下游不支持 SCIM，需要手动或通过应用连接器补充清理。
+- [ ] **审计记录**：保存 `DELETE` 操作的时间、操作人、对象 `externalId`，用于合规审计。
+- [ ] **回滚预案**：如果误删，能否通过 SCIM `POST` 重建？注意 `id` 会变，下游引用（如 ACL 中的 user UUID）可能需要同步调整。
+- [ ] **定时检查**：定期扫描 `active=false` 超过 N 天（如 30 天）的账户，确认是否可以正式删除或归档。
+
+### SCIM 生命周期管理常见问题（FAQ）
+
+**Q: SCIM 可以处理"员工转到子公司但保留部分权限"这种场景吗？**
+
+SCIM 本身不包含授权决策逻辑，但可以作为执行层：通过 `PATCH` 更新用户的 `department` 和 Group 成员，由 IDaaS 的授权引擎重新计算权限。SCIM 负责"改属性"，授权引擎负责"改权限"。
+
+**Q: 多个上游系统（如 HR + 考勤）都通过 SCIM 写同一个用户，怎么避免冲突？**
+
+有两种策略：一是确定单一权威源（System of Record），只有 HR 系统有写权限，其他系统只读；二是通过 IDaaS 内部的属性级优先级规则合并。推荐前者——单一权威源是避免数据竞态的根本方案。
+
+**Q: SCIM 同步延迟有多久？实时性够吗？**
+
+SCIM 协议本身不定义同步频率。常见实现中，上游系统在数据变更后立即推送（事件驱动），延迟在秒级。如果上游不支持事件驱动，需要 IDaaS 定时轮询 `GET /Users?filter=meta.lastModified gt "..."`，延迟取决于轮询间隔。
+
+**Q: 下游应用不支持 SCIM，怎么管理用户生命周期？**
+
+这是现实中最常见的情况。方案按优先级：
+1. 如果应用有 LDAP 接口，通过 IDaaS 的 LDAP 桥接同步；
+2. 如果应用只有 REST API，用 IDaaS 的 workflow/connector 调用自定义 API；
+3. 如果应用只能手动管理，至少让 SCIM 创建/停用触发通知（邮件/IM），由管理员手动操作。
+
+**Q: `DELETE` 用户后需不需要通知下游？**
+
+SCIM 规范没有规定，但生产环境应该做。理想方案是 IDaaS 在收到 SCIM `DELETE` 后，通过内部事件总线触发下游应用的用户清理。最低限度也要记录审计日志。
+
+## 9.8 小结
+
+SCIM 2.0 是 IDaaS 世界中"用户配置"的标准语言。它将身份管理从"手工操作"和"定制脚本"升级为标准化、自动化的 API 调用。对于 IDaaS 平台选型，SCIM 支持的质量——尤其对标标准用户 Schema、过滤语法、PATCH 操作——是评估的重要维度。把 SCIM 真正用好，关键在于理解它不是一个孤立的协议，而是身份生命周期自动化流水线上的关键一环。
