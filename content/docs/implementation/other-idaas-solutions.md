@@ -1,6 +1,6 @@
 ---
 title: "第17章：IDaaS 方案全景对比"
-description: "主流 IDaaS 方案全景对比：开源 vs 商业，自建 vs SaaS，选型决策框架"
+description: "主流 IDaaS 方案全景对比：开源 vs 商业，自建 vs SaaS，Keycloak、Janssen、Casdoor、Zitadel、Authelia、ORY、Dex、CAS 及商业方案选型决策框架"
 date: 2024-04-04T00:00:00+08:00
 draft: false
 weight: 44
@@ -19,7 +19,7 @@ toc: true
                │ 云原生产品
     Okta       │  Auth0 (Okta)    自建/私有化
     Entra ID   │  Ping Identity   Keycloak
-    Google CI  │  ForgeRock       Gluu
+    Google CI  │  ForgeRock       Janssen
     腾讯云IDaaS│  JumpCloud        Casdoor
                │
 
@@ -71,21 +71,25 @@ toc: true
 - 大规模场景的验证不足
 - 企业级特性待完善
 
-### Gluu Server
+### Janssen（原 Gluu Server）
 
 **类型**：企业级 IAM
 **语言**：Java
-**许可证**：Apache 2.0（社区版）
+**许可证**：Apache 2.0
+**最新稳定版**：v2.2.0（2026 年 7 月）
+
+Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，2020 年由 Gluu Server 4.x 社区版 fork 而来。Gluu 团队是主要贡献者，商业发行版为 Gluu Flex。
 
 **核心优势**：
-- 企业级安全特性
-- 强大的集群管理
-- 灵活的认证脚本引擎
+- 完整的 OAuth/OIDC 授权服务器（OpenID 认证），支持 SCIM、FIDO2/Passkey
+- Helm Chart 支持 Kubernetes 部署，也支持单机 VM 安装
+- Agama 认证流程 DSL，可编程定制认证流程
+- Linux Foundation 治理，社区透明
 
 **不足**：
-- 部署和运维复杂
-- 社区版功能有限
-- 被 Gluu Flex 商业版挤压
+- 部署和运维复杂（对 Kubernetes 经验有要求）
+- 社区规模小于 Keycloak
+- 中文文档和社区资源有限
 
 ### Authelia
 
