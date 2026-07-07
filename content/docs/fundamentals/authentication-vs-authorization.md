@@ -1,5 +1,5 @@
 ---
-title: "第3章：认证与授权深度辨析"
+title: "第3章：认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book"
 description: "深入理解认证（Authentication）与授权（Authorization）的区别与联系"
 date: 2024-01-03T00:00:00+08:00
 draft: false

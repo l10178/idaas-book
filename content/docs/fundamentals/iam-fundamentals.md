@@ -1,5 +1,5 @@
 ---
-title: "第2章：IAM 核心理念"
+title: "第2章：IAM 核心理念 — AAA 模型、设计原则与身份架构 | IDaaS Book"
 description: "身份与访问管理（IAM）的核心概念、架构模型与设计原则"
 date: 2024-01-02T00:00:00+08:00
 draft: false

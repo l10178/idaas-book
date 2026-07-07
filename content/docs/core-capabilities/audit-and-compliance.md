@@ -1,5 +1,5 @@
 ---
-title: "第13章：审计与合规"
+title: "第13章：IDaaS 审计与合规 — 等保、ISO 27001 与异常检测实践 | IDaaS Book"
 description: "IDaaS 审计日志设计、合规框架要求、异常检测与安全运营"
 date: 2024-03-04T00:00:00+08:00
 draft: false

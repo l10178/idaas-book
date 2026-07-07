@@ -1,5 +1,5 @@
 ---
-title: "第7章：SAML 2.0"
+title: "第7章：SAML 2.0 — 断言、绑定、元数据与身份联邦 | IDaaS Book"
 description: "SAML 2.0 安全断言标记语言深度解读：协议流程、断言结构、元数据、与 OIDC 的对比"
 date: 2024-02-03T00:00:00+08:00
 draft: false

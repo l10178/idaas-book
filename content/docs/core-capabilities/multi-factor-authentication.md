@@ -1,5 +1,5 @@
 ---
-title: "第11章：多因素认证（MFA）"
+title: "第11章：多因素认证（MFA）— TOTP、FIDO2、WebAuthn 与自适应认证 | IDaaS Book"
 description: "多因素认证全解析：认证因素分类、实现方案、FIDO2/WebAuthn、自适应认证"
 date: 2024-03-02T00:00:00+08:00
 draft: false

@@ -1,5 +1,5 @@
 ---
-title: "第12章：身份联邦与代理"
+title: "第12章：身份联邦与代理 — 跨域身份互信、联邦拓扑与协议桥接 | IDaaS Book"
 description: "身份联邦（Identity Federation）和身份代理（Identity Broker）的架构原理与实现"
 date: 2024-03-03T00:00:00+08:00
 draft: false

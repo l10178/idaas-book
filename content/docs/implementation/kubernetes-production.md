@@ -1,5 +1,5 @@
 ---
-title: "第19章：Kubernetes 生产环境部署"
+title: "第19章：Keycloak Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book"
 description: "Keycloak 在 Kubernetes 上的生产级部署：Operator、Helm、高可用、备份恢复、监控指标与反向代理配置"
 date: 2024-04-06T00:00:00+08:00
 draft: false

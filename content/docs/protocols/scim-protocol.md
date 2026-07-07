@@ -1,5 +1,5 @@
 ---
-title: "第9章：SCIM 协议"
+title: "第9章：SCIM 协议 — 跨域用户配置与身份同步标准 | IDaaS Book"
 description: "跨域身份管理系统（SCIM 2.0）协议深度解读：用户和组的标准化配置与管理"
 date: 2024-02-05T00:00:00+08:00
 draft: false

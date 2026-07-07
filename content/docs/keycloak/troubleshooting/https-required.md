@@ -1,5 +1,5 @@
 ---
-title: "HTTPS Required / 反向代理问题"
+title: "Keycloak HTTPS Required 错误与反向代理排错指南 | IDaaS Book"
 description: "Keycloak 报 HTTPS required 或 Invalid redirect_uri 的排查：反向代理 X-Forwarded-* 头与 proxy 配置"
 date: 2024-04-01T00:00:00+08:00
 draft: false
