@@ -4,6 +4,8 @@
 > From IAM fundamentals and OAuth 2.0 / OIDC / SAML protocol deep-dives to Keycloak, CAS, and Dex production deployments — a systematic guide through the entire identity landscape.
 >
 > 🇨🇳 Written in Chinese · [Read Online →](https://idaas.xlabs.club)
+>
+> 语言：[English](README.md) | [简体中文](README.zh-CN.md)
 
 [![Stars](https://img.shields.io/github/stars/l10178/idaas-book?style=social)](https://github.com/l10178/idaas-book/stargazers)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/l10178/idaas-book/.github%2Fworkflows%2Fgh-pages.yml?label=deploy)](https://github.com/l10178/idaas-book/actions/workflows/gh-pages.yml)
