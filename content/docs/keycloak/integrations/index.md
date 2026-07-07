@@ -193,7 +193,7 @@ oauth2-proxy \
   --set-authorization-header=true
 ```
 
-验证顺序不要反：先访问 `https://kc.example.com/realms/myrealm/.well-known/openid-configuration` 确认 issuer；再登录一次并解码 access token，确认 `aud` 包含 `oauth2-proxy`；最后用浏览器开发者工具检查 `/oauth2/callback` 是否设置了同站点可用的 cookie。生产回滚最简单：移除业务 Ingress 的认证注解或 Traefik ForwardAuth middleware，保留 oauth2-proxy Deployment 以便排查，不要在事故中先删 Keycloak Client。需要完整的 Ingress / ForwardAuth 配置、验证命令和回滚步骤，可参考 [Keycloak + oauth2-proxy 保护内部应用：Ingress 与 ForwardAuth 配置清单]({{< relref "blog/keycloak-oauth2-proxy-ingress-forwardauth.md" >}})。
+验证顺序不要反：先访问 `https://kc.example.com/realms/myrealm/.well-known/openid-configuration` 确认 issuer；再登录一次并解码 access token，确认 `aud` 包含 `oauth2-proxy`；最后用浏览器开发者工具检查 `/oauth2/callback` 是否设置了同站点可用的 cookie。生产回滚最简单：移除业务 Ingress 的认证注解或 Traefik ForwardAuth middleware，保留 oauth2-proxy Deployment 以便排查，不要在事故中先删 Keycloak Client。需要完整的 Ingress / ForwardAuth 配置、验证命令和回滚步骤，可参考 [Keycloak + oauth2-proxy 集成实战指南]({{< relref "docs/solution-blogs/keycloak-oauth2-proxy" >}})。
 
 ## Vault
 
@@ -207,7 +207,6 @@ vault write auth/oidc/config \
   client_secret="SECRET" \
   default_role="engineer"
 
-# 角色：把 Keycloak groups claim 映射到 Vault policy
 vault write auth/oidc/role/engineer \
   bound_audiences="vault" \
   allowed_redirect_uris="https://vault.example.com/ui/vault/auth/oidc/oidc/callback" \
@@ -256,7 +255,6 @@ mc admin service restart myminio
 Nextcloud 用 **Social login / OIDC 插件**：
 
 ```php
-// config.php 片段
 'oidc_login_provider' => [
   'clientId'     => 'nextcloud',
   'clientSecret'  => 'SECRET',
