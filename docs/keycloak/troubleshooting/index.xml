@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 常见问题排查 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Keycloak 常见问题排查 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 07 Jul 2026 22:57:15 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>HTTPS Required / 反向代理问题</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 常见问题排查 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Keycloak 常见问题排查 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 07 Jul 2026 23:11:04 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak HTTPS Required 错误与反向代理排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;以 Http 方式登录，页面错误提示如下。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;We're sorry... HTTPS required.&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
@@ -32,7 +32,7 @@
 &lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;也可以直接在管理控制台 → Realm → Realm Settings → Login → Require SSL 处改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;</description></item><item><title>Liquibase 与 MySQL 组复制冲突</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;也可以直接在管理控制台 → Realm → Realm Settings → Login → Require SSL 处改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;</description></item><item><title>Keycloak Liquibase 与 MySQL 组复制冲突排查与解决 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。&lt;/p&gt;
 &lt;p&gt;查看 Keycloak 启动日志，错误信息大致如下（Quarkus 版日志形如）。&lt;/p&gt;
 
@@ -62,7 +62,7 @@ ERROR [org.keycloak.services] (executor-thread-1) java.lang.RuntimeException: Fa
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
-&lt;p&gt;根据 MySQL 日志，很明确了是因为 DATABASECHANGELOG 没有主键。MySQL group replication 要求表必须有主键或者非 Null 的唯一索引。&lt;/p&gt;</description></item><item><title>Kubernetes 中导入导出迁移</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;根据 MySQL 日志，很明确了是因为 DATABASECHANGELOG 没有主键。MySQL group replication 要求表必须有主键或者非 Null 的唯一索引。&lt;/p&gt;</description></item><item><title>Keycloak Kubernetes 导入导出与数据迁移实战 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;本文以 &lt;strong&gt;Keycloak Quarkus 发行版（17+）&lt;/strong&gt; 为准。Keycloak 17 起官方已移除 WildFly 发行版，旧版用 &lt;code&gt;standalone.sh -Dkeycloak.migration.action=export&lt;/code&gt; 的导出方式不再适用，统一改用 &lt;code&gt;kc.sh export&lt;/code&gt; / &lt;code&gt;kc.sh import&lt;/code&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;

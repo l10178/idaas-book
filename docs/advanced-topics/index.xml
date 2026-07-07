@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第五部分：高级主题 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/</link><description>Recent content in 第五部分：高级主题 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/advanced-topics/index.xml" rel="self" type="application/rss+xml"/><item><title>第20章：授权模型深度对比</title><link>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</link><pubDate>Wed, 01 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</guid><description>&lt;h2 id="201-授权模型的演进"&gt;20.1 授权模型的演进&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第五部分：高级主题 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/</link><description>Recent content in 第五部分：高级主题 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/advanced-topics/index.xml" rel="self" type="application/rss+xml"/><item><title>第20章：授权模型深度对比 — RBAC、ABAC 与 ReBAC 选型指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</link><pubDate>Wed, 01 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</guid><description>&lt;h2 id="201-授权模型的演进"&gt;20.1 授权模型的演进&lt;/h2&gt;
 
 
 
@@ -54,7 +54,7 @@ Bob → [员工] → [提交报销, 查看自己的报表]&lt;/code&gt;&lt;/pre&
  [总监]&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;RBAC2（约束 RBAC）&lt;/strong&gt;：角色互斥（SoD）、基数限制、先决条件&lt;/p&gt;</description></item><item><title>第21章：IDaaS 安全最佳实践</title><link>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</link><pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</guid><description>&lt;h2 id="211-安全总则"&gt;21.1 安全总则&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;RBAC2（约束 RBAC）&lt;/strong&gt;：角色互斥（SoD）、基数限制、先决条件&lt;/p&gt;</description></item><item><title>第21章：IDaaS 安全最佳实践 — 密钥管理、令牌保护与攻击面防御 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</link><pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</guid><description>&lt;h2 id="211-安全总则"&gt;21.1 安全总则&lt;/h2&gt;
 &lt;p&gt;IDaaS 是安全基础设施的核心，它保护着所有应用的入口。如果 IDaaS 被攻破，攻击者就拿到了&amp;quot;万能钥匙&amp;quot;。&lt;/p&gt;
 &lt;p&gt;因此，IDaaS 自身的安全必须比它所保护的应用更高一个等级。&lt;/p&gt;
 &lt;h2 id="212-密码安全"&gt;21.2 密码安全&lt;/h2&gt;
@@ -118,7 +118,7 @@ Bob → [员工] → [提交报销, 查看自己的报表]&lt;/code&gt;&lt;/pre&
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;blockquote&gt;
-&lt;p&gt;注：&lt;code&gt;SameSite&lt;/code&gt; 是 CSRF 纵深防御的一环，不应作为唯一防线；主流浏览器已默认 &lt;code&gt;Lax+POST&lt;/code&gt; 限制，仍需配合 CSRF Token / Origin / &lt;code&gt;Sec-Fetch-Site&lt;/code&gt; 校验。&lt;/p&gt;</description></item><item><title>第22章：性能与扩展性</title><link>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</link><pubDate>Fri, 03 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</guid><description>&lt;h2 id="221-idaas-的性能模型"&gt;22.1 IDaaS 的性能模型&lt;/h2&gt;
+&lt;p&gt;注：&lt;code&gt;SameSite&lt;/code&gt; 是 CSRF 纵深防御的一环，不应作为唯一防线；主流浏览器已默认 &lt;code&gt;Lax+POST&lt;/code&gt; 限制，仍需配合 CSRF Token / Origin / &lt;code&gt;Sec-Fetch-Site&lt;/code&gt; 校验。&lt;/p&gt;</description></item><item><title>第22章：IDaaS 性能与扩展性 — 缓存策略、集群扩展与容量规划 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</link><pubDate>Fri, 03 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</guid><description>&lt;h2 id="221-idaas-的性能模型"&gt;22.1 IDaaS 的性能模型&lt;/h2&gt;
 &lt;p&gt;IDaaS 系统的负载特征：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;读多写少&lt;/strong&gt;：认证操作远多于管理操作（100:1 或更高）&lt;/li&gt;
@@ -213,7 +213,7 @@ db-pool-max-size: 单节点合理的最大连接数
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h3 id="读写分离"&gt;读写分离&lt;/h3&gt;
-&lt;p&gt;对于大规模部署（&amp;gt;100K 用户）：&lt;/p&gt;</description></item><item><title>第23章：去中心化身份与可验证凭证</title><link>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</link><pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</guid><description>&lt;h2 id="231-当前身份模型的根本缺陷"&gt;23.1 当前身份模型的根本缺陷&lt;/h2&gt;
+&lt;p&gt;对于大规模部署（&amp;gt;100K 用户）：&lt;/p&gt;</description></item><item><title>第23章：去中心化身份与可验证凭证 — DID、VC 与自主权身份技术详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</link><pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</guid><description>&lt;h2 id="231-当前身份模型的根本缺陷"&gt;23.1 当前身份模型的根本缺陷&lt;/h2&gt;
 &lt;p&gt;当前的&amp;quot;中心化 + 联邦&amp;quot;身份模型有三个根本问题：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;身份数据被平台控制&lt;/strong&gt;：用户的数据存在各个 IdP 上，用户没有真正的所有权。&lt;/li&gt;
@@ -267,7 +267,7 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h3 id="did-方法"&gt;DID 方法&lt;/h3&gt;
-&lt;p&gt;不同的 DID 方法对应不同的底层技术：&lt;/p&gt;</description></item><item><title>第24章：零信任与身份驱动安全</title><link>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</link><pubDate>Sun, 05 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</guid><description>&lt;h2 id="241-从城堡到零信任"&gt;24.1 从城堡到零信任&lt;/h2&gt;
+&lt;p&gt;不同的 DID 方法对应不同的底层技术：&lt;/p&gt;</description></item><item><title>第24章：零信任与身份驱动安全 — 从架构到落地的完整指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</link><pubDate>Sun, 05 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</guid><description>&lt;h2 id="241-从城堡到零信任"&gt;24.1 从城堡到零信任&lt;/h2&gt;
 &lt;h3 id="传统安全模型城堡与护城河"&gt;传统安全模型：城堡与护城河&lt;/h3&gt;
 
 

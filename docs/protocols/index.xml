@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第二部分：协议与标准 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/</link><description>Recent content in 第二部分：协议与标准 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/protocols/index.xml" rel="self" type="application/rss+xml"/><item><title>第5章：OAuth 2.0 深度解读</title><link>https://idaas.xlabs.club/docs/protocols/oauth2-deep-dive/</link><pubDate>Thu, 01 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2-deep-dive/</guid><description>&lt;h2 id="51-设计哲学"&gt;5.1 设计哲学&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第二部分：协议与标准 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/</link><description>Recent content in 第二部分：协议与标准 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/protocols/index.xml" rel="self" type="application/rss+xml"/><item><title>第5章：OAuth 2.0 深度解读 — 授权模式、令牌管理与安全最佳实践 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/oauth2-deep-dive/</link><pubDate>Thu, 01 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2-deep-dive/</guid><description>&lt;h2 id="51-设计哲学"&gt;5.1 设计哲学&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0（RFC 6749）是由 IETF 制定的授权框架，它的核心使命简单而明确：&lt;strong&gt;让用户可以在不向第三方应用暴露自己密码的情况下，授权该应用访问自己在服务提供商处的受保护资源。&lt;/strong&gt;&lt;/p&gt;
 &lt;h3 id="oauth-20-解决的真实问题"&gt;OAuth 2.0 解决的真实问题&lt;/h3&gt;
 &lt;p&gt;想象一个场景：你想让一个照片冲印应用访问你存在云盘上的照片。&lt;/p&gt;
@@ -135,7 +135,7 @@
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id="pkce授权码流程的安全补丁"&gt;PKCE：授权码流程的安全补丁&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;PKCE（Proof Key for Code Exchange，RFC 7636）&lt;/strong&gt; 是授权码流程的关键安全扩展。它最初为移动 App 设计（因为移动端无法安全存储 client_secret），但现在 &lt;strong&gt;OAuth 2.1 要求所有客户端都必须使用 PKCE&lt;/strong&gt;。&lt;/p&gt;</description></item><item><title>第6章：OpenID Connect</title><link>https://idaas.xlabs.club/docs/protocols/openid-connect/</link><pubDate>Fri, 02 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/openid-connect/</guid><description>&lt;h2 id="61-oauth-20-缺了什么"&gt;6.1 OAuth 2.0 缺了什么？&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;PKCE（Proof Key for Code Exchange，RFC 7636）&lt;/strong&gt; 是授权码流程的关键安全扩展。它最初为移动 App 设计（因为移动端无法安全存储 client_secret），但现在 &lt;strong&gt;OAuth 2.1 要求所有客户端都必须使用 PKCE&lt;/strong&gt;。&lt;/p&gt;</description></item><item><title>第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/openid-connect/</link><pubDate>Fri, 02 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/openid-connect/</guid><description>&lt;h2 id="61-oauth-20-缺了什么"&gt;6.1 OAuth 2.0 缺了什么？&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0 解决的是&lt;strong&gt;授权&lt;/strong&gt;问题——我允许这个应用访问我的资源。但它没有解决&lt;strong&gt;认证&lt;/strong&gt;问题——这个用户是谁？&lt;/p&gt;
 &lt;p&gt;很多开发者早期犯的错误是用 OAuth 2.0 来做认证：&lt;/p&gt;
 
@@ -205,7 +205,7 @@
 &lt;/table&gt;
 &lt;h2 id="63-id-token-深度解析"&gt;6.3 ID Token 深度解析&lt;/h2&gt;
 &lt;h3 id="jwt-结构"&gt;JWT 结构&lt;/h3&gt;
-&lt;p&gt;JWT（JSON Web Token，RFC 7519）由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>第7章：SAML 2.0</title><link>https://idaas.xlabs.club/docs/protocols/saml2/</link><pubDate>Sat, 03 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2/</guid><description>&lt;h2 id="71-历史与现状"&gt;7.1 历史与现状&lt;/h2&gt;
+&lt;p&gt;JWT（JSON Web Token，RFC 7519）由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>第7章：SAML 2.0 — 断言、绑定、元数据与身份联邦 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2/</link><pubDate>Sat, 03 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2/</guid><description>&lt;h2 id="71-历史与现状"&gt;7.1 历史与现状&lt;/h2&gt;
 &lt;p&gt;SAML（Security Assertion Markup Language）是由 OASIS 标准组织制定的基于 XML 的身份联邦协议。SAML 2.0 于 2005 年发布，是 Web 浏览器 SSO 的行业先驱。&lt;/p&gt;
 &lt;p&gt;尽管 OIDC 在新应用中的采用率已远超 SAML，但 SAML 2.0 在企业级应用中依然占有重要地位。特别是在以下场景：&lt;/p&gt;
 &lt;ul&gt;
@@ -271,7 +271,7 @@
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>第8章：LDAP 与目录服务</title><link>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</link><pubDate>Sun, 04 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</guid><description>&lt;h2 id="81-目录服务概述"&gt;8.1 目录服务概述&lt;/h2&gt;
+&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>第8章：LDAP 与目录服务 — Active Directory 集成与目录同步 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</link><pubDate>Sun, 04 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</guid><description>&lt;h2 id="81-目录服务概述"&gt;8.1 目录服务概述&lt;/h2&gt;
 &lt;p&gt;目录服务是一种专门为读操作优化的分布式数据库，用于存储组织化的、层次化的信息。在 IDaaS 中，目录服务是最重要的身份数据存储方式之一。&lt;/p&gt;
 &lt;h3 id="为什么不是关系数据库"&gt;为什么不是关系数据库？&lt;/h3&gt;
 &lt;table&gt;
@@ -463,7 +463,7 @@ cn=张三 cn=engineers&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h2 id="83-active-directory"&gt;8.3 Active Directory&lt;/h2&gt;
-&lt;p&gt;Microsoft Active Directory 是最广泛部署的目录服务。了解 AD 对于 IDaaS 实践至关重要，因为大多数企业仍在使用 AD 管理员工身份。&lt;/p&gt;</description></item><item><title>第9章：SCIM 协议</title><link>https://idaas.xlabs.club/docs/protocols/scim-protocol/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/scim-protocol/</guid><description>&lt;h2 id="91-为什么需要-scim"&gt;9.1 为什么需要 SCIM？&lt;/h2&gt;
+&lt;p&gt;Microsoft Active Directory 是最广泛部署的目录服务。了解 AD 对于 IDaaS 实践至关重要，因为大多数企业仍在使用 AD 管理员工身份。&lt;/p&gt;</description></item><item><title>第9章：SCIM 协议 — 跨域用户配置与身份同步标准 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/scim-protocol/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/scim-protocol/</guid><description>&lt;h2 id="91-为什么需要-scim"&gt;9.1 为什么需要 SCIM？&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0 和 OIDC 解决了认证和授权问题，SAML 解决了联邦 SSO 问题，但它们都没有回答一个问题：如何标准化地创建、更新和删除用户？&lt;/p&gt;
 &lt;p&gt;在 SCIM 出现之前，每个系统都有自己的用户 API：&lt;/p&gt;
 

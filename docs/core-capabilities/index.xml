@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第三部分：核心能力 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/</link><description>Recent content in 第三部分：核心能力 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/core-capabilities/index.xml" rel="self" type="application/rss+xml"/><item><title>第10章：单点登录（SSO）</title><link>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</link><pubDate>Fri, 01 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</guid><description>&lt;h2 id="101-sso-的核心理念"&gt;10.1 SSO 的核心理念&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第三部分：核心能力 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/</link><description>Recent content in 第三部分：核心能力 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/core-capabilities/index.xml" rel="self" type="application/rss+xml"/><item><title>第10章：单点登录（SSO）— 架构模式、会话管理与跨域方案 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</link><pubDate>Fri, 01 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</guid><description>&lt;h2 id="101-sso-的核心理念"&gt;10.1 SSO 的核心理念&lt;/h2&gt;
 &lt;p&gt;单点登录（Single Sign-On, SSO）的核心承诺：&lt;strong&gt;用户只需认证一次，即可访问所有被授权的应用。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;这不仅是用户体验的改善，更是安全性提升。原因很简单：&lt;/p&gt;
 &lt;ul&gt;
@@ -45,7 +45,7 @@
  [App1] [App2] [App3] [App4]&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;用户无论在哪个 IdP 认证，都能访问信任域中的任何应用。&lt;/p&gt;</description></item><item><title>第11章：多因素认证（MFA）</title><link>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</guid><description>&lt;h2 id="111-密码已死"&gt;11.1 密码已死？&lt;/h2&gt;
+&lt;p&gt;用户无论在哪个 IdP 认证，都能访问信任域中的任何应用。&lt;/p&gt;</description></item><item><title>第11章：多因素认证（MFA）— TOTP、FIDO2、WebAuthn 与自适应认证 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</guid><description>&lt;h2 id="111-密码已死"&gt;11.1 密码已死？&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&amp;ldquo;密码就像是蟑螂——你灭不掉它，但你可以让它不再那么讨厌。&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -104,7 +104,7 @@
 &lt;p&gt;MFA 要求使用至少两个&lt;strong&gt;不同类型&lt;/strong&gt;的因素。密码 + 确认密码 = 单因素。密码 + TOTP = 双因素。&lt;/p&gt;
 &lt;h2 id="113-常用-mfa-方案深度对比"&gt;11.3 常用 MFA 方案深度对比&lt;/h2&gt;
 &lt;h3 id="totptime-based-one-time-password"&gt;TOTP（Time-based One-Time Password）&lt;/h3&gt;
-&lt;p&gt;基于时间的动态口令，每 30 秒生成一个新的 6 位数字。&lt;/p&gt;</description></item><item><title>第12章：身份联邦与代理</title><link>https://idaas.xlabs.club/docs/core-capabilities/identity-federation-brokering/</link><pubDate>Sun, 03 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/identity-federation-brokering/</guid><description>&lt;h2 id="121-概念辨析"&gt;12.1 概念辨析&lt;/h2&gt;
+&lt;p&gt;基于时间的动态口令，每 30 秒生成一个新的 6 位数字。&lt;/p&gt;</description></item><item><title>第12章：身份联邦与代理 — 跨域身份互信、联邦拓扑与协议桥接 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/identity-federation-brokering/</link><pubDate>Sun, 03 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/identity-federation-brokering/</guid><description>&lt;h2 id="121-概念辨析"&gt;12.1 概念辨析&lt;/h2&gt;
 &lt;h3 id="身份联邦identity-federation"&gt;身份联邦（Identity Federation）&lt;/h3&gt;
 &lt;p&gt;多个组织或域之间建立信任关系，允许用户在各自的身份域中认证，但可以访问信任域中的资源。&lt;/p&gt;
 &lt;p&gt;关键特征：&lt;strong&gt;跨组织边界&lt;/strong&gt;，&lt;strong&gt;通过信任建立&lt;/strong&gt;，&lt;strong&gt;身份数据源分布在多个组织&lt;/strong&gt;。&lt;/p&gt;
@@ -141,7 +141,7 @@
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h3 id="saml-联邦"&gt;SAML 联邦&lt;/h3&gt;
-&lt;p&gt;SAML 是联邦的&amp;quot;第一语言&amp;quot;：&lt;/p&gt;</description></item><item><title>第13章：审计与合规</title><link>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</link><pubDate>Mon, 04 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</guid><description>&lt;h2 id="131-审计的价值"&gt;13.1 审计的价值&lt;/h2&gt;
+&lt;p&gt;SAML 是联邦的&amp;quot;第一语言&amp;quot;：&lt;/p&gt;</description></item><item><title>第13章：IDaaS 审计与合规 — 等保、ISO 27001 与异常检测实践 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</link><pubDate>Mon, 04 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</guid><description>&lt;h2 id="131-审计的价值"&gt;13.1 审计的价值&lt;/h2&gt;
 &lt;p&gt;身份审计不仅仅是&amp;quot;记录日志&amp;quot;，它是安全运营的三大支柱之一：&lt;/p&gt;
 
 

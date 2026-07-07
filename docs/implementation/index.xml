@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第四部分：实现与实践 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/</link><description>Recent content in 第四部分：实现与实践 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/implementation/index.xml" rel="self" type="application/rss+xml"/><item><title>第14章：Keycloak 架构深度解析</title><link>https://idaas.xlabs.club/docs/implementation/keycloak-architecture/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/keycloak-architecture/</guid><description>&lt;h2 id="141-keycloak-的设计哲学"&gt;14.1 Keycloak 的设计哲学&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第四部分：实现与实践 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/</link><description>Recent content in 第四部分：实现与实践 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/implementation/index.xml" rel="self" type="application/rss+xml"/><item><title>第14章：Keycloak 架构深度解析 — 核心组件、部署架构与扩展机制 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/keycloak-architecture/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/keycloak-architecture/</guid><description>&lt;h2 id="141-keycloak-的设计哲学"&gt;14.1 Keycloak 的设计哲学&lt;/h2&gt;
 &lt;p&gt;Keycloak 是 Red Hat 主导开源的 IAM 解决方案。它的设计哲学可概括为：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;开箱即用&lt;/strong&gt;：快速部署，即可使用完整 SSO、社交登录、MFA&lt;/li&gt;
@@ -62,7 +62,7 @@
 &lt;/div&gt;
 &lt;h2 id="143-核心概念"&gt;14.3 核心概念&lt;/h2&gt;
 &lt;h3 id="realm域"&gt;Realm（域）&lt;/h3&gt;
-&lt;p&gt;Realm 是 Keycloak 中最核心的隔离单位。一个 Realm 管理一组用户、凭证、角色和组。不同 Realm 之间完全隔离。&lt;/p&gt;</description></item><item><title>第15章：Apereo CAS</title><link>https://idaas.xlabs.club/docs/implementation/cas-apereo/</link><pubDate>Tue, 02 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/cas-apereo/</guid><description>&lt;h2 id="151-cas-简介"&gt;15.1 CAS 简介&lt;/h2&gt;
+&lt;p&gt;Realm 是 Keycloak 中最核心的隔离单位。一个 Realm 管理一组用户、凭证、角色和组。不同 Realm 之间完全隔离。&lt;/p&gt;</description></item><item><title>第15章：Apereo CAS — 开源企业级 SSO 与 CAS 协议详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/cas-apereo/</link><pubDate>Tue, 02 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/cas-apereo/</guid><description>&lt;h2 id="151-cas-简介"&gt;15.1 CAS 简介&lt;/h2&gt;
 &lt;p&gt;Apereo CAS（Central Authentication Service）是教育和技术社区最古老、最广泛使用的开源 SSO 解决方案之一。始于耶鲁大学（2002年），现由 Apereo 基金会维护。&lt;/p&gt;
 &lt;p&gt;CAS 的定位是：&lt;strong&gt;专注于 Web SSO 的认证服务器&lt;/strong&gt;，提供了丰富的协议支持和现代的身份管理能力。&lt;/p&gt;
 &lt;h2 id="152-cas-与-keycloak-的定位差异"&gt;15.2 CAS 与 Keycloak 的定位差异&lt;/h2&gt;
@@ -125,7 +125,7 @@
 &lt;/ul&gt;
 &lt;h2 id="153-cas-架构"&gt;15.3 CAS 架构&lt;/h2&gt;
 &lt;h3 id="核心设计assembly-line"&gt;核心设计：Assembly Line&lt;/h3&gt;
-&lt;p&gt;CAS 使用&amp;quot;装配线&amp;quot;模式处理认证请求：&lt;/p&gt;</description></item><item><title>第16章：Dex 身份代理</title><link>https://idaas.xlabs.club/docs/implementation/dex-identity/</link><pubDate>Wed, 03 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/dex-identity/</guid><description>&lt;h2 id="161-dex-的设计定位"&gt;16.1 Dex 的设计定位&lt;/h2&gt;
+&lt;p&gt;CAS 使用&amp;quot;装配线&amp;quot;模式处理认证请求：&lt;/p&gt;</description></item><item><title>第16章：Dex 身份代理 — Kubernetes 原生 OIDC 联邦方案 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/dex-identity/</link><pubDate>Wed, 03 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/dex-identity/</guid><description>&lt;h2 id="161-dex-的设计定位"&gt;16.1 Dex 的设计定位&lt;/h2&gt;
 &lt;p&gt;Dex 最初由 CoreOS 开发，现由 dexidp 社区维护（CNCF 生态相关），专门为 Kubernetes 生态设计。它的定位非常精准：&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;Dex 不是一个完整的 IAM 系统，它是一个 OIDC 身份代理。&lt;/strong&gt;&lt;/p&gt;
@@ -257,7 +257,7 @@
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h3 id="连接器类型"&gt;连接器类型&lt;/h3&gt;
-&lt;p&gt;Dex 支持的连接器：&lt;/p&gt;</description></item><item><title>第17章：IDaaS 方案全景对比</title><link>https://idaas.xlabs.club/docs/implementation/other-idaas-solutions/</link><pubDate>Thu, 04 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/other-idaas-solutions/</guid><description>&lt;h2 id="171-idaas-市场格局"&gt;17.1 IDaaS 市场格局&lt;/h2&gt;
+&lt;p&gt;Dex 支持的连接器：&lt;/p&gt;</description></item><item><title>第17章：IDaaS 方案全景对比 — Keycloak vs CAS vs Dex 选型决策框架 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/other-idaas-solutions/</link><pubDate>Thu, 04 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/other-idaas-solutions/</guid><description>&lt;h2 id="171-idaas-市场格局"&gt;17.1 IDaaS 市场格局&lt;/h2&gt;
 &lt;p&gt;当前 IDaaS 市场可分为以下几个阵营：&lt;/p&gt;
 
 
@@ -295,7 +295,7 @@
 &lt;li&gt;SPI 机制支持深度定制&lt;/li&gt;
 &lt;li&gt;文档相对完善&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;不足&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>第18章：集成模式与实践</title><link>https://idaas.xlabs.club/docs/implementation/integration-patterns/</link><pubDate>Fri, 05 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/integration-patterns/</guid><description>&lt;h2 id="181-集成模式概览"&gt;18.1 集成模式概览&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;不足&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>第18章：IDaaS 集成模式与实践 — 网关、BFF 与 Sidecar 架构模式 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/integration-patterns/</link><pubDate>Fri, 05 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/integration-patterns/</guid><description>&lt;h2 id="181-集成模式概览"&gt;18.1 集成模式概览&lt;/h2&gt;
 &lt;p&gt;将 IDaaS 集成到应用架构中有多种模式，选择正确的模式取决于应用类型、安全要求和技术栈：&lt;/p&gt;
 &lt;table&gt;
 	&lt;thead&gt;
@@ -370,7 +370,7 @@
 &lt;li&gt;后端服务不知道&amp;quot;谁&amp;quot;在访问&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="nginx--oauth2-代理"&gt;Nginx + OAuth2 代理&lt;/h3&gt;
-&lt;p&gt;使用 &lt;code&gt;oauth2-proxy&lt;/code&gt; 为任何 HTTP 应用添加 OAuth 2.0 保护：&lt;/p&gt;</description></item><item><title>第19章：Kubernetes 生产环境部署</title><link>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</link><pubDate>Sat, 06 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</guid><description>&lt;h2 id="191-部署方式选择"&gt;19.1 部署方式选择&lt;/h2&gt;
+&lt;p&gt;使用 &lt;code&gt;oauth2-proxy&lt;/code&gt; 为任何 HTTP 应用添加 OAuth 2.0 保护：&lt;/p&gt;</description></item><item><title>第19章：Keycloak Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</link><pubDate>Sat, 06 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</guid><description>&lt;h2 id="191-部署方式选择"&gt;19.1 部署方式选择&lt;/h2&gt;
 &lt;p&gt;在 Kubernetes 上部署 IDaaS（以 Keycloak 为例），有三种主流方式：&lt;/p&gt;
 &lt;table&gt;
 	&lt;thead&gt;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第一部分：IDaaS 基础 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/</link><description>Recent content in 第一部分：IDaaS 基础 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/fundamentals/index.xml" rel="self" type="application/rss+xml"/><item><title>第1章：什么是 IDaaS</title><link>https://idaas.xlabs.club/docs/fundamentals/what-is-idaas/</link><pubDate>Mon, 01 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/what-is-idaas/</guid><description>&lt;h2 id="11-定义"&gt;1.1 定义&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第一部分：IDaaS 基础 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/</link><description>Recent content in 第一部分：IDaaS 基础 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/fundamentals/index.xml" rel="self" type="application/rss+xml"/><item><title>第1章：什么是 IDaaS — 定义、演进与企业身份即服务的核心价值 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/what-is-idaas/</link><pubDate>Mon, 01 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/what-is-idaas/</guid><description>&lt;h2 id="11-定义"&gt;1.1 定义&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;IDaaS&lt;/strong&gt;（Identity as a Service，身份即服务）是将身份管理能力以云服务形式交付的一种架构模式。它涵盖了用户身份的创建、维护、认证、授权和审计的全生命周期管理，通过标准化的 API 和协议向应用系统提供统一的身份服务。&lt;/p&gt;
 &lt;p&gt;Gartner 将 IDaaS 定义为：&amp;ldquo;通过云端交付的、综合性的身份和访问管理服务，包括身份治理与管理（IGA）、访问管理（AM）和特权访问管理（PAM）等功能。&amp;rdquo;&lt;/p&gt;
 &lt;p&gt;从技术角度看，IDaaS 解决的是这样一个核心问题：在一个应用数量爆炸、部署环境异构的世界里，如何让正确的人，在正确的时间，以正确的方式，访问正确的资源？&lt;/p&gt;
@@ -70,7 +70,7 @@
 &lt;/table&gt;
 &lt;h2 id="13-idaas-的演进历程"&gt;1.3 IDaaS 的演进历程&lt;/h2&gt;
 &lt;h3 id="第一阶段目录服务时代1990s-2000s"&gt;第一阶段：目录服务时代（1990s-2000s）&lt;/h3&gt;
-&lt;p&gt;以 Microsoft Active Directory 和 LDAP 目录服务为代表。这个阶段的身份管理主要是&amp;quot;企业内部的员工账号管理&amp;quot;，认证协议以 Kerberos、NTLM 为主，目录访问以 LDAP 为主。身份管理的范畴局限于企业内网，外部用户和合作伙伴的身份管理极其有限。&lt;/p&gt;</description></item><item><title>第2章：IAM 核心理念</title><link>https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/</link><pubDate>Tue, 02 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/</guid><description>&lt;h2 id="21-iam-的定义与范畴"&gt;2.1 IAM 的定义与范畴&lt;/h2&gt;
+&lt;p&gt;以 Microsoft Active Directory 和 LDAP 目录服务为代表。这个阶段的身份管理主要是&amp;quot;企业内部的员工账号管理&amp;quot;，认证协议以 Kerberos、NTLM 为主，目录访问以 LDAP 为主。身份管理的范畴局限于企业内网，外部用户和合作伙伴的身份管理极其有限。&lt;/p&gt;</description></item><item><title>第2章：IAM 核心理念 — AAA 模型、设计原则与身份架构 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/</link><pubDate>Tue, 02 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/</guid><description>&lt;h2 id="21-iam-的定义与范畴"&gt;2.1 IAM 的定义与范畴&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;IAM&lt;/strong&gt;（Identity and Access Management，身份与访问管理）是信息安全领域的基础性学科，涵盖确保&amp;quot;正确的个体在正确的时间以正确的原因访问正确的资源&amp;quot;所需的所有策略、流程和技术。&lt;/p&gt;
 &lt;p&gt;IAM 的四大核心要素：&lt;/p&gt;
 &lt;ul&gt;
@@ -137,7 +137,7 @@
 &lt;p&gt;&lt;strong&gt;LDAP 目录&lt;/strong&gt;：树状结构，读取性能优异，写入性能一般。适合员工身份存储。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;关系数据库&lt;/strong&gt;：扁平表结构，灵活查询。适合需要复杂关联查询的场景。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;云目录&lt;/strong&gt;：如 Microsoft Entra ID（原 Azure AD）、Google Cloud Identity。原生支持云应用，弹性伸缩。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;图数据库&lt;/strong&gt;：如 Neo4j。适合复杂的身份关系建模，如组织架构、权限继承链。&lt;/p&gt;</description></item><item><title>第3章：认证与授权深度辨析</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;图数据库&lt;/strong&gt;：如 Neo4j。适合复杂的身份关系建模，如组织架构、权限继承链。&lt;/p&gt;</description></item><item><title>第3章：认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&amp;ldquo;我已经登录了，为什么还不能访问这个页面？&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -197,7 +197,7 @@
 3. 后续请求携带 Cookie，服务端查找 Session 验证&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;特点：有状态，服务端存储 Session；可即时吊销；扩展困难（Session 同步）。&lt;/p&gt;</description></item><item><title>第4章：身份生命周期管理</title><link>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</link><pubDate>Thu, 04 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</guid><description>&lt;h2 id="41-身份生命周期的阶段"&gt;4.1 身份生命周期的阶段&lt;/h2&gt;
+&lt;p&gt;特点：有状态，服务端存储 Session；可即时吊销；扩展困难（Session 同步）。&lt;/p&gt;</description></item><item><title>第4章：身份生命周期管理 — 从创建到注销的全流程治理 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</link><pubDate>Thu, 04 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/identity-lifecycle/</guid><description>&lt;h2 id="41-身份生命周期的阶段"&gt;4.1 身份生命周期的阶段&lt;/h2&gt;
 &lt;p&gt;每个数字身份都会经历从诞生到终结的完整旅程：&lt;/p&gt;
 
 
