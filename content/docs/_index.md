@@ -21,6 +21,6 @@ toc: true
 | 📘 第一部分：IDaaS 基础 | 第 1–4 章 | 定义与演进、IAM 核心理念、AuthN vs AuthZ、身份生命周期 |
 | 📗 第二部分：协议与标准 | 第 5–9 章 | OAuth 2.0、OpenID Connect、SAML 2.0、LDAP、SCIM |
 | 📙 第三部分：核心能力 | 第 10–13 章 | SSO、MFA、身份联邦与代理、审计与合规 |
-| 📕 第四部分：实现与实践 | 第 14–19 章 | Keycloak、Apereo CAS、Dex、Authentik、方案对比、集成模式、K8s 部署 |
+| 📕 第四部分：实现与实践 | 第 14–19 章 | Keycloak、Apereo CAS、Dex、方案对比、集成模式、K8s 部署 |
 | 📓 第五部分：高级主题 | 第 20–24 章 | 授权模型、安全实践、性能扩展、去中心化身份、零信任 |
-| 📎 附录 | — | 术语速查表 |
+| 📎 附录 | — | [术语速查表]({{< relref "docs/glossary.md" >}})、[解决方案博客]({{< relref "docs/solution-blogs/_index.md" >}}) |
