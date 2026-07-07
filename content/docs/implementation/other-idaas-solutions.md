@@ -140,6 +140,8 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 - 资源占用相对较高
 - 社区与文档成熟度不及 Keycloak
 
+> 关于 Authentik 的架构、Flow Builder、Outpost 代理机制以及生产部署实践，参见 [Authentik 开源 IAM 平台详解]({{< relref "docs/implementation/authentik-deep-dive.md" >}})。
+
 ### ORY 体系
 
 **类型**：API-first 的组合式开源身份与授权栈
