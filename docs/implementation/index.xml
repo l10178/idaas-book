@@ -437,4 +437,47 @@
 &lt;/table&gt;
 &lt;h2 id="192-使用-keycloak-operator"&gt;19.2 使用 Keycloak Operator&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;版本提示：Keycloak 官方下载页与 GitHub Release 显示当前稳定版为 &lt;code&gt;26.6.4&lt;/code&gt;（2026-07-01 检查）；官方 Operator 安装文档同样提供 &lt;code&gt;26.6.4&lt;/code&gt; 的 &lt;code&gt;keycloak-k8s-resources&lt;/code&gt; 示例。Keycloak 迭代很快，部署时请到 &lt;a href="https://www.keycloak.org/downloads"&gt;keycloak.org/downloads&lt;/a&gt;、&lt;a href="https://github.com/keycloak/keycloak/releases"&gt;Keycloak Releases&lt;/a&gt; 与 &lt;a href="https://www.keycloak.org/operator/installation"&gt;Operator 安装文档&lt;/a&gt; 复核&lt;strong&gt;当前最新稳定版&lt;/strong&gt;，并保持 Operator 版本与 Keycloak 镜像一致。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;版本提示：Keycloak 官方下载页与 GitHub Release 显示当前稳定版为 &lt;code&gt;26.6.4&lt;/code&gt;（2026-07-01 检查）；官方 Operator 安装文档同样提供 &lt;code&gt;26.6.4&lt;/code&gt; 的 &lt;code&gt;keycloak-k8s-resources&lt;/code&gt; 示例。Keycloak 迭代很快，部署时请到 &lt;a href="https://www.keycloak.org/downloads"&gt;keycloak.org/downloads&lt;/a&gt;、&lt;a href="https://github.com/keycloak/keycloak/releases"&gt;Keycloak Releases&lt;/a&gt; 与 &lt;a href="https://www.keycloak.org/operator/installation"&gt;Operator 安装文档&lt;/a&gt; 复核&lt;strong&gt;当前最新稳定版&lt;/strong&gt;，并保持 Operator 版本与 Keycloak 镜像一致。&lt;/p&gt;</description></item><item><title>Authentik — Python 生态的开源 IAM 平台详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/authentik-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/authentik-deep-dive/</guid><description>&lt;p&gt;Authentik 是一个用 Python/Django 编写的开源身份验证与授权平台，2020 年由 Jens Langhammer 创建，当前最新稳定版为 &lt;strong&gt;2026.5.3&lt;/strong&gt;（2026 年 6 月发布），GitHub 22k+ star。它的核心差异点在于：用**可视化流程构建器（Flow Builder）**替代硬编码的认证逻辑，用 &lt;strong&gt;Outpost 代理&lt;/strong&gt; 将认证能力延伸到任意网络边界，同时保持 Python 生态的灵活性和可编程性。&lt;/p&gt;
+&lt;h2 id="核心设计思路"&gt;核心设计思路&lt;/h2&gt;
+&lt;p&gt;Authentik 的设计围绕三个核心概念展开：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Flow（流程）&lt;/strong&gt;：一切认证行为——登录、注册、MFA 验证、密码重置、用户设置——都是可拖拽编排的流程。你可以像搭积木一样组合&amp;quot;用户名密码验证 → TOTP 验证 → 用户信息确认&amp;quot;形成一条完整的登录流水线。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Outpost（前哨）&lt;/strong&gt;：Authentik 核心不直接面向外部流量，而是通过 Go 编写的轻量 Outpost 代理（LDAP Outpost、Proxy Outpost、Radius Outpost）部署在目标网络内，作为认证网关。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Policy / Binding（策略与绑定）&lt;/strong&gt;：权限控制通过表达式策略实现，支持 Python 表达式、用户属性、IP 范围等条件，策略可绑定到 Flow、应用、属性映射等任何资源上。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="架构全景"&gt;架构全景&lt;/h2&gt;
+&lt;div class="mermaid text-center"&gt;flowchart TB
+ subgraph "用户侧"
+ U[用户浏览器]
+ APP[下游应用]
+ end
+
+ subgraph "Authentik 核心"
+ WS[Web Server\nDjango + Channels]
+ DB[(PostgreSQL)]
+ REDIS[(Redis\n缓存 + WebSocket)]
+ CELERY[Celery Worker\n后台任务]
+ end
+
+ subgraph "Outpost 层"
+ PO[Proxy Outpost\nGo 反向代理]
+ LO[LDAP Outpost\nGo LDAP 服务器]
+ RO[Radius Outpost]
+ end
+
+ U --&gt;|HTTPS| PO
+ U --&gt;|登录页面| WS
+ APP --&gt;|LDAP 认证| LO
+ PO --&gt;|OAuth2/OIDC/SAML| WS
+ LO --&gt;|内部 API| WS
+ RO --&gt;|内部 API| WS
+ WS --&gt; DB
+ WS --&gt; REDIS
+ WS --&gt; CELERY
+
+ style WS fill:#4a90d9,color:#fff
+ style PO fill:#e67e22,color:#fff
+ style LO fill:#e67e22,color:#fff
+&lt;/div&gt;
+
+&lt;p&gt;核心（Django + PostgreSQL + Redis）负责策略决策、用户管理和流程编排；Outpost 负责协议转换和流量代理。两者通过内部 API 通信，Outpost 可部署在完全不同的网络区域。&lt;/p&gt;</description></item></channel></rss>
