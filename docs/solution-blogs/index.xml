@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>解决方案博客 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/</link><description>Recent content in 解决方案博客 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/solution-blogs/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。&lt;/p&gt;
+&lt;p&gt;一句话：&lt;strong&gt;Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;适用&lt;/th&gt;
+					&lt;th&gt;不适用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;内部工具统一认证（Grafana、Prometheus、Kibana）&lt;/td&gt;
+					&lt;td&gt;需要细粒度授权的对外 API（用 BFF 或 API 网关）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;快速给老旧应用加 OIDC 登录&lt;/td&gt;
+					&lt;td&gt;SPA 直连 Keycloak（不需要代理层）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;K8s Ingress 统一认证入口&lt;/td&gt;
+					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;多个应用共享同一个 oauth2-proxy 实例&lt;/td&gt;
+					&lt;td&gt;移动端 Native App（应该用系统浏览器 + PKCE）&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="架构"&gt;架构&lt;/h2&gt;
+&lt;div class="mermaid text-center"&gt;sequenceDiagram
+ participant Browser as 浏览器
+ participant Ingress as Nginx Ingress
+ participant Proxy as oauth2-proxy
+ participant App as 后端应用
+ participant KC as Keycloak
+
+ Browser-&gt;&gt;Ingress: GET /app
+ Ingress-&gt;&gt;Proxy: auth-url /oauth2/auth
+ Proxy--&gt;&gt;Ingress: 401 (未认证)
+ Ingress-&gt;&gt;Browser: 302 → Keycloak 登录页
+ Browser-&gt;&gt;KC: 登录
+ KC--&gt;&gt;Browser: 302 → /oauth2/callback
+ Browser-&gt;&gt;Proxy: GET /oauth2/callback?code=...
+ Proxy-&gt;&gt;KC: Token 交换 (code → tokens)
+ KC--&gt;&gt;Proxy: id_token + access_token + refresh_token
+ Proxy--&gt;&gt;Browser: Set-Cookie (_oauth2_proxy) + 302 → /app
+ Browser-&gt;&gt;Ingress: GET /app (带 Cookie)
+ Ingress-&gt;&gt;Proxy: auth-url (带 Cookie)
+ Proxy--&gt;&gt;Ingress: 202 (已认证)
+ Ingress-&gt;&gt;App: 代理请求 + X-Auth-Request-* Headers
+ App--&gt;&gt;Browser: 200 OK
+&lt;/div&gt;
+
+&lt;p&gt;流程要点：&lt;/p&gt;</description></item></channel></rss>

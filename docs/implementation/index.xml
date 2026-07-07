@@ -370,7 +370,7 @@
 &lt;li&gt;后端服务不知道&amp;quot;谁&amp;quot;在访问&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="nginx--oauth2-代理"&gt;Nginx + OAuth2 代理&lt;/h3&gt;
-&lt;p&gt;使用 &lt;code&gt;oauth2-proxy&lt;/code&gt; 为任何 HTTP 应用添加 OAuth 2.0 保护：&lt;/p&gt;</description></item><item><title>第19章：Keycloak Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</link><pubDate>Sat, 06 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</guid><description>&lt;h2 id="191-部署方式选择"&gt;19.1 部署方式选择&lt;/h2&gt;
+&lt;p&gt;使用 &lt;code&gt;oauth2-proxy&lt;/code&gt; 为任何 HTTP 应用添加 OAuth 2.0 保护。完整配置指南、生产排错与回滚方案见 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/"&gt;Keycloak + oauth2-proxy 集成实战指南&lt;/a&gt;，本节给出快速参考。&lt;/p&gt;</description></item><item><title>第19章：Keycloak Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</link><pubDate>Sat, 06 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</guid><description>&lt;h2 id="191-部署方式选择"&gt;19.1 部署方式选择&lt;/h2&gt;
 &lt;p&gt;在 Kubernetes 上部署 IDaaS（以 Keycloak 为例），有三种主流方式：&lt;/p&gt;
 &lt;table&gt;
 	&lt;thead&gt;
