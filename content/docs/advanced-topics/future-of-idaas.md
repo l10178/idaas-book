@@ -1,5 +1,5 @@
 ---
-title: "第23章：去中心化身份与可验证凭证"
+title: "第23章：去中心化身份与可验证凭证 — DID、VC 与自主权身份技术详解 | IDaaS Book"
 description: "DID、Verifiable Credentials、区块链身份：IDaaS 的下一场范式革命"
 date: 2024-05-04T00:00:00+08:00
 draft: false

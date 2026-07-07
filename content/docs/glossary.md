@@ -1,5 +1,5 @@
 ---
-title: "附录：术语表"
+title: "IDaaS 核心术语速查表 — IAM、OAuth、OIDC、SAML、SCIM 术语解释 | IDaaS Book"
 description: "IDaaS 核心术语速查表"
 date: 2024-05-05T00:00:00+08:00
 draft: false

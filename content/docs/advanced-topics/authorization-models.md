@@ -1,5 +1,5 @@
 ---
-title: "第20章：授权模型深度对比"
+title: "第20章：授权模型深度对比 — RBAC、ABAC 与 ReBAC 选型指南 | IDaaS Book"
 description: "RBAC、ABAC、PBAC、ReBAC 授权模型深度对比：原理、实现与选型指南"
 date: 2024-05-01T00:00:00+08:00
 draft: false

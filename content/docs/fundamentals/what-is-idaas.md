@@ -1,5 +1,5 @@
 ---
-title: "第1章：什么是 IDaaS"
+title: "第1章：什么是 IDaaS — 定义、演进与企业身份即服务的核心价值 | IDaaS Book"
 description: "身份即服务（IDaaS）的定义、起源、演进与核心价值"
 date: 2024-01-01T00:00:00+08:00
 draft: false

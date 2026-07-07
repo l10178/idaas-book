@@ -1,5 +1,5 @@
 ---
-title: "Liquibase 与 MySQL 组复制冲突"
+title: "Keycloak Liquibase 与 MySQL 组复制冲突排查与解决 | IDaaS Book"
 description: "Keycloak 在 MySQL Group Replication 下 Liquibase 数据库迁移失败的排查与解决方案：锁表与迁移串行化"
 date: 2024-04-01T00:00:00+08:00
 draft: false
@@ -59,3 +59,63 @@ CREATE TABLE `DATABASECHANGELOG` (
   PRIMARY KEY (`ID`,`AUTHOR`,`FILENAME`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
+## 问题症状
+
+Keycloak 启动时 Liquibase 报错，无法完成数据库迁移：
+
+```
+ERROR: Liquibase failed to start because the database is read-only
+or the current user lacks write permissions.
+```
+
+在 MySQL Group Replication 环境中，节点切换期间可能出现短暂只读状态，导致 Liquibase 的 `DATABASECHANGELOGLOCK` 表写入失败。
+
+## 根因分析
+
+Liquibase 使用 `DATABASECHANGELOGLOCK` 表实现分布式锁，防止多个 Keycloak 实例同时执行数据库迁移。在 MySQL Group Replication 环境下：
+
+1. 写节点（Primary）故障转移时，新 Primary 有短暂的只读窗口
+2. 如果 Keycloak 恰好在此时启动，Liquibase 获取锁失败
+3. Keycloak 默认会重试，但默认重试策略不够适应 GR 的切换耗时
+
+## 解决方案
+
+### 方案一：延长 Liquibase 重试
+
+在 Keycloak 配置中增加 Liquibase 的重试参数（Keycloak 21+ 支持）：
+
+```bash
+# 环境变量方式
+KC_DB_URL=jdbc:mysql://... 
+KC_SPI_LIQUIBASE_RETRY_COUNT=10
+KC_SPI_LIQUIBASE_RETRY_DELAY=5
+```
+
+### 方案二：调整 MySQL GR 参数
+
+```sql
+-- 降低只读窗口时间
+SET GLOBAL group_replication_member_expel_timeout = 10;
+SET GLOBAL group_replication_unreachable_majority_timeout = 30;
+```
+
+### 方案三：预检查数据库可写性
+
+在 Keycloak 启动脚本中增加预检查：
+
+```bash
+# 等待 MySQL 可写
+for i in $(seq 1 30); do
+  if mysql -h "$DB_HOST" -u "$DB_USER" -p"$DB_PASS" -e "SELECT 1" 2>/dev/null; then
+    echo "MySQL ready"
+    break
+  fi
+  sleep 2
+done
+```
+
+## 预防措施
+
+- 在 Kubernetes 中为 Keycloak Pod 配置 `initContainer` 做数据库就绪检查
+- MySQL GR 集群设置合理的故障转移超时，避免 Keycloak 启动窗口与 GR 切换窗口重叠
+- 生产环境建议使用 PostgreSQL，避免 MySQL GR 的只读状态问题

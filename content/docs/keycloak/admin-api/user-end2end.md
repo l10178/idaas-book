@@ -1,5 +1,5 @@
 ---
-title: "用户增删改查端到端"
+title: "Keycloak Admin API 实战：用户增删改查端到端操作指南 | IDaaS Book"
 description: "Keycloak Admin REST API 实战：用 curl 完成获取 token、列出用户、创建用户、解析 Location 头、删除用户的完整端到端流程"
 date: 2024-04-01T00:00:00+08:00
 draft: false
@@ -83,3 +83,58 @@ curl -X DELETE -H "Authorization: Bearer ${token}" \
 echo "====End test user CRUD===="
 
 ```
+## Admin CLI 方式
+
+```bash
+# 获取 Admin Token
+kcadm.sh config credentials --server http://localhost:8080 \
+  --realm master --user admin --password admin
+
+# 创建用户
+kcadm.sh create users -r myrealm \
+  -s username=alice -s email=alice@example.com -s enabled=true
+
+# 设置密码
+kcadm.sh set-password -r myrealm \
+  --username alice --new-password changeme --temporary
+
+# 查询用户
+kcadm.sh get users -r myrealm -q username=alice
+
+# 更新用户
+kcadm.sh update users/USER_ID -r myrealm \
+  -s firstName=Alice -s lastName=Smith
+
+# 删除用户
+kcadm.sh delete users/USER_ID -r myrealm
+```
+
+## REST API 方式
+
+```bash
+# 先获取 Admin Token
+TOKEN=$(curl -s -X POST http://localhost:8080/realms/master/protocol/openid-connect/token \
+  -d 'grant_type=password&client_id=admin-cli&username=admin&password=admin' \
+  | jq -r '.access_token')
+
+# 创建用户
+curl -X POST http://localhost:8080/admin/realms/myrealm/users \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","email":"alice@example.com","enabled":true}'
+
+# 列出用户
+curl http://localhost:8080/admin/realms/myrealm/users \
+  -H "Authorization: Bearer $TOKEN" | jq '.[] | {id,username,email}'
+```
+
+## 常见问题
+
+**Q: 创建用户后收不到密码重置邮件？**
+检查 `Realm Settings > Email` 中 SMTP 配置是否正确，测试连接后再试。
+
+**Q: 批量导入用户？**
+使用 Keycloak 的 Partial Import 功能，或直接通过 Admin API 循环调用创建接口。
+
+**Q: 用户属性（attributes）怎么设？**
+在创建请求的 `attributes` 字段中传 JSON 对象，例如 `{"department":"engineering","region":"cn"}`。

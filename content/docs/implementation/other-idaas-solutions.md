@@ -1,5 +1,5 @@
 ---
-title: "第17章：IDaaS 方案全景对比"
+title: "第17章：IDaaS 方案全景对比 — Keycloak vs CAS vs Dex 选型决策框架 | IDaaS Book"
 description: "主流 IDaaS 方案全景对比：开源 vs 商业，自建 vs SaaS，Keycloak、Janssen、Casdoor、Zitadel、Authelia、ORY、Dex、CAS 及商业方案选型决策框架"
 date: 2024-04-04T00:00:00+08:00
 draft: false

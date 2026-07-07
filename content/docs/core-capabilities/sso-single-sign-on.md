@@ -1,5 +1,5 @@
 ---
-title: "第10章：单点登录（SSO）"
+title: "第10章：单点登录（SSO）— 架构模式、会话管理与跨域方案 | IDaaS Book"
 description: "单点登录的完整实现：SSO 架构模式、会话管理、安全性考量与最佳实践"
 date: 2024-03-01T00:00:00+08:00
 draft: false

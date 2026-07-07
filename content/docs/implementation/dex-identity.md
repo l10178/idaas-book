@@ -1,5 +1,5 @@
 ---
-title: "第16章：Dex 身份代理"
+title: "第16章：Dex 身份代理 — Kubernetes 原生 OIDC 联邦方案 | IDaaS Book"
 description: "Dex 身份代理的架构、配置、与 Kubernetes 的集成及最佳实践"
 date: 2024-04-03T00:00:00+08:00
 draft: false

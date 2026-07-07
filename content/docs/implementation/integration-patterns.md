@@ -1,5 +1,5 @@
 ---
-title: "第18章：集成模式与实践"
+title: "第18章：IDaaS 集成模式与实践 — 网关、BFF 与 Sidecar 架构模式 | IDaaS Book"
 description: "IDaaS 集成的常见模式：网关模式、BFF 模式、Sidecar 模式、SDK 模式"
 date: 2024-04-05T00:00:00+08:00
 lastmod: 2026-07-06T00:00:00+08:00
