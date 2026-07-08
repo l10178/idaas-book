@@ -1,9 +1,9 @@
 ---
 title: "第8章：LDAP 与目录服务 — Active Directory 集成与目录同步 | IDaaS Book"
-description: "LDAP 协议原理、目录服务架构、Active Directory 集成与最佳实践"
+description: "LDAP 协议原理、目录服务架构、Active Directory 集成与最佳实践。涵盖 LDAP 搜索过滤器、LDAPS/TLS 安全传输、AD 用户同步与身份联邦场景。"
 date: 2024-02-04T00:00:00+08:00
 draft: false
-weight: 24
+weight: 27
 menu:
   docs:
     parent: "protocols"

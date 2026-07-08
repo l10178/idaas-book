@@ -1,9 +1,9 @@
 ---
-title: "第7章：SAML 2.0 — 断言、绑定、元数据与身份联邦 | IDaaS Book"
-description: "SAML 2.0 安全断言标记语言深度解读：协议流程、断言结构、元数据、与 OIDC 的对比"
+title: "第7章：SAML 2.0 — 断言、绑定、元数据、SP-Initiated SSO 流程图解 | IDaaS Book"
+description: "SAML 2.0 深度解读：SP-Initiated 与 IdP-Initiated SSO 完整 Mermaid 时序图、断言结构、元数据交换、与 OIDC 选型对比、安全最佳实践。覆盖 AD FS、Shibboleth、企业 SSO 场景。"
 date: 2024-02-03T00:00:00+08:00
 draft: false
-weight: 23
+weight: 25
 menu:
   docs:
     parent: "protocols"
@@ -79,31 +79,98 @@ SAML 定义的标准化请求-响应消息。最常见的协议是 **Web Browser
 
 ## 7.3 Web Browser SSO Profile 详解
 
-### SP-Initiated SSO
+### SP-Initiated SSO（SP 发起）
 
-由应用（SP）发起的 SSO：
+由应用（SP）发起的 SSO——这是最常见也最安全的模式：
 
+```mermaid
+sequenceDiagram
+    actor User as 用户
+    participant SP as 服务提供方<br/>(SP / 应用)
+    participant IdP as 身份提供方<br/>(IdP)
+
+    Note over User,IdP: ═══ 第一步：用户访问应用 ═══
+    User->>SP: 1. 访问受保护资源<br/>GET /app
+    SP->>SP: 2. 检查本地会话<br/>（无有效会话）
+    SP->>SP: 3. 生成 SAML AuthnRequest<br/>含 ID、Issuer、ACS URL
+
+    Note over User,IdP: ═══ 第二步：重定向到 IdP ═══
+    SP-->>User: 4. HTTP 302 重定向<br/>GET /sso?SAMLRequest=...&RelayState=...
+    User->>IdP: 5. 浏览器跟随重定向<br/>携带 SAMLRequest
+
+    Note over User,IdP: ═══ 第三步：IdP 认证用户 ═══
+    IdP->>IdP: 6. 验证 SAMLRequest<br/>（签名、Issuer、Destination）
+    IdP->>User: 7. 如果未登录，展示登录页面
+    User->>IdP: 8. 提交认证凭证
+    IdP->>IdP: 9. 验证凭证 + 生成 SAML Assertion<br/>签名（可选加密）
+
+    Note over User,IdP: ═══ 第四步：断言传回 SP ═══
+    IdP-->>User: 10. 返回自提交 HTML 表单<br/>含 SAMLResponse（POST Binding）
+    User->>SP: 11. 浏览器自动 POST /acs<br/>SAMLResponse=<Base64 编码的断言>
+
+    Note over User,IdP: ═══ 第五步：SP 验证并建立会话 ═══
+    SP->>SP: 12. 验证签名 & 断言有效期<br/>检查 InResponseTo / Audience / Recipient<br/>提取 NameID 和属性
+    SP->>SP: 13. 创建本地会话（Set-Cookie）
+    SP-->>User: 14. HTTP 302 → 原始请求页面
+    User->>SP: 15. 携带会话 Cookie 访问应用
+    SP-->>User: 16. 200 OK（已登录）
 ```
-用户              SP                   IdP
- │                │                    │
- │──访问应用─────→│                    │
- │                │──生成AuthnRequest  │
- │←──302重定向────│   (SAMLRequest)    │
- │──GET /sso──────│──────────────────→│
- │  (SAMLRequest) │                    │
- │                │                    │──用户未登录→要求认证
- │←──登录页面─────────────────────────│
- │──认证信息──────────────────────────→│
- │                │                    │──生成Assertion
- │←──自动提交POST包含SAMLResponse──────────────────│
- │──POST /acs─────→│                    │
- │(SAMLResponse)   │──验证断言,创建Session│
- │←──登录成功──────│                    │
+
+关键步骤解释：
+
+| 步骤 | 安全要点 | 常见失误 |
+|------|---------|---------|
+| 3. 生成 AuthnRequest | 必须包含随机 ID 和正确的 ACS URL | ACS URL 配置错误导致 IdP 拒绝 |
+| 4. 重定向 | RelayState 用于 SP 记住用户原始请求路径 | RelayState 被忽略导致登录后跳到首页 |
+| 6. IdP 验证 | 校验 Destination 与元数据中的端点一致 | Destination 校验缺失 → 可被用于断言转发攻击 |
+| 10-11. POST Binding | 断言通过用户浏览器回传，必须 HTTPS + 签名/加密 | 未加密断言中的敏感属性可被用户直接解码看到 |
+| 12. SP 验证 | 必须校验 InResponseTo、Audience、有效期、签名 | 跳过了 Audience 校验 → 同一 IdP 下不同 SP 可能互相接受断言 |
+
+### IdP-Initiated SSO（IdP 发起）
+
+用户从 IdP 门户/仪表板发起登录，省去 SP 发 AuthnRequest 的步骤：
+
+```mermaid
+sequenceDiagram
+    actor User as 用户
+    participant IdP as 身份提供方<br/>(IdP)
+    participant SP as 服务提供方<br/>(SP / 应用)
+
+    Note over User,SP: ═══ 第一步：用户在 IdP 门户发起 ═══
+    User->>IdP: 1. 登录 IdP 门户/仪表板
+    IdP->>IdP: 2. 用户已认证，<br/>展示可访问的应用列表
+    User->>IdP: 3. 点击目标应用图标
+
+    Note over User,SP: ═══ 第二步：IdP 直接生成断言 ═══
+    IdP->>IdP: 4. 生成 SAML Assertion<br/>⚠️ 无 AuthnRequest → 无 InResponseTo
+    IdP-->>User: 5. 返回自提交 HTML 表单<br/>含 SAMLResponse
+
+    Note over User,SP: ═══ 第三步：断言传回 SP ═══
+    User->>SP: 6. 浏览器自动 POST /acs<br/>SAMLResponse
+    SP->>SP: 7. 验证签名 & 有效期<br/>⚠️ InResponseTo 为空，<br/>需依赖其他机制防重放
+    SP->>SP: 8. 创建本地会话
+    SP-->>User: 9. 302 → 应用首页
 ```
 
-### IdP-Initiated SSO
+**⚠️ IdP-Initiated 的安全风险：**
 
-由 IdP 发起的 SSO。用户在 IdP 的仪表板上点击应用链接。流程类似但省去了 SP 发 AuthnRequest 的步骤。
+因为没有 AuthnRequest（无 InResponseTo），SP 无法将断言与一次特定的认证请求绑定。攻击者如果能获取一个有效的 SAML Assertion（例如通过中间人攻击、日志泄露、或浏览器历史），可以在断言有效期内向 SP 重放。
+
+因此安全最佳实践中通常建议：
+- **优先使用 SP-Initiated SSO**（有 InResponseTo 防重放）
+- 如需支持 IdP-Initiated，必须配合极短的断言有效期（建议 ≤ 2 分钟）
+- SP 端启用「禁止未请求的断言」（Unsolicited Response 检测），若配置允许则应记录审计日志
+
+### SP-Initiated vs IdP-Initiated 对比
+
+| 对比维度 | SP-Initiated | IdP-Initiated |
+|---------|-------------|---------------|
+| 触发方式 | 用户访问应用 → 被重定向到 IdP | 用户在 IdP 门户点击应用 |
+| AuthnRequest | 有（含 ID → InResponseTo） | 无 |
+| 防重放 | InResponseTo + 时间窗口 | 仅靠时间窗口（弱） |
+| 安全性 | ⭐⭐⭐⭐⭐ | ⭐⭐⭐ |
+| 用户体验 | 从应用入口进入 | 从 IdP 统一门户进入 |
+| 推荐场景 | 所有新部署 | 仅在门户型场景保留，配合短有效期
 
 ### SAMLRequest（AuthnRequest）
 
