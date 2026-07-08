@@ -38,6 +38,7 @@ sidebar:
 | [第三方开源集成]({{< relref "docs/keycloak/integrations/index.md" >}}) | Grafana、GitLab、Jenkins、NGINX、Vault、Harbor | 平台工程师 |
 | [解决方案博客]({{< relref "docs/solution-blogs/_index.md" >}}) | oauth2-proxy、Nginx Ingress、Traefik ForwardAuth 排错 | 所有读者 |
 | [常见问题排查]({{< relref "docs/keycloak/troubleshooting/_index.md" >}}) | HTTPS、Liquibase、K8s 导入导出 | 运维 |
+| [oauth2-proxy 深度解析]({{< relref "docs/implementation/oauth2-proxy-deep-dive.md" >}}) | Cookie/Session、Provider 对接、安全加固、方案对比 | 平台工程师 |
 
 ## 阅读建议
 
