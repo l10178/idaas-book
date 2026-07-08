@@ -1,6 +1,6 @@
 ---
 title: "第5章：OAuth 2.0 深度解读 — 授权模式、令牌管理与安全最佳实践 | IDaaS Book"
-description: "OAuth 2.0 授权框架的完整剖析：授权模式、令牌管理、安全最佳实践"
+description: "OAuth 2.0 授权框架完整剖析：授权码流程与 PKCE、四种 Grant Type 对比、Token 管理与刷新、安全最佳实践、OAuth 2.1 迁移指南、常见攻击面与防护"
 date: 2024-02-01T00:00:00+08:00
 draft: false
 weight: 21
