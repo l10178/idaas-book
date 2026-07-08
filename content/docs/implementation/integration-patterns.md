@@ -183,7 +183,7 @@ spec:
 
 直接使用各生态的 OIDC/OAuth 2.0 库集成。
 
-> 自 Keycloak 24+ 起，官方已弃用各语言的专用 **Keycloak Adapter**，推荐改用框架自带的标准 OIDC 客户端。
+> 自 Keycloak 24+ 起，官方已弃用各语言的专用 **Keycloak Adapter**，推荐改用框架自带的标准 OIDC 客户端。已有 Adapter 项目的迁移步骤参见 [Keycloak Adapter 弃用迁移指南]({{< relref "docs/solution-blogs/keycloak-adapter-migration" >}})。
 
 ### Spring Security OIDC 集成
 

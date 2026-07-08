@@ -24,7 +24,7 @@ toc: true
 |------|--------|
 | 内部工具统一认证（Grafana、Prometheus、Kibana） | 需要细粒度授权的对外 API（用 BFF 或 API 网关） |
 | 快速给老旧应用加 OIDC 登录 | SPA 直连 Keycloak（不需要代理层） |
-| K8s Ingress 统一认证入口 | 需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库） |
+| K8s Ingress 统一认证入口 | 需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库，参考 [迁移指南]({{< relref "keycloak-adapter-migration" >}})） |
 | 多个应用共享同一个 oauth2-proxy 实例 | 移动端 Native App（应该用系统浏览器 + PKCE） |
 
 ## 架构

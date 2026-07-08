@@ -24,7 +24,7 @@ toc: true
 |------|--------|
 | Keycloak + 任意反向代理（Nginx/Traefik/HAProxy/ALB） | Keycloak 本身无法启动（那是部署问题） |
 | oauth2-proxy / Traefik ForwardAuth / Nginx auth-url 模式 | 用户凭据错误（先确认用户名密码正确） |
-| OIDC 标准客户端（非 Keycloak Adapter） | Keycloak Adapter 老项目（Adapters 已弃用，迁移到标准 OIDC 库再排查） |
+| OIDC 标准客户端（非 Keycloak Adapter） | Keycloak Adapter 老项目（Adapters 已弃用，参考 [迁移指南]({{< relref "keycloak-adapter-migration" >}}) 迁移到标准 OIDC 库再排查） |
 | SAML 单点登录重定向问题 | 纯 LDAP/Kerberos 认证（不涉及 HTTP 重定向） |
 
 ## 排查路线图
