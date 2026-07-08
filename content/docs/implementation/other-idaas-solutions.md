@@ -1,6 +1,6 @@
 ---
 title: "第17章：IDaaS 方案全景对比 — Keycloak vs CAS vs Dex 选型决策框架 | IDaaS Book"
-description: "主流 IDaaS 方案全景对比：开源 vs 商业，自建 vs SaaS，Keycloak、Janssen、Casdoor、Zitadel、Authelia、ORY、Dex、CAS 及商业方案选型决策框架"
+description: "主流 IDaaS 方案全景对比：开源 vs 商业，自建 vs SaaS，Keycloak、Janssen、Casdoor、Zitadel、Authelia、ORY、Pomerium、Dex、CAS 及商业方案选型决策框架"
 date: 2024-04-04T00:00:00+08:00
 draft: false
 weight: 44
@@ -156,6 +156,26 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 **许可证**：Apache 2.0
 
 由四个独立微服务组成：`Kratos`（身份/注册/登录）、`Hydra`（OAuth2/OIDC Server）、`Oathkeeper`（反向代理/访问网关）、`Keto`（权限/ReBAC）。强调 API 优先、无内置 UI、按需组合，适合需要细粒度控制、与自研前端深度集成的团队；代价是上手与集成成本较高。
+
+### Pomerium
+
+**类型**：企业级零信任身份感知代理
+**语言**：Go（控制面）+ C++（Envoy 数据面）
+**许可证**：Apache 2.0（开源版）
+
+**核心优势**：
+- 基于 Envoy 的高性能反向代理，原生支持零信任架构
+- 声明式策略语言（PPL），路由级细粒度访问控制
+- 原生多 IDP 支持，不同路由可使用不同 IDP
+- 内置审计日志和会话管理
+- 支持 JWT 断言注入，后端可验证请求来源
+
+**不足**：
+- 配置复杂度高于 oauth2-proxy，小团队快速上手有门槛
+- 企业特性（设备信任、高级报告）需企业版
+- 社区规模中等，中文资源有限
+
+> 📖 详见：[Pomerium 深度介绍 — 企业级零信任身份感知代理]({{< relref "docs/implementation/pomerium-deep-dive" >}})
 
 ## 17.3 商业方案概览
 
