@@ -318,7 +318,7 @@ curl -sS -o /dev/null -w "%{http_code}" https://myapp.example.com/
 | 错误现象 | 根本原因 | 解决方案 |
 |----------|----------|----------|
 | `expected audience "oauth2-proxy" got ["account"]` | Keycloak 未配置 Audience Mapper | 在客户端上添加 Audience mapper，勾选 "Add to ID token" |
-| 登录后无限重定向循环 | Cookie Domain 不匹配 / SameSite 过严 | 检查 `--cookie-domain` 是否正确，`--cookie-samesite` 是否为 `lax` |
+| 登录后无限重定向循环 | Cookie Domain 不匹配 / SameSite 过严 | 检查 `--cookie-domain` 是否正确，`--cookie-samesite` 是否为 `lax`。详细排查见 [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}}) |
 | `csrf cookie not found` | Cookie 被浏览器拦截（SameSite/跨域） | 部署在相同主域名下；`--cookie-samesite=lax`；确保 HTTPS |
 | 登录后返回 403 | `--email-domain` 过滤掉了用户 | 临时设置 `--email-domain=*` 验证，确认后再精确配置 |
 | `invalid_token` / `token contains an invalid number of segments` | ID Token 格式异常或 JWT 校验失败 | 检查 `--oidc-issuer-url` 是否正确，Keycloak Realm 名是否对 |

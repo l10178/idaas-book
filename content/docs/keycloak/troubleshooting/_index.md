@@ -20,6 +20,7 @@ toc: true
 | 登录后报 `HTTPS required` / `Invalid parameter: redirect_uri` | HTTPS、反向代理、proxy | [HTTPS / 反向代理问题]({{< relref "docs/keycloak/troubleshooting/https-required.md" >}}) |
 | 启动卡在 Liquibase / 数据库初始化失败 | Liquibase、MySQL Group Replication、锁 | [Liquibase 与 MySQL 组复制]({{< relref "docs/keycloak/troubleshooting/liquibase-mysql-group-replication.md" >}}) |
 | K8s 环境导入导出 Realm 迁移失败 | 导入导出、Helm、Operator | [K8s 导入导出迁移]({{< relref "docs/keycloak/troubleshooting/export-import-on-k8s.md" >}}) |
+| 登录后无限重定向 / 401 Unauthorized | ERR_TOO_MANY_REDIRECTS、Cookie、SameSite | [Keycloak 重定向循环与 401 排错指南]({{< relref "docs/solution-blogs/keycloak-redirect-loop-troubleshooting" >}}) |
 
 ## 通用排查思路
 
