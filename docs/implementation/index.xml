@@ -558,4 +558,106 @@
  style LO fill:#e67e22,color:#fff
 &lt;/div&gt;
 
-&lt;p&gt;核心（Django + PostgreSQL + Redis）负责策略决策、用户管理和流程编排；Outpost 负责协议转换和流量代理。两者通过内部 API 通信，Outpost 可部署在完全不同的网络区域。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;核心（Django + PostgreSQL + Redis）负责策略决策、用户管理和流程编排；Outpost 负责协议转换和流量代理。两者通过内部 API 通信，Outpost 可部署在完全不同的网络区域。&lt;/p&gt;</description></item><item><title>Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</guid><description>&lt;h2 id="zitadel-简介"&gt;Zitadel 简介&lt;/h2&gt;
+&lt;p&gt;Zitadel 是一个用 Go 编写的开源身份与访问管理平台，截至 2026 年 7 月最新稳定版为 &lt;strong&gt;v4.15.3&lt;/strong&gt;（AGPL-3.0 许可证），GitHub 约 14,300 星。项目的核心理念是&amp;quot;Identity infrastructure, simplified for you&amp;quot;——通过事件驱动架构和原生多租户设计，把身份基础设施的复杂性封装成简洁的 API 和管理界面。&lt;/p&gt;
+&lt;p&gt;一句话定位：&lt;strong&gt;事件溯源架构 + CQRS + 原生多租户的开源 IAM，适合需要完整审计追踪和多租户隔离的服务型平台&lt;/strong&gt;。&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;维度&lt;/th&gt;
+					&lt;th&gt;信息&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;项目&lt;/td&gt;
+					&lt;td&gt;&lt;a href="https://github.com/zitadel/zitadel"&gt;github.com/zitadel/zitadel&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;语言&lt;/td&gt;
+					&lt;td&gt;Go (后端) + TypeScript/Angular (前端)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;数据库&lt;/td&gt;
+					&lt;td&gt;PostgreSQL（推荐）或 CockroachDB&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;许可证&lt;/td&gt;
+					&lt;td&gt;AGPL-3.0&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;文档&lt;/td&gt;
+					&lt;td&gt;&lt;a href="https://zitadel.com/docs"&gt;zitadel.com/docs&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;在线 SaaS&lt;/td&gt;
+					&lt;td&gt;&lt;a href="https://zitadel.cloud"&gt;zitadel.cloud&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="核心设计哲学"&gt;核心设计哲学&lt;/h2&gt;
+&lt;p&gt;Zitadel 的设计和其他 IAM 有一个根本性的不同：&lt;strong&gt;它把&amp;quot;发生了什么&amp;quot;当作一等公民存储，而不是只存&amp;quot;当前状态是什么&amp;quot;&lt;/strong&gt;。这来自于三个核心选择：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Event Sourcing（事件溯源）&lt;/strong&gt;：不存储用户/项目的&amp;quot;当前快照&amp;quot;。每个操作——创建用户、修改密码、变更角色——都记录为不可变事件。当前状态是重放所有事件计算出来的。这意味着任何时间点的状态都可以追溯，任何变更都有完整审计线索。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;CQRS（命令查询职责分离）&lt;/strong&gt;：写操作（命令）和读操作（查询）走不同的数据路径。命令生成事件，事件被投影到查询优化的视图。这让 Zitadel 可以独立扩展读写能力，尤其适合读多写少的身份场景。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;原生多租户&lt;/strong&gt;：从数据库 Schema 到 API 路由，多租户不是后加的特性，而是骨子里的设计。每个&amp;quot;Instance&amp;quot;（实例）可以有多个&amp;quot;Organization&amp;quot;（组织），每个 Organization 有独立的用户、项目、应用、授权策略。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="架构全景"&gt;架构全景&lt;/h2&gt;
+&lt;div class="mermaid text-center"&gt;flowchart TB
+ subgraph "用户与应用"
+ U[用户浏览器]
+ APP[下游应用 / API]
+ MGMT[管理员]
+ end
+
+ subgraph "Zitadel 核心"
+ direction TB
+ API_L["API Layer&lt;br/&gt;REST + gRPC"]
+ 
+ subgraph "Command Side (写)"
+ CMD[Command Handler&lt;br/&gt;命令处理器]
+ ES[(Event Store&lt;br/&gt;事件存储&lt;br/&gt;PostgreSQL)]
+ end
+ 
+ subgraph "Query Side (读)"
+ PROJ[Projections&lt;br/&gt;查询投影]
+ QV[(Query Views&lt;br/&gt;查询视图)]
+ end
+ 
+ AUTHN[认证引擎&lt;br/&gt;OIDC / OAuth2 / SAML]
+ AUTHZ[授权引擎&lt;br/&gt;RBAC + IAM Policy]
+ end
+
+ subgraph "存储层"
+ PG[(PostgreSQL&lt;br/&gt;事件存储 + 查询视图)]
+ end
+
+ subgraph "通知与任务"
+ JOB[后台任务&lt;br/&gt;通知/生命周期]
+ end
+
+ U --&gt;|登录/注册| AUTHN
+ APP --&gt;|Token 验证| AUTHN
+ APP --&gt;|API 调用| API_L
+ MGMT --&gt;|管理操作| API_L
+ 
+ API_L --&gt; CMD
+ CMD --&gt; ES
+ ES --&gt; PROJ
+ PROJ --&gt; QV
+ API_L -.-&gt;|查询| QV
+ 
+ AUTHN --&gt; CMD
+ AUTHN -.-&gt;|验证| QV
+ AUTHZ -.-&gt;|策略评估| QV
+ 
+ CMD --&gt; JOB
+&lt;/div&gt;
+
+&lt;p&gt;这个架构有几个值得展开的要点：&lt;/p&gt;</description></item></channel></rss>
