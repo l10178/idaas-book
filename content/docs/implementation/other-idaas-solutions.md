@@ -155,7 +155,7 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 **语言**：Go
 **许可证**：Apache 2.0
 
-由四个独立微服务组成：`Kratos`（身份/注册/登录）、`Hydra`（OAuth2/OIDC Server）、`Oathkeeper`（反向代理/访问网关）、`Keto`（权限/ReBAC）。强调 API 优先、无内置 UI、按需组合，适合需要细粒度控制、与自研前端深度集成的团队；代价是上手与集成成本较高。
+由四个独立微服务组成：`Kratos`（身份/注册/登录）、`Hydra`（OAuth2/OIDC Server）、`Oathkeeper`（反向代理/访问网关）、`Keto`（权限/ReBAC）。强调 API 优先、无内置 UI、按需组合，适合需要细粒度控制、与自研前端深度集成的团队；代价是上手与集成成本较高。详见 [Ory 开源身份栈深度解析]({{< relref "docs/implementation/ory-deep-dive" >}})。
 
 ### Pomerium
 

@@ -190,7 +190,7 @@ Charlie 能看 document:123 吗？
 
 - **OpenFGA**（原 Auth0 FGA）：ReBAC 开源实现，CNCF Sandbox 项目（截至本稿）
 - **SpiceDB**（authzed）：受 Zanzibar 启发的权限数据库
-- **Ory Keto**：Ory 生态的权限服务
+- **Ory Keto**：Ory 生态的权限服务，详见 [Ory 深度解析]({{< relref "docs/implementation/ory-deep-dive" >}})
 
 ### ReBAC 适合的场景
 
