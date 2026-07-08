@@ -17,3 +17,4 @@ menu:
 | 主题 | 关键词 |
 |------|--------|
 | [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}}) | OIDC, audience, CSRF, redirect loop, Nginx Ingress, ForwardAuth |
+| [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}}) | ERR_TOO_MANY_REDIRECTS, 401 Unauthorized, Cookie, TLS 终结, SameSite |
