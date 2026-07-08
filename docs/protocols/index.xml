@@ -190,7 +190,45 @@
 &lt;hr&gt;
 &lt;h2 id="1-redirect-uri-劫持"&gt;1. Redirect URI 劫持&lt;/h2&gt;
 &lt;h3 id="攻击原理"&gt;攻击原理&lt;/h3&gt;
-&lt;p&gt;攻击者诱导用户点击一个精心构造的授权链接，其中 &lt;code&gt;redirect_uri&lt;/code&gt; 被替换为攻击者控制的地址。用户在授权服务器上正常登录后，授权码被重定向到攻击者服务器。&lt;/p&gt;</description></item><item><title>第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/openid-connect/</link><pubDate>Fri, 02 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/openid-connect/</guid><description>&lt;h2 id="61-oauth-20-缺了什么"&gt;6.1 OAuth 2.0 缺了什么？&lt;/h2&gt;
+&lt;p&gt;攻击者诱导用户点击一个精心构造的授权链接，其中 &lt;code&gt;redirect_uri&lt;/code&gt; 被替换为攻击者控制的地址。用户在授权服务器上正常登录后，授权码被重定向到攻击者服务器。&lt;/p&gt;</description></item><item><title>OAuth 2.1 相比 OAuth 2.0 的变化 — 废弃、新增与迁移指南</title><link>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</guid><description>&lt;h2 id="为什么需要-oauth-21"&gt;为什么需要 OAuth 2.1&lt;/h2&gt;
+&lt;p&gt;OAuth 2.0（RFC 6749）发布于 2012 年。在接下来近十年里，安全研究者发现了若干严重攻击面——Redirect URI 劫持、授权码拦截、CSRF、Mix-Up Attack、Token 泄露重放。社区通过一系列补充 RFC 逐个修补：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;RFC 7636 (PKCE)&lt;/strong&gt;：防止授权码拦截（2015）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RFC 6819 / Security BCP&lt;/strong&gt;：安全威胁模型与缓解措施&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RFC 9207 (iss 参数)&lt;/strong&gt;：防止 Mix-Up Attack（2022）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;RFC 9449 (DPoP)&lt;/strong&gt;：Token 发件人约束（2024）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;OAuth 2.1 不是全新协议，而是把这些分散的最佳实践整合成一份统一规范。它同时移除了已被证明不安全的流程，并强化了默认安全配置。&lt;/p&gt;
+&lt;p&gt;如果你现在在写一个新的 OAuth 客户端或授权服务器，应该直接以 OAuth 2.1 为目标——2.0 的安全模型已经过期。&lt;/p&gt;
+&lt;h2 id="变化总览"&gt;变化总览&lt;/h2&gt;
+&lt;div class="mermaid text-center"&gt;graph TD
+ A["OAuth 2.0 (RFC 6749, 2012)"] --&gt; B["OAuth 2.1 (draft-ietf-oauth-v2-1)"]
+ 
+ B --&gt; C1["✅ 保留 &amp; 强化"]
+ B --&gt; C2["❌ 废弃 &amp; 移除"]
+ B --&gt; C3["🆕 新增"]
+
+ C1 --&gt; D1["Authorization Code Flow"]
+ C1 --&gt; D2["Client Credentials Flow"]
+ C1 --&gt; D3["Device Code Flow&lt;br/&gt;(RFC 8628)"]
+ C1 --&gt; D4["Refresh Token"]
+ C1 --&gt; D5["Bearer Token&lt;br/&gt;(不推荐，但仍可用)"]
+
+ C2 --&gt; E1["Implicit Grant&lt;br/&gt;(response_type=token)"]
+ C2 --&gt; E2["ROPC / Password Grant&lt;br/&gt;(grant_type=password)"]
+ C2 --&gt; E3["无 PKCE 的授权码流程"]
+ C2 --&gt; E4["redirect_uri 宽松匹配"]
+
+ C3 --&gt; F1["PKCE 对所有客户端强制"]
+ C3 --&gt; F2["DPoP (RFC 9449)"]
+ C3 --&gt; F3["iss 参数 (RFC 9207)"]
+ C3 --&gt; F4["Refresh Token 发件人约束"]
+ C3 --&gt; F5["redirect_uri 精确匹配"]
+&lt;/div&gt;
+
+&lt;h2 id="七大核心变化"&gt;七大核心变化&lt;/h2&gt;
+&lt;h3 id="1-pkce-对所有客户端强制"&gt;1. PKCE 对所有客户端强制&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;OAuth 2.0&lt;/strong&gt;：PKCE（Proof Key for Code Exchange）只推荐给公共客户端（SPA、移动 App），机密客户端可以不用。&lt;/p&gt;</description></item><item><title>第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/openid-connect/</link><pubDate>Fri, 02 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/openid-connect/</guid><description>&lt;h2 id="61-oauth-20-缺了什么"&gt;6.1 OAuth 2.0 缺了什么？&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0 解决的是&lt;strong&gt;授权&lt;/strong&gt;问题——我允许这个应用访问我的资源。但它没有解决&lt;strong&gt;认证&lt;/strong&gt;问题——这个用户是谁？&lt;/p&gt;
 &lt;p&gt;很多开发者早期犯的错误是用 OAuth 2.0 来做认证：&lt;/p&gt;
 
@@ -326,7 +364,7 @@
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>第8章：SCIM 协议 — 跨域用户配置与身份同步标准 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/scim-protocol/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/scim-protocol/</guid><description>&lt;h2 id="91-为什么需要-scim"&gt;9.1 为什么需要 SCIM？&lt;/h2&gt;
+&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>SCIM 2.0 协议深度解读 — 跨域身份同步标准 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/scim-protocol/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/scim-protocol/</guid><description>&lt;h2 id="91-为什么需要-scim"&gt;9.1 为什么需要 SCIM？&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0 和 OIDC 解决了认证和授权问题，SAML 解决了联邦 SSO 问题，但它们都没有回答一个问题：如何标准化地创建、更新和删除用户？&lt;/p&gt;
 &lt;p&gt;在 SCIM 出现之前，每个系统都有自己的用户 API：&lt;/p&gt;
 
