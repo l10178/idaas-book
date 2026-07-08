@@ -260,6 +260,7 @@ code_challenge_method = "S256"
 
 ## 下一步
 
+- [OAuth 2.1 相比 OAuth 2.0 的变化]({{< relref "oauth2.1-changes.md" >}})：了解 PKCE 如何从可选变为强制，以及 Implicit/ROPC 为何被废弃
 - [OAuth 2.0 攻击面与防护深度图解]({{< relref "oauth2-attack-surface.md" >}})：五大攻击面的完整分析——redirect_uri 劫持、CSRF、授权码拦截、Mix-Up Attack、Token 泄露
 - 理解授权码流程后，看 [OpenID Connect]({{< relref "openid-connect.md" >}}) ——它在此之上添加了身份认证层
 - 了解 [SAML 2.0]({{< relref "saml2.md" >}}) 的另一种 SSO 实现方式

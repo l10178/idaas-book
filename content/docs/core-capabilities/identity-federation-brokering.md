@@ -1,6 +1,6 @@
 ---
 title: "第12章：身份联邦与代理 — 跨域身份互信、联邦拓扑与协议桥接 | IDaaS Book"
-description: "身份联邦（Identity Federation）和身份代理（Identity Broker）的架构原理与实现"
+description: "身份联邦（Identity Federation）、身份代理（Identity Broker）与用户联合（User Federation）的架构原理与实现。涵盖 SP-IDP 联邦、IDP-IDP 链式联邦、Hub-and-Spoke 模式、协议桥接（SAML 到 OIDC）及 Keycloak 身份代理实战。"
 date: 2024-03-03T00:00:00+08:00
 draft: false
 weight: 33
