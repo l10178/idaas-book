@@ -660,4 +660,46 @@
  CMD --&gt; JOB
 &lt;/div&gt;
 
-&lt;p&gt;这个架构有几个值得展开的要点：&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;这个架构有几个值得展开的要点：&lt;/p&gt;</description></item><item><title>oauth2-proxy 深度介绍 — 轻量 OAuth2/OIDC 反向代理 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/oauth2-proxy-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/oauth2-proxy-deep-dive/</guid><description>&lt;h2 id="什么是-oauth2-proxy"&gt;什么是 oauth2-proxy？&lt;/h2&gt;
+&lt;p&gt;&lt;a href="https://oauth2-proxy.github.io/oauth2-proxy/"&gt;oauth2-proxy&lt;/a&gt; 是一个开源的、轻量级的&lt;strong&gt;身份感知反向代理&lt;/strong&gt;。它的工作很简单：拦在应用前面，检查每个 HTTP 请求是否带着有效会话；没有的话，把用户导向 OAuth2/OIDC Provider（比如 Keycloak、GitHub、Google、Dex）去登录，登录成功后再放行。&lt;/p&gt;
+&lt;p&gt;它不存储用户、不管理密码、不签发 Token——这些都是 Provider 的事。oauth2-proxy 只做一件事：&lt;strong&gt;把没有身份的人挡在门外，把有身份的人放进来，并把用户信息（邮箱、用户名、组）通过 HTTP Header 传给后端应用&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id="为什么需要它"&gt;为什么需要它？&lt;/h2&gt;
+&lt;p&gt;在 IDaaS 体系里，认证和授权是 IDP 的事，但你的应用可能根本没写登录逻辑。oauth2-proxy 的价值在于：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;零代码改造&lt;/strong&gt;：给老应用、静态站点、容器化服务加 OIDC 登录，不用改一行业务代码。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;入口层统一&lt;/strong&gt;：Ingress/反向代理层统一拦截，不用每个服务自己实现 OAuth 回调、Token 刷新、Session 管理。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Provider 无关&lt;/strong&gt;：同一个 oauth2-proxy 可以对接 Keycloak、Azure AD、GitHub、Google、Dex 等几十种 Provider，切换 Provider 不影响后端。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="架构概览"&gt;架构概览&lt;/h2&gt;
+&lt;div class="mermaid text-center"&gt;sequenceDiagram
+ participant Browser as 浏览器
+ participant Ingress as Nginx Ingress/Traefik
+ participant O2P as oauth2-proxy
+ participant App as 后端应用
+ participant IDP as Keycloak (IDP)
+
+ Browser-&gt;&gt;Ingress: GET /app
+ Ingress-&gt;&gt;O2P: GET /oauth2/auth (auth_request)
+ 
+ alt 无有效 Session Cookie
+ O2P--&gt;&gt;Ingress: 401 → /oauth2/start
+ Ingress--&gt;&gt;Browser: 302 /oauth2/start
+ Browser-&gt;&gt;O2P: GET /oauth2/start
+ O2P--&gt;&gt;Browser: 302 → IDP 登录页
+ Browser-&gt;&gt;IDP: 登录
+ IDP--&gt;&gt;Browser: 302 /oauth2/callback?code=...
+ Browser-&gt;&gt;O2P: GET /oauth2/callback
+ O2P-&gt;&gt;IDP: 用 code 换 token
+ IDP--&gt;&gt;O2P: access_token + id_token
+ O2P--&gt;&gt;Browser: Set-Cookie + 302 回到 /app
+ Browser-&gt;&gt;Ingress: GET /app (带 Cookie)
+ Ingress-&gt;&gt;O2P: GET /oauth2/auth (auth_request)
+ end
+
+ O2P--&gt;&gt;Ingress: 202 Accepted
+ Note over O2P,Ingress: X-Auth-Request-User&lt;br/&gt;X-Auth-Request-Email&lt;br/&gt;X-Auth-Request-Groups
+ Ingress-&gt;&gt;App: GET /app + 用户身份 Header
+ App--&gt;&gt;Browser: 200 OK
+&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;流程要点：&lt;/strong&gt;&lt;/p&gt;</description></item></channel></rss>
