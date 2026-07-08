@@ -1,9 +1,9 @@
 ---
-title: "第9章：SCIM 协议 — 跨域用户配置与身份同步标准 | IDaaS Book"
-description: "跨域身份管理系统（SCIM 2.0）协议深度解读：用户和组的标准化配置与管理"
+title: "第8章：SCIM 协议 — 跨域用户配置与身份同步标准 | IDaaS Book"
+description: "SCIM 2.0（RFC 7643/7644）协议深度解读：用户生命周期管理、身份自动同步、SCIM 服务端与客户端实现。覆盖从 HR 系统到 IDP 再到目标应用的全链路用户同步场景。"
 date: 2024-02-05T00:00:00+08:00
 draft: false
-weight: 25
+weight: 26
 menu:
   docs:
     parent: "protocols"

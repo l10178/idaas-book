@@ -3,7 +3,7 @@ title: "第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 |
 description: "OpenID Connect 身份认证协议的完整解读：ID Token、UserInfo、会话管理、与 OAuth 2.0 的关系"
 date: 2024-02-02T00:00:00+08:00
 draft: false
-weight: 22
+weight: 24
 menu:
   docs:
     parent: "protocols"
