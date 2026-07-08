@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Wed, 08 Jul 2026 22:10:58 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 00:20:36 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
@@ -452,7 +452,130 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;/div&gt;
 
 &lt;h2 id="配置参数"&gt;配置参数&lt;/h2&gt;
-&lt;p&gt;在 Realm Settings &amp;gt; Security Defenses &amp;gt; Brute Force Detection 中配置：&lt;/p&gt;</description></item><item><title>Keycloak Kubernetes 导入导出与数据迁移实战 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;blockquote&gt;
+&lt;p&gt;在 Realm Settings &amp;gt; Security Defenses &amp;gt; Brute Force Detection 中配置：&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你所在的企业已经用 Active Directory 或 OpenLDAP 管理员工账号多年。现在引入 Keycloak 做统一认证，但不可能把所有用户手动迁移到 Keycloak 本地数据库——需要 Keycloak 直接对接现有的 LDAP/AD，让用户用域账号登录，管理员在原系统维护用户。&lt;/p&gt;
+&lt;p&gt;一句话：&lt;strong&gt;LDAP/AD 是权威用户源，Keycloak 消费但不拥有这些用户&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id="适用--不适用"&gt;适用 / 不适用&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;适用场景&lt;/th&gt;
+					&lt;th&gt;不适用场景&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;企业已有 AD/LDAP，不能动用户库&lt;/td&gt;
+					&lt;td&gt;新建系统、无遗留目录服务（直接用 Keycloak 本地用户即可）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;需要 LDAP 用户和 Keycloak 本地用户混合认证&lt;/td&gt;
+					&lt;td&gt;需要 Keycloak 写入 LDAP（User Federation 默认只读同步）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;多个 Realm 共享同一个 LDAP 源&lt;/td&gt;
+					&lt;td&gt;LDAP schema 与标准差异极大、需要大量自定义逻辑&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="最小配置"&gt;最小配置&lt;/h2&gt;
+&lt;h3 id="keycloak-侧添加-ldap-user-federation"&gt;Keycloak 侧：添加 LDAP User Federation&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;进入目标 Realm → &lt;strong&gt;User federation&lt;/strong&gt; → &lt;strong&gt;Add Ldap provider&lt;/strong&gt;。&lt;/li&gt;
+&lt;li&gt;填写连接参数（以 AD 为例，OpenLDAP 见下节差异表）：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;参数&lt;/th&gt;
+					&lt;th&gt;示例值 (AD)&lt;/th&gt;
+					&lt;th&gt;说明&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Vendor&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;Active Directory&lt;/td&gt;
+					&lt;td&gt;选择 &lt;code&gt;Active Directory&lt;/code&gt; 后 Keycloak 会自动调整部分默认值&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Connection URL&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;ldaps://dc.example.com:636&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;生产必须用 LDAPS（端口 636），不要用裸 LDAP&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Bind DN&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;CN=svc_keycloak,CN=Users,DC=example,DC=com&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;专用服务账号，不要用域管理员&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Bind Credential&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;服务账号密码&lt;/td&gt;
+					&lt;td&gt;使用 &lt;code&gt;vault&lt;/code&gt; / Kubernetes Secret 注入，别写死在配置里&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Users DN&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;CN=Users,DC=example,DC=com&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;LDAP 中存放用户条目的基础 DN&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Edit Mode&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;READ_ONLY&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;生产环境必须 READ_ONLY，避免 Keycloak 侧修改污染 LDAP&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ol start="3"&gt;
+&lt;li&gt;配置用户搜索：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;参数&lt;/th&gt;
+					&lt;th&gt;值&lt;/th&gt;
+					&lt;th&gt;说明&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Username LDAP attribute&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;sAMAccountName&lt;/code&gt; (AD) / &lt;code&gt;uid&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
+					&lt;td&gt;作为 Keycloak 用户名的 LDAP 属性&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;RDN LDAP attribute&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;cn&lt;/code&gt; (AD) / &lt;code&gt;uid&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
+					&lt;td&gt;条目的命名属性&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;UUID LDAP attribute&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;objectGUID&lt;/code&gt; (AD) / &lt;code&gt;entryUUID&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
+					&lt;td&gt;不可变的唯一标识，用于追踪用户&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;User Object Classes&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&lt;code&gt;person, organizationalPerson, user&lt;/code&gt; (AD) / &lt;code&gt;inetOrgPerson, organizationalPerson&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
+					&lt;td&gt;过滤用户条目的 objectClass&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ol start="4"&gt;
+&lt;li&gt;可选：LDAP 过滤器限制同步范围：&lt;/li&gt;
+&lt;/ol&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code&gt;# 只同步 IT 部门的启用用户
+(&amp;amp;(objectCategory=person)(department=IT)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;过滤器里的 &lt;code&gt;userAccountControl:1.2.840.113556.1.4.803:=2&lt;/code&gt; 是 AD 中标志“禁用账户”的位运算写法。生产环境务必过滤掉禁用账户，否则离职员工仍可通过 LDAP 同步拥有 Keycloak 账号。&lt;/p&gt;</description></item><item><title>Keycloak Kubernetes 导入导出与数据迁移实战 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;blockquote&gt;
 &lt;p&gt;本文以 &lt;strong&gt;Keycloak Quarkus 发行版（17+）&lt;/strong&gt; 为准。Keycloak 17 起官方已移除 WildFly 发行版，旧版用 &lt;code&gt;standalone.sh -Dkeycloak.migration.action=export&lt;/code&gt; 的导出方式不再适用，统一改用 &lt;code&gt;kc.sh export&lt;/code&gt; / &lt;code&gt;kc.sh import&lt;/code&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
@@ -487,101 +610,4 @@ OFF 表示临时锁定。&lt;/p&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;blockquote&gt;
-&lt;p&gt;若不指定 &lt;code&gt;--realm&lt;/code&gt;，则导出&lt;strong&gt;除 &lt;code&gt;master&lt;/code&gt; 外&lt;/strong&gt;的所有 Realm；&lt;code&gt;master&lt;/code&gt; Realm 不参与导出。&lt;/p&gt;</description></item><item><title>MFA / OTP / WebAuthn 多因子认证</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</guid><description>&lt;p&gt;&lt;strong&gt;MFA&lt;/strong&gt; 即 Multi-Factor Authentication，多重身份认证，多因子认证，多因素认证。当然也包含等保要求中常说的双因子认证 2FA。&lt;/p&gt;
-&lt;p&gt;常见的实现如 U 盾、短信、邮件、指纹识别、面部识别等，在账户+密码基础上，进行二次或多次认证，增强数据安全。&lt;/p&gt;
-&lt;p&gt;Keycloak 提供了基于 OTP（One-Time Password，一次性密码，动态口令）的开箱即用的解决方案。&lt;/p&gt;
-&lt;h2 id="使用步骤"&gt;使用步骤&lt;/h2&gt;
-&lt;p&gt;直接上图看效果。&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;各个 Realm 默认的浏览器认证流中，OTP 是&lt;code&gt;CONDITIONAL&lt;/code&gt;，是一个条件可选项。
-&lt;a href="./browser-otp.png"&gt;
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/browser-otp_hu_6cf63458b8aa5929.webp"
- width="1400"
- height="622"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="browser"id="h-rh-i-0"
-/&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;为用户配置启用 OTP 认证。
-&lt;a href="./required-otp.png"&gt;
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/required-otp_hu_eeacca81a5ad8044.webp"
- width="799"
- height="702"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="User OTP"id="h-rh-i-1"
-/&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;用户登录，未注册设备，要求注册设备。
-&lt;a href="./register-otp.png"&gt;
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/register-otp_hu_1dbf844eafe0c9a1.webp"
- width="701"
- height="901"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Register"id="h-rh-i-2"
-/&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;手机端下载支持的 OTP 软件，如 FreeOTP，Google Authenticator。扫描注册，注册成功后就能看到已经生成一次性口令。
-&lt;a href="./freeotp.png"&gt;
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/freeotp_hu_26a135755bd10234.webp"
- width="631"
- height="582"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="FreeeOTP APP"id="h-rh-i-3"
-/&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;登录时就会要求输入一次性验证码。
-&lt;a href="./login-otp.png"&gt;
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/login-otp_hu_1119418c1a3e0dc2.webp"
- width="863"
- height="551"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Login"id="h-rh-i-4"
-/&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;注册成功后，可以在管理控制台看到用户注册的设备，用户也可以在自己的账户页面看到注册的设备。如果手机丢了想重新注册，把已有的记录删掉就可以，删掉后下次登录会要求重新注册。&lt;br&gt;
-管理控制台:
-&lt;a href="./admin-otp.png"&gt;
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/admin-otp_hu_127e4b5237a13a6e.webp"
- width="1415"
- height="723"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Admin OTP"id="h-rh-i-5"
-/&gt;&lt;/a&gt;
-自己的账户页面：&lt;br&gt;
-&lt;a href="./account-otp.png"&gt;
-
-&lt;img
- src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/account-otp_hu_8096a16f49b4fcb4.webp"
- width="1196"
- height="344"
- decoding="async"
- fetchpriority="auto"
- loading="lazy"
- alt="Account OTP"id="h-rh-i-6"
-/&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id="扩展认证方式"&gt;扩展认证方式&lt;/h2&gt;
-&lt;p&gt;如果想自己实现认证方式，官方也提供了详细的 SPI 开发指导，我们根据指导用一天时间实现了一个短信验证码。待开源。&lt;/p&gt;
-&lt;h2 id="webauthn--passkey-无密码认证"&gt;WebAuthn / Passkey 无密码认证&lt;/h2&gt;
-&lt;p&gt;Keycloak 自 15.x 版本开始原生支持 &lt;strong&gt;WebAuthn&lt;/strong&gt;（W3C Web Authentication），并在后续版本中逐步加入 &lt;strong&gt;Passkey&lt;/strong&gt; 支持（包括 Conditional UI / autofill 体验和 Modal UI）。截至 Keycloak 26.x，WebAuthn 已成为生产可用的成熟功能，支持两种使用模式：&lt;/p&gt;
-&lt;h3 id="双因素模式two-factor-webauthn"&gt;双因素模式（Two-Factor WebAuthn）&lt;/h3&gt;
-&lt;p&gt;WebAuthn 作为第二因素，在用户输入密码后要求验证——与 TOTP 并列可选。适合需要增强安全但还不准备放弃密码的场景。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;若不指定 &lt;code&gt;--realm&lt;/code&gt;，则导出&lt;strong&gt;除 &lt;code&gt;master&lt;/code&gt; 外&lt;/strong&gt;的所有 Realm；&lt;code&gt;master&lt;/code&gt; Realm 不参与导出。&lt;/p&gt;</description></item></channel></rss>
