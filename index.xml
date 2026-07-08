@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 00:20:36 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 02:06:14 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
@@ -20,7 +20,7 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;K8s Ingress 统一认证入口&lt;/td&gt;
-					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库）&lt;/td&gt;
+					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt;）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;多个应用共享同一个 oauth2-proxy 实例&lt;/td&gt;
@@ -227,7 +227,7 @@
 &lt;li&gt;
 &lt;p&gt;也可以直接在管理控制台 → Realm → Realm Settings → Login → Require SSL 处改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;</description></item><item><title>Keycloak 入门指南 — 安装、配置与首个 OIDC 应用接入 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/getting-started/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/getting-started/</guid><description>&lt;p&gt;&lt;a href="https://www.keycloak.org"&gt;keycloak&lt;/a&gt; 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;自 Keycloak 17 起，官方只发布 &lt;strong&gt;Quarkus 发行版&lt;/strong&gt;，旧的 WildFly 发行版已被移除；各类语言专用的 &lt;strong&gt;Client Adapter 也已陆续废弃&lt;/strong&gt;，官方推荐直接使用各生态的标准 OIDC/OAuth 2.0/SAML 库对接。Keycloak 版本迭代很快，本书编写时当前稳定版为 26.6.4（2026-07-06 检查），部署前请到 &lt;a href="https://www.keycloak.org/downloads"&gt;keycloak.org/downloads&lt;/a&gt; 确认最新版本。关于 Keycloak 架构（Realm / Client / 认证流引擎 / 缓存 / 集群）的深度解析，见&lt;a href="https://idaas.xlabs.club/docs/implementation/keycloak-architecture/"&gt;第14章：Keycloak 架构深度解析&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;自 Keycloak 17 起，官方只发布 &lt;strong&gt;Quarkus 发行版&lt;/strong&gt;，旧的 WildFly 发行版已被移除；各类语言专用的 &lt;strong&gt;Client Adapter 也已陆续废弃&lt;/strong&gt;，官方推荐直接使用各生态的标准 OIDC/OAuth 2.0/SAML 库对接。如果你还在用旧 Adapter，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;Keycloak Adapter 弃用迁移指南&lt;/a&gt; 逐语言迁移。Keycloak 版本迭代很快，本书编写时当前稳定版为 26.6.4（2026-07-06 检查），部署前请到 &lt;a href="https://www.keycloak.org/downloads"&gt;keycloak.org/downloads&lt;/a&gt; 确认最新版本。关于 Keycloak 架构（Realm / Client / 认证流引擎 / 缓存 / 集群）的深度解析，见&lt;a href="https://idaas.xlabs.club/docs/implementation/keycloak-architecture/"&gt;第14章：Keycloak 架构深度解析&lt;/a&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;主要功能：&lt;/p&gt;
 &lt;ul&gt;
@@ -325,7 +325,7 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;OIDC 标准客户端（非 Keycloak Adapter）&lt;/td&gt;
-					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，迁移到标准 OIDC 库再排查）&lt;/td&gt;
+					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt; 迁移到标准 OIDC 库再排查）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;SAML 单点登录重定向问题&lt;/td&gt;

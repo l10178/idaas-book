@@ -20,7 +20,7 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;K8s Ingress 统一认证入口&lt;/td&gt;
-					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库）&lt;/td&gt;
+					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt;）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;多个应用共享同一个 oauth2-proxy 实例&lt;/td&gt;
@@ -75,7 +75,7 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;OIDC 标准客户端（非 Keycloak Adapter）&lt;/td&gt;
-					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，迁移到标准 OIDC 库再排查）&lt;/td&gt;
+					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt; 迁移到标准 OIDC 库再排查）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;SAML 单点登录重定向问题&lt;/td&gt;
@@ -222,4 +222,36 @@
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;blockquote&gt;
-&lt;p&gt;过滤器里的 &lt;code&gt;userAccountControl:1.2.840.113556.1.4.803:=2&lt;/code&gt; 是 AD 中标志“禁用账户”的位运算写法。生产环境务必过滤掉禁用账户，否则离职员工仍可通过 LDAP 同步拥有 Keycloak 账号。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;过滤器里的 &lt;code&gt;userAccountControl:1.2.840.113556.1.4.803:=2&lt;/code&gt; 是 AD 中标志“禁用账户”的位运算写法。生产环境务必过滤掉禁用账户，否则离职员工仍可通过 LDAP 同步拥有 Keycloak 账号。&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你的项目几年前接入了 Keycloak，用的是官方推荐的 Keycloak Adapter（&lt;code&gt;keycloak-spring-security-adapter&lt;/code&gt;、&lt;code&gt;keycloak-connect&lt;/code&gt;、&lt;code&gt;keycloak-python&lt;/code&gt; 等）。最近升级依赖或做安全审查时发现：&lt;strong&gt;这些 Adapter 已经被 Keycloak 官方弃用，不再维护了&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;继续用会有什么问题？旧 Adapter 绑定了 Keycloak 特定版本、依赖老旧框架（如 WildFly、javax），安全补丁不再跟进，且与 Spring Boot 3+ / Jakarta EE 不兼容。需要迁移到各语言生态的标准 OIDC 库。&lt;/p&gt;
+&lt;p&gt;这篇文章按语言给出迁移路径、最小配置和常见踩坑。&lt;/p&gt;
+&lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;适用&lt;/th&gt;
+					&lt;th&gt;不适用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;还在用 &lt;code&gt;keycloak-spring-security-adapter&lt;/code&gt; 的 Spring Boot 应用&lt;/td&gt;
+					&lt;td&gt;已经在用 Spring Security OAuth2 Client 或标准 OIDC 库（继续保持）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;还在用 &lt;code&gt;keycloak-connect&lt;/code&gt; 的 Express.js/Node.js 应用&lt;/td&gt;
+					&lt;td&gt;用的是 Keycloak Admin Client（&lt;code&gt;keycloak-admin-client&lt;/code&gt;）——这是 REST API 客户端，不需要迁移&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;还在用 &lt;code&gt;keycloak-python&lt;/code&gt; 或自写的 Adapter 模式对接&lt;/td&gt;
+					&lt;td&gt;前端 SPA 直接对接 Keycloak（前端用 keycloak-js 的情况不同，需单独评估）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;升级到 Spring Boot 3.x 后发现 Adapter 不兼容&lt;/td&gt;
+					&lt;td&gt;应用根本没有认证/授权需求&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注意区分&lt;/strong&gt;：&lt;code&gt;keycloak-admin-client&lt;/code&gt;（REST API 管理客户端，Maven artifact &lt;code&gt;org.keycloak:keycloak-admin-client&lt;/code&gt;）&lt;strong&gt;不需要迁移&lt;/strong&gt;。它是基于标准 REST API 的，与 Adapter 无关。本文讨论的是用于「保护应用、拦截请求」的认证 Adapter。&lt;/p&gt;</description></item></channel></rss>
