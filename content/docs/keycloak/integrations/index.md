@@ -279,7 +279,7 @@ Nextcloud 用 **Social login / OIDC 插件**：
 
 ## 小结
 
-Keycloak 与开源生态的集成主要分两条路：**原生 OIDC**（Grafana、GitLab、Harbor、Vault、MinIO、Nextcloud 等）与 **前置 OAuth2 Proxy**（任意 Web 服务、K8s Ingress）。掌握这两条路、五步通用流程与 Protocol Mapper 的 claim 映射，即可把一整套开源软件统一纳入 SSO，这正是 IDaaS「一次接入、全网通行」的落地价值。集成中遇到具体报错，参见 [常见问题排查]({{< relref "docs/keycloak/troubleshooting/_index.md" >}})。
+Keycloak 与开源生态的集成主要分三条路：**原生 OIDC**（Grafana、GitLab、Harbor、Vault、MinIO、Nextcloud 等）、**前置 OAuth2 Proxy**（任意 Web 服务、K8s Ingress），以及 **LDAP/AD 用户联邦**（保留现有目录服务作为权威用户源）。掌握这三条路、五步通用流程与 Protocol Mapper 的 claim 映射，即可把一整套开源软件和目录服务统一纳入 SSO。集成中遇到具体报错，参见 [常见问题排查]({{< relref "docs/keycloak/troubleshooting/_index.md" >}})。关于 LDAP/AD 联邦的完整配置步骤，参见 [Keycloak LDAP / AD 用户联邦实战指南]({{< relref "docs/solution-blogs/keycloak-ldap-ad-federation" >}})。
 
 [oauth2-proxy]: https://oauth2-proxy.github.io/oauth2-proxy/
 [jenkins-oidc]: https://plugins.jenkins.io/oic-auth/

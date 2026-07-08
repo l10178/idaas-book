@@ -242,4 +242,4 @@ App → LDAP → IDaaS → AD/LDAP
 
 ## 8.8 小结
 
-LDAP 和目录服务是 IDaaS 世界的基础设施层。对于大多数企业来说，Active Directory 仍然是员工的权威身份源。IDaaS 系统的核心能力之一就是与这些目录服务无缝集成——既能让用户继续使用已有的域账号，又能将身份管理能力扩展到云原生应用。
+LDAP 和目录服务是 IDaaS 世界的基础设施层。对于大多数企业来说，Active Directory 仍然是员工的权威身份源。IDaaS 系统的核心能力之一就是与这些目录服务无缝集成——既能让用户继续使用已有的域账号，又能将身份管理能力扩展到云原生应用。关于 Keycloak 对接 LDAP/AD 的具体配置步骤、同步策略和排错方法，参见 [Keycloak LDAP / AD 用户联邦实战指南]({{< relref "docs/solution-blogs/keycloak-ldap-ad-federation" >}})。
