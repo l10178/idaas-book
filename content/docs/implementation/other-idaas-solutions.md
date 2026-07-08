@@ -115,19 +115,22 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 ### Zitadel
 
 **类型**：云原生 IAM
-**语言**：Go（后端）+ TypeScript/React（前端，早期 Angular 已迁移）
-**许可证**：Apache 2.0
+**语言**：Go（后端）+ TypeScript/Angular（前端）
+**许可证**：AGPL-3.0
+**最新稳定版**：v4.15.3（2026 年 6 月）
 
 **核心优势**：
-- 事件溯源架构，完整的审计追踪
-- 原生多租户
-- API 优先设计
-- Kubernetes 原生
+- 事件溯源 + CQRS 架构，完整的审计追踪，天然适合合规场景
+- 原生三层多租户模型（Instance/Organization/Project），SaaS 友好
+- API 优先设计（REST + gRPC），FIDO2/Passkeys 原生支持
+- Go 单二进制部署，资源占用低
 
 **不足**：
-- 较新，生态不够成熟
-- 文档仍需完善
-- 缺少大型生产案例
+- AGPL-3.0 许可证对商业 SaaS 有约束
+- 社区成熟度和中文资源远不及 Keycloak
+- CQRS/事件溯源增加运维复杂度
+
+> 📖 详见：[Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台]({{< relref "docs/implementation/zitadel-deep-dive" >}})
 
 ### Authentik
 
