@@ -1,6 +1,6 @@
 ---
 title: "第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book"
-description: "OpenID Connect 身份认证协议的完整解读：ID Token、UserInfo、会话管理、与 OAuth 2.0 的关系"
+description: "OpenID Connect 身份认证协议完整解读：ID Token 结构与验证、UserInfo 端点调用时机、OAuth 2.0 与 OIDC 的核心区别、认证流程 Mermaid 时序图、会话管理与登出、与 SAML 2.0 对比选型"
 date: 2024-02-02T00:00:00+08:00
 draft: false
 weight: 25
