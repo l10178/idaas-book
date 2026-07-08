@@ -1,6 +1,6 @@
 ---
 title: "IDaaS 核心术语速查表 — IAM、OAuth、OIDC、SAML、SCIM 术语解释 | IDaaS Book"
-description: "IDaaS 核心术语速查表"
+description: "IDaaS 核心术语速查表：IAM、OAuth 2.0、OIDC、SAML、SCIM、JWT、PKCE 等身份与访问管理领域关键术语的中英文定义与简短解释"
 date: 2024-05-05T00:00:00+08:00
 draft: false
 weight: 99
