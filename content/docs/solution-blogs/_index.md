@@ -20,3 +20,4 @@ menu:
 | [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}}) | ERR_TOO_MANY_REDIRECTS, 401 Unauthorized, Cookie, TLS 终结, SameSite |
 | [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive.md" >}}) | 架构原理、Provider 选型、Cookie/Session、安全加固、与 Pomerium/Traefik/Nginx 对比 |
 | [Keycloak LDAP / AD 用户联邦]({{< relref "keycloak-ldap-ad-federation" >}}) | LDAPS 连接、用户搜索与同步策略、属性映射、组导入、AD 与 OpenLDAP 差异、常见错误排错 |
+| [Keycloak Adapter 弃用迁移指南]({{< relref "keycloak-adapter-migration" >}}) | 从 Keycloak Adapter 迁移到标准 OIDC 库（Spring Security、openid-client、authlib），逐语言迁移路径、角色映射、Token Refresh、常见踩坑与回滚 |
