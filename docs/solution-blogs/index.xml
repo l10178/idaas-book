@@ -20,7 +20,9 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;K8s Ingress 统一认证入口&lt;/td&gt;
-					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt;）&lt;/td&gt;
+					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库，参考 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt;）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;多个应用共享同一个 oauth2-proxy 实例&lt;/td&gt;
@@ -29,29 +31,30 @@
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id="架构"&gt;架构&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;sequenceDiagram
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
  participant Browser as 浏览器
  participant Ingress as Nginx Ingress
  participant Proxy as oauth2-proxy
  participant App as 后端应用
  participant KC as Keycloak
 
- Browser-&gt;&gt;Ingress: GET /app
- Ingress-&gt;&gt;Proxy: auth-url /oauth2/auth
- Proxy--&gt;&gt;Ingress: 401 (未认证)
- Ingress-&gt;&gt;Browser: 302 → Keycloak 登录页
- Browser-&gt;&gt;KC: 登录
- KC--&gt;&gt;Browser: 302 → /oauth2/callback
- Browser-&gt;&gt;Proxy: GET /oauth2/callback?code=...
- Proxy-&gt;&gt;KC: Token 交换 (code → tokens)
- KC--&gt;&gt;Proxy: id_token + access_token + refresh_token
- Proxy--&gt;&gt;Browser: Set-Cookie (_oauth2_proxy) + 302 → /app
- Browser-&gt;&gt;Ingress: GET /app (带 Cookie)
- Ingress-&gt;&gt;Proxy: auth-url (带 Cookie)
- Proxy--&gt;&gt;Ingress: 202 (已认证)
- Ingress-&gt;&gt;App: 代理请求 + X-Auth-Request-* Headers
- App--&gt;&gt;Browser: 200 OK
-&lt;/div&gt;
+ Browser-&amp;gt;&amp;gt;Ingress: GET /app
+ Ingress-&amp;gt;&amp;gt;Proxy: auth-url /oauth2/auth
+ Proxy--&amp;gt;&amp;gt;Ingress: 401 (未认证)
+ Ingress-&amp;gt;&amp;gt;Browser: 302 → Keycloak 登录页
+ Browser-&amp;gt;&amp;gt;KC: 登录
+ KC--&amp;gt;&amp;gt;Browser: 302 → /oauth2/callback
+ Browser-&amp;gt;&amp;gt;Proxy: GET /oauth2/callback?code=...
+ Proxy-&amp;gt;&amp;gt;KC: Token 交换 (code → tokens)
+ KC--&amp;gt;&amp;gt;Proxy: id_token + access_token + refresh_token
+ Proxy--&amp;gt;&amp;gt;Browser: Set-Cookie (_oauth2_proxy) + 302 → /app
+ Browser-&amp;gt;&amp;gt;Ingress: GET /app (带 Cookie)
+ Ingress-&amp;gt;&amp;gt;Proxy: auth-url (带 Cookie)
+ Proxy--&amp;gt;&amp;gt;Ingress: 202 (已认证)
+ Ingress-&amp;gt;&amp;gt;App: 代理请求 + X-Auth-Request-* Headers
+ App--&amp;gt;&amp;gt;Browser: 200 OK
+&lt;/pre&gt;
 
 &lt;p&gt;流程要点：&lt;/p&gt;</description></item><item><title>Keycloak 重定向循环与 401 排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你已经部署好了 Keycloak +反向代理，用户能在 Keycloak 登录页输入用户名密码，但登录成功后浏览器在 Keycloak 和应用之间反复跳转，最终浏览器报 &lt;code&gt;ERR_TOO_MANY_REDIRECTS&lt;/code&gt;；或者直接返回 401，看起来&amp;quot;登录成功了但就是进不去&amp;quot;。&lt;/p&gt;
@@ -75,7 +78,9 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;OIDC 标准客户端（非 Keycloak Adapter）&lt;/td&gt;
-					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt; 迁移到标准 OIDC 库再排查）&lt;/td&gt;
+					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，参考 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt; 迁移到标准 OIDC 库再排查）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;SAML 单点登录重定向问题&lt;/td&gt;
@@ -84,19 +89,20 @@
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id="排查路线图"&gt;排查路线图&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;flowchart TD
- A[用户登录后重定向循环 / 401] --&gt; B{反向代理配置是否正确？}
- B --&gt;|否| B1[X-Forwarded-For / X-Forwarded-Proto 缺失]
- B --&gt;|是| C{Cookie 是否能写入浏览器？}
- C --&gt;|否| C1[SameSite 过严 / Domain 不匹配 / Secure 标记与 HTTP 冲突]
- C --&gt;|是| D{OIDC 回调 URI 是否匹配？}
- D --&gt;|否| D1[redirect_uri 拼写错误 / 协议不匹配 / 端口不一致]
- D --&gt;|是| E{TLS 终结在哪一层？}
- E --&gt;|错层| E1[代理层 HTTP → Keycloak 看到 HTTP 而非 HTTPS]
- E --&gt;|正确| F{认证后的 Token 校验？}
- F --&gt;|失败| F1[audience / issuer / nbf 校验失败]
- F --&gt;|通过| G[✅ 认证链路正常，检查应用层逻辑]
-&lt;/div&gt;
+&lt;pre class="mermaid"&gt;
+ flowchart TD
+ A[用户登录后重定向循环 / 401] --&amp;gt; B{反向代理配置是否正确？}
+ B --&amp;gt;|否| B1[X-Forwarded-For / X-Forwarded-Proto 缺失]
+ B --&amp;gt;|是| C{Cookie 是否能写入浏览器？}
+ C --&amp;gt;|否| C1[SameSite 过严 / Domain 不匹配 / Secure 标记与 HTTP 冲突]
+ C --&amp;gt;|是| D{OIDC 回调 URI 是否匹配？}
+ D --&amp;gt;|否| D1[redirect_uri 拼写错误 / 协议不匹配 / 端口不一致]
+ D --&amp;gt;|是| E{TLS 终结在哪一层？}
+ E --&amp;gt;|错层| E1[代理层 HTTP → Keycloak 看到 HTTP 而非 HTTPS]
+ E --&amp;gt;|正确| F{认证后的 Token 校验？}
+ F --&amp;gt;|失败| F1[audience / issuer / nbf 校验失败]
+ F --&amp;gt;|通过| G[✅ 认证链路正常，检查应用层逻辑]
+&lt;/pre&gt;
 
 &lt;h2 id="第一关反向代理-header"&gt;第一关：反向代理 Header&lt;/h2&gt;
 &lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;

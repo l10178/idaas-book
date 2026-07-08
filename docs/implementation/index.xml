@@ -370,7 +370,9 @@
 &lt;li&gt;后端服务不知道&amp;quot;谁&amp;quot;在访问&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="nginx--oauth2-代理"&gt;Nginx + OAuth2 代理&lt;/h3&gt;
-&lt;p&gt;使用 &lt;code&gt;oauth2-proxy&lt;/code&gt; 为任何 HTTP 应用添加 OAuth 2.0 保护。完整配置指南、生产排错与回滚方案见 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/"&gt;Keycloak + oauth2-proxy 集成实战指南&lt;/a&gt;，本节给出快速参考。&lt;/p&gt;</description></item><item><title>第19章：Keycloak Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</link><pubDate>Sat, 06 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</guid><description>&lt;h2 id="191-部署方式选择"&gt;19.1 部署方式选择&lt;/h2&gt;
+&lt;p&gt;使用 &lt;code&gt;oauth2-proxy&lt;/code&gt; 为任何 HTTP 应用添加 OAuth 2.0 保护。完整配置指南、生产排错与回滚方案见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/"&gt;Keycloak + oauth2-proxy 集成实战指南&lt;/a&gt;，本节给出快速参考。&lt;/p&gt;</description></item><item><title>第19章：Keycloak Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</link><pubDate>Sat, 06 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/kubernetes-production/</guid><description>&lt;h2 id="191-部署方式选择"&gt;19.1 部署方式选择&lt;/h2&gt;
 &lt;p&gt;在 Kubernetes 上部署 IDaaS（以 Keycloak 为例），有三种主流方式：&lt;/p&gt;
 &lt;table&gt;
 	&lt;thead&gt;
@@ -437,8 +439,16 @@
 &lt;/table&gt;
 &lt;h2 id="192-使用-keycloak-operator"&gt;19.2 使用 Keycloak Operator&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;版本提示：Keycloak 官方下载页与 GitHub Release 显示当前稳定版为 &lt;code&gt;26.6.4&lt;/code&gt;（2026-07-01 检查）；官方 Operator 安装文档同样提供 &lt;code&gt;26.6.4&lt;/code&gt; 的 &lt;code&gt;keycloak-k8s-resources&lt;/code&gt; 示例。Keycloak 迭代很快，部署时请到 &lt;a href="https://www.keycloak.org/downloads"&gt;keycloak.org/downloads&lt;/a&gt;、&lt;a href="https://github.com/keycloak/keycloak/releases"&gt;Keycloak Releases&lt;/a&gt; 与 &lt;a href="https://www.keycloak.org/operator/installation"&gt;Operator 安装文档&lt;/a&gt; 复核&lt;strong&gt;当前最新稳定版&lt;/strong&gt;，并保持 Operator 版本与 Keycloak 镜像一致。&lt;/p&gt;</description></item><item><title>Casdoor 深度解读 — AI-First 开源 IAM 的架构、部署与选型指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/casdoor-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/casdoor-deep-dive/</guid><description>&lt;h2 id="casdoor-简介"&gt;Casdoor 简介&lt;/h2&gt;
-&lt;p&gt;Casdoor 是 &lt;a href="https://casbin.org/"&gt;Casbin&lt;/a&gt; 社区推出的开源身份与访问管理（IAM）平台，截至 2026 年 7 月最新稳定版为 &lt;strong&gt;v3.108.0&lt;/strong&gt;（Apache 2.0 许可证），GitHub 约 13,900 星。&lt;/p&gt;
+&lt;p&gt;版本提示：Keycloak 官方下载页与 GitHub Release 显示当前稳定版为 &lt;code&gt;26.6.4&lt;/code&gt;（2026-07-01 检查）；官方 Operator 安装文档同样提供 &lt;code&gt;26.6.4&lt;/code&gt; 的 &lt;code&gt;keycloak-k8s-resources&lt;/code&gt; 示例。Keycloak 迭代很快，部署时请到 
+
+&lt;a class="link link--text" href="https://www.keycloak.org/downloads" rel="external"&gt;keycloak.org/downloads&lt;/a&gt;、
+
+&lt;a class="link link--text" href="https://github.com/keycloak/keycloak/releases" rel="external"&gt;Keycloak Releases&lt;/a&gt; 与 
+
+&lt;a class="link link--text" href="https://www.keycloak.org/operator/installation" rel="external"&gt;Operator 安装文档&lt;/a&gt; 复核&lt;strong&gt;当前最新稳定版&lt;/strong&gt;，并保持 Operator 版本与 Keycloak 镜像一致。&lt;/p&gt;</description></item><item><title>Casdoor 深度解读 — AI-First 开源 IAM 的架构、部署与选型指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/casdoor-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/casdoor-deep-dive/</guid><description>&lt;h2 id="casdoor-简介"&gt;Casdoor 简介&lt;/h2&gt;
+&lt;p&gt;Casdoor 是 
+
+&lt;a class="link link--text" href="https://casbin.org/" rel="external"&gt;Casbin&lt;/a&gt; 社区推出的开源身份与访问管理（IAM）平台，截至 2026 年 7 月最新稳定版为 &lt;strong&gt;v3.108.0&lt;/strong&gt;（Apache 2.0 许可证），GitHub 约 13,900 星。&lt;/p&gt;
 &lt;p&gt;一句话定位：&lt;strong&gt;UI-first、支持多协议、内置 Casbin 授权的轻量级 IAM 服务器&lt;/strong&gt;。它在 2025-2026 年逐步引入 MCP Gateway 和 A2A 协议支持，转向 &amp;ldquo;AI-First&amp;rdquo; 路线——这意味着 Casdoor 不仅能做人应用的认证中心，也在尝试成为 AI Agent 之间的身份与授权网关。&lt;/p&gt;
 &lt;table&gt;
 	&lt;thead&gt;
@@ -450,7 +460,9 @@
 	&lt;tbody&gt;
 			&lt;tr&gt;
 					&lt;td&gt;项目&lt;/td&gt;
-					&lt;td&gt;&lt;a href="https://github.com/casdoor/casdoor"&gt;github.com/casdoor/casdoor&lt;/a&gt;&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://github.com/casdoor/casdoor" rel="external"&gt;github.com/casdoor/casdoor&lt;/a&gt;&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;语言&lt;/td&gt;
@@ -470,50 +482,57 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;文档&lt;/td&gt;
-					&lt;td&gt;&lt;a href="https://casdoor.ai"&gt;casdoor.ai&lt;/a&gt;&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://casdoor.ai" rel="external"&gt;casdoor.ai&lt;/a&gt;&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;在线 Demo&lt;/td&gt;
-					&lt;td&gt;&lt;a href="https://door.casdoor.com"&gt;door.casdoor.com&lt;/a&gt;（只读）/ &lt;a href="https://demo.casdoor.com"&gt;demo.casdoor.com&lt;/a&gt;（可写，约 5 分钟重置）&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://door.casdoor.com" rel="external"&gt;door.casdoor.com&lt;/a&gt;（只读）/ 
+
+&lt;a class="link link--text" href="https://demo.casdoor.com" rel="external"&gt;demo.casdoor.com&lt;/a&gt;（可写，约 5 分钟重置）&lt;/td&gt;
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id="核心架构"&gt;核心架构&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;graph TB
- subgraph "外部系统"
+&lt;pre class="mermaid"&gt;
+ graph TB
+ subgraph &amp;#34;外部系统&amp;#34;
  User[用户/应用]
  AI[AI Agent]
- SP[第三方 IDP&lt;br/&gt;Google/GitHub/企业微信]
+ SP[第三方 IDP&amp;lt;br/&amp;gt;Google/GitHub/企业微信]
  end
 
- subgraph "Casdoor"
+ subgraph &amp;#34;Casdoor&amp;#34;
  UI[React Web UI]
- API[RESTful API Server&lt;br/&gt;Go + Beego]
- AuthN[认证引擎&lt;br/&gt;OAuth/OIDC/SAML/CAS/LDAP]
- AuthZ[授权引擎&lt;br/&gt;Casbin]
- Store[(数据存储&lt;br/&gt;MySQL/PostgreSQL)]
- MCP[MCP Gateway&lt;br/&gt;A2A Protocol]
+ API[RESTful API Server&amp;lt;br/&amp;gt;Go + Beego]
+ AuthN[认证引擎&amp;lt;br/&amp;gt;OAuth/OIDC/SAML/CAS/LDAP]
+ AuthZ[授权引擎&amp;lt;br/&amp;gt;Casbin]
+ Store[(数据存储&amp;lt;br/&amp;gt;MySQL/PostgreSQL)]
+ MCP[MCP Gateway&amp;lt;br/&amp;gt;A2A Protocol]
  end
 
- subgraph "下游应用"
+ subgraph &amp;#34;下游应用&amp;#34;
  App1[Web 应用]
  App2[移动 App]
  App3[AI Agent 工具]
  end
 
- User --&gt; UI
- User --&gt; API
- AI --&gt; MCP
- MCP --&gt; API
- SP --&gt; AuthN
- API --&gt; AuthN
- API --&gt; AuthZ
- AuthN --&gt; Store
- AuthZ --&gt; Store
- AuthN --&gt; App1
- AuthN --&gt; App2
- AuthZ --&gt; App3
-&lt;/div&gt;
+ User --&amp;gt; UI
+ User --&amp;gt; API
+ AI --&amp;gt; MCP
+ MCP --&amp;gt; API
+ SP --&amp;gt; AuthN
+ API --&amp;gt; AuthN
+ API --&amp;gt; AuthZ
+ AuthN --&amp;gt; Store
+ AuthZ --&amp;gt; Store
+ AuthN --&amp;gt; App1
+ AuthN --&amp;gt; App2
+ AuthZ --&amp;gt; App3
+&lt;/pre&gt;
 
 &lt;p&gt;Casdoor 采用前后端分离架构：&lt;/p&gt;</description></item><item><title>Authentik — Python 生态的开源 IAM 平台详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/authentik-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/authentik-deep-dive/</guid><description>&lt;p&gt;Authentik 是一个用 Python/Django 编写的开源身份验证与授权平台，2020 年由 Jens Langhammer 创建，当前最新稳定版为 &lt;strong&gt;2026.5.3&lt;/strong&gt;（2026 年 6 月发布），GitHub 22k+ star。它的核心差异点在于：用**可视化流程构建器（Flow Builder）**替代硬编码的认证逻辑，用 &lt;strong&gt;Outpost 代理&lt;/strong&gt; 将认证能力延伸到任意网络边界，同时保持 Python 生态的灵活性和可编程性。&lt;/p&gt;
 &lt;h2 id="核心设计思路"&gt;核心设计思路&lt;/h2&gt;
@@ -524,39 +543,40 @@
 &lt;li&gt;&lt;strong&gt;Policy / Binding（策略与绑定）&lt;/strong&gt;：权限控制通过表达式策略实现，支持 Python 表达式、用户属性、IP 范围等条件，策略可绑定到 Flow、应用、属性映射等任何资源上。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id="架构全景"&gt;架构全景&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;flowchart TB
- subgraph "用户侧"
+&lt;pre class="mermaid"&gt;
+ flowchart TB
+ subgraph &amp;#34;用户侧&amp;#34;
  U[用户浏览器]
  APP[下游应用]
  end
 
- subgraph "Authentik 核心"
+ subgraph &amp;#34;Authentik 核心&amp;#34;
  WS[Web Server\nDjango + Channels]
  DB[(PostgreSQL)]
  REDIS[(Redis\n缓存 + WebSocket)]
  CELERY[Celery Worker\n后台任务]
  end
 
- subgraph "Outpost 层"
+ subgraph &amp;#34;Outpost 层&amp;#34;
  PO[Proxy Outpost\nGo 反向代理]
  LO[LDAP Outpost\nGo LDAP 服务器]
  RO[Radius Outpost]
  end
 
- U --&gt;|HTTPS| PO
- U --&gt;|登录页面| WS
- APP --&gt;|LDAP 认证| LO
- PO --&gt;|OAuth2/OIDC/SAML| WS
- LO --&gt;|内部 API| WS
- RO --&gt;|内部 API| WS
- WS --&gt; DB
- WS --&gt; REDIS
- WS --&gt; CELERY
+ U --&amp;gt;|HTTPS| PO
+ U --&amp;gt;|登录页面| WS
+ APP --&amp;gt;|LDAP 认证| LO
+ PO --&amp;gt;|OAuth2/OIDC/SAML| WS
+ LO --&amp;gt;|内部 API| WS
+ RO --&amp;gt;|内部 API| WS
+ WS --&amp;gt; DB
+ WS --&amp;gt; REDIS
+ WS --&amp;gt; CELERY
 
  style WS fill:#4a90d9,color:#fff
  style PO fill:#e67e22,color:#fff
  style LO fill:#e67e22,color:#fff
-&lt;/div&gt;
+&lt;/pre&gt;
 
 &lt;p&gt;核心（Django + PostgreSQL + Redis）负责策略决策、用户管理和流程编排；Outpost 负责协议转换和流量代理。两者通过内部 API 通信，Outpost 可部署在完全不同的网络区域。&lt;/p&gt;</description></item><item><title>Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</guid><description>&lt;h2 id="zitadel-简介"&gt;Zitadel 简介&lt;/h2&gt;
 &lt;p&gt;Zitadel 是一个用 Go 编写的开源身份与访问管理平台，截至 2026 年 7 月最新稳定版为 &lt;strong&gt;v4.15.3&lt;/strong&gt;（AGPL-3.0 许可证），GitHub 约 14,300 星。项目的核心理念是&amp;quot;Identity infrastructure, simplified for you&amp;quot;——通过事件驱动架构和原生多租户设计，把身份基础设施的复杂性封装成简洁的 API 和管理界面。&lt;/p&gt;
@@ -571,7 +591,9 @@
 	&lt;tbody&gt;
 			&lt;tr&gt;
 					&lt;td&gt;项目&lt;/td&gt;
-					&lt;td&gt;&lt;a href="https://github.com/zitadel/zitadel"&gt;github.com/zitadel/zitadel&lt;/a&gt;&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://github.com/zitadel/zitadel" rel="external"&gt;github.com/zitadel/zitadel&lt;/a&gt;&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;语言&lt;/td&gt;
@@ -587,11 +609,15 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;文档&lt;/td&gt;
-					&lt;td&gt;&lt;a href="https://zitadel.com/docs"&gt;zitadel.com/docs&lt;/a&gt;&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://zitadel.com/docs" rel="external"&gt;zitadel.com/docs&lt;/a&gt;&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;在线 SaaS&lt;/td&gt;
-					&lt;td&gt;&lt;a href="https://zitadel.cloud"&gt;zitadel.cloud&lt;/a&gt;&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://zitadel.cloud" rel="external"&gt;zitadel.cloud&lt;/a&gt;&lt;/td&gt;
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
@@ -609,59 +635,62 @@
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id="架构全景"&gt;架构全景&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;flowchart TB
- subgraph "用户与应用"
+&lt;pre class="mermaid"&gt;
+ flowchart TB
+ subgraph &amp;#34;用户与应用&amp;#34;
  U[用户浏览器]
  APP[下游应用 / API]
  MGMT[管理员]
  end
 
- subgraph "Zitadel 核心"
+ subgraph &amp;#34;Zitadel 核心&amp;#34;
  direction TB
- API_L["API Layer&lt;br/&gt;REST + gRPC"]
+ API_L[&amp;#34;API Layer&amp;lt;br/&amp;gt;REST + gRPC&amp;#34;]
  
- subgraph "Command Side (写)"
- CMD[Command Handler&lt;br/&gt;命令处理器]
- ES[(Event Store&lt;br/&gt;事件存储&lt;br/&gt;PostgreSQL)]
+ subgraph &amp;#34;Command Side (写)&amp;#34;
+ CMD[Command Handler&amp;lt;br/&amp;gt;命令处理器]
+ ES[(Event Store&amp;lt;br/&amp;gt;事件存储&amp;lt;br/&amp;gt;PostgreSQL)]
  end
  
- subgraph "Query Side (读)"
- PROJ[Projections&lt;br/&gt;查询投影]
- QV[(Query Views&lt;br/&gt;查询视图)]
+ subgraph &amp;#34;Query Side (读)&amp;#34;
+ PROJ[Projections&amp;lt;br/&amp;gt;查询投影]
+ QV[(Query Views&amp;lt;br/&amp;gt;查询视图)]
  end
  
- AUTHN[认证引擎&lt;br/&gt;OIDC / OAuth2 / SAML]
- AUTHZ[授权引擎&lt;br/&gt;RBAC + IAM Policy]
- end
-
- subgraph "存储层"
- PG[(PostgreSQL&lt;br/&gt;事件存储 + 查询视图)]
+ AUTHN[认证引擎&amp;lt;br/&amp;gt;OIDC / OAuth2 / SAML]
+ AUTHZ[授权引擎&amp;lt;br/&amp;gt;RBAC + IAM Policy]
  end
 
- subgraph "通知与任务"
- JOB[后台任务&lt;br/&gt;通知/生命周期]
+ subgraph &amp;#34;存储层&amp;#34;
+ PG[(PostgreSQL&amp;lt;br/&amp;gt;事件存储 + 查询视图)]
  end
 
- U --&gt;|登录/注册| AUTHN
- APP --&gt;|Token 验证| AUTHN
- APP --&gt;|API 调用| API_L
- MGMT --&gt;|管理操作| API_L
+ subgraph &amp;#34;通知与任务&amp;#34;
+ JOB[后台任务&amp;lt;br/&amp;gt;通知/生命周期]
+ end
+
+ U --&amp;gt;|登录/注册| AUTHN
+ APP --&amp;gt;|Token 验证| AUTHN
+ APP --&amp;gt;|API 调用| API_L
+ MGMT --&amp;gt;|管理操作| API_L
  
- API_L --&gt; CMD
- CMD --&gt; ES
- ES --&gt; PROJ
- PROJ --&gt; QV
- API_L -.-&gt;|查询| QV
+ API_L --&amp;gt; CMD
+ CMD --&amp;gt; ES
+ ES --&amp;gt; PROJ
+ PROJ --&amp;gt; QV
+ API_L -.-&amp;gt;|查询| QV
  
- AUTHN --&gt; CMD
- AUTHN -.-&gt;|验证| QV
- AUTHZ -.-&gt;|策略评估| QV
+ AUTHN --&amp;gt; CMD
+ AUTHN -.-&amp;gt;|验证| QV
+ AUTHZ -.-&amp;gt;|策略评估| QV
  
- CMD --&gt; JOB
-&lt;/div&gt;
+ CMD --&amp;gt; JOB
+&lt;/pre&gt;
 
 &lt;p&gt;这个架构有几个值得展开的要点：&lt;/p&gt;</description></item><item><title>oauth2-proxy 深度介绍 — 轻量 OAuth2/OIDC 反向代理 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/oauth2-proxy-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/oauth2-proxy-deep-dive/</guid><description>&lt;h2 id="什么是-oauth2-proxy"&gt;什么是 oauth2-proxy？&lt;/h2&gt;
-&lt;p&gt;&lt;a href="https://oauth2-proxy.github.io/oauth2-proxy/"&gt;oauth2-proxy&lt;/a&gt; 是一个开源的、轻量级的&lt;strong&gt;身份感知反向代理&lt;/strong&gt;。它的工作很简单：拦在应用前面，检查每个 HTTP 请求是否带着有效会话；没有的话，把用户导向 OAuth2/OIDC Provider（比如 Keycloak、GitHub、Google、Dex）去登录，登录成功后再放行。&lt;/p&gt;
+&lt;p&gt;
+
+&lt;a class="link link--text" href="https://oauth2-proxy.github.io/oauth2-proxy/" rel="external"&gt;oauth2-proxy&lt;/a&gt; 是一个开源的、轻量级的&lt;strong&gt;身份感知反向代理&lt;/strong&gt;。它的工作很简单：拦在应用前面，检查每个 HTTP 请求是否带着有效会话；没有的话，把用户导向 OAuth2/OIDC Provider（比如 Keycloak、GitHub、Google、Dex）去登录，登录成功后再放行。&lt;/p&gt;
 &lt;p&gt;它不存储用户、不管理密码、不签发 Token——这些都是 Provider 的事。oauth2-proxy 只做一件事：&lt;strong&gt;把没有身份的人挡在门外，把有身份的人放进来，并把用户信息（邮箱、用户名、组）通过 HTTP Header 传给后端应用&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="为什么需要它"&gt;为什么需要它？&lt;/h2&gt;
 &lt;p&gt;在 IDaaS 体系里，认证和授权是 IDP 的事，但你的应用可能根本没写登录逻辑。oauth2-proxy 的价值在于：&lt;/p&gt;
@@ -671,35 +700,36 @@
 &lt;li&gt;&lt;strong&gt;Provider 无关&lt;/strong&gt;：同一个 oauth2-proxy 可以对接 Keycloak、Azure AD、GitHub、Google、Dex 等几十种 Provider，切换 Provider 不影响后端。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id="架构概览"&gt;架构概览&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;sequenceDiagram
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
  participant Browser as 浏览器
  participant Ingress as Nginx Ingress/Traefik
  participant O2P as oauth2-proxy
  participant App as 后端应用
  participant IDP as Keycloak (IDP)
 
- Browser-&gt;&gt;Ingress: GET /app
- Ingress-&gt;&gt;O2P: GET /oauth2/auth (auth_request)
+ Browser-&amp;gt;&amp;gt;Ingress: GET /app
+ Ingress-&amp;gt;&amp;gt;O2P: GET /oauth2/auth (auth_request)
  
  alt 无有效 Session Cookie
- O2P--&gt;&gt;Ingress: 401 → /oauth2/start
- Ingress--&gt;&gt;Browser: 302 /oauth2/start
- Browser-&gt;&gt;O2P: GET /oauth2/start
- O2P--&gt;&gt;Browser: 302 → IDP 登录页
- Browser-&gt;&gt;IDP: 登录
- IDP--&gt;&gt;Browser: 302 /oauth2/callback?code=...
- Browser-&gt;&gt;O2P: GET /oauth2/callback
- O2P-&gt;&gt;IDP: 用 code 换 token
- IDP--&gt;&gt;O2P: access_token + id_token
- O2P--&gt;&gt;Browser: Set-Cookie + 302 回到 /app
- Browser-&gt;&gt;Ingress: GET /app (带 Cookie)
- Ingress-&gt;&gt;O2P: GET /oauth2/auth (auth_request)
+ O2P--&amp;gt;&amp;gt;Ingress: 401 → /oauth2/start
+ Ingress--&amp;gt;&amp;gt;Browser: 302 /oauth2/start
+ Browser-&amp;gt;&amp;gt;O2P: GET /oauth2/start
+ O2P--&amp;gt;&amp;gt;Browser: 302 → IDP 登录页
+ Browser-&amp;gt;&amp;gt;IDP: 登录
+ IDP--&amp;gt;&amp;gt;Browser: 302 /oauth2/callback?code=...
+ Browser-&amp;gt;&amp;gt;O2P: GET /oauth2/callback
+ O2P-&amp;gt;&amp;gt;IDP: 用 code 换 token
+ IDP--&amp;gt;&amp;gt;O2P: access_token + id_token
+ O2P--&amp;gt;&amp;gt;Browser: Set-Cookie + 302 回到 /app
+ Browser-&amp;gt;&amp;gt;Ingress: GET /app (带 Cookie)
+ Ingress-&amp;gt;&amp;gt;O2P: GET /oauth2/auth (auth_request)
  end
 
- O2P--&gt;&gt;Ingress: 202 Accepted
- Note over O2P,Ingress: X-Auth-Request-User&lt;br/&gt;X-Auth-Request-Email&lt;br/&gt;X-Auth-Request-Groups
- Ingress-&gt;&gt;App: GET /app + 用户身份 Header
- App--&gt;&gt;Browser: 200 OK
-&lt;/div&gt;
+ O2P--&amp;gt;&amp;gt;Ingress: 202 Accepted
+ Note over O2P,Ingress: X-Auth-Request-User&amp;lt;br/&amp;gt;X-Auth-Request-Email&amp;lt;br/&amp;gt;X-Auth-Request-Groups
+ Ingress-&amp;gt;&amp;gt;App: GET /app + 用户身份 Header
+ App--&amp;gt;&amp;gt;Browser: 200 OK
+&lt;/pre&gt;
 
 &lt;p&gt;&lt;strong&gt;流程要点：&lt;/strong&gt;&lt;/p&gt;</description></item></channel></rss>

@@ -51,36 +51,37 @@
 &lt;p&gt;这份图解的目标是：&lt;strong&gt;一图看懂完整交互，然后逐帧理解每个参数的设计意图和攻击面。&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id="授权码流程完整时序图"&gt;授权码流程完整时序图&lt;/h2&gt;
 &lt;p&gt;下面是 OAuth 2.0 Authorization Code Flow 的标准交互，包含四个角色：用户（Resource Owner）、客户端（Client）、授权服务器（Authorization Server）和资源服务器（Resource Server）。&lt;/p&gt;
-&lt;div class="mermaid text-center"&gt;sequenceDiagram
- actor User as 用户&lt;br/&gt;(Resource Owner)
- participant Client as 客户端&lt;br/&gt;(Client)
- participant AS as 授权服务器&lt;br/&gt;(Authorization Server)
- participant RS as 资源服务器&lt;br/&gt;(Resource Server)
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
+ actor User as 用户&amp;lt;br/&amp;gt;(Resource Owner)
+ participant Client as 客户端&amp;lt;br/&amp;gt;(Client)
+ participant AS as 授权服务器&amp;lt;br/&amp;gt;(Authorization Server)
+ participant RS as 资源服务器&amp;lt;br/&amp;gt;(Resource Server)
 
  Note over User,RS: ═══ 第一步：发起授权请求 ═══
- User-&gt;&gt;Client: 1. 点击「使用 XX 账号登录」
- Client-&gt;&gt;Client: 2. 构造授权请求 URL&lt;br/&gt;含 client_id, redirect_uri,&lt;br/&gt;response_type=code, scope,&lt;br/&gt;state（防 CSRF 随机值）
+ User-&amp;gt;&amp;gt;Client: 1. 点击「使用 XX 账号登录」
+ Client-&amp;gt;&amp;gt;Client: 2. 构造授权请求 URL&amp;lt;br/&amp;gt;含 client_id, redirect_uri,&amp;lt;br/&amp;gt;response_type=code, scope,&amp;lt;br/&amp;gt;state（防 CSRF 随机值）
 
  Note over User,RS: ═══ 第二步：用户授权 ═══
- Client-&gt;&gt;User: 3. HTTP 302 重定向到&lt;br/&gt;授权服务器的 /authorize 端点
- User-&gt;&gt;AS: 4. 浏览器跟随重定向，&lt;br/&gt;用户在授权服务器页面登录并确认授权
- AS-&gt;&gt;AS: 5. 验证用户身份&lt;br/&gt;检查 client_id 和 redirect_uri&lt;br/&gt;是否与注册时一致
+ Client-&amp;gt;&amp;gt;User: 3. HTTP 302 重定向到&amp;lt;br/&amp;gt;授权服务器的 /authorize 端点
+ User-&amp;gt;&amp;gt;AS: 4. 浏览器跟随重定向，&amp;lt;br/&amp;gt;用户在授权服务器页面登录并确认授权
+ AS-&amp;gt;&amp;gt;AS: 5. 验证用户身份&amp;lt;br/&amp;gt;检查 client_id 和 redirect_uri&amp;lt;br/&amp;gt;是否与注册时一致
 
  Note over User,RS: ═══ 第三步：获取授权码 ═══
- AS-&gt;&gt;User: 6. HTTP 302 重定向回&lt;br/&gt;redirect_uri?code=AUTH_CODE&amp;state=xxx
- User-&gt;&gt;Client: 7. 浏览器跟随重定向，&lt;br/&gt;将 code 和 state 传给客户端
- Client-&gt;&gt;Client: 8. 验证 state 参数&lt;br/&gt;（防止 CSRF 攻击）
+ AS-&amp;gt;&amp;gt;User: 6. HTTP 302 重定向回&amp;lt;br/&amp;gt;redirect_uri?code=AUTH_CODE&amp;amp;state=xxx
+ User-&amp;gt;&amp;gt;Client: 7. 浏览器跟随重定向，&amp;lt;br/&amp;gt;将 code 和 state 传给客户端
+ Client-&amp;gt;&amp;gt;Client: 8. 验证 state 参数&amp;lt;br/&amp;gt;（防止 CSRF 攻击）
 
  Note over User,RS: ═══ 第四步：用授权码换令牌 ═══
- Client-&gt;&gt;AS: 9. POST /token&lt;br/&gt;grant_type=authorization_code&lt;br/&gt;code=AUTH_CODE&lt;br/&gt;redirect_uri（再次发送以验证）&lt;br/&gt;client_id + client_secret
- AS-&gt;&gt;AS: 10. 验证 code（一次性）&lt;br/&gt;验证 redirect_uri 一致性&lt;br/&gt;验证 client 身份
- AS-&gt;&gt;Client: 11. 返回 {access_token,&lt;br/&gt;refresh_token, expires_in}
+ Client-&amp;gt;&amp;gt;AS: 9. POST /token&amp;lt;br/&amp;gt;grant_type=authorization_code&amp;lt;br/&amp;gt;code=AUTH_CODE&amp;lt;br/&amp;gt;redirect_uri（再次发送以验证）&amp;lt;br/&amp;gt;client_id + client_secret
+ AS-&amp;gt;&amp;gt;AS: 10. 验证 code（一次性）&amp;lt;br/&amp;gt;验证 redirect_uri 一致性&amp;lt;br/&amp;gt;验证 client 身份
+ AS-&amp;gt;&amp;gt;Client: 11. 返回 {access_token,&amp;lt;br/&amp;gt;refresh_token, expires_in}
 
  Note over User,RS: ═══ 第五步：使用令牌访问资源 ═══
- Client-&gt;&gt;RS: 12. GET /api/user&lt;br/&gt;Authorization: Bearer {access_token}
- RS-&gt;&gt;AS: 13. （可选）验证 token&lt;br/&gt;introspect 或本地校验
- RS-&gt;&gt;Client: 14. 返回受保护资源
-&lt;/div&gt;
+ Client-&amp;gt;&amp;gt;RS: 12. GET /api/user&amp;lt;br/&amp;gt;Authorization: Bearer {access_token}
+ RS-&amp;gt;&amp;gt;AS: 13. （可选）验证 token&amp;lt;br/&amp;gt;introspect 或本地校验
+ RS-&amp;gt;&amp;gt;Client: 14. 返回受保护资源
+&lt;/pre&gt;
 
 &lt;h3 id="每一步的设计意图"&gt;每一步的设计意图&lt;/h3&gt;
 &lt;table&gt;
@@ -201,30 +202,31 @@
 &lt;p&gt;OAuth 2.1 不是全新协议，而是把这些分散的最佳实践整合成一份统一规范。它同时移除了已被证明不安全的流程，并强化了默认安全配置。&lt;/p&gt;
 &lt;p&gt;如果你现在在写一个新的 OAuth 客户端或授权服务器，应该直接以 OAuth 2.1 为目标——2.0 的安全模型已经过期。&lt;/p&gt;
 &lt;h2 id="变化总览"&gt;变化总览&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;graph TD
- A["OAuth 2.0 (RFC 6749, 2012)"] --&gt; B["OAuth 2.1 (draft-ietf-oauth-v2-1)"]
+&lt;pre class="mermaid"&gt;
+ graph TD
+ A[&amp;#34;OAuth 2.0 (RFC 6749, 2012)&amp;#34;] --&amp;gt; B[&amp;#34;OAuth 2.1 (draft-ietf-oauth-v2-1)&amp;#34;]
  
- B --&gt; C1["✅ 保留 &amp; 强化"]
- B --&gt; C2["❌ 废弃 &amp; 移除"]
- B --&gt; C3["🆕 新增"]
+ B --&amp;gt; C1[&amp;#34;✅ 保留 &amp;amp; 强化&amp;#34;]
+ B --&amp;gt; C2[&amp;#34;❌ 废弃 &amp;amp; 移除&amp;#34;]
+ B --&amp;gt; C3[&amp;#34;🆕 新增&amp;#34;]
 
- C1 --&gt; D1["Authorization Code Flow"]
- C1 --&gt; D2["Client Credentials Flow"]
- C1 --&gt; D3["Device Code Flow&lt;br/&gt;(RFC 8628)"]
- C1 --&gt; D4["Refresh Token"]
- C1 --&gt; D5["Bearer Token&lt;br/&gt;(不推荐，但仍可用)"]
+ C1 --&amp;gt; D1[&amp;#34;Authorization Code Flow&amp;#34;]
+ C1 --&amp;gt; D2[&amp;#34;Client Credentials Flow&amp;#34;]
+ C1 --&amp;gt; D3[&amp;#34;Device Code Flow&amp;lt;br/&amp;gt;(RFC 8628)&amp;#34;]
+ C1 --&amp;gt; D4[&amp;#34;Refresh Token&amp;#34;]
+ C1 --&amp;gt; D5[&amp;#34;Bearer Token&amp;lt;br/&amp;gt;(不推荐，但仍可用)&amp;#34;]
 
- C2 --&gt; E1["Implicit Grant&lt;br/&gt;(response_type=token)"]
- C2 --&gt; E2["ROPC / Password Grant&lt;br/&gt;(grant_type=password)"]
- C2 --&gt; E3["无 PKCE 的授权码流程"]
- C2 --&gt; E4["redirect_uri 宽松匹配"]
+ C2 --&amp;gt; E1[&amp;#34;Implicit Grant&amp;lt;br/&amp;gt;(response_type=token)&amp;#34;]
+ C2 --&amp;gt; E2[&amp;#34;ROPC / Password Grant&amp;lt;br/&amp;gt;(grant_type=password)&amp;#34;]
+ C2 --&amp;gt; E3[&amp;#34;无 PKCE 的授权码流程&amp;#34;]
+ C2 --&amp;gt; E4[&amp;#34;redirect_uri 宽松匹配&amp;#34;]
 
- C3 --&gt; F1["PKCE 对所有客户端强制"]
- C3 --&gt; F2["DPoP (RFC 9449)"]
- C3 --&gt; F3["iss 参数 (RFC 9207)"]
- C3 --&gt; F4["Refresh Token 发件人约束"]
- C3 --&gt; F5["redirect_uri 精确匹配"]
-&lt;/div&gt;
+ C3 --&amp;gt; F1[&amp;#34;PKCE 对所有客户端强制&amp;#34;]
+ C3 --&amp;gt; F2[&amp;#34;DPoP (RFC 9449)&amp;#34;]
+ C3 --&amp;gt; F3[&amp;#34;iss 参数 (RFC 9207)&amp;#34;]
+ C3 --&amp;gt; F4[&amp;#34;Refresh Token 发件人约束&amp;#34;]
+ C3 --&amp;gt; F5[&amp;#34;redirect_uri 精确匹配&amp;#34;]
+&lt;/pre&gt;
 
 &lt;h2 id="七大核心变化"&gt;七大核心变化&lt;/h2&gt;
 &lt;h3 id="1-pkce-对所有客户端强制"&gt;1. PKCE 对所有客户端强制&lt;/h3&gt;

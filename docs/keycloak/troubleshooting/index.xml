@@ -1,15 +1,19 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 常见问题排查 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Keycloak 常见问题排查 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 04:06:54 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak HTTPS Required 错误与反向代理排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 常见问题排查 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/</link><description>Recent content in Keycloak 常见问题排查 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 06:13:46 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak HTTPS Required 错误与反向代理排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/https-required/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;以 Http 方式登录，页面错误提示如下。&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;We're sorry... HTTPS required.&lt;/code&gt;&lt;/p&gt;
 &lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
 &lt;p&gt;Keycloak 各个 Realm 默认的登录设置里，&lt;code&gt;Require SSL&lt;/code&gt; 为 &lt;code&gt;external requests&lt;/code&gt;，对于外部请求，必须是 Https。
 非外部请求，也就是私有地址，可以是 http，如：&lt;code&gt;localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x&lt;/code&gt;。
-详细参考&lt;a href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl"&gt;官方文档说明&lt;/a&gt;。&lt;/p&gt;
+详细参考
+
+&lt;a class="link link--text" href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl" rel="external"&gt;官方文档说明&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id="解决方案"&gt;解决方案&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。&lt;/p&gt;
-&lt;p&gt;生产环境推荐在反向代理 / Ingress 上终结 TLS，并让 Keycloak 以 &lt;code&gt;proxy=passthrough&lt;/code&gt;（或 &lt;code&gt;edge&lt;/code&gt;/&lt;code&gt;reencrypt&lt;/code&gt; 视场景）感知前端协议，详见 &lt;a href="https://idaas.xlabs.club/docs/keycloak/security-features/"&gt;安全增强功能&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;生产环境推荐在反向代理 / Ingress 上终结 TLS，并让 Keycloak 以 &lt;code&gt;proxy=passthrough&lt;/code&gt;（或 &lt;code&gt;edge&lt;/code&gt;/&lt;code&gt;reencrypt&lt;/code&gt; 视场景）感知前端协议，详见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/keycloak/security-features/"&gt;安全增强功能&lt;/a&gt;。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;如果只是测试环境，可以修改 Realm 的设置，&lt;code&gt;Require SSL&lt;/code&gt; 改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;

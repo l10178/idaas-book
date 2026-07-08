@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 04:06:54 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 06:13:46 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
@@ -20,7 +20,9 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;K8s Ingress 统一认证入口&lt;/td&gt;
-					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt;）&lt;/td&gt;
+					&lt;td&gt;需要 Keycloak Adapter 老项目的迁移目标（直接用标准 OIDC 库，参考 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt;）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;多个应用共享同一个 oauth2-proxy 实例&lt;/td&gt;
@@ -29,29 +31,30 @@
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id="架构"&gt;架构&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;sequenceDiagram
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
  participant Browser as 浏览器
  participant Ingress as Nginx Ingress
  participant Proxy as oauth2-proxy
  participant App as 后端应用
  participant KC as Keycloak
 
- Browser-&gt;&gt;Ingress: GET /app
- Ingress-&gt;&gt;Proxy: auth-url /oauth2/auth
- Proxy--&gt;&gt;Ingress: 401 (未认证)
- Ingress-&gt;&gt;Browser: 302 → Keycloak 登录页
- Browser-&gt;&gt;KC: 登录
- KC--&gt;&gt;Browser: 302 → /oauth2/callback
- Browser-&gt;&gt;Proxy: GET /oauth2/callback?code=...
- Proxy-&gt;&gt;KC: Token 交换 (code → tokens)
- KC--&gt;&gt;Proxy: id_token + access_token + refresh_token
- Proxy--&gt;&gt;Browser: Set-Cookie (_oauth2_proxy) + 302 → /app
- Browser-&gt;&gt;Ingress: GET /app (带 Cookie)
- Ingress-&gt;&gt;Proxy: auth-url (带 Cookie)
- Proxy--&gt;&gt;Ingress: 202 (已认证)
- Ingress-&gt;&gt;App: 代理请求 + X-Auth-Request-* Headers
- App--&gt;&gt;Browser: 200 OK
-&lt;/div&gt;
+ Browser-&amp;gt;&amp;gt;Ingress: GET /app
+ Ingress-&amp;gt;&amp;gt;Proxy: auth-url /oauth2/auth
+ Proxy--&amp;gt;&amp;gt;Ingress: 401 (未认证)
+ Ingress-&amp;gt;&amp;gt;Browser: 302 → Keycloak 登录页
+ Browser-&amp;gt;&amp;gt;KC: 登录
+ KC--&amp;gt;&amp;gt;Browser: 302 → /oauth2/callback
+ Browser-&amp;gt;&amp;gt;Proxy: GET /oauth2/callback?code=...
+ Proxy-&amp;gt;&amp;gt;KC: Token 交换 (code → tokens)
+ KC--&amp;gt;&amp;gt;Proxy: id_token + access_token + refresh_token
+ Proxy--&amp;gt;&amp;gt;Browser: Set-Cookie (_oauth2_proxy) + 302 → /app
+ Browser-&amp;gt;&amp;gt;Ingress: GET /app (带 Cookie)
+ Ingress-&amp;gt;&amp;gt;Proxy: auth-url (带 Cookie)
+ Proxy--&amp;gt;&amp;gt;Ingress: 202 (已认证)
+ Ingress-&amp;gt;&amp;gt;App: 代理请求 + X-Auth-Request-* Headers
+ App--&amp;gt;&amp;gt;Browser: 200 OK
+&lt;/pre&gt;
 
 &lt;p&gt;流程要点：&lt;/p&gt;</description></item><item><title>Keycloak Admin API 实战：用户增删改查端到端操作指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/admin-api/user-end2end/</guid><description>&lt;p&gt;Keycloak Admin REST API，curl 模拟用户增加修改删除的完整例子。&lt;/p&gt;
 &lt;blockquote&gt;
@@ -197,12 +200,16 @@
 &lt;h2 id="问题原因"&gt;问题原因&lt;/h2&gt;
 &lt;p&gt;Keycloak 各个 Realm 默认的登录设置里，&lt;code&gt;Require SSL&lt;/code&gt; 为 &lt;code&gt;external requests&lt;/code&gt;，对于外部请求，必须是 Https。
 非外部请求，也就是私有地址，可以是 http，如：&lt;code&gt;localhost, 127.0.0.1, 10.x.x.x, 192.168.x.x, 172.16.x.x&lt;/code&gt;。
-详细参考&lt;a href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl"&gt;官方文档说明&lt;/a&gt;。&lt;/p&gt;
+详细参考
+
+&lt;a class="link link--text" href="https://www.keycloak.org/docs/latest/server_installation/index.html#setting-up-https-ssl" rel="external"&gt;官方文档说明&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id="解决方案"&gt;解决方案&lt;/h2&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。&lt;/p&gt;
-&lt;p&gt;生产环境推荐在反向代理 / Ingress 上终结 TLS，并让 Keycloak 以 &lt;code&gt;proxy=passthrough&lt;/code&gt;（或 &lt;code&gt;edge&lt;/code&gt;/&lt;code&gt;reencrypt&lt;/code&gt; 视场景）感知前端协议，详见 &lt;a href="https://idaas.xlabs.club/docs/keycloak/security-features/"&gt;安全增强功能&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;生产环境推荐在反向代理 / Ingress 上终结 TLS，并让 Keycloak 以 &lt;code&gt;proxy=passthrough&lt;/code&gt;（或 &lt;code&gt;edge&lt;/code&gt;/&lt;code&gt;reencrypt&lt;/code&gt; 视场景）感知前端协议，详见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/keycloak/security-features/"&gt;安全增强功能&lt;/a&gt;。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;如果只是测试环境，可以修改 Realm 的设置，&lt;code&gt;Require SSL&lt;/code&gt; 改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;
@@ -225,9 +232,17 @@
 &lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;也可以直接在管理控制台 → Realm → Realm Settings → Login → Require SSL 处改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;</description></item><item><title>Keycloak 入门指南 — 安装、配置与首个 OIDC 应用接入 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/getting-started/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/getting-started/</guid><description>&lt;p&gt;&lt;a href="https://www.keycloak.org"&gt;keycloak&lt;/a&gt; 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。&lt;/p&gt;
+&lt;p&gt;也可以直接在管理控制台 → Realm → Realm Settings → Login → Require SSL 处改为 &lt;code&gt;none&lt;/code&gt;。&lt;/p&gt;</description></item><item><title>Keycloak 入门指南 — 安装、配置与首个 OIDC 应用接入 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/getting-started/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/getting-started/</guid><description>&lt;p&gt;
+
+&lt;a class="link link--text" href="https://www.keycloak.org" rel="external"&gt;keycloak&lt;/a&gt; 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;p&gt;自 Keycloak 17 起，官方只发布 &lt;strong&gt;Quarkus 发行版&lt;/strong&gt;，旧的 WildFly 发行版已被移除；各类语言专用的 &lt;strong&gt;Client Adapter 也已陆续废弃&lt;/strong&gt;，官方推荐直接使用各生态的标准 OIDC/OAuth 2.0/SAML 库对接。如果你还在用旧 Adapter，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;Keycloak Adapter 弃用迁移指南&lt;/a&gt; 逐语言迁移。Keycloak 版本迭代很快，本书编写时当前稳定版为 26.6.4（2026-07-06 检查），部署前请到 &lt;a href="https://www.keycloak.org/downloads"&gt;keycloak.org/downloads&lt;/a&gt; 确认最新版本。关于 Keycloak 架构（Realm / Client / 认证流引擎 / 缓存 / 集群）的深度解析，见&lt;a href="https://idaas.xlabs.club/docs/implementation/keycloak-architecture/"&gt;第14章：Keycloak 架构深度解析&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;自 Keycloak 17 起，官方只发布 &lt;strong&gt;Quarkus 发行版&lt;/strong&gt;，旧的 WildFly 发行版已被移除；各类语言专用的 &lt;strong&gt;Client Adapter 也已陆续废弃&lt;/strong&gt;，官方推荐直接使用各生态的标准 OIDC/OAuth 2.0/SAML 库对接。如果你还在用旧 Adapter，参考 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;Keycloak Adapter 弃用迁移指南&lt;/a&gt; 逐语言迁移。Keycloak 版本迭代很快，本书编写时当前稳定版为 26.6.4（2026-07-06 检查），部署前请到 
+
+&lt;a class="link link--text" href="https://www.keycloak.org/downloads" rel="external"&gt;keycloak.org/downloads&lt;/a&gt; 确认最新版本。关于 Keycloak 架构（Realm / Client / 认证流引擎 / 缓存 / 集群）的深度解析，见
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/implementation/keycloak-architecture/"&gt;第14章：Keycloak 架构深度解析&lt;/a&gt;。&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;p&gt;主要功能：&lt;/p&gt;
 &lt;ul&gt;
@@ -240,7 +255,9 @@
 &lt;li&gt;标准协议适配&lt;br&gt;
 由于 Keycloak 严格实现 OIDC / OAuth 2.0 / SAML 2.0 标准，任何符合标准的库均可对接：Java 用 Spring Security / Quarkus OIDC，Go 用 &lt;code&gt;coreos/go-oidc&lt;/code&gt;，Node.js 用 &lt;code&gt;openid-client&lt;/code&gt; 等，无需依赖专用适配器。&lt;/li&gt;
 &lt;li&gt;后台管理&lt;br&gt;
-提供了管理控制台与账户控制台，可定制主题（见&lt;a href="https://idaas.xlabs.club/docs/keycloak/themes/"&gt;主题定制&lt;/a&gt;）。同时还有 CLI（&lt;code&gt;kcadm&lt;/code&gt;/&lt;code&gt;kcreg&lt;/code&gt;）、Admin REST API 与各语言 SDK。&lt;/li&gt;
+提供了管理控制台与账户控制台，可定制主题（见
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/keycloak/themes/"&gt;主题定制&lt;/a&gt;）。同时还有 CLI（&lt;code&gt;kcadm&lt;/code&gt;/&lt;code&gt;kcreg&lt;/code&gt;）、Admin REST API 与各语言 SDK。&lt;/li&gt;
 &lt;li&gt;授权服务&lt;br&gt;
 提供基于 RBAC、ABAC、UBAC 等多种策略的授权功能。&lt;/li&gt;
 &lt;li&gt;其他常用功能&lt;br&gt;
@@ -325,7 +342,9 @@
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;OIDC 标准客户端（非 Keycloak Adapter）&lt;/td&gt;
-					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，参考 &lt;a href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt; 迁移到标准 OIDC 库再排查）&lt;/td&gt;
+					&lt;td&gt;Keycloak Adapter 老项目（Adapters 已弃用，参考 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/"&gt;迁移指南&lt;/a&gt; 迁移到标准 OIDC 库再排查）&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;SAML 单点登录重定向问题&lt;/td&gt;
@@ -334,19 +353,20 @@
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id="排查路线图"&gt;排查路线图&lt;/h2&gt;
-&lt;div class="mermaid text-center"&gt;flowchart TD
- A[用户登录后重定向循环 / 401] --&gt; B{反向代理配置是否正确？}
- B --&gt;|否| B1[X-Forwarded-For / X-Forwarded-Proto 缺失]
- B --&gt;|是| C{Cookie 是否能写入浏览器？}
- C --&gt;|否| C1[SameSite 过严 / Domain 不匹配 / Secure 标记与 HTTP 冲突]
- C --&gt;|是| D{OIDC 回调 URI 是否匹配？}
- D --&gt;|否| D1[redirect_uri 拼写错误 / 协议不匹配 / 端口不一致]
- D --&gt;|是| E{TLS 终结在哪一层？}
- E --&gt;|错层| E1[代理层 HTTP → Keycloak 看到 HTTP 而非 HTTPS]
- E --&gt;|正确| F{认证后的 Token 校验？}
- F --&gt;|失败| F1[audience / issuer / nbf 校验失败]
- F --&gt;|通过| G[✅ 认证链路正常，检查应用层逻辑]
-&lt;/div&gt;
+&lt;pre class="mermaid"&gt;
+ flowchart TD
+ A[用户登录后重定向循环 / 401] --&amp;gt; B{反向代理配置是否正确？}
+ B --&amp;gt;|否| B1[X-Forwarded-For / X-Forwarded-Proto 缺失]
+ B --&amp;gt;|是| C{Cookie 是否能写入浏览器？}
+ C --&amp;gt;|否| C1[SameSite 过严 / Domain 不匹配 / Secure 标记与 HTTP 冲突]
+ C --&amp;gt;|是| D{OIDC 回调 URI 是否匹配？}
+ D --&amp;gt;|否| D1[redirect_uri 拼写错误 / 协议不匹配 / 端口不一致]
+ D --&amp;gt;|是| E{TLS 终结在哪一层？}
+ E --&amp;gt;|错层| E1[代理层 HTTP → Keycloak 看到 HTTP 而非 HTTPS]
+ E --&amp;gt;|正确| F{认证后的 Token 校验？}
+ F --&amp;gt;|失败| F1[audience / issuer / nbf 校验失败]
+ F --&amp;gt;|通过| G[✅ 认证链路正常，检查应用层逻辑]
+&lt;/pre&gt;
 
 &lt;h2 id="第一关反向代理-header"&gt;第一关：反向代理 Header&lt;/h2&gt;
 &lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>Keycloak Liquibase 与 MySQL 组复制冲突排查与解决 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
@@ -382,7 +402,9 @@ ERROR [org.keycloak.services] (executor-thread-1) java.lang.RuntimeException: Fa
 &lt;p&gt;根据 MySQL 日志，很明确了是因为 DATABASECHANGELOG 没有主键。MySQL group replication 要求表必须有主键或者非 Null 的唯一索引。&lt;/p&gt;</description></item><item><title>Keycloak 暴力破解检测 — 账户锁定策略与安全防护配置 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</link><pubDate>Fri, 04 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</guid><description>&lt;p&gt;Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N 次锁定。&lt;/p&gt;
 &lt;h2 id="启用暴力检测"&gt;启用暴力检测&lt;/h2&gt;
 &lt;p&gt;控制台选择 Realm，设置：Realm Settings -&amp;gt; Security Defenses -&amp;gt; Brute Force Detection。&lt;/p&gt;
-&lt;p&gt;&lt;a href="./brute-force.png"&gt;
+&lt;p&gt;
+
+&lt;a class="link link--text" href="./brute-force.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/brute-force_hu_910f61029bb10ff5.webp"
@@ -391,8 +413,9 @@ ERROR [org.keycloak.services] (executor-thread-1) java.lang.RuntimeException: Fa
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="Brute Force Detection"id="h-rh-i-0"
-/&gt;&lt;/a&gt;&lt;/p&gt;
+ alt="Brute Force Detection"
+ id="h-rh-i-0"
+&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;Permanent Lockout&lt;/p&gt;
@@ -419,7 +442,9 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;管理员在用户列表或用户详情里可以手动解锁。&lt;/p&gt;
-&lt;p&gt;&lt;a href="./unlock-user.png"&gt;
+&lt;p&gt;
+
+&lt;a class="link link--text" href="./unlock-user.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/unlock-user_hu_45213718e53c5de9.webp"
@@ -428,8 +453,9 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="解除锁定"id="h-rh-i-1"
-/&gt;&lt;/a&gt;&lt;/p&gt;
+ alt="解除锁定"
+ id="h-rh-i-1"
+&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id="注意事项"&gt;注意事项&lt;/h2&gt;
@@ -439,17 +465,18 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;/ol&gt;
 &lt;h2 id="工作原理"&gt;工作原理&lt;/h2&gt;
 &lt;p&gt;Keycloak 在 Realm 级别维护一个登录失败计数器。当用户在配置的时间窗口内连续登录失败达到阈值时，账户被临时锁定。&lt;/p&gt;
-&lt;div class="mermaid text-center"&gt;sequenceDiagram
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
  participant U as 用户
  participant K as Keycloak
- U-&gt;&gt;K: 1. 输入错误密码
- K-&gt;&gt;K: 2. 失败计数 +1
- U-&gt;&gt;K: 3. 再次输入错误密码
- K-&gt;&gt;K: 4. 失败计数 +1（达到阈值）
- U-&gt;&gt;K: 5. 第三次尝试
- K-&gt;&gt;U: 6. ❌ 账户已临时锁定
+ U-&amp;gt;&amp;gt;K: 1. 输入错误密码
+ K-&amp;gt;&amp;gt;K: 2. 失败计数 +1
+ U-&amp;gt;&amp;gt;K: 3. 再次输入错误密码
+ K-&amp;gt;&amp;gt;K: 4. 失败计数 +1（达到阈值）
+ U-&amp;gt;&amp;gt;K: 5. 第三次尝试
+ K-&amp;gt;&amp;gt;U: 6. ❌ 账户已临时锁定
  Note over K: 等待锁定时间过后自动解锁
-&lt;/div&gt;
+&lt;/pre&gt;
 
 &lt;h2 id="配置参数"&gt;配置参数&lt;/h2&gt;
 &lt;p&gt;在 Realm Settings &amp;gt; Security Defenses &amp;gt; Brute Force Detection 中配置：&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;

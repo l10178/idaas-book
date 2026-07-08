@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 安全增强功能 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/</link><description>Recent content in Keycloak 安全增强功能 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 04:06:54 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/security-features/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak 密码策略 — 复杂度、过期与历史记录配置指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</guid><description>&lt;p&gt;密码策略，常见的如密码最小长度、必须包含特殊字符、密码不能与历史密码相同等。控制用户在修改密码时，新密码必须满足一定的条件，从而增强密码安全。&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Keycloak 安全增强功能 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/</link><description>Recent content in Keycloak 安全增强功能 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 09 Jul 2026 06:13:46 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/docs/keycloak/security-features/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak 密码策略 — 复杂度、过期与历史记录配置指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/password-policies/</guid><description>&lt;p&gt;密码策略，常见的如密码最小长度、必须包含特殊字符、密码不能与历史密码相同等。控制用户在修改密码时，新密码必须满足一定的条件，从而增强密码安全。&lt;/p&gt;
 &lt;p&gt;Keycloak 内置了丰富的密码策略，满足常用的需求，不过默认都是不启用的，需要管理员主动设置。&lt;/p&gt;
 &lt;p&gt;启用方式，单击 &lt;code&gt;Authentication&lt;/code&gt; 菜单，选择 &lt;code&gt;Password Policy&lt;/code&gt; 选项卡。 在右侧下拉列表框中选择要添加的策略。根据策略提示设置不同的参数，保存。&lt;/p&gt;
 &lt;p&gt;密码策略只对新创建用户，或者用户修改密码生效，对已有用户不生效。如果想更快生效，就强制用户必须修改密码，在用户的 &lt;code&gt;Required User Actions&lt;/code&gt; 里增加 &lt;code&gt;Update Password&lt;/code&gt; 。&lt;/p&gt;
@@ -57,7 +57,9 @@
 &lt;p&gt;Password Blacklist&lt;/p&gt;</description></item><item><title>Keycloak 暴力破解检测 — 账户锁定策略与安全防护配置 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</link><pubDate>Fri, 04 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/</guid><description>&lt;p&gt;Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N 次锁定。&lt;/p&gt;
 &lt;h2 id="启用暴力检测"&gt;启用暴力检测&lt;/h2&gt;
 &lt;p&gt;控制台选择 Realm，设置：Realm Settings -&amp;gt; Security Defenses -&amp;gt; Brute Force Detection。&lt;/p&gt;
-&lt;p&gt;&lt;a href="./brute-force.png"&gt;
+&lt;p&gt;
+
+&lt;a class="link link--text" href="./brute-force.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/brute-force_hu_910f61029bb10ff5.webp"
@@ -66,8 +68,9 @@
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="Brute Force Detection"id="h-rh-i-0"
-/&gt;&lt;/a&gt;&lt;/p&gt;
+ alt="Brute Force Detection"
+ id="h-rh-i-0"
+&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;Permanent Lockout&lt;/p&gt;
@@ -94,7 +97,9 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;管理员在用户列表或用户详情里可以手动解锁。&lt;/p&gt;
-&lt;p&gt;&lt;a href="./unlock-user.png"&gt;
+&lt;p&gt;
+
+&lt;a class="link link--text" href="./unlock-user.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/brute-force-detection/unlock-user_hu_45213718e53c5de9.webp"
@@ -103,8 +108,9 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="解除锁定"id="h-rh-i-1"
-/&gt;&lt;/a&gt;&lt;/p&gt;
+ alt="解除锁定"
+ id="h-rh-i-1"
+&gt;&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id="注意事项"&gt;注意事项&lt;/h2&gt;
@@ -114,17 +120,18 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;/ol&gt;
 &lt;h2 id="工作原理"&gt;工作原理&lt;/h2&gt;
 &lt;p&gt;Keycloak 在 Realm 级别维护一个登录失败计数器。当用户在配置的时间窗口内连续登录失败达到阈值时，账户被临时锁定。&lt;/p&gt;
-&lt;div class="mermaid text-center"&gt;sequenceDiagram
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
  participant U as 用户
  participant K as Keycloak
- U-&gt;&gt;K: 1. 输入错误密码
- K-&gt;&gt;K: 2. 失败计数 +1
- U-&gt;&gt;K: 3. 再次输入错误密码
- K-&gt;&gt;K: 4. 失败计数 +1（达到阈值）
- U-&gt;&gt;K: 5. 第三次尝试
- K-&gt;&gt;U: 6. ❌ 账户已临时锁定
+ U-&amp;gt;&amp;gt;K: 1. 输入错误密码
+ K-&amp;gt;&amp;gt;K: 2. 失败计数 +1
+ U-&amp;gt;&amp;gt;K: 3. 再次输入错误密码
+ K-&amp;gt;&amp;gt;K: 4. 失败计数 +1（达到阈值）
+ U-&amp;gt;&amp;gt;K: 5. 第三次尝试
+ K-&amp;gt;&amp;gt;U: 6. ❌ 账户已临时锁定
  Note over K: 等待锁定时间过后自动解锁
-&lt;/div&gt;
+&lt;/pre&gt;
 
 &lt;h2 id="配置参数"&gt;配置参数&lt;/h2&gt;
 &lt;p&gt;在 Realm Settings &amp;gt; Security Defenses &amp;gt; Brute Force Detection 中配置：&lt;/p&gt;</description></item><item><title>MFA / OTP / WebAuthn 多因子认证</title><link>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</link><pubDate>Mon, 14 Dec 2020 23:54:37 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/security-features/mfa/</guid><description>&lt;p&gt;&lt;strong&gt;MFA&lt;/strong&gt; 即 Multi-Factor Authentication，多重身份认证，多因子认证，多因素认证。当然也包含等保要求中常说的双因子认证 2FA。&lt;/p&gt;
@@ -134,7 +141,9 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;p&gt;直接上图看效果。&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;各个 Realm 默认的浏览器认证流中，OTP 是&lt;code&gt;CONDITIONAL&lt;/code&gt;，是一个条件可选项。
-&lt;a href="./browser-otp.png"&gt;
+
+
+&lt;a class="link link--text" href="./browser-otp.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/browser-otp_hu_6cf63458b8aa5929.webp"
@@ -143,10 +152,13 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="browser"id="h-rh-i-0"
-/&gt;&lt;/a&gt;&lt;/li&gt;
+ alt="browser"
+ id="h-rh-i-0"
+&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;为用户配置启用 OTP 认证。
-&lt;a href="./required-otp.png"&gt;
+
+
+&lt;a class="link link--text" href="./required-otp.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/required-otp_hu_eeacca81a5ad8044.webp"
@@ -155,10 +167,13 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="User OTP"id="h-rh-i-1"
-/&gt;&lt;/a&gt;&lt;/li&gt;
+ alt="User OTP"
+ id="h-rh-i-1"
+&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;用户登录，未注册设备，要求注册设备。
-&lt;a href="./register-otp.png"&gt;
+
+
+&lt;a class="link link--text" href="./register-otp.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/register-otp_hu_1dbf844eafe0c9a1.webp"
@@ -167,10 +182,13 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="Register"id="h-rh-i-2"
-/&gt;&lt;/a&gt;&lt;/li&gt;
+ alt="Register"
+ id="h-rh-i-2"
+&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;手机端下载支持的 OTP 软件，如 FreeOTP，Google Authenticator。扫描注册，注册成功后就能看到已经生成一次性口令。
-&lt;a href="./freeotp.png"&gt;
+
+
+&lt;a class="link link--text" href="./freeotp.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/freeotp_hu_26a135755bd10234.webp"
@@ -179,10 +197,13 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="FreeeOTP APP"id="h-rh-i-3"
-/&gt;&lt;/a&gt;&lt;/li&gt;
+ alt="FreeeOTP APP"
+ id="h-rh-i-3"
+&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;登录时就会要求输入一次性验证码。
-&lt;a href="./login-otp.png"&gt;
+
+
+&lt;a class="link link--text" href="./login-otp.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/login-otp_hu_1119418c1a3e0dc2.webp"
@@ -191,11 +212,14 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="Login"id="h-rh-i-4"
-/&gt;&lt;/a&gt;&lt;/li&gt;
+ alt="Login"
+ id="h-rh-i-4"
+&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;注册成功后，可以在管理控制台看到用户注册的设备，用户也可以在自己的账户页面看到注册的设备。如果手机丢了想重新注册，把已有的记录删掉就可以，删掉后下次登录会要求重新注册。&lt;br&gt;
 管理控制台:
-&lt;a href="./admin-otp.png"&gt;
+
+
+&lt;a class="link link--text" href="./admin-otp.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/admin-otp_hu_127e4b5237a13a6e.webp"
@@ -204,10 +228,13 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="Admin OTP"id="h-rh-i-5"
-/&gt;&lt;/a&gt;
+ alt="Admin OTP"
+ id="h-rh-i-5"
+&gt;&lt;/a&gt;
 自己的账户页面：&lt;br&gt;
-&lt;a href="./account-otp.png"&gt;
+
+
+&lt;a class="link link--text" href="./account-otp.png"&gt;
 
 &lt;img
  src="https://idaas.xlabs.club/docs/keycloak/security-features/mfa/account-otp_hu_8096a16f49b4fcb4.webp"
@@ -216,12 +243,11 @@ OFF 表示临时锁定。&lt;/p&gt;
  decoding="async"
  fetchpriority="auto"
  loading="lazy"
- alt="Account OTP"id="h-rh-i-6"
-/&gt;&lt;/a&gt;&lt;/li&gt;
+ alt="Account OTP"
+ id="h-rh-i-6"
+&gt;&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id="扩展认证方式"&gt;扩展认证方式&lt;/h2&gt;
 &lt;p&gt;如果想自己实现认证方式，官方也提供了详细的 SPI 开发指导，我们根据指导用一天时间实现了一个短信验证码。待开源。&lt;/p&gt;
 &lt;h2 id="webauthn--passkey-无密码认证"&gt;WebAuthn / Passkey 无密码认证&lt;/h2&gt;
-&lt;p&gt;Keycloak 自 15.x 版本开始原生支持 &lt;strong&gt;WebAuthn&lt;/strong&gt;（W3C Web Authentication），并在后续版本中逐步加入 &lt;strong&gt;Passkey&lt;/strong&gt; 支持（包括 Conditional UI / autofill 体验和 Modal UI）。截至 Keycloak 26.x，WebAuthn 已成为生产可用的成熟功能，支持两种使用模式：&lt;/p&gt;
-&lt;h3 id="双因素模式two-factor-webauthn"&gt;双因素模式（Two-Factor WebAuthn）&lt;/h3&gt;
-&lt;p&gt;WebAuthn 作为第二因素，在用户输入密码后要求验证——与 TOTP 并列可选。适合需要增强安全但还不准备放弃密码的场景。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;Keycloak 自 15.x 版本开始原生支持 &lt;strong&gt;WebAuthn&lt;/strong&gt;（W3C Web Authentication），并在后续版本中逐步加入 &lt;strong&gt;Passkey&lt;/strong&gt; 支持（包括 Conditional UI / autofill 体验和 Modal UI）。截至 Keycloak 26.x，WebAuthn 已成为生产可用的成熟功能，支持两种使用模式：&lt;/p&gt;</description></item></channel></rss>
