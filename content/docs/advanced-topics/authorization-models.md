@@ -1,6 +1,6 @@
 ---
-title: "第20章：授权模型深度对比 — RBAC、ABAC 与 ReBAC 选型指南 | IDaaS Book"
-description: "RBAC、ABAC、PBAC、ReBAC 授权模型深度对比：原理、实现与选型指南"
+title: "RBAC、ABAC、ReBAC 授权模型对比与选型指南 | IDaaS Book"
+description: "RBAC、ABAC、ReBAC 三种授权模型的核心原理、实现方式、对比表格和选型决策树。包含 Keycloak RBAC 实现、OPA/Rego 策略示例、Google Zanzibar 关系模型解读，附常见问题 FAQ 和混合模型实践建议。"
 date: 2024-05-01T00:00:00+08:00
 draft: false
 weight: 51
@@ -227,22 +227,21 @@ Google Cloud IAM：
 
 ### 选型决策树
 
-```
-应用类型是什么？
-├─ 企业内部管理应用
-│   └─ RBAC 通常已足够
-│
-├─ 需要基于时间的权限（如"只能在工作时间访问"）
-│   └─ RBAC + OPA/策略引擎（补充动态条件）
-│
-├─ 协作工具、社交网络
-│   └─ ReBAC 更适合
-│
-├─ 高度监管的行业（金融、医疗）需要极细粒度
-│   └─ ABAC (OPA) 或 PBAC
-│
-└─ 混合场景
-    └─ RBAC 做基线 + OPA 做补充策略 + ReBAC 做关系权限
+```mermaid
+flowchart TD
+    START["我需要给应用加授权控制"] --> Q1{"应用类型是什么？"}
+    
+    Q1 -->|"企业内部管理应用"| RBAC["✅ RBAC 通常已足够<br/>Keycloak Realm/Client Roles + Groups"]
+    Q1 -->|"协作工具 / 社交网络<br/>文件系统 / 多级组织"| ReBAC["✅ ReBAC 更合适<br/>OpenFGA / SpiceDB / Ory Keto"]
+    Q1 -->|"需要动态上下文决策<br/>金融/医疗等强监管行业"| ABAC["✅ ABAC (OPA) 或 PBAC<br/>OPA + Rego / Cedar"]
+    Q1 -->|"混合场景：角色基线 +<br/>动态条件 + 关系权限"| MIXED["✅ 混合模型<br/>RBAC 做骨架 + OPA 补充动态规则<br/>+ ReBAC 处理关系继承"]
+    
+    RBAC --> KISS["90% 场景用 RBAC 就能解决<br/>不要过度设计"]
+    ReBAC --> KISS
+    ABAC --> KISS
+    MIXED --> KISS
+    
+    KISS --> PRINCIPLE["无论哪种模型，坚守两条原则：<br/>🔒 默认拒绝（deny by default）<br/>🔒 最小权限（least privilege）"]
 ```
 
 ### Keep It Simple
@@ -255,3 +254,73 @@ Google Cloud IAM：
 ## 20.8 小结
 
 授权模型的选择取决于业务的复杂度和场景需求。RBAC 仍然是大多数应用的最佳起点，ABAC 在需要动态、精细控制的场景中发光发热，ReBAC 在强调关系的应用中是自然之选。好的实践是组合使用——RBAC 作为骨架，策略引擎补充动态规则，关系模型处理继承和共享。
+
+## 20.9 常见问题（FAQ）
+
+### Q1：RBAC 和 ABAC 到底有什么区别？我该怎么选？
+
+**RBAC** 按照「角色」划分权限——你是谁（经理/员工/管理员）决定你能做什么。**ABAC** 按照「属性」决断——你是谁、在什么时间、从什么设备、访问什么资源，综合条件决定结果。
+
+**选型简单判断**：
+- 企业内部权限管理，角色边界清晰 → RBAC 足够
+- 需要「工作时间才能访问」「只有通过公司 VPN 才能操作」「用户等级 ≥ 文档密级才能查看」这类多条件组合 → ABAC
+
+### Q2：Keycloak 支持 ABAC 吗？
+
+Keycloak 原生基于 RBAC（Realm Roles、Client Roles、Groups、Composite Roles）。但可以通过以下方式扩展 ABAC 能力：
+
+- **Keycloak Authorization Services**（基于 UMA 2.0）：支持基于资源、Scope、策略的细粒度授权，可以使用 JavaScript 或 Drools 规则编写属性条件
+- **外挂 OPA**：Keycloak 做认证 + 基础角色，OPA 做授权决策点（PDP），应用侧通过 OPA SDK 查询策略结果
+- **自定义 Policy SPI**：Keycloak 的 SPI 接口允许实现自定义策略评估逻辑
+
+对于大多数 Keycloak 用户，先用 RBAC 把角色体系建好，需要动态条件时用 Authorization Services + 外挂 OPA。
+
+### Q3：ReBAC 的「关系推导」是什么意思？举个具体例子。
+
+以 Google Drive 为例：
+
+```
+folder:A⟨parent⟩→folder:Projects       # A 归属于 Projects
+document:123⟨parent⟩→folder:A          # 文档 123 在 A 下面
+user:Bob⟨editor⟩→document:123          # Bob 是文档 123 的编辑者
+folder:Projects⟨viewer⟩→user:Alice     # Alice 是 Projects 的查看者
+```
+
+**重写规则**定义权限如何沿关系图传递：
+
+```
+document:⟨viewer⟩ → document:⟨viewer⟩ ∪ document.parent:⟨viewer⟩
+```
+
+意思是「能看到文档的人 = 文档的直接 viewer + 其父文件夹的 viewer」。因此 Alice 是 folder:Projects 的 viewer，而 document:123 在 A 下面、A 在 Projects 下面，推导后 Alice 也是 document:123 的 viewer。
+
+**不需要**给 Alice 直接分配 document:123 的权限——关系结构自动传递。这就是 ReBAC 相比 RBAC（每个文档都要分别赋权）的优势所在。
+
+### Q4：OPA 和 Keycloak Authorization Services 怎么配合？会有冲突吗？
+
+不会冲突。Keycloak Authorization Services 管理「谁有什么角色/权限」，OPA 做「基于这些属性的策略决策」。
+
+典型架构：
+
+```
+应用请求 → PEP (应用侧拦截器/网关) → OPA (决策引擎)
+                ↓                           ↓
+          提取用户身份               查询 Keycloak 获取用户角色/属性
+                                        ↓
+                                  评估 Rego 策略
+                                        ↓
+                                  返回 Allow/Deny
+```
+
+OPA 不自己管理用户和角色，而是从 Keycloak 获取用户属性作为决策输入（通过 JWT claims、Token Introspection 或 Keycloak REST API）。
+
+### Q5：我们团队刚起步，权限应该怎么开始设计？有「最小可行」方案吗？
+
+**最小可行权限方案（MVP）**：
+
+1. **第一周**：确定 3 个以内的核心角色（admin / editor / viewer），用 Keycloak Realm Roles 或 Client Roles 实现。不做层次继承，不做组合角色。
+2. **第二周**：确认每个角色的最小权限集合——admin 能做什么、viewer 不能做什么，写在一个 README 里（比代码更早达成共识）。
+3. **第三周**：在应用中实现「默认拒绝 + 按角色放行」。对所有未认证请求返回 401，对所有无权限返回 403。
+4. **一个月后复盘**：角色是否开始膨胀？是否有「既是 A 又是 B」的情况？超过 15 个角色时考虑引入 Groups 分配。
+
+这个方案的底线是**先让权限系统能被审计**——哪怕粗糙，只要每次权限变更都有记录，就比「所有权限散落在代码里」强一个数量级。
