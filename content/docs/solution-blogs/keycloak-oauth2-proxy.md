@@ -220,6 +220,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
     nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups,X-Auth-Request-Access-Token"
+    # 允许 oauth2-proxy 回调路径绕过认证
     nginx.ingress.kubernetes.io/auth-snippet: |
       if ($request_uri ~* "^/oauth2/") {
         # oauth2-proxy 自身的回调路径不走 auth-url

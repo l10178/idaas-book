@@ -56,13 +56,15 @@ toc: true
 **类型**：轻量级 IAM / SSO
 **语言**：Go + React
 **许可证**：Apache 2.0
+**最新稳定版**：v3.108.0（2026 年 7 月）
 
 **核心优势**：
 - 部署极简（单二进制文件）
 - UI 现代、用户体验好
 - 原生支持多种语言（包括中文）
-- 支持 OAuth 2.0、OIDC、SAML、CAS
+- 支持 OAuth 2.0、OIDC、SAML、CAS、LDAP、SCIM、WebAuthn/Passkeys
 - 内置 Casbin 作为授权引擎，与 Casdoor 同源
+- 2025-2026 新增 MCP Gateway 和 A2A 协议支持（AI-First）
 - 活跃的中国社区
 
 **不足**：
@@ -70,6 +72,8 @@ toc: true
 - 生态和插件较少
 - 大规模场景的验证不足
 - 企业级特性待完善
+
+> 📖 详见：[Casdoor 深度解读 — 架构、部署与 Keycloak 对比选型]({{< relref "docs/implementation/casdoor-deep-dive" >}})
 
 ### Janssen（原 Gluu Server）
 
