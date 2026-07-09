@@ -324,3 +324,5 @@ OPA 不自己管理用户和角色，而是从 Keycloak 获取用户属性作为
 4. **一个月后复盘**：角色是否开始膨胀？是否有「既是 A 又是 B」的情况？超过 15 个角色时考虑引入 Groups 分配。
 
 这个方案的底线是**先让权限系统能被审计**——哪怕粗糙，只要每次权限变更都有记录，就比「所有权限散落在代码里」强一个数量级。
+
+> **实战参考**：如果你已经在用 Keycloak，可以直接参考 [Keycloak 细粒度权限与授权策略实战]({{< relref "../solution-blogs/keycloak-fine-grained-authz" >}}) 中的 Roles 配置和 Authorization Services 实操步骤，配有完整的 Policy Evaluation 调试方法。
