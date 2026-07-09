@@ -248,7 +248,11 @@ spec:
 
 ## Traefik ForwardAuth 配置
 
-如果用 Traefik 替代 Nginx Ingress，使用 `ForwardAuth` 中间件：
+如果用 Traefik 替代 Nginx Ingress，使用 `ForwardAuth` 中间件。完整配置、排错和对比见专用指南：
+
+👉 **[Traefik ForwardAuth + Keycloak + oauth2-proxy 完整配置与排错指南]({{< relref "traefik-forwardauth-keycloak" >}})**
+
+以下为快速参考配置：
 
 ```yaml
 apiVersion: traefik.io/v1alpha1
