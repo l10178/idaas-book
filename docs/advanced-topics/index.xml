@@ -330,4 +330,45 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2 id="242-身份零信任的基石"&gt;24.2 身份：零信任的基石&lt;/h2&gt;
-&lt;p&gt;在零信任架构中，身份取代 IP 地址成为新的安全边界：&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;在零信任架构中，身份取代 IP 地址成为新的安全边界：&lt;/p&gt;</description></item><item><title>IAM 架构设计指南 — 从单体到零信任的演进 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/</guid><description>&lt;h2 id="iam-架构的核心问题"&gt;IAM 架构的核心问题&lt;/h2&gt;
+&lt;p&gt;设计一个 IAM 系统架构，本质上是在回答三个问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;身份数据放在哪？&lt;/strong&gt;——集中存储还是分布在各处？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;谁来做认证决策？&lt;/strong&gt;——单一权威源还是多点自治？&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;如何应对规模和故障？&lt;/strong&gt;——垂直扩展、水平扩展还是多活？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这三个问题的答案，决定了 IAM 架构的形态。下面从经典到现代，逐一解析。&lt;/p&gt;
+&lt;h2 id="三种经典-iam-架构模式"&gt;三种经典 IAM 架构模式&lt;/h2&gt;
+&lt;h3 id="中心化-iam-架构"&gt;中心化 IAM 架构&lt;/h3&gt;
+&lt;p&gt;所有身份数据和认证逻辑集中在一个中心节点，所有应用统一对接这个中心。&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ graph TB
+ subgraph &amp;#34;应用层&amp;#34;
+ A1[Web 应用]
+ A2[移动 App]
+ A3[API 网关]
+ A4[内部系统]
+ end
+
+ subgraph &amp;#34;中心 IAM 层&amp;#34;
+ IAM[IAM Server&amp;lt;br/&amp;gt;认证 + 授权 + 审计]
+ LDAP[(LDAP / DB&amp;lt;br/&amp;gt;身份存储)]
+ end
+
+ A1 --&amp;gt; IAM
+ A2 --&amp;gt; IAM
+ A3 --&amp;gt; IAM
+ A4 --&amp;gt; IAM
+ IAM --&amp;gt; LDAP
+
+ style IAM fill:#f9f,stroke:#333,stroke-width:2px
+ style LDAP fill:#bbf,stroke:#333
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;优点&lt;/strong&gt;：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;策略统一，一处管控所有访问&lt;/li&gt;
+&lt;li&gt;审计完整，所有认证事件集中在一条日志流&lt;/li&gt;
+&lt;li&gt;接入简单，应用只需对接一个端点&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;</description></item></channel></rss>
