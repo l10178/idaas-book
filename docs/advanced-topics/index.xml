@@ -371,4 +371,110 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 &lt;li&gt;审计完整，所有认证事件集中在一条日志流&lt;/li&gt;
 &lt;li&gt;接入简单，应用只需对接一个端点&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>IAM 认证协议选型指南 — OAuth 2.0 vs OIDC vs SAML vs LDAP vs SCIM 决策框架 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-protocol-selection-guide/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-protocol-selection-guide/</guid><description>&lt;h2 id="协议选型为什么重要"&gt;协议选型为什么重要&lt;/h2&gt;
+&lt;p&gt;IAM 系统的核心任务是&amp;quot;把正确的身份信息，在正确的时机，以正确的方式，交给正确的应用&amp;quot;。而&lt;strong&gt;协议&lt;/strong&gt;就是这条信息传递通道的语法和合同。&lt;/p&gt;
+&lt;p&gt;选错协议的代价不是&amp;quot;功能少了几个&amp;quot;，而是：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;问题类型&lt;/th&gt;
+					&lt;th&gt;典型后果&lt;/th&gt;
+					&lt;th&gt;实际案例&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;协议不匹配&lt;/td&gt;
+					&lt;td&gt;用 OAuth 做认证，结果拿到 Access Token 却不知道用户是谁&lt;/td&gt;
+					&lt;td&gt;早期很多开发者把 OAuth 2.0 当成&amp;quot;社交登录协议&amp;quot;用&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;过度设计&lt;/td&gt;
+					&lt;td&gt;在内部管理面板里用 SAML，每个 SP 都要交换 XML 元数据&lt;/td&gt;
+					&lt;td&gt;几十个内部工具维护 SAML metadata 的运维噩梦&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;协议混用&lt;/td&gt;
+					&lt;td&gt;OIDC + SAML 双栈但未统一会话管理，导致登出不同步&lt;/td&gt;
+					&lt;td&gt;用户在一个应用登出，另一个应用会话依然有效&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;安全盲区&lt;/td&gt;
+					&lt;td&gt;PKCE 缺失、redirect_uri 未校验、state 参数未使用&lt;/td&gt;
+					&lt;td&gt;OAuth 授权码拦截、CSRF、Mix-Up Attack&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;本章不重复 OAuth 2.0、OIDC、SAML 的协议细节——那些在
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/protocols/"&gt;协议与标准&lt;/a&gt;部分有完整阐述。这里专注于&lt;strong&gt;决策&lt;/strong&gt;：你面对一个具体场景时，该选哪个协议、为什么、不选其他协议的原因是什么。&lt;/p&gt;
+&lt;h2 id="五大协议的核心定位"&gt;五大协议的核心定位&lt;/h2&gt;
+&lt;p&gt;在进入决策树之前，先理解每个协议在 IAM 体系中的核心角色——它们解决的是&lt;strong&gt;不同层面的问题&lt;/strong&gt;：&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ graph TD
+ subgraph &amp;#34;IAM 协议体系&amp;#34;
+ AUTH_Z[授权&amp;lt;br/&amp;gt;OAuth 2.0] --&amp;gt; |构建于| AUTH_N[认证&amp;lt;br/&amp;gt;OpenID Connect]
+ AUTH_N --&amp;gt; |替代/互补| SAML[SAML 2.0&amp;lt;br/&amp;gt;企业 SSO]
+ DIR[LDAP&amp;lt;br/&amp;gt;目录查询] --&amp;gt; |用户源| AUTH_N
+ DIR --&amp;gt; |用户源| SAML
+ PROV[SCIM&amp;lt;br/&amp;gt;生命周期管理] --&amp;gt; |同步到| AUTH_N
+ PROV --&amp;gt; |同步到| SAML
+ end
+
+ style AUTH_Z fill:#e1f5fe
+ style AUTH_N fill:#c8e6c9
+ style SAML fill:#fff9c4
+ style DIR fill:#f3e5f5
+ style PROV fill:#ffe0b2
+&lt;/pre&gt;
+
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;协议&lt;/th&gt;
+					&lt;th&gt;核心问题&lt;/th&gt;
+					&lt;th&gt;在 IAM 中的位置&lt;/th&gt;
+					&lt;th&gt;数据格式&lt;/th&gt;
+					&lt;th&gt;典型端口&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;OAuth 2.0&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&amp;ldquo;我能做什么？（授权）&amp;rdquo;&lt;/td&gt;
+					&lt;td&gt;授权层——控制第三方应用对受保护资源的访问范围&lt;/td&gt;
+					&lt;td&gt;JSON&lt;/td&gt;
+					&lt;td&gt;通常 HTTPS&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;OpenID Connect (OIDC)&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&amp;ldquo;你是谁？（认证）&amp;rdquo;&lt;/td&gt;
+					&lt;td&gt;认证层——OAuth 2.0 + 身份层，标准化用户身份传递&lt;/td&gt;
+					&lt;td&gt;JSON (JWT)&lt;/td&gt;
+					&lt;td&gt;HTTPS&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;SAML 2.0&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&amp;ldquo;企业里的你是谁？（联邦认证）&amp;rdquo;&lt;/td&gt;
+					&lt;td&gt;身份联邦——跨组织/跨域传递用户身份断言&lt;/td&gt;
+					&lt;td&gt;XML&lt;/td&gt;
+					&lt;td&gt;HTTPS / Redirect&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;LDAP&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&amp;ldquo;用户信息在哪？（目录查询）&amp;rdquo;&lt;/td&gt;
+					&lt;td&gt;用户存储——身份数据的查询、验证和修改协议&lt;/td&gt;
+					&lt;td&gt;ASN.1 / LDIF&lt;/td&gt;
+					&lt;td&gt;389 / 636&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;SCIM&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;&amp;ldquo;用户怎么创建/更新/删除？（生命周期）&amp;rdquo;&lt;/td&gt;
+					&lt;td&gt;用户供应——自动化用户帐号的 CRUD 生命周期管理&lt;/td&gt;
+					&lt;td&gt;JSON (REST)&lt;/td&gt;
+					&lt;td&gt;HTTPS&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;一句话判断&lt;/strong&gt;：需要授权第三方访问资源 → OAuth 2.0；需要证明&amp;quot;我是谁&amp;quot; → OIDC 或 SAML；需要连企业 AD → LDAP；需要自动创建/删除用户 → SCIM；需要跨公司 SSO → SAML 或 OIDC Federation。&lt;/p&gt;</description></item></channel></rss>
