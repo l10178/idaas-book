@@ -601,4 +601,65 @@
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;注意区分&lt;/strong&gt;：&lt;code&gt;keycloak-admin-client&lt;/code&gt;（REST API 管理客户端，Maven artifact &lt;code&gt;org.keycloak:keycloak-admin-client&lt;/code&gt;）&lt;strong&gt;不需要迁移&lt;/strong&gt;。它是基于标准 REST API 的，与 Adapter 无关。本文讨论的是用于「保护应用、拦截请求」的认证 Adapter。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;&lt;strong&gt;注意区分&lt;/strong&gt;：&lt;code&gt;keycloak-admin-client&lt;/code&gt;（REST API 管理客户端，Maven artifact &lt;code&gt;org.keycloak:keycloak-admin-client&lt;/code&gt;）&lt;strong&gt;不需要迁移&lt;/strong&gt;。它是基于标准 REST API 的，与 Adapter 无关。本文讨论的是用于「保护应用、拦截请求」的认证 Adapter。&lt;/p&gt;</description></item><item><title>Keycloak 集成企业微信 / 飞书 / 钉钉 — IAM 统一身份认证方案 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-wecom-feishu-dingtalk/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-wecom-feishu-dingtalk/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;国内企业普遍使用企业微信、飞书或钉钉作为组织协作平台，员工已经在这些平台上拥有身份。将 Keycloak 作为企业的统一 IAM 认证入口，对接这些平台的 OIDC/OAuth 能力，可以实现：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;员工一键登录&lt;/strong&gt;：内部应用使用「企业微信登录」「飞书登录」「钉钉登录」，无需额外记住密码&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;统一身份管理&lt;/strong&gt;：Keycloak 作为中间层，下游应用对接 Keycloak 即可，不需要每个应用单独对接 IM 平台&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;混合认证&lt;/strong&gt;：同时支持 IM 扫码登录 + 本地密码登录 + LDAP 登录等多种方式&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="适用场景"&gt;适用场景&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;企业内部应用需要对接企业微信、飞书或钉钉登录&lt;/li&gt;
+&lt;li&gt;已有 Keycloak 作为 IAM 中心，想复用现有架构而非每应用单独适配 IM SDK&lt;/li&gt;
+&lt;li&gt;需要统一管理不同 IM 来源的用户（部分员工用企业微信，部分用飞书）&lt;/li&gt;
+&lt;li&gt;新员工入职后自动在 Keycloak 中创建用户（Just-In-Time Provisioning）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;协议选型提示&lt;/strong&gt;：在对接前，建议先了解 IAM 中 OIDC 和 SAML 的适用场景差异——详见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-protocol-selection-guide/"&gt;IAM 协议选型指南&lt;/a&gt;。国内 IM 平台中，飞书对标准 OIDC 的支持最成熟，企业微信和钉钉需要额外适配。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id="不适用场景"&gt;不适用场景&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;只需要在单一应用中对接 IM 登录——直接用 IM 的 OAuth SDK 更快，Keycloak 中间层反而增加复杂度&lt;/li&gt;
+&lt;li&gt;对外 C 端用户登录——企业微信和钉钉的 OAuth 登录通常限定组织内成员&lt;/li&gt;
+&lt;li&gt;需要极致的移动端体验——IM 平台原生 SDK 在某些场景下比 OIDC 重定向流程更流畅&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="总体架构"&gt;总体架构&lt;/h2&gt;
+&lt;pre class="mermaid"&gt;
+ flowchart LR
+ subgraph &amp;#34;用户&amp;#34;
+ U[员工]
+ end
+
+ subgraph &amp;#34;IM 平台&amp;#34;
+ WX[企业微信&amp;lt;br/&amp;gt;OIDC Provider]
+ FS[飞书&amp;lt;br/&amp;gt;OIDC Provider]
+ DD[钉钉&amp;lt;br/&amp;gt;OIDC Provider]
+ end
+
+ subgraph &amp;#34;Keycloak IAM&amp;#34;
+ KC[Keycloak&amp;lt;br/&amp;gt;OIDC/SAML Broker]
+ end
+
+ subgraph &amp;#34;下游应用&amp;#34;
+ A1[内部系统 A]
+ A2[内部系统 B]
+ A3[Kubernetes Dashboard]
+ end
+
+ U --&amp;gt;|扫码/账号登录| WX
+ U --&amp;gt;|扫码/账号登录| FS
+ U --&amp;gt;|扫码/账号登录| DD
+
+ WX --&amp;gt;|OIDC| KC
+ FS --&amp;gt;|OIDC| KC
+ DD --&amp;gt;|OIDC| KC
+
+ KC --&amp;gt;|OIDC/SAML| A1
+ KC --&amp;gt;|OIDC/SAML| A2
+ KC --&amp;gt;|OIDC| A3
+&lt;/pre&gt;
+
+&lt;p&gt;Keycloak 在这一架构中扮演 **Identity Broker（身份中介）**角色：对外对接多个上游 IM 平台的 OIDC，对内向下游应用统一暴露 OIDC/SAML 接口。下游应用不需要知道用户来自哪个 IM 平台。&lt;/p&gt;</description></item></channel></rss>
