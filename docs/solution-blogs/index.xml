@@ -322,7 +322,70 @@
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;code&gt;metrics-enabled&lt;/code&gt; 是构建时（build-time）选项，必须在首次启动时或通过 &lt;code&gt;kc.sh build&lt;/code&gt; 阶段指定。如果你通过 Operator 或 conf 文件修改了此选项但没重建，需要先 &lt;code&gt;kc.sh build&lt;/code&gt; 或重启 Pod 使其生效。&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;metrics-enabled&lt;/code&gt; 是构建时（build-time）选项，必须在首次启动时或通过 &lt;code&gt;kc.sh build&lt;/code&gt; 阶段指定。如果你通过 Operator 或 conf 文件修改了此选项但没重建，需要先 &lt;code&gt;kc.sh build&lt;/code&gt; 或重启 Pod 使其生效。&lt;/p&gt;</description></item><item><title>Keycloak 高可用集群部署与灾难恢复实战 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ha-dr/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ha-dr/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你在生产环境跑着单节点的 Keycloak，业务方已经依赖它完成 SSO 登录。某天凌晨数据库挂了、节点 OOM 重启了，或者 Kubernetes Node 被 drain 了——所有依赖 Keycloak 的应用全部掉线。&lt;/p&gt;
+&lt;p&gt;你需要在故障发生前就把集群搭好，并且有一套经过演练的备份恢复流程。&lt;/p&gt;
+&lt;p&gt;本文不重复 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/implementation/kubernetes-production/"&gt;Keycloak Kubernetes 生产部署&lt;/a&gt; 的完整 Operator 部署步骤，而是聚焦三个核心问题：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;多节点集群怎么配才能&lt;strong&gt;不丢 Session、不断登录&lt;/strong&gt;？&lt;/li&gt;
+&lt;li&gt;数据库备份怎么做到&lt;strong&gt;可验证恢复&lt;/strong&gt;而不仅仅是&amp;quot;dump 了&amp;quot;？&lt;/li&gt;
+&lt;li&gt;故障发生时的&lt;strong&gt;恢复步骤&lt;/strong&gt;和&lt;strong&gt;回滚路径&lt;/strong&gt;是什么？&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;适用&lt;/th&gt;
+					&lt;th&gt;不适用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Keycloak 24+ 基于 Quarkus 发行版&lt;/td&gt;
+					&lt;td&gt;旧版 WildFly 发行版（集群配置不同）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;生产环境需要 HA 和灾难恢复&lt;/td&gt;
+					&lt;td&gt;开发环境单节点即可&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Kubernetes（Operator/Helm）或裸机部署&lt;/td&gt;
+					&lt;td&gt;刚接触 Keycloak、还未完成单节点部署&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;PostgreSQL/MySQL 等外部数据库&lt;/td&gt;
+					&lt;td&gt;内嵌 H2 数据库（不可用于集群或生产）&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="集群架构概览"&gt;集群架构概览&lt;/h2&gt;
+&lt;p&gt;Keycloak 集群的核心依赖只有两个：&lt;strong&gt;共享数据库&lt;/strong&gt; + &lt;strong&gt;节点发现机制&lt;/strong&gt;。没有共享存储、没有共享 Session 文件。&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ graph TB
+ LB[负载均衡器&amp;lt;br/&amp;gt;Nginx/ALB/HAProxy]
+ 
+ subgraph KC1[Keycloak 节点 1]
+ KC1_APP[Keycloak 26.x&amp;lt;br/&amp;gt;Quarkus]
+ KC1_CACHE[InfiniSpan Cache&amp;lt;br/&amp;gt;Sessions/ClientSessions]
+ end
+ 
+ subgraph KC2[Keycloak 节点 2]
+ KC2_APP[Keycloak 26.x&amp;lt;br/&amp;gt;Quarkus]
+ KC2_CACHE[InfiniSpan Cache&amp;lt;br/&amp;gt;Sessions/ClientSessions]
+ end
+ 
+ DB[(PostgreSQL&amp;lt;br/&amp;gt;共享数据库)]
+ 
+ LB --&amp;gt; KC1_APP
+ LB --&amp;gt; KC2_APP
+ KC1_APP --&amp;gt; DB
+ KC2_APP --&amp;gt; DB
+ KC1_CACHE &amp;lt;--&amp;gt;|JGroups 分布式缓存| KC2_CACHE
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;关键理解&lt;/strong&gt;：Keycloak 的 Session 数据存在两个地方——数据库是持久化的（离线 token、持久 session），InfiniSpan 分布式缓存是内存/近缓存（在线 session）。节点挂了，在线 session 从其他节点的 InfiniSpan 缓存中恢复；如果整个集群都挂了，持久化的 session 从数据库恢复。&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你的项目几年前接入了 Keycloak，用的是官方推荐的 Keycloak Adapter（&lt;code&gt;keycloak-spring-security-adapter&lt;/code&gt;、&lt;code&gt;keycloak-connect&lt;/code&gt;、&lt;code&gt;keycloak-python&lt;/code&gt; 等）。最近升级依赖或做安全审查时发现：&lt;strong&gt;这些 Adapter 已经被 Keycloak 官方弃用，不再维护了&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;继续用会有什么问题？旧 Adapter 绑定了 Keycloak 特定版本、依赖老旧框架（如 WildFly、javax），安全补丁不再跟进，且与 Spring Boot 3+ / Jakarta EE 不兼容。需要迁移到各语言生态的标准 OIDC 库。&lt;/p&gt;
 &lt;p&gt;这篇文章按语言给出迁移路径、最小配置和常见踩坑。&lt;/p&gt;
