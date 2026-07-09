@@ -236,7 +236,7 @@ AAA 是 IAM 最经典的三要素模型：
 - 组织已经在用 SAML 且迁移成本过高
 - 需要 IDP-Initiated SSO（用户从 IdP 门户点击应用图标跳转，不过 OIDC 通过第三方发起登录也能实现类似效果）
 
-详细对比见 [OIDC vs SAML 选型决策]({{< relref "docs/protocols/openid-connect.md" >}})。
+详细对比和选型决策见 [IAM 协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}})，其中包含 10 种典型场景的决策树和 OAuth 2.0 / OIDC / SAML / LDAP / SCIM 的对比速查表。
 
 ## 2.7 小结
 
