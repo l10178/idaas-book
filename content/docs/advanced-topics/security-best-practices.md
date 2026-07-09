@@ -78,6 +78,8 @@ Set-Cookie: session_id=xxx;
 
 ### Session 管理
 
+> **参见**：[IAM 会话管理与 Token 生命周期]({{< relref "iam-session-management" >}})——SSO 会话架构、Token 刷新流程与吊销机制的完整指南。
+
 - 绝对的会话超时时间（如 8 小时）
 - 空闲超时时间（如 30 分钟）
 - 更改密码后吊销所有现有 Session

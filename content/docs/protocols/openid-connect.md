@@ -362,3 +362,5 @@ OIDC Session Management 规范（draft-ietf-oauth-session-management，长期处
 ## 6.9 小结
 
 OpenID Connect 是 OAuth 2.0 的自然延伸——用 ID Token（JWT）、UserInfo 端点和发现文档在授权的基础之上标准化了认证的语义。理解 ID Token 的结构、验证流程和 claims 含义，是正确实现 OIDC 的前提。在实际项目中，绝大部分 OIDC 的安全漏洞都来自于对 ID Token 验证的疏忽或不全。
+
+> **延伸**：ID Token 签发后的生命周期管理（刷新、吊销、登出传播）见 [IAM 会话管理与 Token 生命周期]({{< relref "../advanced-topics/iam-session-management" >}})。
