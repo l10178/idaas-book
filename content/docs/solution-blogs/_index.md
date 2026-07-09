@@ -26,4 +26,4 @@ menu:
 | [Keycloak 细粒度权限与授权策略实战]({{< relref "keycloak-fine-grained-authz" >}}) | Groups vs Roles、Composite Roles、Authorization Services、Policy Evaluation、资源级权限控制 |
 | [Traefik ForwardAuth + Keycloak + oauth2-proxy]({{< relref "traefik-forwardauth-keycloak" >}}) | Traefik ForwardAuth 中间件、Middleware CRD、IngressRoute TLS、多中间件链式调用、与 Nginx auth-url 对比 |
 | [Dex + Keycloak 联合身份：Kubernetes 集群 OIDC 认证]({{< relref "dex-keycloak-federation" >}}) | Keycloak 上游 OIDC 源、Dex OIDC connector、Kubernetes API Server 集成、groups claim 传递、kubelogin、RBAC 绑定 |
-|
+| [Keycloak 集成企业微信 / 飞书 / 钉钉 OIDC 统一登录]({{< relref "keycloak-wecom-feishu-dingtalk" >}}) | 企业微信 OAuth、飞书 OIDC、钉钉 OIDC、Identity Provider Broker、回调地址配置、属性映射与 JIT Provisioning |
