@@ -416,3 +416,9 @@ spec:
 - Prometheus + Grafana 监控 + 告警规则
 - NetworkPolicy 和 Secrets 管理加强安全
 - cert-manager 自动化 TLS 证书管理
+
+## 19.12 延伸阅读
+
+- [Keycloak 高可用集群部署与灾难恢复实战]({{< relref "../solution-blogs/keycloak-ha-dr" >}}) — 多节点集群、JGroups 发现机制、InfiniSpan 缓存一致性、备份恢复演练流程
+- [Keycloak Prometheus 监控指标详解]({{< relref "../solution-blogs/keycloak-prometheus-metrics" >}}) — 监控指标采集和告警规则
+- [IDaaS 性能与扩展性]({{< relref "../advanced-topics/performance-and-scaling" >}}) — 缓存策略与容量规划

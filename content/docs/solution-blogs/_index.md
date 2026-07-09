@@ -22,3 +22,4 @@ menu:
 | [Keycloak LDAP / AD 用户联邦]({{< relref "keycloak-ldap-ad-federation" >}}) | LDAPS 连接、用户搜索与同步策略、属性映射、组导入、AD 与 OpenLDAP 差异、常见错误排错 |
 | [Keycloak Adapter 弃用迁移指南]({{< relref "keycloak-adapter-migration" >}}) | 从 Keycloak Adapter 迁移到标准 OIDC 库（Spring Security、openid-client、authlib），逐语言迁移路径、角色映射、Token Refresh、常见踩坑与回滚 |
 | [Keycloak Prometheus 监控指标详解]({{< relref "keycloak-prometheus-metrics" >}}) | metrics 端点启用、ServiceMonitor 采集、Grafana Dashboard 21997、关键告警规则与常见排错 |
+| [Keycloak 高可用集群部署与灾难恢复]({{< relref "keycloak-ha-dr" >}}) | 多节点集群、JGroups 发现、InfiniSpan 缓存一致性、数据库备份恢复流程与故障演练 |
