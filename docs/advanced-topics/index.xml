@@ -54,7 +54,7 @@ Bob → [员工] → [提交报销, 查看自己的报表]&lt;/code&gt;&lt;/pre&
  [总监]&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;RBAC2（约束 RBAC）&lt;/strong&gt;：角色互斥（SoD）、基数限制、先决条件&lt;/p&gt;</description></item><item><title>第21章：IDaaS 安全最佳实践 — 密钥管理、令牌保护与攻击面防御 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</link><pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</guid><description>&lt;h2 id="211-安全总则"&gt;21.1 安全总则&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;RBAC2（约束 RBAC）&lt;/strong&gt;：角色互斥（SoD）、基数限制、先决条件&lt;/p&gt;</description></item><item><title>第21章：IAM / IDaaS 安全最佳实践 — 密钥管理、令牌保护与攻击面防御 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</link><pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</guid><description>&lt;h2 id="211-安全总则"&gt;21.1 安全总则&lt;/h2&gt;
 &lt;p&gt;IDaaS 是安全基础设施的核心，它保护着所有应用的入口。如果 IDaaS 被攻破，攻击者就拿到了&amp;quot;万能钥匙&amp;quot;。&lt;/p&gt;
 &lt;p&gt;因此，IDaaS 自身的安全必须比它所保护的应用更高一个等级。&lt;/p&gt;
 &lt;h2 id="212-密码安全"&gt;21.2 密码安全&lt;/h2&gt;
