@@ -385,7 +385,73 @@
  KC1_CACHE &amp;lt;--&amp;gt;|JGroups 分布式缓存| KC2_CACHE
 &lt;/pre&gt;
 
-&lt;p&gt;&lt;strong&gt;关键理解&lt;/strong&gt;：Keycloak 的 Session 数据存在两个地方——数据库是持久化的（离线 token、持久 session），InfiniSpan 分布式缓存是内存/近缓存（在线 session）。节点挂了，在线 session 从其他节点的 InfiniSpan 缓存中恢复；如果整个集群都挂了，持久化的 session 从数据库恢复。&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;关键理解&lt;/strong&gt;：Keycloak 的 Session 数据存在两个地方——数据库是持久化的（离线 token、持久 session），InfiniSpan 分布式缓存是内存/近缓存（在线 session）。节点挂了，在线 session 从其他节点的 InfiniSpan 缓存中恢复；如果整个集群都挂了，持久化的 session 从数据库恢复。&lt;/p&gt;</description></item><item><title>Traefik ForwardAuth + Keycloak + oauth2-proxy 完整配置与排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/traefik-forwardauth-keycloak/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/traefik-forwardauth-keycloak/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你用 Traefik 做 Kubernetes Ingress Controller，用 Keycloak 做统一身份认证，现在有一组内部 Web 应用需要加登录保护。不想在每个应用里改代码接 OIDC，想在入口层解决问题。&lt;/p&gt;
+&lt;p&gt;一句话：&lt;strong&gt;Traefik ForwardAuth 中间件指向 oauth2-proxy，oauth2-proxy 对接 Keycloak——三个组件各司其职，入口层统一认证。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;适用&lt;/th&gt;
+					&lt;th&gt;不适用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;已使用 Traefik 作为 Ingress Controller 的 K8s 集群&lt;/td&gt;
+					&lt;td&gt;使用 Nginx Ingress Controller（参考 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/"&gt;Keycloak + oauth2-proxy 集成指南&lt;/a&gt; 的 auth-url 模式）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;需要给多个内部工具统一加 OIDC 登录（Grafana、Kibana、Argo CD）&lt;/td&gt;
+					&lt;td&gt;SPA 直连 Keycloak（不需要代理层）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;需要链式中间件（限流 + 认证 + 头改写）&lt;/td&gt;
+					&lt;td&gt;需要细粒度路径级授权（用 Pomerium 或 API 网关）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;已有 Traefik EntryPoint 做 TLS 终结&lt;/td&gt;
+					&lt;td&gt;移动端 Native App（用系统浏览器 + PKCE）&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="架构"&gt;架构&lt;/h2&gt;
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
+ participant Browser as 浏览器
+ participant Traefik as Traefik&amp;lt;br/&amp;gt;(Ingress Controller)
+ participant Proxy as oauth2-proxy
+ participant KC as Keycloak
+ participant App as 后端应用
+
+ Note over Browser,App: 首次访问（无 Cookie）
+ Browser-&amp;gt;&amp;gt;Traefik: GET /app (TLS)
+ Traefik-&amp;gt;&amp;gt;Proxy: ForwardAuth GET /oauth2/auth
+ Proxy--&amp;gt;&amp;gt;Traefik: 401 Unauthorized
+ Traefik-&amp;gt;&amp;gt;Browser: 302 → Keycloak 登录页
+
+ Note over Browser,App: 用户在 Keycloak 完成登录
+ Browser-&amp;gt;&amp;gt;KC: 输入凭据 + 登录
+ KC--&amp;gt;&amp;gt;Browser: 302 → /oauth2/callback?code=xxx&amp;amp;state=yyy
+
+ Note over Browser,App: oauth2-proxy 回调
+ Browser-&amp;gt;&amp;gt;Traefik: GET /oauth2/callback
+ Traefik-&amp;gt;&amp;gt;Proxy: ForwardAuth 放行（callback 路径不拦截）
+ Proxy-&amp;gt;&amp;gt;KC: POST /token (code 换 token)
+ KC--&amp;gt;&amp;gt;Proxy: access_token + id_token
+ Proxy--&amp;gt;&amp;gt;Browser: Set-Cookie + 302 → /app
+
+ Note over Browser,App: 二次访问（带 Cookie）
+ Browser-&amp;gt;&amp;gt;Traefik: GET /app (带 _oauth2_proxy Cookie)
+ Traefik-&amp;gt;&amp;gt;Proxy: ForwardAuth GET /oauth2/auth
+ Proxy--&amp;gt;&amp;gt;Traefik: 202 Accepted
+ Traefik-&amp;gt;&amp;gt;App: GET /app (透传 X-Auth-Request-* 头)
+ App--&amp;gt;&amp;gt;Browser: 200 OK
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;关键点&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你的项目几年前接入了 Keycloak，用的是官方推荐的 Keycloak Adapter（&lt;code&gt;keycloak-spring-security-adapter&lt;/code&gt;、&lt;code&gt;keycloak-connect&lt;/code&gt;、&lt;code&gt;keycloak-python&lt;/code&gt; 等）。最近升级依赖或做安全审查时发现：&lt;strong&gt;这些 Adapter 已经被 Keycloak 官方弃用，不再维护了&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;继续用会有什么问题？旧 Adapter 绑定了 Keycloak 特定版本、依赖老旧框架（如 WildFly、javax），安全补丁不再跟进，且与 Spring Boot 3+ / Jakarta EE 不兼容。需要迁移到各语言生态的标准 OIDC 库。&lt;/p&gt;
 &lt;p&gt;这篇文章按语言给出迁移路径、最小配置和常见踩坑。&lt;/p&gt;
