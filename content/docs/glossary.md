@@ -1,6 +1,6 @@
 ---
 title: "IDaaS 核心术语速查表 — IAM、OAuth、OIDC、SAML、SCIM 术语解释 | IDaaS Book"
-description: "IDaaS 核心术语速查表"
+description: "IDaaS 核心术语速查表：IAM、OAuth 2.0、OIDC、SAML、SCIM、JWT、PKCE 等身份与访问管理领域关键术语的中英文定义与简短解释"
 date: 2024-05-05T00:00:00+08:00
 draft: false
 weight: 99
@@ -106,7 +106,7 @@ toc: true
 | **Azure AD** | 微软的云身份服务，2023 年起更名为 Microsoft Entra ID |
 | **OPA** | Open Policy Agent，CNCF 毕业项目，通用策略引擎 |
 | **OpenFGA** | 开源 ReBAC 实现，CNCF Sandbox（截至本稿） |
-| **Zitadel** | 云原生开源 IAM |
+| **Zitadel** | Go 语言事件驱动开源 IAM（AGPL-3.0），事件溯源 + CQRS 架构，原生多租户，支持 OIDC/OAuth2/SAML/Passkeys。详见 [Zitadel 深度解读]({{< relref "docs/implementation/zitadel-deep-dive" >}}) |
 
 ## 安全概念
 

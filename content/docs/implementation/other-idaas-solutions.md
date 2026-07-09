@@ -1,6 +1,6 @@
 ---
 title: "第17章：IDaaS 方案全景对比 — Keycloak vs CAS vs Dex 选型决策框架 | IDaaS Book"
-description: "主流 IDaaS 方案全景对比：开源 vs 商业，自建 vs SaaS，Keycloak、Janssen、Casdoor、Zitadel、Authelia、ORY、Dex、CAS 及商业方案选型决策框架"
+description: "主流 IDaaS 方案全景对比：开源 vs 商业，自建 vs SaaS，Keycloak、Janssen、Casdoor、Zitadel、Authelia、ORY、Pomerium、Dex、CAS 及商业方案选型决策框架"
 date: 2024-04-04T00:00:00+08:00
 draft: false
 weight: 44
@@ -56,13 +56,15 @@ toc: true
 **类型**：轻量级 IAM / SSO
 **语言**：Go + React
 **许可证**：Apache 2.0
+**最新稳定版**：v3.108.0（2026 年 7 月）
 
 **核心优势**：
 - 部署极简（单二进制文件）
 - UI 现代、用户体验好
 - 原生支持多种语言（包括中文）
-- 支持 OAuth 2.0、OIDC、SAML、CAS
+- 支持 OAuth 2.0、OIDC、SAML、CAS、LDAP、SCIM、WebAuthn/Passkeys
 - 内置 Casbin 作为授权引擎，与 Casdoor 同源
+- 2025-2026 新增 MCP Gateway 和 A2A 协议支持（AI-First）
 - 活跃的中国社区
 
 **不足**：
@@ -70,6 +72,8 @@ toc: true
 - 生态和插件较少
 - 大规模场景的验证不足
 - 企业级特性待完善
+
+> 📖 详见：[Casdoor 深度解读 — 架构、部署与 Keycloak 对比选型]({{< relref "docs/implementation/casdoor-deep-dive" >}})
 
 ### Janssen（原 Gluu Server）
 
@@ -111,19 +115,22 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 ### Zitadel
 
 **类型**：云原生 IAM
-**语言**：Go（后端）+ TypeScript/React（前端，早期 Angular 已迁移）
-**许可证**：Apache 2.0
+**语言**：Go（后端）+ TypeScript/Angular（前端）
+**许可证**：AGPL-3.0
+**最新稳定版**：v4.15.3（2026 年 6 月）
 
 **核心优势**：
-- 事件溯源架构，完整的审计追踪
-- 原生多租户
-- API 优先设计
-- Kubernetes 原生
+- 事件溯源 + CQRS 架构，完整的审计追踪，天然适合合规场景
+- 原生三层多租户模型（Instance/Organization/Project），SaaS 友好
+- API 优先设计（REST + gRPC），FIDO2/Passkeys 原生支持
+- Go 单二进制部署，资源占用低
 
 **不足**：
-- 较新，生态不够成熟
-- 文档仍需完善
-- 缺少大型生产案例
+- AGPL-3.0 许可证对商业 SaaS 有约束
+- 社区成熟度和中文资源远不及 Keycloak
+- CQRS/事件溯源增加运维复杂度
+
+> 📖 详见：[Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台]({{< relref "docs/implementation/zitadel-deep-dive" >}})
 
 ### Authentik
 
@@ -140,13 +147,35 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 - 资源占用相对较高
 - 社区与文档成熟度不及 Keycloak
 
+> 关于 Authentik 的架构、Flow Builder、Outpost 代理机制以及生产部署实践，参见 [Authentik 开源 IAM 平台详解]({{< relref "docs/implementation/authentik-deep-dive.md" >}})。
+
 ### ORY 体系
 
 **类型**：API-first 的组合式开源身份与授权栈
 **语言**：Go
 **许可证**：Apache 2.0
 
-由四个独立微服务组成：`Kratos`（身份/注册/登录）、`Hydra`（OAuth2/OIDC Server）、`Oathkeeper`（反向代理/访问网关）、`Keto`（权限/ReBAC）。强调 API 优先、无内置 UI、按需组合，适合需要细粒度控制、与自研前端深度集成的团队；代价是上手与集成成本较高。
+由四个独立微服务组成：`Kratos`（身份/注册/登录）、`Hydra`（OAuth2/OIDC Server）、`Oathkeeper`（反向代理/访问网关）、`Keto`（权限/ReBAC）。强调 API 优先、无内置 UI、按需组合，适合需要细粒度控制、与自研前端深度集成的团队；代价是上手与集成成本较高。详见 [Ory 开源身份栈深度解析]({{< relref "docs/implementation/ory-deep-dive" >}})。
+
+### Pomerium
+
+**类型**：企业级零信任身份感知代理
+**语言**：Go（控制面）+ C++（Envoy 数据面）
+**许可证**：Apache 2.0（开源版）
+
+**核心优势**：
+- 基于 Envoy 的高性能反向代理，原生支持零信任架构
+- 声明式策略语言（PPL），路由级细粒度访问控制
+- 原生多 IDP 支持，不同路由可使用不同 IDP
+- 内置审计日志和会话管理
+- 支持 JWT 断言注入，后端可验证请求来源
+
+**不足**：
+- 配置复杂度高于 oauth2-proxy，小团队快速上手有门槛
+- 企业特性（设备信任、高级报告）需企业版
+- 社区规模中等，中文资源有限
+
+> 📖 详见：[Pomerium 深度介绍 — 企业级零信任身份感知代理]({{< relref "docs/implementation/pomerium-deep-dive" >}})
 
 ## 17.3 商业方案概览
 

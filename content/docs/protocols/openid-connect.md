@@ -1,9 +1,9 @@
 ---
 title: "第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book"
-description: "OpenID Connect 身份认证协议的完整解读：ID Token、UserInfo、会话管理、与 OAuth 2.0 的关系"
+description: "OpenID Connect 身份认证协议完整解读：ID Token 结构与验证、UserInfo 端点调用时机、OAuth 2.0 与 OIDC 的核心区别、认证流程 Mermaid 时序图、会话管理与登出、与 SAML 2.0 对比选型"
 date: 2024-02-02T00:00:00+08:00
 draft: false
-weight: 22
+weight: 25
 menu:
   docs:
     parent: "protocols"
@@ -153,6 +153,78 @@ Header.Payload.Signature
    - 验证 exp（未过期）
    - 验证 nonce（匹配请求中的值）
 ```
+
+### OIDC 认证流程可视化
+
+下面是 OIDC Authorization Code Flow 的完整时序图，展示用户、客户端（RP）、OpenID Provider 和 UserInfo 端点之间的交互。与 OAuth 2.0 纯授权流程的关键区别在于 ID Token 的生成与验证，以及可选的 UserInfo 端点调用。
+
+```mermaid
+sequenceDiagram
+    actor User as 用户<br/>(End User)
+    participant RP as 客户端/RP<br/>(Relying Party)
+    participant OP as OpenID Provider<br/>(授权+认证服务器)
+    participant UserInfo as UserInfo 端点
+
+    Note over User,UserInfo: ═══ 第一步：发起认证请求 ═══
+    User->>RP: 1. 点击「使用 OpenID 登录」
+    RP->>RP: 2. 构造 OIDC 授权请求<br/>response_type=code<br/>scope=openid profile email<br/>state（防 CSRF）<br/>nonce（防 ID Token 重放）
+
+    Note over User,UserInfo: ═══ 第二步：用户认证与授权 ═══
+    RP->>User: 3. HTTP 302 → /authorize
+    User->>OP: 4. 在 OP 登录页面输入凭据
+    OP->>OP: 5. 验证用户身份<br/>检查 client_id、redirect_uri<br/>检查用户是否已授权 scope
+
+    Note over User,UserInfo: ═══ 第三步：授权码返回 ═══
+    OP->>User: 6. 302 → RP callback?code=AUTH_CODE&state=xxx
+    User->>RP: 7. 浏览器将 code 传给 RP
+    RP->>RP: 8. 验证 state 参数匹配<br/>验证 redirect_uri 正确
+
+    Note over User,UserInfo: ═══ 第四步：用授权码换取 Token ═══
+    RP->>OP: 9. POST /token<br/>grant_type=authorization_code<br/>code=AUTH_CODE<br/>client_id + client_secret
+    OP->>OP: 10. 验证 code（一次性，防重放）<br/>验证 client_secret<br/>验证 PKCE code_verifier（如有）
+    OP-->>OP: 11. 生成 ID Token（JWT）<br/>包含 sub/iss/aud/exp/iat<br/>nonce/amr/at_hash
+
+    Note over User,UserInfo: ═══ 第五步：收到 Token ═══
+    OP->>RP: 12. {access_token, id_token,<br/>refresh_token, expires_in}
+    RP->>RP: 13. 验证 ID Token<br/>✓ 签名（JWKS）<br/>✓ iss / aud / exp / nonce
+
+    Note over User,UserInfo: ═══ 第六步（可选）：获取用户信息 ═══
+    RP->>UserInfo: 14. GET /userinfo<br/>Authorization: Bearer ***
+    UserInfo->>RP: 15. 返回用户属性<br/>{sub, name, email,<br/>preferred_username, picture...}
+
+    Note over User,UserInfo: ═══ 第七步：建立应用会话 ═══
+    RP->>User: 16. 为用户创建本地会话<br/>（Cookie / Session Token）
+```
+
+### 时序图关键节点说明
+
+| 步骤 | OAuth 2.0 中有吗？ | OIDC 新增了什么？ | 安全意义 |
+|------|-------------------|-------------------|---------|
+| 2 — scope=openid | 没有 | `openid` scope 声明这是 OIDC 认证请求 | 告诉 OP：客户端要认证用户，不只是授权 |
+| 2 — nonce | 没有 | 客户端生成随机值，在 ID Token 中回传 | 将 ID Token 绑定到本次请求，防重放 |
+| 5 — 用户身份验证 | 授权时不需要验证用户是谁 | 必须验证用户身份并记录认证时间 `auth_time` | OIDC 和 OAuth 的本质区别——认证 vs 授权 |
+| 11 — 生成 ID Token | 没有 | OP 生成包含用户身份信息的 ID Token | ID Token 是 OIDC 的核心产出，是认证的证明 |
+| 13 — 验证 ID Token | 没有 | RP 必须验证 ID Token 的签名和 claims | 不验证 = 可以伪造任何用户身份 |
+| 14-15 — UserInfo | 没有 | 可选的标准化用户属性接口 | ID Token 放不下所有属性时补充使用 |
+
+### OAuth 2.0 与 OIDC 流程对比速查
+
+如果你已经理解 [OAuth 2.0 授权码流程](/docs/protocols/oauth2-authorization-code-pkce/)，OIDC 认证流程只多做了三件事：
+
+1. **请求时加 `scope=openid`**：告诉 OP 这不是纯授权请求，是认证请求
+2. **响应中多了 `id_token`**：一个 JWT，包含用户身份信息（sub/name/email 等）
+3. **客户端多了 ID Token 验证步骤**：不验证签名和 claims 就等于没认证
+
+```text
+OAuth 2.0 流程：
+  /authorize → 用户授权 → code → /token → {access_token}
+
+OIDC 流程（在 OAuth 2.0 之上）：
+  /authorize (scope=openid+nonce) → 用户认证+授权 → code →
+  /token → {access_token + id_token} → 验证 ID Token → 登录完成
+```
+
+> ⚠️ 安全提醒：OIDC 的授权码交换环节同样面临 OAuth 2.0 的所有[攻击面](/docs/protocols/oauth2-attack-surface/)——redirect_uri 劫持、CSRF、授权码拦截等。因此 OAuth 2.1 要求所有 OIDC 客户端也必须启用 PKCE。详见 [OAuth 2.0 授权码流程与 PKCE 图解](/docs/protocols/oauth2-authorization-code-pkce/)。
 
 ### 关键 Scope
 

@@ -18,16 +18,17 @@
   "dependencies": {
     "@docsearch/css": "^3.6.1",
     "@docsearch/js": "^3.6.1",
-    "@tabler/icons": "^3.12.0",
-    "@thulite/doks-core": "^1.7.0",
-    "@thulite/images": "^3.3.0",
-    "@thulite/inline-svg": "^1.1.0",
-    "@thulite/seo": "^2.4.0",
-    "mermaid": "^11.2.1",
-    "thulite": "^2.5.0"
+    "@tabler/icons": "^3.44.0",
+    "@thulite/doks-core": "^1.9.3",
+    "@thulite/images": "^3.3.4",
+    "@thulite/inline-svg": "^1.2.2",
+    "@thulite/seo": "^2.4.3",
+    "mermaid": "^11.16.0",
+    "thulite": "^2.6.5"
   },
   "devDependencies": {
     "prettier": "^3.3.3",
+    "purgecss-whitelister": "^2.4.0",
     "vite": "^5.4.2"
   },
   "engines": {

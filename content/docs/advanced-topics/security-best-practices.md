@@ -187,6 +187,11 @@ HSTS: max-age=31536000; includeSubDomains
 □ 权限审计：定期审查管理员权限？
 ```
 
-## 21.10 小结
+## 21.10 延伸阅读
+
+- [OAuth 2.0 攻击面与防护深度图解]({{< relref "../protocols/oauth2-attack-surface.md" >}})：五大攻击面的完整 Mermaid 图解——redirect_uri 劫持、CSRF、授权码拦截、Mix-Up Attack、Token 泄露与 DPoP 防护
+- [OAuth 2.0 深度解读]({{< relref "../protocols/oauth2-deep-dive.md" >}})：授权框架的完整剖析
+
+## 21.11 小结
 
 IDaaS 安全不是配置清单，而是一种思维方式。每个环节——密码存储、Token 管理、会话控制、传输加密、API 安全、部署安全——都需要被认真对待。最简单的安全原则：如果你不确定某个配置是否安全，就用最安全的选项，然后通过监控和审计验证它确实在工作。

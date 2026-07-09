@@ -1,6 +1,6 @@
 ---
 title: "第16章：Dex 身份代理 — Kubernetes 原生 OIDC 联邦方案 | IDaaS Book"
-description: "Dex 身份代理的架构、配置、与 Kubernetes 的集成及最佳实践"
+description: "Dex 身份代理的架构、配置、与 Kubernetes 的集成及最佳实践。Dex 与 Keycloak 的核心区别：定位为 OIDC 身份代理而非完整 IAM 系统。"
 date: 2024-04-03T00:00:00+08:00
 draft: false
 weight: 43
@@ -274,3 +274,25 @@ Dex 支持多种存储后端：
 ## 16.7 小结
 
 Dex 是 Kubernetes 世界中"做一件事并把它做好"的典型代表。它不试图成为完整的 IAM 平台，而是专注于将各种身份源桥接到 OIDC。对于以 Kubernetes 为中心的基础设施，Dex + Kubernetes RBAC 是一个轻量而强大的组合。如果需要更完整的 IDaaS 能力，Keycloak 是更合适的选择。
+
+## 常见问题（FAQ）
+
+### Dex 和 Keycloak 可以一起用吗？
+
+可以，而且有两种常见模式：
+
+1. **Keycloak 作为上游，Dex 作为 OIDC 代理**（最常用于 Kubernetes 认证）：Keycloak 管理用户，Dex 的 OIDC connector 对接 Keycloak，Dex 再向 Kubernetes API Server 提供 OIDC。详见 [Dex + Keycloak 联合身份实战]({{< relref "../solution-blogs/dex-keycloak-federation" >}})。
+
+2. **Dex 作为上游，Keycloak 作为下游**：Dex 对接多个上游 IdP（LDAP、GitHub、Google Workspace 等），Keycloak 消费 Dex 的统一 OIDC，再由 Keycloak 向应用输出 SAML/OIDC。适合已有 Keycloak 但需要 Keycloak 不原生支持的上游身份源的场景。
+
+### Dex 支持 SAML 吗？
+
+Dex 作为 OIDC 输出方，不直接向下游提供 SAML。但 Dex 可以作为 SAML Service Provider 对接上游 SAML IdP（如 ADFS、Okta）。如果下游应用需要 SAML，用 Keycloak 接在 Dex 后面。
+
+### Dex 的用户存在哪里？
+
+Dex 不存储用户数据。用户数据全在外部 IdP（LDAP、AD、GitHub、OIDC 提供商等），Dex 只做代理。这意味着用户生命周期管理（入职、离职、密码重置）在原 IdP 完成。
+
+### Kubernetes 之外的场景适合用 Dex 吗？
+
+Dex 设计上紧密耦合 Kubernetes OIDC 认证。虽然它也能对接其他 OIDC Relying Party（例如 oauth2-proxy），但如果你的场景不是以 Kubernetes 为中心，Keycloak 或 CAS 通常是更合适的选择。

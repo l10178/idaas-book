@@ -1,6 +1,6 @@
 ---
 title: "第11章：多因素认证（MFA）— TOTP、FIDO2、WebAuthn 与自适应认证 | IDaaS Book"
-description: "多因素认证全解析：认证因素分类、实现方案、FIDO2/WebAuthn、自适应认证"
+description: "多因素认证（MFA）实现指南：TOTP 动态口令配置、FIDO2/WebAuthn/Passkey 无密码认证部署、自适应认证策略与企业 MFA 落地最佳实践，涵盖 Keycloak 等主流 IDP 的 MFA 配置方法"
 date: 2024-03-02T00:00:00+08:00
 draft: false
 weight: 32

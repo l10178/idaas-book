@@ -1,9 +1,9 @@
 ---
-title: "第9章：SCIM 协议 — 跨域用户配置与身份同步标准 | IDaaS Book"
-description: "跨域身份管理系统（SCIM 2.0）协议深度解读：用户和组的标准化配置与管理"
+title: "SCIM 2.0 协议深度解读 — 跨域身份同步标准 | IDaaS Book"
+description: "SCIM 2.0（RFC 7643/7644）协议深度解读：用户生命周期管理、身份自动同步、SCIM 服务端与客户端实现。覆盖从 HR 系统到 IDP 再到目标应用的全链路用户同步场景。"
 date: 2024-02-05T00:00:00+08:00
 draft: false
-weight: 25
+weight: 27
 menu:
   docs:
     parent: "protocols"
@@ -245,24 +245,72 @@ PATCH /Users/user-123
 
 ### 场景一：HR 系统 → IDaaS
 
-最常见的 SCIM 应用场景：
+最常见的 SCIM 应用场景。下面用一张时序图完整展示从员工入职到离职的全生命周期——覆盖 Joiner（入职创建）、Mover（调岗变更）和 Leaver（离职注销）三个阶段：
 
-```
-HR 系统（Workday/PeopleSoft）
-    │
-    │ SCIM 2.0 Bootstrap
-    ▼
-IDaaS（自动创建用户）
-    │
-    │ SCIM / 自定义 API
-    ▼
-下游应用（Slack、GitHub、Jira...）
+```mermaid
+sequenceDiagram
+    actor HR as HR 系统<br/>(Workday/PeopleSoft)
+    participant IDaaS as IDaaS / IdP<br/>(Keycloak / Entra ID)
+    participant SaaS1 as 下游 SaaS<br/>(Slack / Jira)
+    participant SaaS2 as 下游 SaaS<br/>(Google Workspace)
+    participant Admin as 管理员 / 审计
+
+    Note over HR,Admin: ═══ 阶段一：Joiner — 员工入职 ═══
+
+    HR->>IDaaS: POST /Users<br/>SCIM 2.0 创建用户<br/>{"userName":"zhangsan@example.com",<br/>"active":true,"name":{...}}
+    IDaaS->>IDaaS: 验证 Schema、查重<br/>分配 Group、生成 internal ID
+
+    Note over IDaaS: 自动 Provisioning 规则触发<br/>根据部门/职位分配应用权限
+
+    IDaaS->>SaaS1: POST /Users（SCIM 或 Connector）<br/>在 Slack 中创建用户
+    SaaS1-->>IDaaS: 201 Created<br/>{"id":"U12345"}
+
+    IDaaS->>SaaS2: POST /Users（SCIM）<br/>在 Google Workspace 中创建用户
+    SaaS2-->>IDaaS: 201 Created<br/>{"id":"gw-user-678"}
+
+    IDaaS-->>HR: 201 Created<br/>{"id":"idaas-user-uuid",<br/>"externalId":"EMP-12345"}
+
+    Note over HR,Admin: ═══ 阶段二：Mover — 员工调岗/升职 ═══
+
+    HR->>IDaaS: PATCH /Users/{id}<br/>{"Operations":[{"op":"replace",<br/>"path":"title","value":"资深工程师"},<br/>{"op":"replace","path":"department","value":"平台研发"}]}
+    IDaaS->>IDaaS: 更新属性 → 触发 Group 重算<br/>移除旧部门 Group，加入新部门 Group
+
+    IDaaS->>SaaS1: PATCH /Users/{slack-id}<br/>更新 Slack 用户属性
+    IDaaS->>SaaS2: PATCH /Users/{gw-id}<br/>更新 Google Workspace 用户属性
+
+    Note over HR,Admin: ═══ 阶段三：Leaver — 员工离职 ═══
+
+    HR->>IDaaS: PATCH /Users/{id}<br/>{"Operations":[{"op":"replace",<br/>"path":"active","value":false}]}
+    IDaaS->>IDaaS: 立即阻断认证<br/>（Token/会话失效）
+
+    IDaaS->>SaaS1: PATCH /Users/{slack-id}<br/>{"active":false} → 停用 Slack 账号
+    IDaaS->>SaaS2: PATCH /Users/{gw-id}<br/>{"active":false} → 停用 Google Workspace 账号
+
+    Note over Admin: 30 天交接期后确认清理
+
+    Admin->>IDaaS: DELETE /Users/{id}<br/>（经审计确认后手动或定时触发）
+    IDaaS->>SaaS1: DELETE /Users/{slack-id}
+    IDaaS->>SaaS2: DELETE /Users/{gw-id}
+    IDaaS->>HR: 审计日志 ← 记录所有操作
+
+    Note over HR,Admin: 整个生命周期由 SCIM 全自动化
 ```
 
-当员工在 HR 系统中被录用时：
-1. HR 系统通过 SCIM 将新员工推送到 IDaaS
-2. IDaaS 根据规则自动创建账户、分配组
-3. IDaaS 通过 SCIM 或应用连接器将用户同步到下游应用
+这张图把 SCIM 的三种核心操作与身份生命周期的三个阶段一一映射：
+
+| 生命周期阶段 | SCIM 操作 | 触发条件 | 下游影响 |
+|-------------|-----------|----------|----------|
+| **Joiner**（入职） | `POST /Users` | HR 系统录入新员工 | 在所有授权应用中自动创建用户 |
+| **Mover**（调岗） | `PATCH /Users` | 职位、部门、组织变更 | 自动更新属性，触发 Group 重算 → 权限重新分配 |
+| **Leaver**（离职） | `PATCH active=false` → `DELETE` | 离职审批通过 | 先停用阻断访问 → 交接期后正式删除 |
+
+**关键设计决策：**
+
+1. **为什么先 PATCH active=false，而不是直接 DELETE？** 直接删除不可逆，误删后 `id` 会变，下游 ACL 引用全部断裂。先停用（软删除）保留数据和引用关系，待审计确认后再物理删除是生产环境的标准做法。
+
+2. **为什么用 externalId 而非 userName 做上下游关联？** `userName` 可能随改名/婚变而变化，`externalId`（如工号 `EMP-12345`）在员工生命周期内稳定不变。SCIM 规范建议 `externalId` 作为跨系统主键。
+
+3. **为什么图中展示了管理员介入的步骤？** SCIM 自动化了 90% 的操作，但 DELETE 这种不可逆操作需要人工确认。图中 Leaver 阶段的 `Admin→IDaaS` 步骤可以是手动审批、也可以是"停用 N 天后自动删除"的定时任务。
 
 ### 场景二：IDaaS → SaaS 应用
 

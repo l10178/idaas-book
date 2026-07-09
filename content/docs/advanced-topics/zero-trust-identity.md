@@ -1,6 +1,6 @@
 ---
 title: "第24章：零信任与身份驱动安全 — 从架构到落地的完整指南 | IDaaS Book"
-description: "零信任架构中的身份：从边界安全到身份驱动的安全模型"
+description: "零信任身份架构的完整指南：从边界安全模型到身份驱动的持续验证，覆盖策略引擎(PDP)、策略执行点(PEP)、微分段、Zero Trust Maturity Model 及 Keycloak 在零信任架构中的角色"
 date: 2024-05-05T00:00:00+08:00
 draft: false
 weight: 55

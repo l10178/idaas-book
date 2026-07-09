@@ -265,6 +265,8 @@ curl -X POST "https://auth.example.com/admin/realms/myrealm/partial-export" \
 
 ## 19.7 监控与可观测性
 
+> 本章节提供生产监控的快速配置和告警。更详细的指标解读、ServiceMonitor 配置、Grafana Dashboard 导入和常见排错方法，见 [Keycloak Prometheus 监控指标详解]({{< relref "../solution-blogs/keycloak-prometheus-metrics" >}})。
+
 ### Prometheus Metrics
 
 Keycloak 22+ 支持直接暴露 Prometheus 指标（需 `KC_METRICS_ENABLED=true`），端点为**全局**路径：
@@ -414,3 +416,9 @@ spec:
 - Prometheus + Grafana 监控 + 告警规则
 - NetworkPolicy 和 Secrets 管理加强安全
 - cert-manager 自动化 TLS 证书管理
+
+## 19.12 延伸阅读
+
+- [Keycloak 高可用集群部署与灾难恢复实战]({{< relref "../solution-blogs/keycloak-ha-dr" >}}) — 多节点集群、JGroups 发现机制、InfiniSpan 缓存一致性、备份恢复演练流程
+- [Keycloak Prometheus 监控指标详解]({{< relref "../solution-blogs/keycloak-prometheus-metrics" >}}) — 监控指标采集和告警规则
+- [IDaaS 性能与扩展性]({{< relref "../advanced-topics/performance-and-scaling" >}}) — 缓存策略与容量规划
