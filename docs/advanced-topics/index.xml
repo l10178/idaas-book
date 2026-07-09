@@ -477,4 +477,66 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
 &lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;一句话判断&lt;/strong&gt;：需要授权第三方访问资源 → OAuth 2.0；需要证明&amp;quot;我是谁&amp;quot; → OIDC 或 SAML；需要连企业 AD → LDAP；需要自动创建/删除用户 → SCIM；需要跨公司 SSO → SAML 或 OIDC Federation。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;&lt;strong&gt;一句话判断&lt;/strong&gt;：需要授权第三方访问资源 → OAuth 2.0；需要证明&amp;quot;我是谁&amp;quot; → OIDC 或 SAML；需要连企业 AD → LDAP；需要自动创建/删除用户 → SCIM；需要跨公司 SSO → SAML 或 OIDC Federation。&lt;/p&gt;</description></item><item><title>IAM 会话管理与 Token 生命周期 — SSO 会话、Token 刷新与吊销机制 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-session-management/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-session-management/</guid><description>&lt;h2 id="iam-会话管理为什么重要"&gt;IAM 会话管理为什么重要&lt;/h2&gt;
+&lt;p&gt;IAM 系统中，&amp;ldquo;会话&amp;rdquo; 是连接认证与授权的桥梁。一次登录不只是验证密码——它创建了一个受控的信任窗口，在这个窗口内用户无需重复认证即可访问多个应用。这个窗口的管理——创建、刷新、吊销——决定了系统的安全性和用户体验。&lt;/p&gt;
+&lt;p&gt;理解 IAM 会话管理需要先澄清三层会话：&lt;/p&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;会话层&lt;/th&gt;
+					&lt;th&gt;含义&lt;/th&gt;
+					&lt;th&gt;生命周期&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;IDP 会话&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;用户在 IDP（如 Keycloak）的登录状态&lt;/td&gt;
+					&lt;td&gt;用户登出或超时&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;应用会话&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;用户在某应用内的登录状态&lt;/td&gt;
+					&lt;td&gt;应用自身管理&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Token 会话&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;Access Token / Refresh Token 的有效期&lt;/td&gt;
+					&lt;td&gt;Token 过期或吊销&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;三层会话之间通过 SSO 协议（OIDC、SAML）联动，但各层独立管理。这种解耦设计是理解 Token 刷新、会话吊销和登出传播的关键。&lt;/p&gt;
+&lt;h2 id="token-生命周期全景"&gt;Token 生命周期全景&lt;/h2&gt;
+&lt;p&gt;OAuth 2.0 / OIDC 的会话本质上是 Token 的生命周期管理。三个核心 Token 各司其职：&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
+ participant U as 用户/客户端
+ participant IDP as IDP (Keycloak)
+ participant App as 应用
+ participant RS as 资源服务器
+
+ Note over U,RS: 第一阶段：认证与授权
+ U-&amp;gt;&amp;gt;IDP: 1. 登录请求（OIDC Authorization Code + PKCE）
+ IDP-&amp;gt;&amp;gt;U: 2. 返回授权码（Authorization Code）
+ U-&amp;gt;&amp;gt;IDP: 3. 授权码换取 Token（Token Endpoint）
+ IDP-&amp;gt;&amp;gt;U: 4. Access Token (5min) + Refresh Token + ID Token
+
+ Note over U,RS: 第二阶段：使用 Access Token
+ U-&amp;gt;&amp;gt;RS: 5. API 请求 (Authorization: Bearer &amp;lt;AT&amp;gt;)
+ RS-&amp;gt;&amp;gt;RS: 6. 验证签名 + aud + exp
+ RS-&amp;gt;&amp;gt;U: 7. 返回资源
+
+ Note over U,RS: 第三阶段：Token 过期 → 刷新
+ U-&amp;gt;&amp;gt;IDP: 8. Refresh Token 请求新 Access Token
+ IDP-&amp;gt;&amp;gt;IDP: 9. 验证 Refresh Token + 轮换
+ IDP-&amp;gt;&amp;gt;U: 10. 新 Access Token + 新 Refresh Token
+
+ Note over U,RS: 第四阶段：用户登出
+ U-&amp;gt;&amp;gt;IDP: 11. 登出请求（/logout, 含 id_token_hint）
+ IDP-&amp;gt;&amp;gt;IDP: 12. 吊销所有 Token + 销毁 IDP Session
+ IDP-&amp;gt;&amp;gt;App: 13. 可选：Backchannel Logout 通知
+&lt;/pre&gt;
+
+&lt;h3 id="access-token访问令牌"&gt;Access Token（访问令牌）&lt;/h3&gt;
+&lt;p&gt;Access Token 是访问资源的&amp;quot;通行证&amp;quot;——资源服务器用它来判断&amp;quot;这个请求有没有权限&amp;quot;。&lt;/p&gt;</description></item></channel></rss>
