@@ -265,6 +265,8 @@ curl -X POST "https://auth.example.com/admin/realms/myrealm/partial-export" \
 
 ## 19.7 监控与可观测性
 
+> 本章节提供生产监控的快速配置和告警。更详细的指标解读、ServiceMonitor 配置、Grafana Dashboard 导入和常见排错方法，见 [Keycloak Prometheus 监控指标详解]({{< relref "../solution-blogs/keycloak-prometheus-metrics" >}})。
+
 ### Prometheus Metrics
 
 Keycloak 22+ 支持直接暴露 Prometheus 指标（需 `KC_METRICS_ENABLED=true`），端点为**全局**路径：
