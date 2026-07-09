@@ -525,7 +525,51 @@
  App--&amp;gt;&amp;gt;Browser: 200 OK
 &lt;/pre&gt;
 
-&lt;p&gt;&lt;strong&gt;关键点&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;关键点&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>Dex + Keycloak 联合身份：Kubernetes 集群 OIDC 认证集成 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/dex-keycloak-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/dex-keycloak-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;组织用 Keycloak 管理全部用户和组（对接 AD/LDAP 或本地用户），同时需要为多个 Kubernetes 集群提供统一身份认证。直接在 Kubernetes API Server 挂 Keycloak 做 OIDC 可行，但有两个常见痛点：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;多集群管理&lt;/strong&gt;：每个集群的 API Server 需要指向同一个 issuer URL，Keycloak 的 realm 级别 issuer 不够灵活&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;上游身份源复用&lt;/strong&gt;：Keycloak 本身对接了 AD、LDAP、GitHub 等多个 IdP，Kubernetes 还想同时接受这些来源的用户&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这时 Dex 作为 OIDC 代理层，Keycloak 作为上游身份源，是最成熟的生产组合。&lt;/p&gt;
+&lt;p&gt;一句话：&lt;strong&gt;Keycloak 管你是谁，Dex 把你的身份转换成 Kubernetes 认识的 OIDC&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id="适用场景"&gt;适用场景&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;已有 Keycloak 部署，需要给 Kubernetes 加 OIDC 认证&lt;/li&gt;
+&lt;li&gt;多个 Kubernetes 集群需要共享同一套身份&lt;/li&gt;
+&lt;li&gt;需要 Keycloak 的用户组映射到 Kubernetes RBAC 的 groups claim&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="不适用场景"&gt;不适用场景&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;没有 Keycloak，只想用 Dex 直连 LDAP/AD —— 直接在 Dex 配 LDAP connector 即可&lt;/li&gt;
+&lt;li&gt;只有一个小集群且用户都在 Keycloak 本地 —— 可以考虑直接对接 Keycloak OIDC&lt;/li&gt;
+&lt;li&gt;需要 Kubernetes 之外的完整 IAM 能力——直接用 Keycloak，不需要 Dex&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="架构"&gt;架构&lt;/h2&gt;
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
+ participant User as kubectl / kubelogin
+ participant K8s as Kubernetes API Server
+ participant Dex as Dex&amp;lt;br/&amp;gt;(OIDC Provider)
+ participant KC as Keycloak&amp;lt;br/&amp;gt;(上游 OIDC Provider)
+
+ User-&amp;gt;&amp;gt;K8s: kubectl 请求
+ K8s-&amp;gt;&amp;gt;User: 401 + OIDC redirect
+ User-&amp;gt;&amp;gt;Dex: 浏览器打开 Dex 登录页
+ Dex-&amp;gt;&amp;gt;KC: OIDC Authorization Code Flow&amp;lt;br/&amp;gt;(redirect 到 Keycloak 登录页)
+ KC-&amp;gt;&amp;gt;User: 登录表单 / SSO session
+ User-&amp;gt;&amp;gt;KC: 用户名+密码 / 已有 session
+ KC-&amp;gt;&amp;gt;Dex: Authorization Code
+ Dex-&amp;gt;&amp;gt;KC: Token Request&amp;lt;br/&amp;gt;(client_id + client_secret)
+ KC-&amp;gt;&amp;gt;Dex: ID Token + Access Token
+ Dex-&amp;gt;&amp;gt;Dex: 提取 claims (sub, email, groups)&amp;lt;br/&amp;gt;生成 Dex 自己的 ID Token
+ Dex-&amp;gt;&amp;gt;User: Dex ID Token
+ User-&amp;gt;&amp;gt;K8s: Bearer Token (Dex ID Token)
+ K8s-&amp;gt;&amp;gt;K8s: 验证 JWT 签名、issuer、audience
+ K8s-&amp;gt;&amp;gt;User: kubectl 执行结果
+&lt;/pre&gt;
+
+&lt;p&gt;核心链路：&lt;strong&gt;kubectl/kubelogin → Dex（OIDC Provider）→ Keycloak（上游 OIDC 源）→ AD/LDAP/本地用户&lt;/strong&gt;。&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你的项目几年前接入了 Keycloak，用的是官方推荐的 Keycloak Adapter（&lt;code&gt;keycloak-spring-security-adapter&lt;/code&gt;、&lt;code&gt;keycloak-connect&lt;/code&gt;、&lt;code&gt;keycloak-python&lt;/code&gt; 等）。最近升级依赖或做安全审查时发现：&lt;strong&gt;这些 Adapter 已经被 Keycloak 官方弃用，不再维护了&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;继续用会有什么问题？旧 Adapter 绑定了 Keycloak 特定版本、依赖老旧框架（如 WildFly、javax），安全补丁不再跟进，且与 Spring Boot 3+ / Jakarta EE 不兼容。需要迁移到各语言生态的标准 OIDC 库。&lt;/p&gt;
 &lt;p&gt;这篇文章按语言给出迁移路径、最小配置和常见踩坑。&lt;/p&gt;
