@@ -8,4 +8,4 @@ menu:
     identifier: "advanced-topics-index"
 ---
 
-本部分探讨 IDaaS 的前沿和高级话题。我们从授权模型的深度对比出发，到安全最佳实践的系统化总结，再到性能与扩展性的工程实践，最后展望去中心化身份和零信任架构的未来。这些内容将帮助你在掌握 IDaaS 基础之后，进一步提升架构设计和安全决策的能力。
+本部分探讨 IDaaS 的前沿和高级话题。我们从 [IAM 架构设计]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}}) 入手，涵盖中心化、联邦、多租户和零信任架构的选型决策；再到[授权模型的深度对比]({{< relref "docs/advanced-topics/authorization-models.md" >}})，[安全最佳实践]({{< relref "docs/advanced-topics/security-best-practices.md" >}})的系统化总结，[性能与扩展性]({{< relref "docs/advanced-topics/performance-and-scaling.md" >}})的工程实践，最后展望[去中心化身份]({{< relref "docs/advanced-topics/future-of-idaas.md" >}})和[零信任架构]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})的未来。这些内容将帮助你在掌握 IDaaS 基础之后，进一步提升架构设计和安全决策的能力。

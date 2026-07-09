@@ -141,6 +141,8 @@ AAA 是 IAM 最经典的三要素模型：
 
 用户自主控制身份数据，通过区块链或分布式账本建立信任。这是 IAM 的未来方向之一，我们将在[第23章]({{< relref "docs/advanced-topics/future-of-idaas.md" >}})详细讨论。
 
+> 关于 IAM 架构的深入讨论——包括多租户架构、零信任 IAM、混合云部署和高可用设计，参见 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}})，其中包含 Mermaid 架构图和选型决策树。
+
 ## 2.5 IAM 的核心设计原则
 
 ### 最小权限原则（Least Privilege）
@@ -200,6 +202,39 @@ AAA 是 IAM 最经典的三要素模型：
 | SCIM 2.0 | IETF | 身份配置 |
 | FIDO2/WebAuthn | FIDO Alliance/W3C | 无密码认证 |
 | 等保 2.0 | 中国国家标准 | 网络安全等级保护 |
+
+## 2.6 IAM 常见问题 FAQ
+
+### Q1: IAM 和 IDaaS 到底有什么区别？
+
+**IAM 是学科/概念，IDaaS 是交付模式。** IAM 回答"身份管理应该怎么做"，IDaaS 回答"身份管理以什么形式交付"。IDaaS 是 IAM 的云服务化实现——你可以自建 IAM（如部署 Keycloak），也可以购买 IAM 即服务（即 IDaaS，如 Okta/Entra ID），但底层的身份管理理念是共通的。详见[第1章：什么是 IDaaS]({{< relref "docs/fundamentals/what-is-idaas.md" >}})。
+
+### Q2: IAM 系统中，认证失败和授权失败有什么区别？
+
+| 维度 | 认证失败（401） | 授权失败（403） |
+|------|----------------|----------------|
+| 含义 | 系统不知道你是谁 | 系统知道你是谁，但你没权限 |
+| 典型原因 | 密码错误、Token 过期、账号锁定 | 角色不足、IP 受限、时间窗口外 |
+| HTTP 状态码 | 401 Unauthorized | 403 Forbidden |
+| 用户看到 | "请重新登录" | "你没有访问权限" |
+
+### Q3: 小公司需要 IAM 吗？还是等长大了再说？
+
+**越早建立 IAM 体系越好，哪怕是最简版。** 原因：
+- 后期迁移成本远高于早期规划：从一个"每个应用自己管用户"的架构迁移到统一 IAM，工作量随应用数量指数增长
+- 安全问题不等人：一个员工离职后，如果你要逐个应用回收权限，漏掉一个就是安全隐患
+- 最小可用 IAM 并不贵：一个 Keycloak 实例跑在 2C4G 的虚拟机上，足以服务 1000 用户 + 20 个应用
+
+**小公司的 IAM 起步方案**：Keycloak + 一个 OIDC 客户端库 → 先把 SSO 跑通 → 逐步接入 MFA → 后续再考虑 HR 系统集成和自动化。
+
+### Q4: IAM 的认证协议怎么选——OIDC 还是 SAML？
+
+**新项目默认选 OIDC（基于 OAuth 2.0）。** 只有在以下情况才选 SAML：
+- 要对接的系统只支持 SAML（如老旧的 Salesforce SSO 配置、某些政府系统）
+- 组织已经在用 SAML 且迁移成本过高
+- 需要 IDP-Initiated SSO（用户从 IdP 门户点击应用图标跳转，不过 OIDC 通过第三方发起登录也能实现类似效果）
+
+详细对比见 [OIDC vs SAML 选型决策]({{< relref "docs/protocols/openid-connect.md" >}})。
 
 ## 2.7 小结
 
