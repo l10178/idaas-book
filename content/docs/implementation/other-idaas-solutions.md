@@ -132,6 +132,30 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 
 > 📖 详见：[Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台]({{< relref "docs/implementation/zitadel-deep-dive" >}})
 
+### Logto
+
+**类型**：CIAM（客户身份），面向 SaaS 和 AI 应用
+**语言**：TypeScript (Node.js)
+**许可证**：MPL-2.0
+
+**核心优势**：
+- Protocol-first 设计：OIDC、OAuth 2.1、SAML 即开即用，SDK 三步接入
+- 多租户 Organization 从第一天就是一等公民，支持独立 SSO、RBAC 和品牌定制
+- 30+ 框架官方 SDK（React、Next.js、Flutter、Go、Python 等）
+- 内置可定制的登录 UI，支持 Social Login 和企业 SSO 连接器
+- MCP（Model Context Protocol）原生支持，AI Agent 可直接调用身份能力
+- Cloud + OSS 统一代码库，功能无阉割
+
+**不足**：
+- 不支持原生 LDAP 用户联邦（可通过 LDAP→OIDC 桥接方案接入）
+- 社区规模和中文资源不及 Keycloak
+- PostgreSQL 是唯一支持的数据库，无 Oracle/MySQL 官方支持
+- 授权模型以 RBAC 为主，细粒度的 ABAC/ReBAC 支持有限
+
+**适用场景**：B2B SaaS 平台的客户身份管理、AI Agent 应用的身份层、需要多租户 + 开箱即用登录 UI 的全栈产品。
+
+> 📖 详见：[Logto 深度介绍 — 面向 SaaS 和 AI 应用的现代开源身份基础设施]({{< relref "docs/implementation/logto-deep-dive" >}})
+
 ### Authentik
 
 **类型**：灵活的开源 IAM

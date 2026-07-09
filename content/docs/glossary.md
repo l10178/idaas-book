@@ -107,6 +107,7 @@ toc: true
 | **OPA** | Open Policy Agent，CNCF 毕业项目，通用策略引擎 |
 | **OpenFGA** | 开源 ReBAC 实现，CNCF Sandbox（截至本稿） |
 | **Zitadel** | Go 语言事件驱动开源 IAM（AGPL-3.0），事件溯源 + CQRS 架构，原生多租户，支持 OIDC/OAuth2/SAML/Passkeys。详见 [Zitadel 深度解读]({{< relref "docs/implementation/zitadel-deep-dive" >}}) |
+| **Logto** | TypeScript 编写的现代开源 CIAM（MPL-2.0），面向 SaaS 和 AI 应用，原生多租户 Organization，支持 OIDC/OAuth 2.1/SAML，30+ SDK，MCP AI Agent 集成。详见 [Logto 深度介绍]({{< relref "docs/implementation/logto-deep-dive" >}}) |
 
 ## 安全概念
 
