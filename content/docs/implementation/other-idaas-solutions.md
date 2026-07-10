@@ -222,6 +222,28 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 
 > 📖 详见：[SuperTokens 深度解读 — 开发者友好的开源用户认证]({{< relref "docs/implementation/supertokens-deep-dive" >}})
 
+### Hanko
+
+**类型**：Passkey-first 认证平台
+**语言**：Go（后端）+ JavaScript/TypeScript（前端 SDK 与 Web Components）
+**许可证**：AGPL-3.0（后端）/ MIT（客户端 SDK 与 Elements）
+
+**核心优势**：
+- Passkey/WebAuthn 优先设计，密码完全可选，可直接禁用
+- `<hanko-auth>` Web Component 一行标签嵌入登录/注册全流程，自带 UI
+- 轻量部署（Go 单服务 + PostgreSQL），Docker Compose 5 分钟起步
+- Email Passcode 作为 Passkey 不可用时的降级，覆盖所有设备
+- OAuth SSO（Google/Apple/GitHub）+ SAML Enterprise SSO
+- 细化的前端 SDK 和框架示例（React、Vue、Angular）
+
+**不足**：
+- 不做 OIDC Provider，不对外签发 ID Token（应用通过 JWT + JWKS 验证集成）
+- 不覆盖 LDAP/AD 联邦、SCIM 自动配置、细粒度 RBAC 授权
+- 企业 IAM 能力（组织、角色、权限）仍在开发中（v2.7 阶段）
+- 社区规模和中文资源有限
+
+> 📖 详见：[Hanko 深度介绍 — Passkey-first 开源 IAM 认证方案]({{< relref "docs/implementation/hanko-deep-dive" >}})
+
 ## 17.3 商业方案概览
 
 ### Okta
