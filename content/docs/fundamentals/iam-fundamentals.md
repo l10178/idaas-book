@@ -141,7 +141,7 @@ AAA 是 IAM 最经典的三要素模型：
 
 用户自主控制身份数据，通过区块链或分布式账本建立信任。这是 IAM 的未来方向之一，我们将在[第23章]({{< relref "docs/advanced-topics/future-of-idaas.md" >}})详细讨论。
 
-> 关于 IAM 架构的深入讨论——包括多租户架构、零信任 IAM、混合云部署和高可用设计，参见 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}})，其中包含 Mermaid 架构图和选型决策树。
+> 关于 IAM 架构的深入讨论——包括多租户架构、零信任 IAM、混合云部署和高可用设计，参见 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}})，其中包含 Mermaid 架构图和选型决策树。SaaS 平台和企业级多租户 IAM 的隔离模式（共享 IDP / 独立 Realm / 联邦 IDP）和选型指南见 [多租户 IAM 架构设计与方案对比]({{< relref "docs/advanced-topics/multi-tenant-iam.md" >}})。
 >
 > 关于认证协议的选型——OAuth 2.0、OIDC、SAML、LDAP、SCIM 该在什么场景下使用，参见 [IAM 协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}})，其中包含 10 种典型场景的选型推荐和决策树。
 
