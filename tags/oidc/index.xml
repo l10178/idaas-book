@@ -1,1 +1,56 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OIDC on IDaaS Book</title><link>https://idaas.xlabs.club/tags/oidc/</link><description>Recent content in OIDC on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/tags/oidc/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 保护内部应用：Ingress 与 ForwardAuth 配置清单</title><link>https://idaas.xlabs.club/blog/keycloak-oauth2-proxy-ingress-forwardauth/</link><pubDate>Sat, 04 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/blog/keycloak-oauth2-proxy-ingress-forwardauth/</guid><description>一份面向内部应用的 Keycloak + oauth2-proxy 网关层 SSO 配置清单，覆盖 NGINX Ingress、Traefik ForwardAuth、常见报错和回滚。</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>OIDC on IDaaS Book</title><link>https://idaas.xlabs.club/tags/oidc/</link><description>Recent content in OIDC on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/tags/oidc/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 保护内部应用：Ingress 与 ForwardAuth 配置清单</title><link>https://idaas.xlabs.club/blog/keycloak-oauth2-proxy-ingress-forwardauth/</link><pubDate>Sat, 04 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/blog/keycloak-oauth2-proxy-ingress-forwardauth/</guid><description>一份面向内部应用的 Keycloak + oauth2-proxy 网关层 SSO 配置清单，覆盖 NGINX Ingress、Traefik ForwardAuth、常见报错和回滚。</description></item><item><title>Keycloak 直连 Kubernetes OIDC 认证 — API Server 集成与 RBAC 绑定 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-kubernetes-rbac/</link><pubDate>Sat, 11 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-kubernetes-rbac/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你有一个 Kubernetes 集群，团队成员目前用证书或静态 token 认证，管理起来既麻烦又不安全。组织已经在用 Keycloak 管理用户和组，你想把 K8s 集群的认证直接委托给 Keycloak，用 Keycloak 里的组来控制谁有集群管理员权限、谁只能看 Pod 日志。&lt;/p&gt;
+&lt;p&gt;与 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/dex-keycloak-federation/"&gt;Dex + Keycloak 联邦方案&lt;/a&gt; 不同，这里不需要额外的 Dex 代理层——Keycloak 本身就是标准的 OIDC Provider，Kubernetes API Server 原生支持 OIDC 认证。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;一句话：Keycloak 告诉 K8s「这个人是谁、属于哪些组」，K8s RBAC 决定「这些组能做什么」。&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;适用&lt;/th&gt;
+					&lt;th&gt;不适用&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;单集群或少量集群，用户都在 Keycloak 里&lt;/td&gt;
+					&lt;td&gt;几十个集群需要统一管理（建议加 Dex，参考
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/dex-keycloak-federation/"&gt;联邦方案&lt;/a&gt;）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Keycloak 是唯一的用户身份源&lt;/td&gt;
+					&lt;td&gt;需要同时接受 GitHub、LDAP、Google 等多源认证（用 Dex 做聚合）&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;团队规模中等（几十到几百用户）&lt;/td&gt;
+					&lt;td&gt;上千用户且需要动态 RBAC 同步&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;已有 Keycloak 部署，不想引入新组件&lt;/td&gt;
+					&lt;td&gt;Keycloak 还没部署（先部署 Keycloak，参考
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/implementation/kubernetes-production/"&gt;生产部署指南&lt;/a&gt;）&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="架构"&gt;架构&lt;/h2&gt;
+&lt;pre class="mermaid"&gt;
+ sequenceDiagram
+ participant User as kubectl / kubelogin
+ participant K8s as K8s API Server
+ participant KC as Keycloak
+
+ User-&amp;gt;&amp;gt;K8s: kubectl get pods
+ K8s-&amp;gt;&amp;gt;User: 401 + OIDC redirect URL
+ User-&amp;gt;&amp;gt;KC: 浏览器打开 Keycloak 登录页
+ Note over User,KC: OIDC Authorization Code + PKCE
+ KC-&amp;gt;&amp;gt;User: 登录成功，返回 id_token + refresh_token
+ User-&amp;gt;&amp;gt;K8s: kubectl get pods (Authorization: Bearer &amp;amp;lt;id_token&amp;amp;gt;)
+ K8s-&amp;gt;&amp;gt;K8s: 验证 JWT 签名 + issuer + aud + exp
+ K8s-&amp;gt;&amp;gt;K8s: 提取 sub、groups → 匹配 RBAC
+ K8s-&amp;gt;&amp;gt;User: Pod 列表
+&lt;/pre&gt;
+
+&lt;p&gt;流程要点：&lt;/p&gt;</description></item></channel></rss>
