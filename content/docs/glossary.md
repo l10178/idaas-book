@@ -108,6 +108,7 @@ toc: true
 | **OpenFGA** | 开源 ReBAC 实现，CNCF Sandbox（截至本稿） |
 | **Zitadel** | Go 语言事件驱动开源 IAM（AGPL-3.0），事件溯源 + CQRS 架构，原生多租户，支持 OIDC/OAuth2/SAML/Passkeys。详见 [Zitadel 深度解读]({{< relref "docs/implementation/zitadel-deep-dive" >}}) |
 | **Logto** | TypeScript 编写的现代开源 CIAM（MPL-2.0），面向 SaaS 和 AI 应用，原生多租户 Organization，支持 OIDC/OAuth 2.1/SAML，30+ SDK，MCP AI Agent 集成。详见 [Logto 深度介绍]({{< relref "docs/implementation/logto-deep-dive" >}}) |
+| **SuperTokens** | Java 开源用户认证方案，15k+ star，定位 Auth0/Firebase Auth/AWS Cognito 替代品。三层架构（Frontend SDK + Backend SDK + Core），内置会话管理与自动 Token 刷新。详见 [SuperTokens 深度解读]({{< relref "docs/implementation/supertokens-deep-dive" >}}) |
 
 ## 安全概念
 

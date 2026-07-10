@@ -201,6 +201,27 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 
 > 📖 详见：[Pomerium 深度介绍 — 企业级零信任身份感知代理]({{< relref "docs/implementation/pomerium-deep-dive" >}})
 
+### SuperTokens
+
+**类型**：开发者友好的用户认证与会话管理
+**语言**：Java（Core）+ Node.js/Go/Python（Backend SDK）
+**许可证**：核心开源（含商业许可）
+
+**核心优势**：
+- 极致的开发者体验：前端 SDK 提供 `<SignInAndUp />` 等开箱即用组件，后端 SDK 封装所有协议细节
+- 三层架构（Frontend SDK → Backend SDK → Core），每层可独立替换
+- 内置会话管理：Access + Refresh Token 自动刷新、防 CSRF/XSS、Token 撤销
+- 多租户原生支持（v9.0+），适配 SaaS 场景
+- 用户数据完全自控，最小供应商锁定
+
+**不足**：
+- 不是完整 IAM 平台，无 LDAP/AD 联邦、无 SAML 协议代理
+- 不充当 OIDC Provider，无法对外提供 OIDC 能力
+- 企业 SSO 等功能需商业许可
+- 大规模企业生产验证案例少于 Keycloak
+
+> 📖 详见：[SuperTokens 深度解读 — 开发者友好的开源用户认证]({{< relref "docs/implementation/supertokens-deep-dive" >}})
+
 ## 17.3 商业方案概览
 
 ### Okta
