@@ -244,6 +244,28 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 
 > 📖 详见：[Hanko 深度介绍 — Passkey-first 开源 IAM 认证方案]({{< relref "docs/implementation/hanko-deep-dive" >}})
 
+### OpenBao
+
+**类型**：身份驱动的密钥管理与加密引擎
+**语言**：Go
+**许可证**：MPL-2.0
+
+**核心优势**：
+- HashiCorp Vault 的 Linux Foundation 社区分支，保持 MPL-2.0 开源许可
+- 集中管理数据库密码、API Key、TLS 证书等机器凭证，带完整的审计日志
+- 动态密钥生成（数据库、K8s、云服务），支持自动轮换和租约吊销
+- 通过 JWT/OIDC Auth Method 与 Keycloak 集成——人通过 Keycloak 认证后获取 OpenBao Token
+- API 与 Vault 1.x 兼容，bao CLI 可替代 vault 命令
+
+**不足**：
+- 不是完整的 IAM 平台（不做用户认证/SSO），聚焦机器身份和密钥管理
+- 运维复杂度较高（解封机制、高可用 Raft 集群需经验）
+- HSM 自动解封等企业特性仍在社区开发中
+
+**适用场景**：需要集中管理数据库凭证、TLS 证书、API Key 的 IAM 基础设施；与 Keycloak 配合形成「人+机器」完整身份层。
+
+> 📖 详见：[OpenBao 深度解读 — 身份驱动的密钥管理与加密引擎]({{< relref "docs/implementation/openbao-deep-dive" >}})
+
 ## 17.3 商业方案概览
 
 ### Okta
