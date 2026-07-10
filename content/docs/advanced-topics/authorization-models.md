@@ -1,6 +1,6 @@
 ---
-title: "RBAC、ABAC、ReBAC 授权模型对比与选型指南 | IDaaS Book"
-description: "RBAC、ABAC、ReBAC 三种授权模型的核心原理、实现方式、对比表格和选型决策树。包含 Keycloak RBAC 实现、OPA/Rego 策略示例、Google Zanzibar 关系模型解读，附常见问题 FAQ 和混合模型实践建议。"
+title: "IAM RBAC、ABAC、ReBAC 授权模型对比与选型指南 | IDaaS Book"
+description: "企业 IAM 权限模型深度对比：RBAC（基于角色）、ABAC（基于属性）、ReBAC（基于关系）的核心原理、实现方式、对比表格和选型决策树。Keycloak RBAC 实现、OPA Rego 策略示例、Google Zanzibar 关系模型解读，附 IAM 权限设计 FAQ。"
 date: 2024-05-01T00:00:00+08:00
 draft: false
 weight: 51
@@ -11,7 +11,9 @@ menu:
 toc: true
 ---
 
-## 20.1 授权模型的演进
+## 20.1 IAM 授权模型的演进
+
+在企业 IAM（身份与访问管理）体系中，授权模型决定了"谁能访问什么"。从早期的自主访问控制（DAC）和强制访问控制（MAC），到如今主流的 RBAC、ABAC、ReBAC，每一次演进都在提升权限管理的精细度和可扩展性。理解这些模型的区别，是设计可维护 IAM 权限体系的前提。关于 IAM 整体概念和身份生命周期管理，请参阅 [IAM 基础概念]({{< relref "docs/fundamentals/iam-fundamentals.md" >}})；IAM 架构层面的设计考量见 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}})。
 
 ```
 1960s-70s  1970s-80s  1990s-2000s   2000s-2010s    2019
@@ -23,7 +25,11 @@ toc: true
 复杂度递增，精细度递增
 ```
 
-## 20.2 RBAC（基于角色的访问控制）
+## 20.2 IAM RBAC（基于角色的访问控制）
+
+### RBAC 在 IAM 体系中的定位
+
+在企业 IAM 实践中，RBAC 是使用最广泛的授权模型。它的核心优势在于"角色"这个概念与组织架构天然对齐——HR 系统里叫"部门经理"，IAM 系统里就映射为 `manager` 角色，权限跟着角色走，而非跟着人走。这使得 IAM 权限审计（"谁拥有管理员权限？"）和权限回收（员工离职时移除角色即可）变得直观可控。本节聚焦 Keycloak 中的 RBAC 落地，实际生产环境中常与 [IAM 会话管理]({{< relref "docs/advanced-topics/iam-session-management.md" >}}) 配合，确保角色变更后会话及时失效。
 
 ### 核心模型
 
@@ -69,7 +75,7 @@ Keycloak 的 RBAC 由三层组成：
 - **静态性**：角色不能根据上下文（时间、位置、设备）动态调整
 - **跨域困难**：不同系统的角色体系无法互通
 
-## 20.3 ABAC（基于属性的访问控制）
+## 20.3 IAM ABAC（基于属性的访问控制）
 
 ### 核心模型
 
@@ -152,7 +158,7 @@ allow if {
 
 典型实现仍是 [OPA]({{< relref "docs/advanced-topics/authorization-models.md#opaopen-policy-agent" >}}) / Rego、AWS Cedar 等；在合规密集型行业（金融、医疗、政务），把 RBAC 的静态角色与 PBAC 的动态策略叠加，是当前最主流的落地形态（见 20.7 选型决策树）。术语速查见[附录术语表]({{< relref "docs/glossary.md" >}})。
 
-## 20.4 ReBAC（基于关系的访问控制）
+## 20.4 IAM ReBAC（基于关系的访问控制）
 
 ### Google Zanzibar
 
@@ -251,9 +257,9 @@ flowchart TD
 - 如果选择了 ABAC，确保有策略测试和可视化
 - 无论哪种模型，都要有**默认拒绝 + 最小权限**
 
-## 20.8 小结
+## 20.8 IAM 授权模型小结
 
-授权模型的选择取决于业务的复杂度和场景需求。RBAC 仍然是大多数应用的最佳起点，ABAC 在需要动态、精细控制的场景中发光发热，ReBAC 在强调关系的应用中是自然之选。好的实践是组合使用——RBAC 作为骨架，策略引擎补充动态规则，关系模型处理继承和共享。
+授权模型的选择取决于 IAM 业务的复杂度和场景需求。RBAC 仍然是大多数企业 IAM 应用的最佳起点——角色与组织架构对齐、审计友好；ABAC 在需要动态、精细控制的合规场景（金融、医疗、政务）中不可或缺；ReBAC 在强调关系的协作型 IAM 应用中是自然之选。好的 IAM 实践是组合使用——RBAC 作为骨架，策略引擎补充动态规则，关系模型处理继承和共享。（关于 IAM 权限设计的更多决策考量，可参阅 [IAM 协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}}) 和 [IAM 安全最佳实践]({{< relref "docs/advanced-topics/security-best-practices.md" >}})。）
 
 ## 20.9 常见问题（FAQ）
 
@@ -326,3 +332,37 @@ OPA 不自己管理用户和角色，而是从 Keycloak 获取用户属性作为
 这个方案的底线是**先让权限系统能被审计**——哪怕粗糙，只要每次权限变更都有记录，就比「所有权限散落在代码里」强一个数量级。
 
 > **实战参考**：如果你已经在用 Keycloak，可以直接参考 [Keycloak 细粒度权限与授权策略实战]({{< relref "../solution-blogs/keycloak-fine-grained-authz" >}}) 中的 Roles 配置和 Authorization Services 实操步骤，配有完整的 Policy Evaluation 调试方法。
+
+### Q6：企业 IAM 权限模型选型有没有「黄金法则」？
+
+有，但不是一条，是三条：
+
+1. **先 RBAC 再扩展**：IAM 项目中，95% 的初始需求用 RBAC 就能满足。先把角色体系建好、审计链路跑通，再评估是否需要 ABAC/ReBAC。不要在项目第一天就引入 OPA。
+2. **权限设计先于代码**：花半天在 Confluence 或 Markdown 里画一张"角色→权限"矩阵表，比写了一周代码后发现角色遗漏要划算得多。IAM 权限模型的核心是**对齐业务语义**，不是技术选型。
+3. **默认拒绝是底线**：无论选 RBAC/ABAC/ReBAC，IAM 系统的第一行授权逻辑永远是 `deny unless explicitly allowed`。很多安全事故不是因为模型选错了，而是因为"不小心放行了所有人"。
+
+违反这三条的 IAM 项目，最终都会在审计或安全事件中被迫返工。
+
+### Q7：IAM RBAC 的「角色爆炸」问题怎么提前预防？
+
+角色爆炸是 IAM RBAC 最常见的反模式——当角色数量从 5 个膨胀到 500 个时，RBAC 的优势（简单、可审计）就消失了。预防策略：
+
+| 预防措施 | 具体做法 | 适用阶段 |
+|---------|---------|---------|
+| **角色粒度控制** | 一个角色对应一个业务职能（如"审批报销"），不要一个角色包揽所有权限 | 设计阶段 |
+| **组合优于继承** | 用 Keycloak Composite Roles 把细小角色拼成大角色，而非创建多层继承 | 实现阶段 |
+| **属性解耦** | 角色只管"职能"，把"地域/部门/项目"等维度放到用户属性（Attribute）中，由 ABAC 策略层处理 | 扩展阶段 |
+| **定期角色审计** | 每季度跑一次「哪些角色超过 3 个月无人使用」的报告，及时回收 | 运维阶段 |
+| **Groups 中间层** | 用户→Groups→Roles，用 Groups 做组织维度映射，避免直接给用户赋角色 | 架构阶段 |
+
+> 角色的"10 倍法则"：如果角色数量超过了用户数量的 10%，就该反思是不是粒度太细了。一个 200 人的团队有 40 个角色是健康的；有 200 个角色就需要重构。
+
+### Q8：IAM 零信任架构下，授权模型该怎么选？
+
+零信任 IAM 的核心原则是「永不信任，始终验证」，这对授权模型提出了额外要求：
+
+- **RBAC 不够**：零信任要求在每次访问时验证设备状态、网络位置、行为风险等上下文——纯静态角色做不到
+- **ABAC/PBAC 是首选**：OPA 或 Cedar 策略引擎可以在每次请求时评估多维属性（用户身份 + 设备合规 + 地理位置 + 时间窗口），天然适配零信任的持续验证要求
+- **ReBAC 做资源层**：零信任的微隔离场景（"服务 A 能否访问服务 B 的 API"）适合用 ReBAC 的关系模型表达
+
+推荐组合：**PBAC（OPA）做策略决策层 + RBAC 做角色基线 + ReBAC 做资源关系层**。具体架构可参阅 [零信任身份架构]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})。
