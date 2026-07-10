@@ -439,7 +439,7 @@
 &lt;/table&gt;
 &lt;h2 id="192-使用-keycloak-operator"&gt;19.2 使用 Keycloak Operator&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;版本提示：Keycloak 官方下载页与 GitHub Release 显示当前稳定版为 &lt;code&gt;26.6.4&lt;/code&gt;（2026-07-01 检查）；官方 Operator 安装文档同样提供 &lt;code&gt;26.6.4&lt;/code&gt; 的 &lt;code&gt;keycloak-k8s-resources&lt;/code&gt; 示例。Keycloak 迭代很快，部署时请到 
+&lt;p&gt;版本提示：Keycloak 官方下载页与 GitHub Release 显示当前稳定版为 &lt;code&gt;26.7.0&lt;/code&gt;（2026-07-11 检查）；官方 Operator 安装文档同样提供 &lt;code&gt;26.7.0&lt;/code&gt; 的 &lt;code&gt;keycloak-k8s-resources&lt;/code&gt; 示例。Keycloak 迭代很快，部署时请到 
 
 &lt;a class="link link--text" href="https://www.keycloak.org/downloads" rel="external"&gt;keycloak.org/downloads&lt;/a&gt;、
 
