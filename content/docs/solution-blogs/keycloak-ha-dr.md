@@ -62,6 +62,8 @@ graph TB
 
 **关键理解**：Keycloak 的 Session 数据存在两个地方——数据库是持久化的（离线 token、持久 session），InfiniSpan 分布式缓存是内存/近缓存（在线 session）。节点挂了，在线 session 从其他节点的 InfiniSpan 缓存中恢复；如果整个集群都挂了，持久化的 session 从数据库恢复。
 
+> 关于缓存层的深度调优——`cache-ispn.xml` 参数详解、传输栈选型对比、`owners` 参数调优、Istio 服务网格兼容方案、常见缓存故障排错，参见 [Keycloak 集群缓存深度调优与排错指南]({{< relref "keycloak-cluster-cache-tuning" >}})。
+
 ## 节点发现：JGroups 配置
 
 Keycloak 使用 JGroups 做节点间通信和发现。Kubernetes 环境下推荐 DNS_PING；裸机推荐 JDBC_PING 或 TCPPING。
