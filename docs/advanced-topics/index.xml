@@ -109,7 +109,7 @@ Bob → [员工] → [提交报销, 查看自己的报表]&lt;/code&gt;&lt;/pre&
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;blockquote&gt;
-&lt;p&gt;注：&lt;code&gt;SameSite&lt;/code&gt; 是 CSRF 纵深防御的一环，不应作为唯一防线；主流浏览器已默认 &lt;code&gt;Lax+POST&lt;/code&gt; 限制，仍需配合 CSRF Token / Origin / &lt;code&gt;Sec-Fetch-Site&lt;/code&gt; 校验。&lt;/p&gt;</description></item><item><title>第22章：IDaaS 性能与扩展性 — 缓存策略、集群扩展与容量规划 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</link><pubDate>Fri, 03 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</guid><description>&lt;h2 id="221-idaas-的性能模型"&gt;22.1 IDaaS 的性能模型&lt;/h2&gt;
+&lt;p&gt;注：&lt;code&gt;SameSite&lt;/code&gt; 是 CSRF 纵深防御的一环，不应作为唯一防线；主流浏览器已默认 &lt;code&gt;Lax+POST&lt;/code&gt; 限制，仍需配合 CSRF Token / Origin / &lt;code&gt;Sec-Fetch-Site&lt;/code&gt; 校验。&lt;/p&gt;</description></item><item><title>第22章：IAM 高可用与 IDaaS 性能扩展 — 缓存策略、集群扩展与容量规划 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</link><pubDate>Fri, 03 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/</guid><description>&lt;h2 id="221-idaas-的性能模型"&gt;22.1 IDaaS 的性能模型&lt;/h2&gt;
 &lt;p&gt;IDaaS 系统的负载特征：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;读多写少&lt;/strong&gt;：认证操作远多于管理操作（100:1 或更高）&lt;/li&gt;
@@ -204,7 +204,195 @@ db-pool-max-size: 单节点合理的最大连接数
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h3 id="读写分离"&gt;读写分离&lt;/h3&gt;
-&lt;p&gt;对于大规模部署（&amp;gt;100K 用户）：&lt;/p&gt;</description></item><item><title>第23章：去中心化身份与可验证凭证 — DID、VC 与自主权身份技术详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</link><pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</guid><description>&lt;h2 id="231-当前身份模型的根本缺陷"&gt;23.1 当前身份模型的根本缺陷&lt;/h2&gt;
+&lt;p&gt;对于大规模部署（&amp;gt;100K 用户）：&lt;/p&gt;</description></item><item><title>IAM 安全合规与等保 2.0 要求 Checklist — 身份认证、访问控制与审计落地指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-compliance-dengbao/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-compliance-dengbao/</guid><description>&lt;h2 id="为什么-iam-是等保-20-的核心控制域"&gt;为什么 IAM 是等保 2.0 的核心控制域&lt;/h2&gt;
+&lt;p&gt;等保 2.0（GB/T 22239-2019《信息安全技术 网络安全等级保护基本要求》）将安全要求分为技术和管理两大类。在技术层面，&lt;strong&gt;身份与访问管理（IAM）跨越了&amp;quot;安全计算环境&amp;quot;和&amp;quot;安全区域边界&amp;quot;两个控制域&lt;/strong&gt;，直接影响以下测评项：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;身份鉴别（Identification and Authentication）&lt;/strong&gt;：你是谁&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;访问控制（Access Control）&lt;/strong&gt;：你能做什么&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;安全审计（Security Audit）&lt;/strong&gt;：你做了什么&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;三者构成等保的&amp;quot;事前预防→事中控制→事后追溯&amp;quot;闭环。IAM 系统（无论是自建 Keycloak 还是 SaaS IDaaS）就是实现这个闭环的核心基础设施。&lt;/p&gt;
+&lt;h2 id="等保-iam-要求逐条对照表以三级为例"&gt;等保 IAM 要求逐条对照表（以三级为例）&lt;/h2&gt;
+&lt;p&gt;以下对照表按 GB/T 22239-2019 三级安全标记保护要求整理，列出每项要求、测评要点和 IAM 技术落地方式。关于 IAM 整体概念见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/"&gt;IAM 基础概念&lt;/a&gt;，架构设计考量见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/"&gt;IAM 架构设计指南&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id="8142-身份鉴别安全计算环境"&gt;8.1.4.2 身份鉴别（安全计算环境）&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;等保要求&lt;/th&gt;
+					&lt;th&gt;测评要点&lt;/th&gt;
+					&lt;th&gt;IAM 落地方式&lt;/th&gt;
+					&lt;th&gt;对应协议/技术&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;a) 身份标识和鉴别&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;所有用户登录需唯一标识+密码/证书&lt;/td&gt;
+					&lt;td&gt;LDAP/AD 统一用户目录，所有应用通过 OIDC/SAML 回调 IAM 做认证&lt;/td&gt;
+					&lt;td&gt;OIDC Authorization Code Flow + PKCE&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;b) 标识唯一性&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;用户名/UID 全局唯一，不存在同名账号&lt;/td&gt;
+					&lt;td&gt;IAM 用户目录强制唯一约束（uid/email），禁止重复注册&lt;/td&gt;
+					&lt;td&gt;LDAP uid 唯一索引&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;c) 登录失败处理&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;连续失败锁定账户，会话超时自动退出&lt;/td&gt;
+					&lt;td&gt;Keycloak Brute Force Detection，Token 短有效期（5-15min），Session Idle/Max 超时&lt;/td&gt;
+					&lt;td&gt;Keycloak Realm Settings → Security Defenses&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;d) 远程管理加密&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;管理接口必须 HTTPS，禁止明文传输凭证&lt;/td&gt;
+					&lt;td&gt;IAM Admin Console 强制 HTTPS，管理 API 用 mTLS 或 JWT Bearer Token&lt;/td&gt;
+					&lt;td&gt;TLS 1.2+、mTLS&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;e) 双因素认证&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;重要操作需两种以上鉴别技术组合&lt;/td&gt;
+					&lt;td&gt;管理员强制 TOTP/WebAuthn，高敏感操作（删除用户/改权限）要求 Step-up MFA&lt;/td&gt;
+					&lt;td&gt;TOTP（RFC 6238）、WebAuthn/FIDO2&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;f) 口令复杂度&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;最小长度 ≥ 8，包含大小写+数字+特殊字符中 3 种&lt;/td&gt;
+					&lt;td&gt;Keycloak Password Policy：最小长度 8，至少 1 数字+1 特殊字符+1 大写&lt;/td&gt;
+					&lt;td&gt;Keycloak Password Policies&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="8143-访问控制安全计算环境"&gt;8.1.4.3 访问控制（安全计算环境）&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;等保要求&lt;/th&gt;
+					&lt;th&gt;测评要点&lt;/th&gt;
+					&lt;th&gt;IAM 落地方式&lt;/th&gt;
+					&lt;th&gt;对应协议/技术&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;a) 账户与权限分配&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;为每个用户/进程分配独立账户和权限&lt;/td&gt;
+					&lt;td&gt;RBAC 角色绑定，用户只分配必要角色；服务账户用 Client Credentials Grant&lt;/td&gt;
+					&lt;td&gt;RBAC + Client Credentials&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;b) 默认账户处理&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;删除或重命名默认账户，修改默认口令&lt;/td&gt;
+					&lt;td&gt;部署后立即禁用 admin 默认账户，创建命名管理员；Keycloak 初始 admin 改密码&lt;/td&gt;
+					&lt;td&gt;Keycloak Admin CLI&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;c) 冗余账户清理&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;离职/转岗及时禁用或删除&lt;/td&gt;
+					&lt;td&gt;SCIM 自动同步 HR 系统，用户状态变更自动生效；定期审计僵尸账户&lt;/td&gt;
+					&lt;td&gt;SCIM 2.0 (RFC 7644)&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;d) 最小权限原则&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;管理员授予完成工作所需的最小权限&lt;/td&gt;
+					&lt;td&gt;RBAC 细粒度角色拆分（只读管理员、用户管理员、Client 管理员），禁止共享超级管理员&lt;/td&gt;
+					&lt;td&gt;Keycloak Fine-Grained Admin Permissions&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;e) 访问控制策略&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;由授权主体（安全管理员）配置策略，而非开发者&lt;/td&gt;
+					&lt;td&gt;集中式 IAM 策略管理，应用只做 PEP（策略执行点），不自行决策&lt;/td&gt;
+					&lt;td&gt;XACML/OPA 策略引擎&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;f) 控制粒度&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;主体粒度达用户级，客体粒度达文件/数据库表级&lt;/td&gt;
+					&lt;td&gt;ABAC 可做到属性级授权；Keycloak Authorization Services 支持资源级权限&lt;/td&gt;
+					&lt;td&gt;UMA 2.0、Keycloak AuthZ Services&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;g) 安全标记&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;敏感数据打标签，基于标签控制访问&lt;/td&gt;
+					&lt;td&gt;用户属性打安全等级标签，ABAC 策略读取标签决策&lt;/td&gt;
+					&lt;td&gt;ABAC 属性策略&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id="8145-安全审计安全计算环境"&gt;8.1.4.5 安全审计（安全计算环境）&lt;/h3&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;等保要求&lt;/th&gt;
+					&lt;th&gt;测评要点&lt;/th&gt;
+					&lt;th&gt;IAM 落地方式&lt;/th&gt;
+					&lt;th&gt;对应协议/技术&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;a) 审计功能开启&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;审计覆盖所有用户、所有安全事件&lt;/td&gt;
+					&lt;td&gt;Keycloak Event Listener 开启，记录 LOGIN/LOGOUT/TOKEN_EXCHANGE/ADMIN 事件&lt;/td&gt;
+					&lt;td&gt;Keycloak Events、Syslog&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;b) 审计记录完整性&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;记录时间、用户、事件类型、结果、来源 IP&lt;/td&gt;
+					&lt;td&gt;Event 包含：时间戳（timestamp）、用户 ID、事件类型（type）、结果（success/error）、IP&lt;/td&gt;
+					&lt;td&gt;Keycloak Event 结构&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;c) 审计记录保护&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;防篡改、防删除，定期备份&lt;/td&gt;
+					&lt;td&gt;审计事件推送到不可篡改存储（ELK + 只读索引、Syslog 远程服务器），定期归档&lt;/td&gt;
+					&lt;td&gt;Logstash → Elasticsearch&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;d) 审计记录留存&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;留存 ≥ 6 个月&lt;/td&gt;
+					&lt;td&gt;日志归档策略：热数据 30 天（ES）、温数据 90 天（S3/对象存储）、冷数据 6 个月（归档存储）&lt;/td&gt;
+					&lt;td&gt;日志生命周期管理&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id="等保-iam-合规评估流程"&gt;等保 IAM 合规评估流程&lt;/h2&gt;
+&lt;pre class="mermaid"&gt;
+ graph TD
+ A[开始等保 IAM 评估] --&amp;gt; B{身份源是否统一？}
+ B --&amp;gt;|否| B1[✅ 建立 LDAP/AD 统一目录&amp;lt;br/&amp;gt;或对接 HR 系统]
+ B --&amp;gt;|是| C{认证协议是否是&amp;lt;br/&amp;gt;标准协议？}
+ B1 --&amp;gt; C
+ C --&amp;gt;|否| C1[✅ 迁移到 OIDC/SAML&amp;lt;br/&amp;gt;废弃私有 Token]
+ C --&amp;gt;|是| D{MFA 是否覆盖&amp;lt;br/&amp;gt;所有管理员？}
+ C1 --&amp;gt; D
+ D --&amp;gt;|否| D1[✅ 管理员强制 TOTP/WebAuthn&amp;lt;br/&amp;gt;敏感操作 Step-up MFA]
+ D --&amp;gt;|是| E{访问控制是否&amp;lt;br/&amp;gt;遵循最小权限？}
+ D1 --&amp;gt; E
+ E --&amp;gt;|否| E1[✅ RBAC 角色拆分&amp;lt;br/&amp;gt;禁止共享超级管理员]
+ E --&amp;gt;|是| F{审计日志是否&amp;lt;br/&amp;gt;完整且不可篡改？}
+ E1 --&amp;gt; F
+ F --&amp;gt;|否| F1[✅ 开启 Event Listener&amp;lt;br/&amp;gt;推送 Syslog/ELK + 归档]
+ F --&amp;gt;|是| G{是否有定期权限&amp;lt;br/&amp;gt;审阅机制？}
+ F1 --&amp;gt; G
+ G --&amp;gt;|否| G1[✅ 建立季度权限审阅&amp;lt;br/&amp;gt;SCIM 自动化生命周期]
+ G --&amp;gt;|是| H[🎉 等保 IAM 合规检查通过]
+ G1 --&amp;gt; H
+
+ style A fill:#e1f5fe
+ style H fill:#c8e6c9
+ style B1 fill:#fff9c4
+ style C1 fill:#fff9c4
+ style D1 fill:#fff9c4
+ style E1 fill:#fff9c4
+ style F1 fill:#fff9c4
+ style G1 fill:#fff9c4
+&lt;/pre&gt;
+
+&lt;p&gt;上图的每条路径对应一组整改动作。大多数企业在初次评估时会在&amp;quot;身份源统一&amp;quot;和&amp;quot;MFA 覆盖&amp;quot;两个节点卡住——前者因为存量系统账密散落各处，后者因为运维习惯不习惯带 Token。&lt;/p&gt;</description></item><item><title>第23章：去中心化身份与可验证凭证 — DID、VC 与自主权身份技术详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</link><pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</guid><description>&lt;h2 id="231-当前身份模型的根本缺陷"&gt;23.1 当前身份模型的根本缺陷&lt;/h2&gt;
 &lt;p&gt;当前的&amp;quot;中心化 + 联邦&amp;quot;身份模型有三个根本问题：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;身份数据被平台控制&lt;/strong&gt;：用户的数据存在各个 IdP 上，用户没有真正的所有权。&lt;/li&gt;
