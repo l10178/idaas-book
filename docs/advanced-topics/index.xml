@@ -1,4 +1,9 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第五部分：高级主题 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/</link><description>Recent content in 第五部分：高级主题 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/advanced-topics/index.xml" rel="self" type="application/rss+xml"/><item><title>RBAC、ABAC、ReBAC 授权模型对比与选型指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</link><pubDate>Wed, 01 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</guid><description>&lt;h2 id="201-授权模型的演进"&gt;20.1 授权模型的演进&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第五部分：高级主题 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/</link><description>Recent content in 第五部分：高级主题 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/advanced-topics/index.xml" rel="self" type="application/rss+xml"/><item><title>IAM RBAC、ABAC、ReBAC 授权模型对比与选型指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</link><pubDate>Wed, 01 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/authorization-models/</guid><description>&lt;h2 id="201-iam-授权模型的演进"&gt;20.1 IAM 授权模型的演进&lt;/h2&gt;
+&lt;p&gt;在企业 IAM（身份与访问管理）体系中，授权模型决定了&amp;quot;谁能访问什么&amp;quot;。从早期的自主访问控制（DAC）和强制访问控制（MAC），到如今主流的 RBAC、ABAC、ReBAC，每一次演进都在提升权限管理的精细度和可扩展性。理解这些模型的区别，是设计可维护 IAM 权限体系的前提。关于 IAM 整体概念和身份生命周期管理，请参阅 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/"&gt;IAM 基础概念&lt;/a&gt;；IAM 架构层面的设计考量见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/"&gt;IAM 架构设计指南&lt;/a&gt;。&lt;/p&gt;
 
 
 
@@ -16,7 +21,11 @@
 复杂度递增，精细度递增&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;h2 id="202-rbac基于角色的访问控制"&gt;20.2 RBAC（基于角色的访问控制）&lt;/h2&gt;
+&lt;h2 id="202-iam-rbac基于角色的访问控制"&gt;20.2 IAM RBAC（基于角色的访问控制）&lt;/h2&gt;
+&lt;h3 id="rbac-在-iam-体系中的定位"&gt;RBAC 在 IAM 体系中的定位&lt;/h3&gt;
+&lt;p&gt;在企业 IAM 实践中，RBAC 是使用最广泛的授权模型。它的核心优势在于&amp;quot;角色&amp;quot;这个概念与组织架构天然对齐——HR 系统里叫&amp;quot;部门经理&amp;quot;，IAM 系统里就映射为 &lt;code&gt;manager&lt;/code&gt; 角色，权限跟着角色走，而非跟着人走。这使得 IAM 权限审计（&amp;ldquo;谁拥有管理员权限？&amp;quot;）和权限回收（员工离职时移除角色即可）变得直观可控。本节聚焦 Keycloak 中的 RBAC 落地，实际生产环境中常与 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-session-management/"&gt;IAM 会话管理&lt;/a&gt; 配合，确保角色变更后会话及时失效。&lt;/p&gt;
 &lt;h3 id="核心模型"&gt;核心模型&lt;/h3&gt;
 
 
@@ -34,27 +43,7 @@ Bob → [员工] → [提交报销, 查看自己的报表]&lt;/code&gt;&lt;/pre&
 &lt;/div&gt;
 &lt;h3 id="rbac-的三个层次"&gt;RBAC 的三个层次&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;RBAC0（基础 RBAC）&lt;/strong&gt;：用户 → 角色 → 权限
-&lt;strong&gt;RBAC1（层次 RBAC）&lt;/strong&gt;：角色之间有继承关系&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt; [员工]
- │
- ┌──────┴──────┐
- │ │
- [组长] [专员]
- │
- [经理]
- │
- [总监]&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;RBAC2（约束 RBAC）&lt;/strong&gt;：角色互斥（SoD）、基数限制、先决条件&lt;/p&gt;</description></item><item><title>第21章：IAM / IDaaS 安全最佳实践 — 密钥管理、令牌保护与攻击面防御 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</link><pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</guid><description>&lt;h2 id="211-安全总则"&gt;21.1 安全总则&lt;/h2&gt;
+&lt;strong&gt;RBAC1（层次 RBAC）&lt;/strong&gt;：角色之间有继承关系&lt;/p&gt;</description></item><item><title>第21章：IAM / IDaaS 安全最佳实践 — 密钥管理、令牌保护与攻击面防御 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</link><pubDate>Thu, 02 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/security-best-practices/</guid><description>&lt;h2 id="211-安全总则"&gt;21.1 安全总则&lt;/h2&gt;
 &lt;p&gt;IDaaS 是安全基础设施的核心，它保护着所有应用的入口。如果 IDaaS 被攻破，攻击者就拿到了&amp;quot;万能钥匙&amp;quot;。&lt;/p&gt;
 &lt;p&gt;因此，IDaaS 自身的安全必须比它所保护的应用更高一个等级。&lt;/p&gt;
 &lt;h2 id="212-密码安全"&gt;21.2 密码安全&lt;/h2&gt;
