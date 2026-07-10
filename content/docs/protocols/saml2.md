@@ -426,6 +426,24 @@ Keycloak 的 Identity Brokering 实现中支持这种转换，我们将在[第14
 6. **禁止 IdP-Initiated SSO 的滥用**：尽量只使用 SP-Initiated SSO，减少钓鱼风险。
 7. **防御 XML 签名包装攻击（XSW）**：XML 签名验证本身需要先解析 XML，正确防御姿势是——解析后必须校验"签名所覆盖的元素恰为 SAML 断言/响应的预期根节点"，并**只信任通过签名验证的节点**，绝不能通过任意 XPath 取值后盲目使用。
 
-## 7.10 小结
+## 7.10 IAM 中的 SAML 常见问题（FAQ）
 
-SAML 2.0 虽然承载着 XML 的"沉重遗产"，但在企业级身份联邦中依然不可替代。理解 SAML 的关键是掌握断言、协议、绑定和元数据这四个核心概念，以及它们在实际 SSO 流程中如何协同工作。作为 IDaaS 实践者，不需要手写 SAML XML，但需要理解 SAML 的工作原理以诊断集成问题、评估安全风险和进行正确的系统设计。
+**Q1: IAM 系统中 SAML 和 OIDC 到底怎么选？**
+
+SAML 用于已有企业基础设施（AD FS、Shibboleth、传统 SaaS），OIDC 用于新开发的 Web/移动/SPA 应用。作为 IAM 平台，两者都要支持，但新项目默认用 OIDC。详细对比见 [IAM 协议选型指南]({{< relref "../advanced-topics/iam-protocol-selection-guide" >}})。
+
+**Q2: IAM 身份联邦中 SAML metadata 多久更新一次？**
+
+metadata 中的证书有过期时间，建议在证书到期前至少 30 天完成轮换，并在 SP 端同步更新 metadata。Keycloak 支持自动生成 metadata endpoint（`/realms/{realm}/protocol/saml/descriptor`），SP 可以配置定时拉取。
+
+**Q3: 为什么很多企业 IAM 架构还离不开 SAML？**
+
+因为大量商业 SaaS（Salesforce、Workday、ServiceNow）和传统企业内部系统（SharePoint、Jira 本地部署）只支持 SAML。对于 IAM 管理员来说，不是「要不要 SAML」的问题，而是「还要维持 SAML 多久」。Microsoft 已宣布 AD FS 不再新增功能，迁移窗口正在收窄，但短期内 SAML 仍是 IAM 必须覆盖的协议。
+
+**Q4: IAM 系统中的 SAML 和 LDAP 有什么关系？**
+
+LDAP 是身份数据的存储和查询协议，SAML 是身份认证的联邦协议。典型 IAM 架构中，用户身份存在 AD/LDAP 中，Keycloak 通过 LDAP Federation 读取用户，然后通过 SAML（或 OIDC）向应用提供 SSO。一个是身份源的「进」，一个是应用认证的「出」。
+
+## 7.11 小结
+
+SAML 2.0 虽然承载着 XML 的"沉重遗产"，但在企业级 IAM 身份联邦中依然不可替代。理解 SAML 的关键是掌握断言、协议、绑定和元数据这四个核心概念，以及它们在实际 SSO 流程中如何协同工作。作为 IAM 实践者，不需要手写 SAML XML，但需要理解 SAML 的工作原理以诊断集成问题、评估安全风险和进行正确的系统设计。

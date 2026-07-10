@@ -29,3 +29,4 @@ menu:
 | [Dex + Keycloak 联合身份：Kubernetes 集群 OIDC 认证]({{< relref "dex-keycloak-federation" >}}) | Keycloak 上游 OIDC 源、Dex OIDC connector、Kubernetes API Server 集成、groups claim 传递、kubelogin、RBAC 绑定 |
 | [Keycloak 集成企业微信 / 飞书 / 钉钉 OIDC 统一登录]({{< relref "keycloak-wecom-feishu-dingtalk" >}}) | 企业微信 OAuth、飞书 OIDC、钉钉 OIDC、Identity Provider Broker、回调地址配置、属性映射与 JIT Provisioning |
 | [Keycloak 生产数据库配置 — PostgreSQL 实战]({{< relref "keycloak-postgresql-config" >}}) | H2 迁移 PostgreSQL、Kubernetes Secret 凭据管理、连接池调优、Liquibase 自动建表、常见数据库错误排错 |
+| [Keycloak 直连 K8s OIDC — API Server 认证与 RBAC]({{< relref "keycloak-kubernetes-rbac" >}}) | kube-apiserver OIDC 参数、groups claim 映射、kubelogin 接入、RBAC 绑定、与 Dex 方案对比 |

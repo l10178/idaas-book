@@ -300,4 +300,5 @@ curl -s https://keycloak.example.com/realms/enterprise/.well-known/openid-config
 - [第14章：Keycloak 架构与集群部署]({{< relref "../implementation/keycloak-architecture" >}})
 - [Keycloak + oauth2-proxy 集成实战指南]({{< relref "keycloak-oauth2-proxy" >}})
 - [Dex 官方文档：OIDC Connector](https://dexidp.io/docs/connectors/oidc/)
+- [Keycloak 直连 K8s OIDC — 无需 Dex 的方案]({{< relref "keycloak-kubernetes-rbac" >}})：如果只有单集群且不需要多源认证，Keycloak 直连更简单
 - [kubelogin 项目](https://github.com/int128/kubelogin)
