@@ -1,6 +1,6 @@
 ---
 title: "IDaaS Book：企业身份与访问管理实战全书"
-description: "面向架构师、安全团队与平台工程师的中文 IDaaS / IAM 系统手册。覆盖 OAuth 2.0、OIDC、SAML、Keycloak 生产部署、零信任与身份治理。"
+description: "面向架构师与平台工程师的中文 IDaaS / IAM 系统手册，覆盖 OAuth 2.0、OIDC、SAML、Keycloak 部署与零信任治理"
 lead: "从一次登录到零信任架构——系统掌握企业身份基础设施的设计、协议、工程落地与安全治理。全书 5 部分 24 章，约 13 万字，持续更新。"
 date: 2023-09-07T16:33:54+02:00
 lastmod: 2026-07-06T00:00:00+08:00

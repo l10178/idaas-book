@@ -1,6 +1,6 @@
 ---
 title: "MFA / OTP / WebAuthn 多因子认证"
-description: "Keycloak 多因子认证（MFA）配置：TOTP 动态口令、WebAuthn/Passkey 无密码认证、安全密钥（YubiKey）、FreeOTP/Google Authenticator 扫码注册、登录验证与设备管理"
+description: "Keycloak 多因子认证配置：TOTP 动态口令、WebAuthn/Passkey 无密码认证、YubiKey 安全密钥及 Google Authenticator 扫码注册"
 date: 2020-12-14T23:54:37+08:00
 draft: false
 weight: 3

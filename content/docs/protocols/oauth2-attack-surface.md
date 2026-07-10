@@ -1,6 +1,6 @@
 ---
 title: "OAuth 2.0 攻击面与防护深度图解"
-description: "OAuth 2.0 五大攻击面完整分析：Redirect URI 劫持、CSRF/State 伪造、授权码拦截、Mix-Up Attack、Token 泄露与重放，每个攻击面附带 Mermaid 流程图和可落地的防护措施。"
+description: "OAuth 2.0 五大攻击面完整分析：Redirect URI 劫持、CSRF/State 伪造、授权码拦截、Mix-Up 攻击与 Token 泄露，附防护措施"
 date: 2026-07-08T00:00:00+08:00
 draft: false
 weight: 23

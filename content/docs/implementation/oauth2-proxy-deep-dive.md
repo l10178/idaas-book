@@ -1,6 +1,6 @@
 ---
 title: "oauth2-proxy 深度介绍 — 轻量 OAuth2/OIDC 反向代理 | IDaaS Book"
-description: "oauth2-proxy 架构原理、部署模式、Cookie/Session 配置、与 Keycloak/Dex/GitHub 等 Provider 对接、安全加固，以及与 Pomerium/Traefik ForwardAuth/Nginx auth_request 的选型对比"
+description: "oauth2-proxy 架构原理与部署指南：Cookie/Session 配置、与 Keycloak/Dex 等 Provider 对接、安全加固及与 Pomerium/Traefik 的选型对比"
 date: 2026-07-08T00:00:00+08:00
 draft: false
 weight: 50

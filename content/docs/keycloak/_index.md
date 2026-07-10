@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 实战指南"
-description: "Keycloak 实战章节：主题定制、Admin REST API 调用、安全防护、高级特性（SPI/认证流/事件总线）以及与 Grafana、GitLab、Jenkins、NGINX、Vault、Harbor、MinIO 等第三方开源软件的集成"
+description: "Keycloak 实战指南：主题定制、Admin API 调用、安全防护、高级特性及与 Grafana、GitLab、Jenkins 等第三方开源软件集成"
 summary: "独立成章的 Keycloak 实战指南，覆盖主题定制、Admin API、安全防护、高级特性与第三方开源集成"
 date: 2020-09-26T18:54:37+08:00
 lastmod: 2024-04-01T00:00:00+08:00

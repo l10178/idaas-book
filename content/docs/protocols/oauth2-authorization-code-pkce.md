@@ -1,6 +1,6 @@
 ---
 title: "OAuth 2.0 授权码流程与 PKCE 完整图解"
-description: "OAuth 2.0 授权码流程（Authorization Code Flow）的每一步详解，PKCE（RFC 7636）的安全增强机制，以及 OAuth 2.1 带来的变化。附带完整 Mermaid 时序图和常见攻击面分析。"
+description: "OAuth 2.0 授权码流程每一步详解、PKCE（RFC 7636）安全增强机制及 OAuth 2.1 带来的变化，附完整时序图和攻击面分析"
 date: 2026-07-07T00:00:00+08:00
 draft: false
 weight: 22

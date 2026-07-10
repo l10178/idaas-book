@@ -1,6 +1,6 @@
 ---
 title: "第7章：SAML 2.0 — 断言、绑定、元数据、SP-Initiated SSO 流程图解 | IDaaS Book"
-description: "SAML 2.0 深度解读：SP-Initiated 与 IdP-Initiated SSO 完整 Mermaid 时序图、断言结构、元数据交换、与 OIDC 选型对比、安全最佳实践。覆盖 AD FS、Shibboleth、企业 SSO 场景。"
+description: "SAML 2.0 深度解读：SP-Initiated 与 IdP-Initiated SSO 时序图、断言结构、元数据交换、与 OIDC 选型对比及安全最佳实践"
 date: 2024-02-03T00:00:00+08:00
 draft: false
 weight: 26

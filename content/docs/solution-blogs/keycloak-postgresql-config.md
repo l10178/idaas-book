@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 生产数据库配置指南 — PostgreSQL 部署与 IAM 高可用实践 | IDaaS Book"
-description: "Keycloak 生产环境 PostgreSQL 数据库配置完整指南：从 H2 迁移到 PostgreSQL 的步骤、Kubernetes 与 Docker 部署示例、连接池调优、Liquibase 自动升级原理，附常见数据库错误排查 FAQ"
+description: "Keycloak 生产环境 PostgreSQL 配置完整指南：从 H2 迁移步骤、Kubernetes/Docker 部署示例、连接池调优与 Liquibase 自动升级"
 date: 2026-07-10T00:00:00+08:00
 draft: false
 weight: 59

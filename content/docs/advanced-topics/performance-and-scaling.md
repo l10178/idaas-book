@@ -1,6 +1,6 @@
 ---
 title: "第22章：IDaaS 性能与扩展性 — 缓存策略、集群扩展与容量规划 | IDaaS Book"
-description: "IDaaS 系统性能优化与水平扩展：数据库优化、缓存策略、负载测试方案"
+description: "IDaaS 系统性能优化与水平扩展指南：深入数据库优化、分布式缓存策略、集群部署与科学的负载测试方案"
 date: 2024-05-03T00:00:00+08:00
 draft: false
 weight: 53

@@ -1,6 +1,6 @@
 ---
 title: "第四部分：实现与实践"
-description: "IDaaS 开源平台深度解析与实践指南"
+description: "IDaaS 开源平台深度解析与实践指南：Keycloak、CAS、Dex 等方案对比、集成模式与生产部署"
 weight: 40
 menu:
   docs:

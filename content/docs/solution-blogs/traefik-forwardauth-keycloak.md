@@ -1,6 +1,6 @@
 ---
 title: "Traefik ForwardAuth + Keycloak + oauth2-proxy 完整配置与排错指南 | IDaaS Book"
-description: "使用 Traefik ForwardAuth 中间件集成 Keycloak OIDC 和 oauth2-proxy 保护 Web 应用的完整配置指南，覆盖 Middleware CRD、IngressRoute TLS 终结、多中间件链式调用、401 重定向排错与生产回滚"
+description: "使用 Traefik ForwardAuth 中间件集成 Keycloak OIDC 和 oauth2-proxy 保护 Web 应用的完整配置指南，覆盖 Middleware CRD 与 401 排错"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false

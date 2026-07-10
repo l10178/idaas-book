@@ -1,6 +1,6 @@
 ---
 title: "Keycloak + oauth2-proxy 保护内部应用：Ingress 与 ForwardAuth 配置清单"
-description: "用 Keycloak、oauth2-proxy、NGINX Ingress 或 Traefik ForwardAuth 给内部 Web 应用加 OIDC 登录：最小配置、audience/groups/header/cookie 排错与回滚方式。"
+description: "使用 Keycloak 与 oauth2-proxy 通过 NGINX Ingress 及 Traefik ForwardAuth 为内部应用添加 OIDC 认证的完整配置与排错指南"
 summary: "一份面向内部应用的 Keycloak + oauth2-proxy 网关层 SSO 配置清单，覆盖 NGINX Ingress、Traefik ForwardAuth、常见报错和回滚。"
 date: 2026-07-04T00:00:00+08:00
 lastmod: 2026-07-04T00:00:00+08:00

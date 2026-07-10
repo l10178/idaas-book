@@ -1,6 +1,6 @@
 ---
 title: "Casdoor 深度解读 — AI-First 开源 IAM 的架构、部署与选型指南 | IDaaS Book"
-description: "Casdoor 开源 IAM 平台详解：Go + React 架构、Casbin 授权引擎集成、OAuth/OIDC/SAML/CAS/LDAP 多协议支持、MCP Gateway、Docker/Helm 部署、与 Keycloak 的对比选型"
+description: "Casdoor 开源 IAM 平台详解：Go + React 架构、Casbin 授权引擎集成、OAuth/OIDC/SAML 多协议支持、Docker/Helm 部署及与 Keycloak 对比选型"
 date: 2026-07-08T00:00:00+08:00
 lastmod: 2026-07-08T00:00:00+08:00
 draft: false

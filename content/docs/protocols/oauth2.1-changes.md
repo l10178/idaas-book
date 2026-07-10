@@ -1,6 +1,6 @@
 ---
 title: "OAuth 2.1 相比 OAuth 2.0 的变化 — 废弃、新增与迁移指南"
-description: "OAuth 2.1 整合了近十年安全最佳实践：PKCE 强制、Implicit 与 ROPC 废弃、Refresh Token 发件人约束、DPoP、iss 参数。附带 OAuth 2.0 → 2.1 迁移对照表和决策树。"
+description: "OAuth 2.1 安全最佳实践整合：PKCE 强制、Implicit 与 ROPC 废弃、Refresh Token 发件人约束、DPoP 及 OAuth 2.0 到 2.1 迁移指南"
 date: 2026-07-08T00:00:00+08:00
 draft: false
 weight: 24

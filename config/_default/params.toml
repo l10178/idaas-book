@@ -139,6 +139,10 @@ footer = "Give Me a <a class=\"text-muted\" href=\"https://github.com/l10178/ida
     svgIcon = "favicon.png" # favicon.svg (default)
     maskIcon = "mask-icon.svg" # mask-icon.svg (default)
     maskIconColor = "white" # white (default)
+  [seo.description]
+    [seo.description.length]
+      min = 100
+      max = 480
   [seo.schemas]
     type = "Organization" # Organization (default) or Person
     logo = "favicon-512x512.png" # Logo of Organization — favicon-512x512.png (default)

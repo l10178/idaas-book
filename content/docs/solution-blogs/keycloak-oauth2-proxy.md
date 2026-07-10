@@ -1,6 +1,6 @@
 ---
 title: "Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book"
-description: "Keycloak 搭配 oauth2-proxy 保护 Web 应用的完整配置指南，覆盖 audience 映射、Cookie 域配置、Nginx Ingress auth-url、常见错误排错与生产环境回滚方案"
+description: "Keycloak 搭配 oauth2-proxy 保护 Web 应用的完整配置指南，覆盖 audience 映射、Cookie 域配置、Nginx Ingress auth-url 与排错"
 date: 2026-07-08T00:00:00+08:00
 lastmod: 2026-07-08T00:00:00+08:00
 draft: false

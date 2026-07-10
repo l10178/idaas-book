@@ -1,6 +1,6 @@
 ---
 title: "第10章：单点登录（SSO）— 架构模式、会话管理与跨域方案 | IDaaS Book"
-description: "单点登录（SSO）完整指南：SSO 架构模式选型、会话管理策略、跨域方案对比、企业 SSO 落地实践和安全考量。涵盖 SAML SSO 与 OIDC SSO 两种主流实现路径。"
+description: "单点登录完整指南：SSO 架构模式选型、会话管理策略、跨域方案对比及企业落地实践，涵盖 SAML SSO 与 OIDC SSO 两种主流实现"
 date: 2024-03-01T00:00:00+08:00
 draft: false
 weight: 31

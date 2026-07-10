@@ -1,6 +1,6 @@
 ---
 title: "第三部分：核心能力"
-description: "IDaaS 平台核心功能深度解析"
+description: "IDaaS 平台核心功能深度解析：单点登录、多因素认证、身份联邦、用户供应与审计合规等关键组件"
 weight: 30
 menu:
   docs:

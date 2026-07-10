@@ -1,6 +1,6 @@
 ---
 title: "第一部分：IDaaS 基础"
-description: "IDaaS 基础概念与核心原理"
+description: "IDaaS 基础概念与核心原理：从身份的定义与演进、IAM 核心理念到认证与授权的本质区别"
 weight: 10
 menu:
   docs:

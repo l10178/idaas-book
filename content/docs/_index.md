@@ -1,6 +1,6 @@
 ---
 title: "Docs"
-description: "IDaaS 身份即服务 —— 全书文档目录"
+description: "IDaaS 身份即服务全书文档体系，覆盖基础理论、协议标准、核心能力与开源实践，提供系统化身份管理指南"
 summary: ""
 date: 2024-04-01T00:00:00+08:00
 lastmod: 2024-04-01T00:00:00+08:00

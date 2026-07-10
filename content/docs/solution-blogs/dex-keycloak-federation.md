@@ -1,6 +1,6 @@
 ---
 title: "Dex + Keycloak 联合身份：Kubernetes 集群 OIDC 认证集成 | IDaaS Book"
-description: "将 Keycloak 作为上游身份源，Dex 作为 OIDC 代理为 Kubernetes 提供认证的完整配置指南，覆盖客户端创建、声明映射、groups claim 传递、kubelogin 接入、常见错误排错与回滚方案"
+description: "Keycloak 作为上游身份源，Dex 作为 OIDC 代理为 Kubernetes 提供认证的完整配置指南，覆盖声明映射、kubelogin 接入与排错"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false

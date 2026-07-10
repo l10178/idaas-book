@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 安全增强功能"
-description: "Keycloak 安全防护实战：密码策略、暴力破解检测与账号锁定、MFA/OTP 多因子认证、安全加固清单（HTTPS/CSP/Token/会话/CORS/审计）"
+description: "Keycloak 安全防护实战：密码策略、暴力破解检测与账号锁定、MFA 多因子认证及安全加固清单"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 13

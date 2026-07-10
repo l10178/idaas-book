@@ -1,6 +1,6 @@
 ---
 title: "IAM 认证协议选型指南 — OAuth 2.0 vs OIDC vs SAML vs LDAP vs SCIM 决策框架 | IDaaS Book"
-description: "企业 IAM 认证协议选型完整指南：OAuth 2.0、OIDC、SAML 2.0、LDAP、SCIM 五大协议的核心定位 Mermaid 决策树、功能对比表、10 种典型场景选型推荐、选型避坑指南与 FAQ。覆盖 SSO、身份联邦、用户同步、API 授权场景。"
+description: "企业 IAM 认证协议选型指南：OAuth 2.0、OIDC、SAML、LDAP、SCIM 五大协议功能对比、典型场景选型推荐与避坑指南"
 date: 2026-07-10T00:00:00+08:00
 draft: false
 weight: 57

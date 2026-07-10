@@ -1,6 +1,6 @@
 ---
 title: "IAM RBAC、ABAC、ReBAC 授权模型对比与选型指南 | IDaaS Book"
-description: "企业 IAM 权限模型深度对比：RBAC（基于角色）、ABAC（基于属性）、ReBAC（基于关系）的核心原理、实现方式、对比表格和选型决策树。Keycloak RBAC 实现、OPA Rego 策略示例、Google Zanzibar 关系模型解读，附 IAM 权限设计 FAQ。"
+description: "企业 IAM 权限模型深度对比：RBAC、ABAC、ReBAC 的核心原理、实现方式、选型决策树及 Keycloak 与 OPA 实战示例"
 date: 2024-05-01T00:00:00+08:00
 draft: false
 weight: 51

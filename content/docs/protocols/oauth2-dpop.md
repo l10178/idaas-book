@@ -1,6 +1,6 @@
 ---
 title: "OAuth 2.0 DPoP 深度解析 — Sender-Constrained Token 的原理与实战 | IDaaS Book"
-description: "RFC 9449 DPoP（Demonstration of Proof-of-Possession）完整解读：Bearer Token 重放风险、DPoP Proof JWT 结构与生成流程 Mermaid 图解、Keycloak 26 DPoP 配置、DPoP vs mTLS 对比表、常见踩坑与 FAQ。"
+description: "RFC 9449 DPoP 完整解读：Bearer Token 重放风险、DPoP Proof JWT 结构与生成流程、Keycloak 26 配置、DPoP vs mTLS 对比及常见踩坑"
 date: 2026-07-10T00:00:00+08:00
 draft: false
 weight: 29

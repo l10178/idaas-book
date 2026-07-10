@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 集成企业微信 / 飞书 / 钉钉 — IAM 统一身份认证方案 | IDaaS Book"
-description: "通过 Keycloak OIDC Identity Provider 对接企业微信、飞书、钉钉实现 IAM 统一登录，覆盖 OAuth App 创建、回调地址配置、用户属性映射、Just-In-Time 用户创建、常见错误排错与生产环境最佳实践"
+description: "通过 Keycloak OIDC Identity Provider 对接企业微信、飞书、钉钉实现统一登录，覆盖回调配置、用户属性映射与 Just-In-Time 用户创建"
 date: 2026-07-10T00:00:00+08:00
 lastmod: 2026-07-10T00:00:00+08:00
 draft: false

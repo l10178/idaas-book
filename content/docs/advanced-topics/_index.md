@@ -1,6 +1,6 @@
 ---
 title: "第五部分：高级主题"
-description: "IDaaS 高级主题：授权模型、安全最佳实践、性能优化、未来趋势"
+description: "IDaaS 高级主题：涵盖授权模型对比、IAM 架构设计、安全最佳实践、性能扩展与去中心化身份等前沿话题"
 weight: 50
 menu:
   docs:

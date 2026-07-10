@@ -1,6 +1,6 @@
 ---
 title: "Ory 开源身份栈深度解析 — Hydra、Kratos、Keto 云原生 IAM 架构 | IDaaS Book"
-description: "Ory 开源身份栈完整解读：Hydra（OAuth2.1/OIDC 认证服务器）、Kratos（身份管理）、Keto（Zanzibar 权限引擎）、Oathkeeper（零信任网关）的架构设计、与 Keycloak 对比选型，以及 Docker Compose 快速部署指南"
+description: "Ory 开源身份栈解读：Hydra（OAuth2.1/OIDC）、Kratos（身份管理）、Keto（权限引擎）、Oathkeeper（零信任网关）及与 Keycloak 对比选型"
 date: 2026-07-09T00:00:00+08:00
 draft: false
 weight: 52

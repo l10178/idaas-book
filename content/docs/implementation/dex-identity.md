@@ -1,6 +1,6 @@
 ---
 title: "第16章：Dex 身份代理 — Kubernetes 原生 OIDC 联邦方案 | IDaaS Book"
-description: "Dex 身份代理的架构、配置、与 Kubernetes 的集成及最佳实践。Dex 与 Keycloak 的核心区别：定位为 OIDC 身份代理而非完整 IAM 系统。"
+description: "Dex 身份代理架构与配置解析：作为 OIDC 身份代理而非完整 IAM 系统，与 Keycloak 的定位区别及 Kubernetes 集成最佳实践"
 date: 2024-04-03T00:00:00+08:00
 draft: false
 weight: 43

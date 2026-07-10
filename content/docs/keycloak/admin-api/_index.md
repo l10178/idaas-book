@@ -1,6 +1,6 @@
 ---
 title: "Keycloak Admin REST API 调用"
-description: "Keycloak Admin REST API 实战：认证鉴权、Realm/Client/User/Role/Group 增删改查、curl 与各语言 SDK 示例、分页与批量操作、权限模型与最佳实践"
+description: "Keycloak Admin REST API 实战：认证鉴权、Realm/Client/User/Role/Group 增删改查、curl 与 SDK 示例、分页与最佳实践"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 12

@@ -1,6 +1,6 @@
 ---
 title: "第3章：IAM 认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book"
-description: "IAM 体系中的认证（Authentication）与授权（Authorization）完整对比：IAM 认证方式分类、授权模型（RBAC/ABAC/ReBAC）、两者关系 Mermaid 图解、IAM 常见反模式与实践要点。"
+description: "IAM 认证与授权完整对比：认证方式分类、授权模型（RBAC/ABAC/ReBAC）、两者核心区别、常见反模式与实践要点"
 date: 2024-01-03T00:00:00+08:00
 draft: false
 weight: 13

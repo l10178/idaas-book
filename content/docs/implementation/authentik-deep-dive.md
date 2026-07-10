@@ -1,6 +1,6 @@
 ---
 title: "Authentik — Python 生态的开源 IAM 平台详解 | IDaaS Book"
-description: "Authentik 开源 IAM 平台深度解析：Django 技术栈架构、可视化流程构建器、Outpost 代理机制、与 Keycloak 对比选型，以及 Docker 快速部署指南"
+description: "Authentik 开源 IAM 平台深度解析：Django 技术栈架构、可视化流程构建器、Outpost 代理机制及与 Keycloak 的对比选型"
 date: 2026-07-08T00:00:00+08:00
 draft: false
 weight: 48

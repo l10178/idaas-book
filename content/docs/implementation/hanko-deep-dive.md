@@ -1,6 +1,6 @@
 ---
 title: "Hanko — Passkey-first 开源 IAM 认证方案详解 | IDaaS Book"
-description: "Hanko 开源 IAM 认证平台深度解析：Passkey/WebAuthn 优先的 Go 后端架构、Hanko Elements 前端组件、与 Keycloak/Auth0 的 IAM 选型对比，以及 Docker 自建部署指南"
+description: "Hanko 开源 IAM 认证平台深度解析：Passkey/WebAuthn 优先的 Go 后端架构、前端组件及与 Keycloak/Auth0 的选型对比"
 date: 2026-07-10T00:00:00+08:00
 draft: false
 weight: 53

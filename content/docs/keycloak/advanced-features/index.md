@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 高级特性 — 自定义 SPI、事件监听与扩展开发 | IDaaS Book"
-description: "Keycloak 高级特性：SPI 扩展机制、认证流（Authentication Flow）编排、事件总线与审计、身份联邦与 Brokering、多租户、密钥轮换、Quarkus 迁移"
+description: "Keycloak 高级特性：SPI 扩展机制、认证流编排、事件总线与审计、身份联邦、多租户、密钥轮换与 Quarkus 迁移实战"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 14

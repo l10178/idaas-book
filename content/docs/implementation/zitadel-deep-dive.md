@@ -1,6 +1,6 @@
 ---
 title: "Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台 | IDaaS Book"
-description: "Zitadel 开源 IAM 平台详解：Go 语言事件驱动架构、CQRS 模式、原生多租户设计、FIDO2/Passkeys 支持、Docker/Kubernetes 部署指南，与 Keycloak 的架构对比选型"
+description: "Zitadel 开源 IAM 平台详解：Go 语言事件驱动架构、CQRS 模式、原生多租户设计、FIDO2/Passkeys 支持及与 Keycloak 的架构对比选型"
 date: 2026-07-08T00:00:00+08:00
 draft: false
 weight: 49

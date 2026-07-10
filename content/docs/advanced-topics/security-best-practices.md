@@ -1,6 +1,6 @@
 ---
 title: "第21章：IAM / IDaaS 安全最佳实践 — 密钥管理、令牌保护与攻击面防御 | IDaaS Book"
-description: "IAM 与 IDaaS 安全最佳实践全景：从身份安全到应用安全的系统性防护指南"
+description: "IAM 与 IDaaS 安全最佳实践全景：涵盖密钥管理、令牌保护、会话安全、攻击面防御与安全监控的系统性防护指南"
 date: 2024-05-02T00:00:00+08:00
 draft: false
 weight: 52

@@ -1,6 +1,6 @@
 ---
 title: "第15章：Apereo CAS — 开源企业级 SSO 与 CAS 协议详解 | IDaaS Book"
-description: "Apereo CAS 架构解析、部署实战、协议支持与适用场景"
+description: "Apereo CAS 开源企业级单点登录架构深度解析：核心组件设计原理、生产环境部署实战、多协议支持与适用场景评估"
 date: 2024-04-02T00:00:00+08:00
 draft: false
 weight: 42

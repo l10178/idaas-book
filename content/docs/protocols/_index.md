@@ -1,6 +1,6 @@
 ---
 title: "第二部分：协议与标准"
-description: "IDaaS 核心协议深度解读"
+description: "IDaaS 核心协议深度解读：OAuth 2.0、OpenID Connect、SAML 2.0、LDAP、SCIM 与 DPoP 的设计原理与安全考量"
 weight: 20
 menu:
   docs:

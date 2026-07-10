@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 入门指南 — 安装、配置与首个 OIDC 应用接入 | IDaaS Book"
-description: "Keycloak 开源 IAM/IDaaS 简介：SSO、社交登录、用户联合、标准协议适配、授权服务、密码策略与 MFA 等核心功能总览与选型参考"
+description: "Keycloak 入门指南：SSO、社交登录、用户联合、标准协议适配、授权服务、密码策略与 MFA 等核心功能总览与选型参考"
 date: 2024-04-01T00:00:00+08:00
 lastmod: 2026-07-06T00:00:00+08:00
 draft: false

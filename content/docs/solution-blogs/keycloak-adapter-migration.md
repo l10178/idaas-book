@@ -1,6 +1,6 @@
 ---
 title: "Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book"
-description: "Keycloak 官方已弃用各语言 Adapter。本文提供 Java/Spring Boot、Node.js、Python、.NET 的完整迁移路径，包括 Spring Security OAuth2、openid-client、authlib 的标准 OIDC 对接方式、常见踩坑与验证方法。"
+description: "Keycloak Adapter 弃用后迁移到标准 OIDC 库的完整指南：Java/Spring Boot、Node.js、Python、.NET 的迁移路径与常见踩坑"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false

@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 密码策略 — 复杂度、过期与历史记录配置指南 | IDaaS Book"
-description: "Keycloak 密码策略（Password Policy）配置：最小长度、大小写、特殊字符、不与用户名/历史密码相同、定期过期等，提升口令安全"
+description: "Keycloak 密码策略配置指南：最小长度、复杂度要求、历史记录限制与定期过期等口令安全规则"
 date: 2020-12-14T23:54:37+08:00
 draft: false
 weight: 1

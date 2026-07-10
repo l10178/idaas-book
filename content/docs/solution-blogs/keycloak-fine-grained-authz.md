@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 细粒度权限与授权策略实战 — Groups vs Roles、Authorization Services | IDaaS Book"
-description: "Keycloak 细粒度授权实战：Groups 与 Roles 的区别和选择、Composite Roles 组合角色、Authorization Services 策略与权限配置、Policy Evaluation 调试方法，附常见错误与最小可运行配置"
+description: "Keycloak 细粒度授权实战：Groups 与 Roles 的选择、Composite Roles 组合角色、Authorization Services 策略配置与 Policy Evaluation 调试"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false

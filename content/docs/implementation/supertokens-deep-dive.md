@@ -1,6 +1,6 @@
 ---
 title: "SuperTokens — 开发者友好的开源用户认证与会话管理 | IDaaS Book"
-description: "SuperTokens 开源认证方案深度解析：Java 核心架构、前端 SDK 驱动的开发者体验、多租户与 MFA、Docker 快速部署，以及与 Keycloak 的定位对比选型"
+description: "SuperTokens 开源认证方案深度解析：Java 核心架构、前端 SDK 驱动的开发者体验、多租户与 MFA 及与 Keycloak 的定位对比选型"
 date: 2026-07-10T00:00:00+08:00
 draft: false
 weight: 49

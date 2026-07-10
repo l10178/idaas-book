@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 重定向循环与 401 排错指南 | IDaaS Book"
-description: "Keycloak 登录后无限重定向、401 Unauthorized、Too Many Redirects 的完整诊断流程：Cookie、反向代理 Header、OIDC 回调、TLS 终结、SameSite 配置逐一排查"
+description: "Keycloak 登录后无限重定向与 401 的完整诊断流程：Cookie、反向代理 Header、OIDC 回调、TLS 终结与 SameSite 配置排查"
 date: 2026-07-08T00:00:00+08:00
 lastmod: 2026-07-08T00:00:00+08:00
 draft: false

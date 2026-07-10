@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 实战配置与排错指南 — 解决方案 | IDaaS Book"
-description: "Keycloak + oauth2-proxy 集成配置、Nginx Ingress auth-url 认证、Traefik ForwardAuth、重定向循环排错、CSRF Cookie 问题等身份网关实战方案，附带可直接复制的配置片段和验证命令。"
+description: "Keycloak + oauth2-proxy 集成配置、Nginx Ingress auth-url 认证、Traefik ForwardAuth、重定向循环排错等身份网关实战方案"
 weight: 55
 menu:
   docs:

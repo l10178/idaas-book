@@ -1,6 +1,6 @@
 ---
 title: "第14章：Keycloak 架构深度解析 — 核心组件、部署架构与扩展机制 | IDaaS Book"
-description: "Keycloak 的架构设计、核心组件、集群部署、高可用与性能调优"
+description: "Keycloak 架构深度解析：核心组件设计原理、数据库架构、集群部署架构、高可用机制与性能调优策略"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 41
