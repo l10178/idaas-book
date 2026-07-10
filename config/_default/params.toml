@@ -76,7 +76,7 @@ footer = "Give Me a <a class=\"text-muted\" href=\"https://github.com/l10178/ida
   backgroundDots = true # true (default) or false
 
   # Homepage
-  sectionFooter = true # false (default) or true
+  sectionFooter = false # false (default) or true
 
   # Blog
   relatedPosts = false # false (default) or true
