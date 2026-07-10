@@ -18,4 +18,5 @@ resources
 
 .idea
 .impl
+.worktrees
 *.log
