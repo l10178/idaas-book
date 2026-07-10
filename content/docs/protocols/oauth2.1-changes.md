@@ -155,6 +155,8 @@ grant_type=authorization_code&code=xxx&...
 
 授权服务器将 DPoP 公钥绑定到颁发的 Access Token 和 Refresh Token 中。后续使用这些 Token 的请求也必须附带 DPoP Proof，服务器验证 Proof 中的公钥与绑定的公钥一致。
 
+完整的 DPoP 流程（含 Mermaid 时序图）、DPoP Proof JWT 结构详解、Keycloak 26 DPoP 配置和排错指南见独立章节：[OAuth 2.0 DPoP 深度解析]({{< relref "oauth2-dpop.md" >}})。
+
 ## OAuth 2.0 → 2.1 迁移对照表
 
 | 项目 | OAuth 2.0 (RFC 6749) | OAuth 2.1 | 迁移动作 |

@@ -274,7 +274,7 @@ OAuth 2.0 的一个重要特性是用户可以对授权的 Scope 进行确认。
 2. **严格验证 redirect_uri**：精确匹配，不使用通配符。
 3. **使用 PKCE**：所有模式都建议使用。
 4. **Refresh Token Rotation**：每次使用 Refresh Token 后发放新 Token。
-5. **Sender-Constrained Token**：使用 DPoP（RFC 9449）或 mTLS 将 Token 绑定到特定客户端。
+5. **Sender-Constrained Token**：使用 [DPoP（RFC 9449）]({{< relref "oauth2-dpop.md" >}}) 或 mTLS 将 Token 绑定到特定客户端。
 6. **短生命周期**：Access Token 5-15分钟，通过 Refresh Token 续期。
 7. **Token 黑名单**：维护被吊销 Token 的标识列表。
 

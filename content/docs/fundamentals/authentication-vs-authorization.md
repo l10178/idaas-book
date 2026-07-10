@@ -1,6 +1,6 @@
 ---
-title: "第3章：认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book"
-description: "深入理解认证（Authentication）与授权（Authorization）的区别与联系"
+title: "第3章：IAM 认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book"
+description: "IAM 体系中的认证（Authentication）与授权（Authorization）完整对比：IAM 认证方式分类、授权模型（RBAC/ABAC/ReBAC）、两者关系 Mermaid 图解、IAM 常见反模式与实践要点。"
 date: 2024-01-03T00:00:00+08:00
 draft: false
 weight: 13
@@ -15,7 +15,7 @@ toc: true
 
 > "我已经登录了，为什么还不能访问这个页面？"
 
-这是 IAM 工程师最常听到的问题之一。用户将"能够登录"等同于"能访问所有功能"，这恰恰混淆了认证和授权的本质区别。
+这是 IAM 工程师最常听到的问题之一。在企业 IAM（身份与访问管理）体系中，用户将"能够登录"等同于"能访问所有功能"，这恰恰混淆了认证和授权的本质区别。理解这一区别是 IAM 系统设计的第一课——如果你不知道 AuthN 和 AuthZ 的分界线在哪里，你的 IAM 架构从一开始就埋下了安全债务。关于 IAM 整体框架，推荐先阅读 [IAM 基础概念]({{< relref "docs/fundamentals/iam-fundamentals.md" >}})。
 
 让我们用机场的比喻来理解：
 
@@ -205,11 +205,14 @@ Rule: 允许访问 IF
 3. **将用户 ID 作为授权判断的唯一依据**：攻击者可以伪造用户 ID。
 4. **前端隐藏按钮代替后端权限检查**：用户可以绕过前端直接调用 API。
 
-## 3.5 实践要点
+## 3.5 IAM 实践要点
 
-1. AuthN 和 AuthZ 应当解耦。认证服务负责"他是谁"，授权服务负责"他能做什么"。
+在企业 IAM 系统中，认证和授权的工程落地远比概念区分复杂：
+
+1. AuthN 和 AuthZ 应当解耦。IAM 认证服务负责"他是谁"，IAM 授权服务负责"他能做什么"。这是 IAM 架构设计的基本法则——解耦后你可以独立升级认证方式（如增加 Passkey）而不影响授权策略。
 2. Token 应当短有效期，使用 Refresh Token 续期。
-3. 权限变更后，应能在合理时间内生效（建议 < 5 分钟）。
-4. 所有授权决策都应记录日志。
+3. 权限变更后，应能在合理时间内生效（建议 < 5 分钟）。在 IAM 会话管理层面，这意味着 Token 吊销机制必须可靠——详见 [IAM 会话管理与 Token 生命周期]({{< relref "docs/advanced-topics/iam-session-management.md" >}})。
+4. 所有授权决策都应记录日志——这是 IAM 审计合规的基础。
 5. 默认拒绝（Deny by Default）——什么都不声明，默认就是不能访问。
 6. 在 API 网关、应用中间件、业务逻辑三层都进行授权检查。
+7. 授权模型选型直接影响 IAM 系统的可维护性——RBAC 简单但易角色爆炸，ABAC 灵活但策略复杂，ReBAC 适合关系密集型场景。完整的授权模型对比见 [IAM RBAC、ABAC、ReBAC 授权模型对比与选型指南]({{< relref "docs/advanced-topics/authorization-models.md" >}})。
