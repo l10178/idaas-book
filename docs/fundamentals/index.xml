@@ -137,11 +137,13 @@
 &lt;p&gt;&lt;strong&gt;LDAP 目录&lt;/strong&gt;：树状结构，读取性能优异，写入性能一般。适合员工身份存储。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;关系数据库&lt;/strong&gt;：扁平表结构，灵活查询。适合需要复杂关联查询的场景。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;云目录&lt;/strong&gt;：如 Microsoft Entra ID（原 Azure AD）、Google Cloud Identity。原生支持云应用，弹性伸缩。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;图数据库&lt;/strong&gt;：如 Neo4j。适合复杂的身份关系建模，如组织架构、权限继承链。&lt;/p&gt;</description></item><item><title>第3章：认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;图数据库&lt;/strong&gt;：如 Neo4j。适合复杂的身份关系建模，如组织架构、权限继承链。&lt;/p&gt;</description></item><item><title>第3章：IAM 认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&amp;ldquo;我已经登录了，为什么还不能访问这个页面？&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;这是 IAM 工程师最常听到的问题之一。用户将&amp;quot;能够登录&amp;quot;等同于&amp;quot;能访问所有功能&amp;quot;，这恰恰混淆了认证和授权的本质区别。&lt;/p&gt;
+&lt;p&gt;这是 IAM 工程师最常听到的问题之一。在企业 IAM（身份与访问管理）体系中，用户将&amp;quot;能够登录&amp;quot;等同于&amp;quot;能访问所有功能&amp;quot;，这恰恰混淆了认证和授权的本质区别。理解这一区别是 IAM 系统设计的第一课——如果你不知道 AuthN 和 AuthZ 的分界线在哪里，你的 IAM 架构从一开始就埋下了安全债务。关于 IAM 整体框架，推荐先阅读 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/"&gt;IAM 基础概念&lt;/a&gt;。&lt;/p&gt;
 &lt;p&gt;让我们用机场的比喻来理解：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;认证&lt;/strong&gt;：出示身份证件，证明&amp;quot;我是张三&amp;quot;&lt;/li&gt;

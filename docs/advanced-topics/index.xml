@@ -73,7 +73,9 @@ Bob → [员工] → [提交报销, 查看自己的报表]&lt;/code&gt;&lt;/pre&
 &lt;li&gt;短有效期（5-15 分钟）&lt;/li&gt;
 &lt;li&gt;使用非对称签名（RS256/ES256），资源服务器用公钥验证&lt;/li&gt;
 &lt;li&gt;包含 audience（aud）限制可用范围&lt;/li&gt;
-&lt;li&gt;使用 DPoP 或 mTLS 绑定 Token 到客户端&lt;/li&gt;
+&lt;li&gt;使用 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/protocols/oauth2-dpop/"&gt;DPoP&lt;/a&gt; 或 mTLS 绑定 Token 到客户端&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id="refresh-token"&gt;Refresh Token&lt;/h3&gt;
 &lt;ul&gt;
