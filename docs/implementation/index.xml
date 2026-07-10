@@ -578,7 +578,51 @@
  style LO fill:#e67e22,color:#fff
 &lt;/pre&gt;
 
-&lt;p&gt;核心（Django + PostgreSQL + Redis）负责策略决策、用户管理和流程编排；Outpost 负责协议转换和流量代理。两者通过内部 API 通信，Outpost 可部署在完全不同的网络区域。&lt;/p&gt;</description></item><item><title>Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</guid><description>&lt;h2 id="zitadel-简介"&gt;Zitadel 简介&lt;/h2&gt;
+&lt;p&gt;核心（Django + PostgreSQL + Redis）负责策略决策、用户管理和流程编排；Outpost 负责协议转换和流量代理。两者通过内部 API 通信，Outpost 可部署在完全不同的网络区域。&lt;/p&gt;</description></item><item><title>SuperTokens — 开发者友好的开源用户认证与会话管理 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/supertokens-deep-dive/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/supertokens-deep-dive/</guid><description>&lt;p&gt;SuperTokens 是一个开源的、面向开发者的用户认证与会话管理方案，由 SuperTokens 团队于 2020 年创建，当前最新稳定版为 &lt;strong&gt;v11.4.5&lt;/strong&gt;（2026 年 6 月发布），GitHub 15k+ star。核心用 Java 编写，提供 Node.js、Go、Python、React、React Native、Vanilla JS 等前端/后端 SDK，定位是 &lt;strong&gt;Auth0 / Firebase Auth / AWS Cognito 的开源替代品&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;SuperTokens 的核心理念：&lt;strong&gt;把认证做得像你自己写的一样可控，但省掉从头搭建的时间和安全风险。&lt;/strong&gt; 和 Keycloak 这类完整 IAM 平台不同，SuperTokens 选择做减法——只关注用户认证和会话管理，不涉及用户联邦、复杂协议代理或企业级身份编排。&lt;/p&gt;
+&lt;h2 id="核心设计思路"&gt;核心设计思路&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;三层架构抽象&lt;/strong&gt;：Frontend SDK（管理 session token + 渲染登录 UI）→ Backend SDK（提供 sign-up/sign-in/session refresh API）→ Core HTTP 服务（核心认证逻辑 + 数据库操作）。每一层都可以独立替换。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;协议隐藏而非暴露&lt;/strong&gt;：开发者不需要理解 OAuth 2.0 的 grant type、PKCE 或 Token 结构。调用 &lt;code&gt;signUp()&lt;/code&gt;/&lt;code&gt;signIn()&lt;/code&gt; 即可，SuperTokens 在后端 SDK 中处理所有协议细节。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;最小供应商锁定&lt;/strong&gt;：用户数据存在你自己的数据库中，切换 SuperTokens 不需要强制用户重新登录、重置密码或重新注册。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;功能解耦&lt;/strong&gt;：你可以只使用 SuperTokens 的登录功能，或只使用会话管理，甚至可以将会话管理与 Auth0 等其他登录提供商组合使用。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="架构全景"&gt;架构全景&lt;/h2&gt;
+&lt;pre class="mermaid"&gt;
+ flowchart TB
+ subgraph &amp;#34;用户侧&amp;#34;
+ BROWSER[浏览器&amp;lt;br/&amp;gt;React / Vanilla JS]
+ MOBILE[移动端&amp;lt;br/&amp;gt;React Native / Flutter]
+ SPA[SPA 应用]
+ end
+
+ subgraph &amp;#34;SuperTokens 体系&amp;#34;
+ direction TB
+ FE_SDK[Frontend SDK&amp;lt;br/&amp;gt;管理 Token 与 UI]
+ BE_SDK[Backend SDK&amp;lt;br/&amp;gt;Node.js / Go / Python]
+ CORE[SuperTokens Core&amp;lt;br/&amp;gt;Java HTTP 服务]
+ DB[(PostgreSQL&amp;lt;br/&amp;gt;或 MySQL)]
+ end
+
+ subgraph &amp;#34;你的应用&amp;#34;
+ API[业务 API]
+ end
+
+ BROWSER --&amp;gt;|登录/注册| FE_SDK
+ MOBILE --&amp;gt;|登录/注册| FE_SDK
+ SPA --&amp;gt;|登录/注册| FE_SDK
+ FE_SDK --&amp;gt;|调用 signIn/signUp API| BE_SDK
+ BE_SDK --&amp;gt;|认证逻辑与 DB 操作| CORE
+ CORE --&amp;gt; DB
+ BE_SDK --&amp;gt;|session 验证中间件| API
+ API --&amp;gt;|验证 session| BE_SDK
+
+ style CORE fill:#4a90d9,color:#fff
+ style FE_SDK fill:#e67e22,color:#fff
+ style BE_SDK fill:#27ae60,color:#fff
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;三层各自职责：&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>Zitadel 深度解读 — 事件驱动、多租户原生的开源 IAM 平台 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/zitadel-deep-dive/</guid><description>&lt;h2 id="zitadel-简介"&gt;Zitadel 简介&lt;/h2&gt;
 &lt;p&gt;Zitadel 是一个用 Go 编写的开源身份与访问管理平台，截至 2026 年 7 月最新稳定版为 &lt;strong&gt;v4.15.3&lt;/strong&gt;（AGPL-3.0 许可证），GitHub 约 14,300 星。项目的核心理念是&amp;quot;Identity infrastructure, simplified for you&amp;quot;——通过事件驱动架构和原生多租户设计，把身份基础设施的复杂性封装成简洁的 API 和管理界面。&lt;/p&gt;
 &lt;p&gt;一句话定位：&lt;strong&gt;事件溯源架构 + CQRS + 原生多租户的开源 IAM，适合需要完整审计追踪和多租户隔离的服务型平台&lt;/strong&gt;。&lt;/p&gt;
 &lt;table&gt;
@@ -687,49 +731,4 @@
  CMD --&amp;gt; JOB
 &lt;/pre&gt;
 
-&lt;p&gt;这个架构有几个值得展开的要点：&lt;/p&gt;</description></item><item><title>oauth2-proxy 深度介绍 — 轻量 OAuth2/OIDC 反向代理 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/implementation/oauth2-proxy-deep-dive/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/implementation/oauth2-proxy-deep-dive/</guid><description>&lt;h2 id="什么是-oauth2-proxy"&gt;什么是 oauth2-proxy？&lt;/h2&gt;
-&lt;p&gt;
-
-&lt;a class="link link--text" href="https://oauth2-proxy.github.io/oauth2-proxy/" rel="external"&gt;oauth2-proxy&lt;/a&gt; 是一个开源的、轻量级的&lt;strong&gt;身份感知反向代理&lt;/strong&gt;。它的工作很简单：拦在应用前面，检查每个 HTTP 请求是否带着有效会话；没有的话，把用户导向 OAuth2/OIDC Provider（比如 Keycloak、GitHub、Google、Dex）去登录，登录成功后再放行。&lt;/p&gt;
-&lt;p&gt;它不存储用户、不管理密码、不签发 Token——这些都是 Provider 的事。oauth2-proxy 只做一件事：&lt;strong&gt;把没有身份的人挡在门外，把有身份的人放进来，并把用户信息（邮箱、用户名、组）通过 HTTP Header 传给后端应用&lt;/strong&gt;。&lt;/p&gt;
-&lt;h2 id="为什么需要它"&gt;为什么需要它？&lt;/h2&gt;
-&lt;p&gt;在 IDaaS 体系里，认证和授权是 IDP 的事，但你的应用可能根本没写登录逻辑。oauth2-proxy 的价值在于：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;零代码改造&lt;/strong&gt;：给老应用、静态站点、容器化服务加 OIDC 登录，不用改一行业务代码。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;入口层统一&lt;/strong&gt;：Ingress/反向代理层统一拦截，不用每个服务自己实现 OAuth 回调、Token 刷新、Session 管理。&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Provider 无关&lt;/strong&gt;：同一个 oauth2-proxy 可以对接 Keycloak、Azure AD、GitHub、Google、Dex 等几十种 Provider，切换 Provider 不影响后端。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id="架构概览"&gt;架构概览&lt;/h2&gt;
-&lt;pre class="mermaid"&gt;
- sequenceDiagram
- participant Browser as 浏览器
- participant Ingress as Nginx Ingress/Traefik
- participant O2P as oauth2-proxy
- participant App as 后端应用
- participant IDP as Keycloak (IDP)
-
- Browser-&amp;gt;&amp;gt;Ingress: GET /app
- Ingress-&amp;gt;&amp;gt;O2P: GET /oauth2/auth (auth_request)
- 
- alt 无有效 Session Cookie
- O2P--&amp;gt;&amp;gt;Ingress: 401 → /oauth2/start
- Ingress--&amp;gt;&amp;gt;Browser: 302 /oauth2/start
- Browser-&amp;gt;&amp;gt;O2P: GET /oauth2/start
- O2P--&amp;gt;&amp;gt;Browser: 302 → IDP 登录页
- Browser-&amp;gt;&amp;gt;IDP: 登录
- IDP--&amp;gt;&amp;gt;Browser: 302 /oauth2/callback?code=...
- Browser-&amp;gt;&amp;gt;O2P: GET /oauth2/callback
- O2P-&amp;gt;&amp;gt;IDP: 用 code 换 token
- IDP--&amp;gt;&amp;gt;O2P: access_token + id_token
- O2P--&amp;gt;&amp;gt;Browser: Set-Cookie + 302 回到 /app
- Browser-&amp;gt;&amp;gt;Ingress: GET /app (带 Cookie)
- Ingress-&amp;gt;&amp;gt;O2P: GET /oauth2/auth (auth_request)
- end
-
- O2P--&amp;gt;&amp;gt;Ingress: 202 Accepted
- Note over O2P,Ingress: X-Auth-Request-User&amp;lt;br/&amp;gt;X-Auth-Request-Email&amp;lt;br/&amp;gt;X-Auth-Request-Groups
- Ingress-&amp;gt;&amp;gt;App: GET /app + 用户身份 Header
- App--&amp;gt;&amp;gt;Browser: 200 OK
-&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;流程要点：&lt;/strong&gt;&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;这个架构有几个值得展开的要点：&lt;/p&gt;</description></item></channel></rss>
