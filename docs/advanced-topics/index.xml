@@ -530,4 +530,63 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 &lt;/pre&gt;
 
 &lt;h3 id="access-token访问令牌"&gt;Access Token（访问令牌）&lt;/h3&gt;
-&lt;p&gt;Access Token 是访问资源的&amp;quot;通行证&amp;quot;——资源服务器用它来判断&amp;quot;这个请求有没有权限&amp;quot;。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;Access Token 是访问资源的&amp;quot;通行证&amp;quot;——资源服务器用它来判断&amp;quot;这个请求有没有权限&amp;quot;。&lt;/p&gt;</description></item><item><title>多租户 IAM 架构设计与方案对比 — 隔离模式、实现与选型 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/multi-tenant-iam/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/multi-tenant-iam/</guid><description>&lt;h2 id="多租户-iam-要解决什么问题"&gt;多租户 IAM 要解决什么问题&lt;/h2&gt;
+&lt;p&gt;多租户（Multi-Tenancy）是 SaaS 平台和企业 IAM 系统中绕不开的架构命题。核心问题是：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;在同一个 IAM 系统中，如何安全隔离不同租户（组织/客户/部门）的身份数据，同时保持运维效率和成本可控？&lt;/strong&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;多租户 IAM 不是简单的&amp;quot;加一个 org_id 字段&amp;quot;，它涉及：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;数据隔离&lt;/strong&gt;：租户 A 的管理员不能看到租户 B 的用户&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;认证隔离&lt;/strong&gt;：租户 A 的用户不能登录到租户 B 的应用&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;授权隔离&lt;/strong&gt;：租户 A 的权限策略不污染租户 B&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;可观测性隔离&lt;/strong&gt;：租户 A 的审计日志不能让租户 B 看到&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;运维效率&lt;/strong&gt;：新增一个租户的成本是分钟级还是天级？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;关于 IAM 的整体架构设计思路，请参阅 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/"&gt;IAM 架构设计指南&lt;/a&gt;；IAM 基础概念见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/"&gt;IAM 基础&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id="三种多租户-iam-隔离模式"&gt;三种多租户 IAM 隔离模式&lt;/h2&gt;
+&lt;h3 id="模式一共享-idp--逻辑隔离"&gt;模式一：共享 IDP + 逻辑隔离&lt;/h3&gt;
+&lt;p&gt;所有租户共享同一个身份提供者（IDP）实例，通过属性/组/组织单元做逻辑区分。&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ graph TB
+ subgraph &amp;#34;共享 IDP 实例&amp;#34;
+ IDP[IDP Server&amp;lt;br/&amp;gt;共享实例]
+ R[(身份存储)]
+
+ subgraph &amp;#34;租户 A&amp;#34;
+ UA[用户组 A]
+ PA[策略 A]
+ end
+ subgraph &amp;#34;租户 B&amp;#34;
+ UB[用户组 B]
+ PB[策略 B]
+ end
+ subgraph &amp;#34;租户 C&amp;#34;
+ UC[用户组 C]
+ PC[策略 C]
+ end
+ end
+
+ subgraph &amp;#34;应用层&amp;#34;
+ APP_A[应用 A]
+ APP_B[应用 B]
+ APP_C[应用 C]
+ end
+
+ UA --&amp;gt; IDP
+ UB --&amp;gt; IDP
+ UC --&amp;gt; IDP
+ IDP --&amp;gt; R
+ APP_A --&amp;gt; IDP
+ APP_B --&amp;gt; IDP
+ APP_C --&amp;gt; IDP
+
+ style IDP fill:#f9f,stroke:#333,stroke-width:2px
+ style R fill:#bbf,stroke:#333
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;实现方式&lt;/strong&gt;：在 Keycloak 中用同一个 Realm，通过 Group、Role、Attribute 区分租户；在 Auth0/Okta 中用 Organization 特性。&lt;/p&gt;</description></item></channel></rss>
