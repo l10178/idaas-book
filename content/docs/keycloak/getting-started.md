@@ -2,7 +2,7 @@
 title: "Keycloak 入门指南 — 安装、配置与首个 OIDC 应用接入 | IDaaS Book"
 description: "Keycloak 入门指南：SSO、社交登录、用户联合、标准协议适配、授权服务、密码策略与 MFA 等核心功能总览与选型参考"
 date: 2024-04-01T00:00:00+08:00
-lastmod: 2026-07-06T00:00:00+08:00
+lastmod: 2026-07-11T00:00:00+08:00
 draft: false
 weight: 1
 menu:
@@ -14,7 +14,7 @@ toc: true
 
 [keycloak][] 是一个开源的、面向现代应用和服务的 IAM（身份认证和访问控制）解决方案。
 
-> 自 Keycloak 17 起，官方只发布 **Quarkus 发行版**，旧的 WildFly 发行版已被移除；各类语言专用的 **Client Adapter 也已陆续废弃**，官方推荐直接使用各生态的标准 OIDC/OAuth 2.0/SAML 库对接。如果你还在用旧 Adapter，参考 [Keycloak Adapter 弃用迁移指南]({{< relref "docs/solution-blogs/keycloak-adapter-migration" >}}) 逐语言迁移。Keycloak 版本迭代很快，本书编写时当前稳定版为 26.6.4（2026-07-06 检查），部署前请到 [keycloak.org/downloads](https://www.keycloak.org/downloads) 确认最新版本。关于 Keycloak 架构（Realm / Client / 认证流引擎 / 缓存 / 集群）的深度解析，见[第14章：Keycloak 架构深度解析]({{< relref "docs/implementation/keycloak-architecture.md" >}})。
+> 自 Keycloak 17 起，官方只发布 **Quarkus 发行版**，旧的 WildFly 发行版已被移除；各类语言专用的 **Client Adapter 也已陆续废弃**，官方推荐直接使用各生态的标准 OIDC/OAuth 2.0/SAML 库对接。如果你还在用旧 Adapter，参考 [Keycloak Adapter 弃用迁移指南]({{< relref "docs/solution-blogs/keycloak-adapter-migration" >}}) 逐语言迁移。Keycloak 版本迭代很快，本书编写时当前稳定版为 26.7.0（2026-07-11 检查），部署前请到 [keycloak.org/downloads](https://www.keycloak.org/downloads) 确认最新版本。关于 Keycloak 架构（Realm / Client / 认证流引擎 / 缓存 / 集群）的深度解析，见[第14章：Keycloak 架构深度解析]({{< relref "docs/implementation/keycloak-architecture.md" >}})。
 
 主要功能：
 
