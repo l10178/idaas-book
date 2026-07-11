@@ -413,6 +413,8 @@ SCIM 协议本身不定义同步频率。常见实现中，上游系统在数据
 
 SCIM 规范没有规定，但生产环境应该做。理想方案是 IDaaS 在收到 SCIM `DELETE` 后，通过内部事件总线触发下游应用的用户清理。最低限度也要记录审计日志。
 
+> **实践指南**：关于 SCIM 在企业 IAM 中的落地部署、Keycloak SCIM 插件配置、Azure AD SCIM 集成和常见排错，参阅 [IAM SCIM 用户自动配置实战]({{< relref "docs/solution-blogs/iam-scim-provisioning-guide.md" >}})。
+
 ## 9.8 IAM 用户生命周期小结
 
 SCIM 2.0 是企业 IAM 体系中"用户配置"的标准语言。它将 IAM 身份管理从"手工操作"和"定制脚本"升级为标准化、自动化的 API 调用。对于 IAM/IDaaS 平台选型，SCIM 支持的质量——尤其对标标准用户 Schema、过滤语法、PATCH 操作——是评估的重要维度。把 SCIM 真正用好，关键在于理解它不是孤立的协议，而是 IAM 身份生命周期自动化流水线上的关键一环。
