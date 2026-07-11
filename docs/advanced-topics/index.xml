@@ -446,7 +446,7 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h3 id="did-方法"&gt;DID 方法&lt;/h3&gt;
-&lt;p&gt;不同的 DID 方法对应不同的底层技术：&lt;/p&gt;</description></item><item><title>第24章：零信任与身份驱动安全 — 从架构到落地的完整指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</link><pubDate>Sun, 05 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</guid><description>&lt;h2 id="241-从城堡到零信任"&gt;24.1 从城堡到零信任&lt;/h2&gt;
+&lt;p&gt;不同的 DID 方法对应不同的底层技术：&lt;/p&gt;</description></item><item><title>第24章：零信任 IAM 架构 — 身份驱动的持续安全验证体系 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</link><pubDate>Sun, 05 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/</guid><description>&lt;h2 id="241-从城堡到零信任"&gt;24.1 从城堡到零信任&lt;/h2&gt;
 &lt;h3 id="传统安全模型城堡与护城河"&gt;传统安全模型：城堡与护城河&lt;/h3&gt;
 
 
@@ -477,7 +477,9 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&amp;ldquo;永远不信任，始终验证&amp;rdquo;（Never Trust, Always Verify）&lt;/p&gt;
 &lt;p&gt;（这一口号源自 John Kindervag / Forrester 2010 的零信任早期表述；NIST SP 800-207 将其具化为：不基于网络位置给予隐式信任、显式验证、最小权限、假设已沦陷等原则。）&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;零信任不是一种产品，而是一种安全架构理念：&lt;/p&gt;
+&lt;p&gt;零信任不是一种产品，而是一种安全架构理念。在 IAM（身份与访问管理）体系中，零信任将&amp;quot;身份&amp;quot;提升为安全决策的核心依据——这与传统 IAM 以&amp;quot;认证通过后放行&amp;quot;的模式有根本区别。IAM 架构的整体设计思路可参考 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/"&gt;IAM 架构设计指南&lt;/a&gt;。&lt;/p&gt;
 &lt;table&gt;
 	&lt;thead&gt;
 			&lt;tr&gt;
@@ -508,8 +510,8 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;h2 id="242-身份零信任的基石"&gt;24.2 身份：零信任的基石&lt;/h2&gt;
-&lt;p&gt;在零信任架构中，身份取代 IP 地址成为新的安全边界：&lt;/p&gt;</description></item><item><title>IAM 架构设计指南 — 从单体到零信任的演进 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/</guid><description>&lt;h2 id="iam-架构的核心问题"&gt;IAM 架构的核心问题&lt;/h2&gt;
+&lt;h2 id="242-身份零信任-iam-的基石"&gt;24.2 身份：零信任 IAM 的基石&lt;/h2&gt;
+&lt;p&gt;在零信任架构中，身份取代 IP 地址成为新的安全边界。IAM 系统不再是&amp;quot;登录后就完成任务&amp;quot;的旁路组件，而是持续参与每一次访问决策的核心引擎：&lt;/p&gt;</description></item><item><title>IAM 架构设计指南 — 从单体到零信任的演进 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/</guid><description>&lt;h2 id="iam-架构的核心问题"&gt;IAM 架构的核心问题&lt;/h2&gt;
 &lt;p&gt;设计一个 IAM 系统架构，本质上是在回答三个问题：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;身份数据放在哪？&lt;/strong&gt;——集中存储还是分布在各处？&lt;/li&gt;
