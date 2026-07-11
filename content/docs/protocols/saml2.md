@@ -1,6 +1,6 @@
 ---
-title: "第7章：SAML 2.0 — 断言、绑定、元数据、SP-Initiated SSO 流程图解 | IDaaS Book"
-description: "SAML 2.0 深度解读：SP-Initiated 与 IdP-Initiated SSO 时序图、断言结构、元数据交换、与 OIDC 选型对比及安全最佳实践"
+title: "第7章：IAM SAML 2.0 身份联邦 — 断言、绑定、元数据与 SSO 流程图解 | IDaaS Book"
+description: "企业 IAM SAML 2.0 深度解读：SP-Initiated 与 IdP-Initiated SSO 时序图、断言结构、元数据交换、与 OIDC 选型对比及 IAM 安全最佳实践"
 date: 2024-02-03T00:00:00+08:00
 draft: false
 weight: 26
@@ -13,7 +13,7 @@ toc: true
 
 ## 7.1 历史与现状
 
-SAML（Security Assertion Markup Language）是由 OASIS 标准组织制定的基于 XML 的身份联邦协议。SAML 2.0 于 2005 年发布，是 Web 浏览器 SSO 的行业先驱。
+在企业 IAM（身份与访问管理）体系中，SAML（Security Assertion Markup Language）是由 OASIS 标准组织制定的基于 XML 的身份联邦协议。SAML 2.0 于 2005 年发布，是 Web 浏览器 SSO 的行业先驱，至今仍是 IAM 身份联邦场景中与 OIDC 并列的两大支柱协议之一。
 
 尽管 OIDC 在新应用中的采用率已远超 SAML，但 SAML 2.0 在企业级应用中依然占有重要地位。特别是在以下场景：
 
