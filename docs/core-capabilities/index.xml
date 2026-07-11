@@ -1,51 +1,40 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第三部分：核心能力 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/</link><description>Recent content in 第三部分：核心能力 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/core-capabilities/index.xml" rel="self" type="application/rss+xml"/><item><title>第10章：单点登录（SSO）— 架构模式、会话管理与跨域方案 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</link><pubDate>Fri, 01 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</guid><description>&lt;h2 id="101-sso-的核心理念"&gt;10.1 SSO 的核心理念&lt;/h2&gt;
-&lt;p&gt;单点登录（Single Sign-On, SSO）的核心承诺：&lt;strong&gt;用户只需认证一次，即可访问所有被授权的应用。&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;这不仅是用户体验的改善，更是安全性提升。原因很简单：&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>第三部分：核心能力 on IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/</link><description>Recent content in 第三部分：核心能力 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><atom:link href="https://idaas.xlabs.club/docs/core-capabilities/index.xml" rel="self" type="application/rss+xml"/><item><title>IAM 单点登录（SSO）架构模式、会话管理与跨域方案 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</link><pubDate>Fri, 01 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/sso-single-sign-on/</guid><description>&lt;h2 id="101-iam-sso-的核心理念"&gt;10.1 IAM SSO 的核心理念&lt;/h2&gt;
+&lt;p&gt;在企业 IAM（身份与访问管理）体系中，单点登录（Single Sign-On, SSO）的核心承诺：&lt;strong&gt;用户只需认证一次，即可访问所有被授权的应用。&lt;/strong&gt; 这是 IAM 体系中最直观的用户价值——也是 IAM 项目的典型起点。&lt;/p&gt;
+&lt;p&gt;这不仅是用户体验的改善，更是 IAM 安全性提升。原因很简单：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;用户只需要记住一个强密码（而不是 N 个弱密码或同一个密码用 N 遍）&lt;/li&gt;
 &lt;li&gt;认证策略集中管理（强制 MFA、密码策略统一执行）&lt;/li&gt;
-&lt;li&gt;会话可以集中管理和吊销&lt;/li&gt;
+&lt;li&gt;会话可以集中管理和吊销——这对于 IAM 合规审计至关重要&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id="102-sso-的三种实现模式"&gt;10.2 SSO 的三种实现模式&lt;/h2&gt;
+&lt;p&gt;关于 IAM 整体概念，可先阅读 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/what-is-iam/"&gt;IAM 是什么&lt;/a&gt;；关于 SSO 依赖的协议细节见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/protocols/openid-connect/"&gt;OAuth 2.0 与 OIDC&lt;/a&gt; 和 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/protocols/saml2/"&gt;SAML 2.0&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id="102-iam-sso-的三种实现模式"&gt;10.2 IAM SSO 的三种实现模式&lt;/h2&gt;
 &lt;h3 id="模式一中心化-sso"&gt;模式一：中心化 SSO&lt;/h3&gt;
-&lt;p&gt;所有用户和应用都注册在同一个中心 IAM 系统中。&lt;/p&gt;
+&lt;p&gt;所有用户和应用都注册在同一个中心 IAM 系统中。这是最常见的 IAM 部署形态。&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ graph TD
+ IAM[&amp;#34;IAM / IDaaS&amp;lt;br/&amp;gt;认证中心&amp;#34;]
+ App1[&amp;#34;App1&amp;#34;]
+ App2[&amp;#34;App2&amp;#34;]
+ App3[&amp;#34;App3&amp;#34;]
 
+ IAM --&amp;gt; App1
+ IAM --&amp;gt; App2
+ IAM --&amp;gt; App3
 
+ style IAM fill:#e1f5fe,stroke:#0288d1
+ style App1 fill:#f5f5f5
+ style App2 fill:#f5f5f5
+ style App3 fill:#f5f5f5
+&lt;/pre&gt;
 
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt; ┌─────────────────┐
- │ IAM/IDaaS │
- │ (认证中心) │
- └───┬───┬───┬─────┘
- │ │ │
- ┌──────┘ │ └──────┐
- ▼ ▼ ▼
- [App1] [App2] [App3]&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
 &lt;p&gt;实现方式：通常通过 OIDC 或 SAML 2.0。
-代表：Keycloak 单域部署。&lt;/p&gt;
-&lt;h3 id="模式二联邦-ssofederated-sso"&gt;模式二：联邦 SSO（Federated SSO）&lt;/h3&gt;
-&lt;p&gt;多个身份域之间建立信任关系：&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt; [IdP A] ←──信任──→ [IdP B]
- │ │
- ┌─────┴──┐ ┌────┴──┐
- [App1] [App2] [App3] [App4]&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;p&gt;用户无论在哪个 IdP 认证，都能访问信任域中的任何应用。&lt;/p&gt;</description></item><item><title>第11章：多因素认证（MFA）— TOTP、FIDO2、WebAuthn 与自适应认证 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</guid><description>&lt;h2 id="111-密码已死"&gt;11.1 密码已死？&lt;/h2&gt;
+代表：Keycloak 单域部署。&lt;/p&gt;</description></item><item><title>第11章：多因素认证（MFA）— TOTP、FIDO2、WebAuthn 与自适应认证 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</guid><description>&lt;h2 id="111-密码已死"&gt;11.1 密码已死？&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&amp;ldquo;密码就像是蟑螂——你灭不掉它，但你可以让它不再那么讨厌。&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
