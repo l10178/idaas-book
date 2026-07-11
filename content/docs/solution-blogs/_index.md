@@ -30,3 +30,4 @@ menu:
 | [Keycloak 集成企业微信 / 飞书 / 钉钉 OIDC 统一登录]({{< relref "keycloak-wecom-feishu-dingtalk" >}}) | 企业微信 OAuth、飞书 OIDC、钉钉 OIDC、Identity Provider Broker、回调地址配置、属性映射与 JIT Provisioning |
 | [Keycloak 生产数据库配置 — PostgreSQL 实战]({{< relref "keycloak-postgresql-config" >}}) | H2 迁移 PostgreSQL、Kubernetes Secret 凭据管理、连接池调优、Liquibase 自动建表、常见数据库错误排错 |
 | [Keycloak 直连 K8s OIDC — API Server 认证与 RBAC]({{< relref "keycloak-kubernetes-rbac" >}}) | kube-apiserver OIDC 参数、groups claim 映射、kubelogin 接入、RBAC 绑定、与 Dex 方案对比 |
+| [Keycloak SMTP 邮件配置与密码重置]({{< relref "keycloak-smtp-email-config" >}}) | SMTP 配置（Gmail/企业微信/AWS SES）、忘记密码流程、邮箱验证、网络层排错、生产检查清单 |

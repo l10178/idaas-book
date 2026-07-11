@@ -201,6 +201,32 @@ Keycloak 的 Session 存储与部署模式相关：
 
 高可用场景下，建议至少 2 个节点 + Infinispan 分布式缓存。配置细节见 [Keycloak 高可用与灾备方案]({{< relref "../solution-blogs/keycloak-ha-dr.md" >}})。
 
+### Q5：IAM 会话固定攻击是什么？怎么防？
+
+IAM 会话固定（Session Fixation）是指攻击者在用户登录前先获取一个会话标识符（如 Keycloak 的 `AUTH_SESSION_ID` Cookie），然后诱骗用户使用这个会话 ID 完成登录——登录成功后攻击者也持有同一个会话 ID，等同于劫持了用户的已认证会话。
+
+Keycloak 对此的防护是：**登录成功后更换会话 ID**。在 Authentication Flow 中，认证完成时 Keycloak 会重新分配 `AUTH_SESSION_ID`，旧的未认证会话 ID 失效。但要注意：
+
+- **自定义认证 SPI 如果绕过了会话 ID 轮换**，会重新引入该漏洞
+- **通过 Identity Provider 登录（Brokered Login）**时，首次从外部 IDP 返回后也会发生会话 ID 更换
+- 在反向代理层（Nginx/Traefik）不应缓存 `KEYCLOAK_SESSION` / `AUTH_SESSION_ID` Cookie
+
+### Q6：IAM 系统中「记住我（Remember Me）」和「Keep Me Signed In」怎么实现？
+
+两个看似相似的功能对应不同的 IAM 会话策略：
+
+| 功能 | 作用 | 实现方式 | 安全风险 |
+|------|------|---------|---------|
+| **Remember Me** | 用户关浏览器再打开时，自动恢复 IDP 会话 | 持久化 Cookie（`KEYCLOAK_REMEMBER_ME`），浏览器关闭不删除 | Cookie 泄露 = 长期账户劫持 |
+| **Keep Me Signed In** | 用户关浏览器后，Access Token 过期但可用 Refresh Token 续期 | 长有效期 Refresh Token + Silent Refresh（iframe） | Refresh Token 泄露风险 |
+
+Keycloak 在 Realm Settings → Tokens → **Remember Me** 中控制此功能。开启后，登录页会显示「记住我」复选框。`KEYCLOAK_REMEMBER_ME` Cookie 的 Max-Age 在 Realm Settings → Tokens → `Remember Me (token idle timeout)` 控制（默认 30 天）。
+
+**安全建议**：
+- 企业内部应用可以开启 Remember Me（缩短到 7 天）
+- 面向公网的应用不要开启，或用短有效期（1 天）
+- 配合 **设备识别 + 异常登录告警** 使用，参考 [IAM 安全最佳实践]({{< relref "security-best-practices.md" >}})
+
 ## 延伸阅读
 
 - [OAuth 2.0 深度解读]({{< relref "../protocols/oauth2-deep-dive.md" >}})：理解 Token 的基础——四种 Grant Type 的完整流程
