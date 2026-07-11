@@ -352,47 +352,17 @@ db-pool-max-size: 单节点合理的最大连接数
 					&lt;td&gt;Logstash → Elasticsearch&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
+					&lt;td&gt;&lt;/td&gt;
 					&lt;td&gt;&lt;strong&gt;d) 审计记录留存&lt;/strong&gt;&lt;/td&gt;
 					&lt;td&gt;留存 ≥ 6 个月&lt;/td&gt;
 					&lt;td&gt;日志归档策略：热数据 30 天（ES）、温数据 90 天（S3/对象存储）、冷数据 6 个月（归档存储）&lt;/td&gt;
-					&lt;td&gt;日志生命周期管理&lt;/td&gt;
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;h2 id="等保-iam-合规评估流程"&gt;等保 IAM 合规评估流程&lt;/h2&gt;
-&lt;pre class="mermaid"&gt;
- graph TD
- A[开始等保 IAM 评估] --&amp;gt; B{身份源是否统一？}
- B --&amp;gt;|否| B1[✅ 建立 LDAP/AD 统一目录&amp;lt;br/&amp;gt;或对接 HR 系统]
- B --&amp;gt;|是| C{认证协议是否是&amp;lt;br/&amp;gt;标准协议？}
- B1 --&amp;gt; C
- C --&amp;gt;|否| C1[✅ 迁移到 OIDC/SAML&amp;lt;br/&amp;gt;废弃私有 Token]
- C --&amp;gt;|是| D{MFA 是否覆盖&amp;lt;br/&amp;gt;所有管理员？}
- C1 --&amp;gt; D
- D --&amp;gt;|否| D1[✅ 管理员强制 TOTP/WebAuthn&amp;lt;br/&amp;gt;敏感操作 Step-up MFA]
- D --&amp;gt;|是| E{访问控制是否&amp;lt;br/&amp;gt;遵循最小权限？}
- D1 --&amp;gt; E
- E --&amp;gt;|否| E1[✅ RBAC 角色拆分&amp;lt;br/&amp;gt;禁止共享超级管理员]
- E --&amp;gt;|是| F{审计日志是否&amp;lt;br/&amp;gt;完整且不可篡改？}
- E1 --&amp;gt; F
- F --&amp;gt;|否| F1[✅ 开启 Event Listener&amp;lt;br/&amp;gt;推送 Syslog/ELK + 归档]
- F --&amp;gt;|是| G{是否有定期权限&amp;lt;br/&amp;gt;审阅机制？}
- F1 --&amp;gt; G
- G --&amp;gt;|否| G1[✅ 建立季度权限审阅&amp;lt;br/&amp;gt;SCIM 自动化生命周期]
- G --&amp;gt;|是| H[🎉 等保 IAM 合规检查通过]
- G1 --&amp;gt; H
+&lt;blockquote&gt;
+&lt;p&gt;实践指南：Keycloak 事件日志的具体配置步骤（CLI 参数、环境变量、Syslog/ELK 导出、数据库膨胀处理）见 
 
- style A fill:#e1f5fe
- style H fill:#c8e6c9
- style B1 fill:#fff9c4
- style C1 fill:#fff9c4
- style D1 fill:#fff9c4
- style E1 fill:#fff9c4
- style F1 fill:#fff9c4
- style G1 fill:#fff9c4
-&lt;/pre&gt;
-
-&lt;p&gt;上图的每条路径对应一组整改动作。大多数企业在初次评估时会在&amp;quot;身份源统一&amp;quot;和&amp;quot;MFA 覆盖&amp;quot;两个节点卡住——前者因为存量系统账密散落各处，后者因为运维习惯不习惯带 Token。&lt;/p&gt;</description></item><item><title>第23章：去中心化身份与可验证凭证 — DID、VC 与自主权身份技术详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</link><pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</guid><description>&lt;h2 id="231-当前身份模型的根本缺陷"&gt;23.1 当前身份模型的根本缺陷&lt;/h2&gt;
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-audit-logging-compliance/"&gt;Keycloak 审计日志配置与 IAM 合规实践&lt;/a&gt;。&lt;/p&gt;</description></item><item><title>第23章：去中心化身份与可验证凭证 — DID、VC 与自主权身份技术详解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</link><pubDate>Sat, 04 May 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/future-of-idaas/</guid><description>&lt;h2 id="231-当前身份模型的根本缺陷"&gt;23.1 当前身份模型的根本缺陷&lt;/h2&gt;
 &lt;p&gt;当前的&amp;quot;中心化 + 联邦&amp;quot;身份模型有三个根本问题：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;&lt;strong&gt;身份数据被平台控制&lt;/strong&gt;：用户的数据存在各个 IdP 上，用户没有真正的所有权。&lt;/li&gt;

@@ -300,8 +300,8 @@
 &lt;/table&gt;
 &lt;h2 id="63-id-token-深度解析"&gt;6.3 ID Token 深度解析&lt;/h2&gt;
 &lt;h3 id="jwt-结构"&gt;JWT 结构&lt;/h3&gt;
-&lt;p&gt;JWT（JSON Web Token，RFC 7519）由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>第7章：SAML 2.0 — 断言、绑定、元数据、SP-Initiated SSO 流程图解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2/</link><pubDate>Sat, 03 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2/</guid><description>&lt;h2 id="71-历史与现状"&gt;7.1 历史与现状&lt;/h2&gt;
-&lt;p&gt;SAML（Security Assertion Markup Language）是由 OASIS 标准组织制定的基于 XML 的身份联邦协议。SAML 2.0 于 2005 年发布，是 Web 浏览器 SSO 的行业先驱。&lt;/p&gt;
+&lt;p&gt;JWT（JSON Web Token，RFC 7519）由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>第7章：IAM SAML 2.0 身份联邦 — 断言、绑定、元数据与 SSO 流程图解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2/</link><pubDate>Sat, 03 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2/</guid><description>&lt;h2 id="71-历史与现状"&gt;7.1 历史与现状&lt;/h2&gt;
+&lt;p&gt;在企业 IAM（身份与访问管理）体系中，SAML（Security Assertion Markup Language）是由 OASIS 标准组织制定的基于 XML 的身份联邦协议。SAML 2.0 于 2005 年发布，是 Web 浏览器 SSO 的行业先驱，至今仍是 IAM 身份联邦场景中与 OIDC 并列的两大支柱协议之一。&lt;/p&gt;
 &lt;p&gt;尽管 OIDC 在新应用中的采用率已远超 SAML，但 SAML 2.0 在企业级应用中依然占有重要地位。特别是在以下场景：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;金融、政府、教育等传统行业&lt;/li&gt;
