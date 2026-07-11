@@ -46,7 +46,7 @@
 &lt;h2 id="53-授权模式grant-types"&gt;5.3 授权模式（Grant Types）&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0 定义了四种核心授权模式，加上 PKCE 扩展和 Device Flow：&lt;/p&gt;
 &lt;h3 id="531-授权码模式authorization-code"&gt;5.3.1 授权码模式（Authorization Code）&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;这是最安全、最广泛使用的模式&lt;/strong&gt;。核心特征是用户浏览器不直接接触 Access Token。&lt;/p&gt;</description></item><item><title>OAuth 2.0 授权码流程与 PKCE 完整图解</title><link>https://idaas.xlabs.club/docs/protocols/oauth2-authorization-code-pkce/</link><pubDate>Tue, 07 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2-authorization-code-pkce/</guid><description>&lt;h2 id="为什么需要这份图解"&gt;为什么需要这份图解&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;这是最安全、最广泛使用的模式&lt;/strong&gt;。核心特征是用户浏览器不直接接触 Access Token——它只拿到一个一次性授权码（authorization code），由后端服务器用这个 code 去换 token，用户密码全程不经过客户端后端。&lt;/p&gt;</description></item><item><title>OAuth 2.0 授权码流程与 PKCE 完整图解</title><link>https://idaas.xlabs.club/docs/protocols/oauth2-authorization-code-pkce/</link><pubDate>Tue, 07 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2-authorization-code-pkce/</guid><description>&lt;h2 id="为什么需要这份图解"&gt;为什么需要这份图解&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0 授权码流程（Authorization Code Flow）是所有现代身份协议的基础。OIDC 基于它、单页应用靠它、移动 App 也用它——但大部分资料要么只有文字描述，要么跳过了关键的安全细节。&lt;/p&gt;
 &lt;p&gt;这份图解的目标是：&lt;strong&gt;一图看懂完整交互，然后逐帧理解每个参数的设计意图和攻击面。&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id="授权码流程完整时序图"&gt;授权码流程完整时序图&lt;/h2&gt;
