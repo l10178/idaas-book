@@ -1,17 +1,21 @@
 # IDaaS Book · A Complete Guide to Identity & Access Management
 
+> 🧭 *"Trust is hard. Knowing who to trust is even harder."* — this book helps you navigate both.
+
 > **The most comprehensive Chinese-language technical book on enterprise identity.**
 > From IAM fundamentals and OAuth 2.0 / OIDC / SAML protocol deep-dives to Keycloak, CAS, and Dex production deployments — a systematic guide through the entire identity landscape.
 >
-> 🇨🇳 Written in Chinese · [Read Online →](https://idaas.xlabs.club)
->
-> 语言：[English](README.md) | [简体中文](README.zh-CN.md)
+> 🇨🇳 Written in Chinese · **[Read Online →](https://idaas.xlabs.club)**
 
 [![Stars](https://img.shields.io/github/stars/l10178/idaas-book?style=social)](https://github.com/l10178/idaas-book/stargazers)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/l10178/idaas-book/.github%2Fworkflows%2Fgh-pages.yml?label=deploy)](https://github.com/l10178/idaas-book/actions/workflows/gh-pages.yml)
 [![Contributors](https://img.shields.io/github/contributors/l10178/idaas-book)](https://github.com/l10178/idaas-book/graphs/contributors)
-[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue)](https://creativecommons.org/licenses/by-nc/4.0/)
 [![Release](https://img.shields.io/github/v/release/l10178/idaas-book)](https://github.com/l10178/idaas-book/releases/latest)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue)](https://creativecommons.org/licenses/by-nc/4.0/)
+
+**[📖 Read the Book](https://idaas.xlabs.club)** · **[⭐ Star This Repo](https://github.com/l10178/idaas-book/stargazers)** · **[🐛 Report an Issue](https://github.com/l10178/idaas-book/issues)** · **[🔀 Fork & Contribute](https://github.com/l10178/idaas-book/forks)**
+
+Language: **English** · [简体中文](README.zh-CN.md)
 
 ---
 
@@ -19,7 +23,7 @@
 
 Identity is the control plane of modern systems. Every application needs authentication, authorization, SSO, and audit — yet most teams learn these protocols the hard way: scattered docs, outdated blog posts, and vendor-specific manuals that never explain *why*.
 
-This book fills the gap: **a single, coherent Chinese-language resource that connects principles, protocols, engineering practice, and emerging trends in enterprise identity.**
+This book fills the gap: **a single, coherent Chinese-language resource that connects principles, protocols, engineering practice, and emerging trends in enterprise identity** — not a pile of disconnected tutorials, but one continuous narrative from "what is authentication" to "zero-trust architecture."
 
 | You need... | This book delivers |
 |-------------|-------------------|
@@ -28,6 +32,15 @@ This book fills the gap: **a single, coherent Chinese-language resource that con
 | Decision frameworks | Keycloak vs CAS vs Dex vs Casdoor — side-by-side comparison with selection criteria |
 | Architecture patterns | Gateway integration, BFF, Sidecar, multi-tenant account design, federation topologies |
 | Future-proof knowledge | Zero Trust, DID/VC, ReBAC, Passkey/WebAuthn — standalone chapters, not footnotes |
+
+## ✨ Highlights
+
+- **One coherent narrative** — 24 chapters build on each other, so reading end-to-end gives you a complete mental model, not trivia.
+- **Protocol-first, not vendor-first** — understand *why* OAuth and SAML work the way they do before touching any product. The product then becomes obvious.
+- **Production-grade recipes** — every deployment chapter is built around real Kubernetes clusters, Helm charts, and Operator patterns, not toy examples.
+- **Honest comparisons** — Keycloak, CAS, Dex, and Casdoor weighed by the same criteria, so you can defend your choice to your team.
+- **Forward-looking, not legacy-locked** — dedicated chapters on ReBAC, AuthZEN/SSF, Passkey, Verifiable Credentials, and Zero Trust, so the book stays relevant as the field moves.
+- **Open and free** — no paywall, no registration, no vendor lock-in. CC BY-NC licensed and auto-deployed from `main`.
 
 ## What's Inside
 
@@ -81,7 +94,7 @@ This book fills the gap: **a single, coherent Chinese-language resource that con
 
 </details>
 
-## Who Should Read
+## 👥 Who Should Read
 
 Chinese-reading engineers, architects, and security professionals who need authoritative identity knowledge without language barriers:
 
@@ -91,7 +104,7 @@ Chinese-reading engineers, architects, and security professionals who need autho
 - 🧭 **SaaS / Platform Teams** — multi-tenant account design, RBAC, user lifecycle
 - 🆕 **IAM Beginners** — build a complete identity domain knowledge system
 
-## Reading Paths
+## 🧭 Reading Paths
 
 | Your goal | Start here |
 |-----------|-----------|
@@ -127,7 +140,7 @@ This book is continuously improving. All contributions welcome:
 
 PRs should follow existing frontmatter conventions (`title`, `description`, `weight`, `menu`, `toc`) and maintain consistent chapter numbering and style.
 
-## 📊 Why Star This Repo
+## ⭐ Why Star This Repo
 
 If you're working with identity — or know you will — starring this repo:
 
@@ -139,9 +152,5 @@ If you're working with identity — or know you will — starring this repo:
 
 ## ⚖️ License
 
-Content: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (Attribution-NonCommercial).  
+Content: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (Attribution-NonCommercial).
 Site scaffolding: follows upstream [Doks](https://github.com/thuliteio/doks) license.
-
----
-
-> 🧭 *"Trust is hard. Knowing who to trust is even harder."* — this book helps you navigate both.
