@@ -1,6 +1,6 @@
 ---
 title: "第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book"
-description: "OpenID Connect 身份认证协议完整解读：ID Token 结构与验证、UserInfo 端点、OAuth 2.0 与 OIDC 区别、会话管理与 SAML 2.0 对比"
+description: "企业 IAM OpenID Connect 身份认证协议完整解读：ID Token 结构与验证、UserInfo 端点、OAuth 2.0 与 OIDC 区别、会话管理与 SAML 2.0 对比"
 date: 2024-02-02T00:00:00+08:00
 draft: false
 weight: 25
@@ -14,6 +14,8 @@ toc: true
 ## 6.1 OAuth 2.0 缺了什么？
 
 OAuth 2.0 解决的是**授权**问题——我允许这个应用访问我的资源。但它没有解决**认证**问题——这个用户是谁？
+
+在企业 IAM（身份与访问管理）体系中，认证是授权的前提。一个完整的 IAM 平台不仅要能发 Token，还要能标准地回答「这个 Token 代表谁」。这就是 OIDC 在 IAM 栈中的位置——它是 OAuth 2.0 之上专门解决**身份认证**的标准化层。
 
 很多开发者早期犯的错误是用 OAuth 2.0 来做认证：
 
@@ -364,3 +366,25 @@ OIDC Session Management 规范（draft-ietf-oauth-session-management，长期处
 OpenID Connect 是 OAuth 2.0 的自然延伸——用 ID Token（JWT）、UserInfo 端点和发现文档在授权的基础之上标准化了认证的语义。理解 ID Token 的结构、验证流程和 claims 含义，是正确实现 OIDC 的前提。在实际项目中，绝大部分 OIDC 的安全漏洞都来自于对 ID Token 验证的疏忽或不全。
 
 > **延伸**：ID Token 签发后的生命周期管理（刷新、吊销、登出传播）见 [IAM 会话管理与 Token 生命周期]({{< relref "../advanced-topics/iam-session-management" >}})。
+
+## 6.10 IAM 中的 OIDC 常见问题（FAQ）
+
+**Q1: IAM 系统中 OIDC 和 OAuth 2.0 到底怎么区分？**
+
+OAuth 2.0 回答「你能访问什么」，OIDC 回答「你是谁」。在实践中，IAM 平台用 OAuth 2.0 的授权码流程完成用户认证后会同时返回 Access Token（授权）和 ID Token（认证）。区分两者的关键在于用途：Access Token 发给资源服务器做授权判断，ID Token 发给客户端确认用户身份——**不要把 ID Token 当成 API 的访问凭证**。
+
+**Q2: IAM 架构中，为什么 OIDC 比 SAML 更适合现代应用？**
+
+对终端用户来说 OIDC 和 SAML 的 SSO 体验相同。差异在开发者体验和适用范围：(1) OIDC 用 JSON/JWT，比 SAML 的 XML 轻量得多，移动端和 SPA 直接可用；(2) OIDC 原生支持 API 认证（Access Token → Resource Server），SAML 断言不能直接用于 API；(3) OIDC 有 OpenID Discovery（`.well-known/openid-configuration`）自动发现端点，SAML 需要手动交换元数据。在 IAM 企业架构中，新应用默认选 OIDC，SAML 仅用于兼容遗留系统和商业 SaaS。完整选型对比见 [SAML 2.0 深度解读]({{< relref "saml2" >}}) 的选型决策矩阵。
+
+**Q3: IAM 平台验证 ID Token 最容易漏掉什么？**
+
+最容易漏掉三个校验：(1) `aud` 必须包含当前客户端的 `client_id`——漏掉它会导致跨客户端 Token 滥用；(2) `nonce` 必须与授权请求中发出的一致——漏掉它给重放攻击留了门；(3) 如果响应同时包含 `access_token`，必须校验 `at_hash`——漏掉它可能让中间人把 ID Token 和另一个 Access Token 绑定。完整的验证清单见本章 6.8 节。
+
+**Q4: IAM 体系中 OIDC 和 SCIM 分别解决什么问题？**
+
+OIDC 解决「单点登录」——用户如何在多个应用间共享一次登录。SCIM 解决「用户生命周期」——用户从入职到离职，哪些应用自动开通/禁用账号。在 IAM 工程中两者是前后关系：OIDC 处理「用户进来时的认证」，SCIM 处理「用户账号在多个系统中的同步」。两者都是企业 IAM 的必备能力——有 SSO 没 SCIM 的结果是「手动在 20 个 SaaS 中创建用户」，有 SCIM 没 SSO 的结果是「账号同步了但用户还要每个应用单独登录」。
+
+**Q5: 如何判断 IAM 系统的 OIDC 实现是否安全？**
+
+对照本章 6.8 节的验证清单逐项检查。额外注意三点：(1) 生产环境必须用 RS256/ES256 签名算法，不用 `none`；(2) `redirect_uri` 必须精确匹配——OAuth 攻击面的第一条就是 redirect_uri 劫持，详见 [OAuth 2.0 攻击面与防护]({{< relref "oauth2-attack-surface" >}})；(3) 如果用的是公共客户端（SPA、移动端），必须启用 PKCE——OAuth 2.1 已将 PKCE 强制化。

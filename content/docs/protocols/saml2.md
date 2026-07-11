@@ -418,6 +418,8 @@ Keycloak 的 Identity Brokering 实现中支持这种转换，我们将在[第14
 
 ## 7.9 安全最佳实践
 
+> **深度分析**：SAML 的安全挑战远不止这七条。XML 签名包装（XSW）、断言重放、XXE 注入和元数据伪造是 SAML 独有的攻击面。完整分析见 [SAML 2.0 攻击面与安全防护]({{< relref "saml2-attack-surface" >}})，包含每个攻击面的 Mermaid 攻击流程图、检测代码和 NIST 800-63 合规检查清单。
+
 1. **始终使用 HTTPS**：SAML 消息通过用户浏览器传输（POST Binding），HTTPS 是基础保护。
 2. **启用断言签名和加密**：签名防止篡改，加密防止敏感信息泄露。
 3. **验证所有字段**：InResponseTo、Destination、Audience、时间窗口，一个都不能少。
