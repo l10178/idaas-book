@@ -145,7 +145,7 @@ IDaaS 不是简单的"云上的 AD"，而是一种全新的身份管理范式。
 
 1. **SaaS 应用不支持 LDAP**：Salesforce、Slack、GitHub 等 SaaS 应用通过 OIDC/SAML 对接，AD 原生不支持这些协议
 2. **移动端和远程办公**：用户不在内网时无法访问 AD，需要反向代理或 VPN，安全性大打折扣
-3. **合作伙伴和客户身份**：AD 主要管员工，外部用户（B2B、CIAM 场景）需要独立身份体系
+3. **合作伙伴和客户身份**：AD 主要管员工，外部用户（B2B、CIAM 场景）需要独立身份体系。员工 IAM 和客户 IAM 的需求差异很大，详见 [CIAM vs Workforce IAM 全面对比]({{< relref "../advanced-topics/iam-vs-ciam-workforce" >}})。
 4. **多因素认证**：AD 的 MFA 依赖额外基础设施（AD FS + Azure MFA），IDaaS 原生集成 WebAuthn/TOTP/SMS
 
 正确的做法不是「替代 AD」，而是把 AD 作为 IDaaS 的**上游身份源**：用户仍然在 AD 中管理，IDaaS 通过 LDAP/LDAPS 同步用户并向上游应用暴露 OIDC/SAML 端点。Keycloak 的 User Federation 就是这个模式的典型实现。详见 [Keycloak LDAP / AD 用户联邦]({{< relref "../solution-blogs/keycloak-ldap-ad-federation" >}})。
