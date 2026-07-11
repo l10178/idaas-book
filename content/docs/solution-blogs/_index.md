@@ -24,6 +24,7 @@ menu:
 | [Keycloak LDAP / AD 用户联邦]({{< relref "keycloak-ldap-ad-federation" >}}) | LDAPS 连接、用户搜索与同步策略、属性映射、组导入、AD 与 OpenLDAP 差异、常见错误排错 |
 | [Keycloak Adapter 弃用迁移指南]({{< relref "keycloak-adapter-migration" >}}) | 从 Keycloak Adapter 迁移到标准 OIDC 库（Spring Security、openid-client、authlib），逐语言迁移路径、角色映射、Token Refresh、常见踩坑与回滚 |
 | [Keycloak Prometheus 监控指标详解]({{< relref "keycloak-prometheus-metrics" >}}) | metrics 端点启用、ServiceMonitor 采集、Grafana Dashboard 21997、关键告警规则与常见排错 |
+| [Keycloak 生产巡检与运维清单]({{< relref "keycloak-operations-checklist" >}}) | 日常健康检查、监控告警阈值、证书管理、IAM 运维应急响应、月度审计与性能基线 |
 | [Keycloak 高可用集群部署与灾难恢复]({{< relref "keycloak-ha-dr" >}}) | 多节点集群、JGroups 发现、InfiniSpan 缓存一致性、数据库备份恢复流程与故障演练 |
 | [Keycloak 细粒度权限与授权策略实战]({{< relref "keycloak-fine-grained-authz" >}}) | Groups vs Roles、Composite Roles、Authorization Services、Policy Evaluation、资源级权限控制 |
 | [Traefik ForwardAuth + Keycloak + oauth2-proxy]({{< relref "traefik-forwardauth-keycloak" >}}) | Traefik ForwardAuth 中间件、Middleware CRD、IngressRoute TLS、多中间件链式调用、与 Nginx auth-url 对比 |
