@@ -232,6 +232,7 @@
 &lt;h3 id="1-pkce-对所有客户端强制"&gt;1. PKCE 对所有客户端强制&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;OAuth 2.0&lt;/strong&gt;：PKCE（Proof Key for Code Exchange）只推荐给公共客户端（SPA、移动 App），机密客户端可以不用。&lt;/p&gt;</description></item><item><title>第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/openid-connect/</link><pubDate>Fri, 02 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/openid-connect/</guid><description>&lt;h2 id="61-oauth-20-缺了什么"&gt;6.1 OAuth 2.0 缺了什么？&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0 解决的是&lt;strong&gt;授权&lt;/strong&gt;问题——我允许这个应用访问我的资源。但它没有解决&lt;strong&gt;认证&lt;/strong&gt;问题——这个用户是谁？&lt;/p&gt;
+&lt;p&gt;在企业 IAM（身份与访问管理）体系中，认证是授权的前提。一个完整的 IAM 平台不仅要能发 Token，还要能标准地回答「这个 Token 代表谁」。这就是 OIDC 在 IAM 栈中的位置——它是 OAuth 2.0 之上专门解决&lt;strong&gt;身份认证&lt;/strong&gt;的标准化层。&lt;/p&gt;
 &lt;p&gt;很多开发者早期犯的错误是用 OAuth 2.0 来做认证：&lt;/p&gt;
 
 
@@ -366,7 +367,64 @@
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>SCIM 2.0 协议深度解读 — IAM 跨域身份同步标准 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/scim-protocol/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/scim-protocol/</guid><description>&lt;h2 id="91-为什么需要-scimiam-用户生命周期的标准化"&gt;9.1 为什么需要 SCIM？——IAM 用户生命周期的标准化&lt;/h2&gt;
+&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>SAML 2.0 攻击面与安全防护 — IAM 身份联邦安全深度分析 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2-attack-surface/</link><pubDate>Sun, 12 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2-attack-surface/</guid><description>&lt;h2 id="为什么需要-saml-安全分析"&gt;为什么需要 SAML 安全分析&lt;/h2&gt;
+&lt;p&gt;上一章 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/protocols/oauth2-attack-surface/"&gt;OAuth 2.0 攻击面与防护&lt;/a&gt; 分析了 OAuth 的五类攻击——但 IAM 身份联邦的另一大支柱 SAML 2.0 同样拥有自己的攻击面。在企业实践中，SAML 承载着金融、政务、教育等领域的身份联邦流量，一次 SAML 安全漏洞就可能导致跨系统身份伪造。&lt;/p&gt;
+&lt;p&gt;SAML 的安全挑战与 OAuth 不同：OAuth 的安全问题多集中在 HTTP 重定向和 Token 传递环节，而 SAML 的根因在于 &lt;strong&gt;XML 解析的复杂性&lt;/strong&gt;——签名验证、XML Schema、实体引用等 XML 特性给了攻击者更多操作空间。&lt;/p&gt;
+&lt;p&gt;以下四个攻击面是过去二十年里真实发生过的漏洞模式，每一个都配有攻击流程图、根因分析和防护方案。&lt;/p&gt;
+&lt;h2 id="四大攻击面总览"&gt;四大攻击面总览&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;#&lt;/th&gt;
+					&lt;th&gt;攻击面&lt;/th&gt;
+					&lt;th&gt;根本原因&lt;/th&gt;
+					&lt;th&gt;关键防护&lt;/th&gt;
+					&lt;th&gt;相关规范&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;1&lt;/td&gt;
+					&lt;td&gt;XML 签名包装（XSW）&lt;/td&gt;
+					&lt;td&gt;SAML 处理器在签名校验后取错 XML 节点&lt;/td&gt;
+					&lt;td&gt;仅信任签名引用的元素，使用 XPath 白名单&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://docs.oasis-open.org/security/saml/v2.0/saml-sec-consider-2.0-os.pdf" rel="external"&gt;SAML 2.0 Security&lt;/a&gt; §3.1&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;2&lt;/td&gt;
+					&lt;td&gt;断言重放（Replay）&lt;/td&gt;
+					&lt;td&gt;SP 未校验断言的时效性/一次性/受众&lt;/td&gt;
+					&lt;td&gt;校验 NotOnOrAfter + InResponseTo + Audience + OneTimeUse&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf" rel="external"&gt;SAML 2.0 Core&lt;/a&gt; §2.5&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;3&lt;/td&gt;
+					&lt;td&gt;XXE 注入&lt;/td&gt;
+					&lt;td&gt;SAML 处理器解析含外部实体的 XML 断言&lt;/td&gt;
+					&lt;td&gt;禁用 DTD 和外部实体（XXE-safe parser config）&lt;/td&gt;
+					&lt;td&gt;OWASP XXE Prevention&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;4&lt;/td&gt;
+					&lt;td&gt;元数据伪造/MITM&lt;/td&gt;
+					&lt;td&gt;攻击者替换 SP 元数据中的证书&lt;/td&gt;
+					&lt;td&gt;证书 pinning、metadata 签名、TLS 双向校验&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://docs.oasis-open.org/security/saml/v2.0/saml-metadata-2.0-os.pdf" rel="external"&gt;SAML 2.0 Metadata&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="1-xml-签名包装xsw"&gt;1. XML 签名包装（XSW）&lt;/h2&gt;
+&lt;h3 id="攻击原理"&gt;攻击原理&lt;/h3&gt;
+&lt;p&gt;XSW 是 SAML 历史上最著名也最危险的攻击类别（CVE-2012-0053 等）。核心思路是：&lt;strong&gt;XML 签名覆盖了原始断言，攻击者在签名覆盖之外插入伪造断言，利用 SAML 处理器「只验签不看节点」的缺陷完成身份伪造&lt;/strong&gt;。&lt;/p&gt;</description></item><item><title>SCIM 2.0 协议深度解读 — IAM 跨域身份同步标准 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/scim-protocol/</link><pubDate>Mon, 05 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/scim-protocol/</guid><description>&lt;h2 id="91-为什么需要-scimiam-用户生命周期的标准化"&gt;9.1 为什么需要 SCIM？——IAM 用户生命周期的标准化&lt;/h2&gt;
 &lt;p&gt;在企业 IAM（身份与访问管理）体系中，OAuth 2.0 和 OIDC 解决了认证和授权问题，SAML 解决了联邦 SSO 问题，但它们都没有回答一个 IAM 核心问题：如何标准化地创建、更新和删除用户？SCIM 正是 IAM 用户生命周期管理的标准答案——它把&amp;quot;入职创建账号 → 调岗修改权限 → 离职回收身份&amp;quot;这一整套 IAM 流程变成了标准化的 REST API。&lt;/p&gt;
 &lt;p&gt;在 SCIM 出现之前，每个系统都有自己的用户 API：&lt;/p&gt;
 
