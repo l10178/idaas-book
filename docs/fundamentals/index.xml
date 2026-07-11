@@ -183,7 +183,9 @@
 			&lt;tr&gt;
 					&lt;td&gt;客户身份&lt;/td&gt;
 					&lt;td&gt;终端用户&lt;/td&gt;
-					&lt;td&gt;大规模，CIAM 场景&lt;/td&gt;
+					&lt;td&gt;大规模，CIAM 场景。详见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-vs-ciam-workforce/"&gt;CIAM vs Workforce IAM&lt;/a&gt;&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;服务身份&lt;/td&gt;
@@ -206,8 +208,7 @@
 &lt;p&gt;身份数据需要持久化存储。常见的存储方式：&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;LDAP 目录&lt;/strong&gt;：树状结构，读取性能优异，写入性能一般。适合员工身份存储。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;关系数据库&lt;/strong&gt;：扁平表结构，灵活查询。适合需要复杂关联查询的场景。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;云目录&lt;/strong&gt;：如 Microsoft Entra ID（原 Azure AD）、Google Cloud Identity。原生支持云应用，弹性伸缩。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;图数据库&lt;/strong&gt;：如 Neo4j。适合复杂的身份关系建模，如组织架构、权限继承链。&lt;/p&gt;</description></item><item><title>第3章：IAM 认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;云目录&lt;/strong&gt;：如 Microsoft Entra ID（原 Azure AD）、Google Cloud Identity。原生支持云应用，弹性伸缩。&lt;/p&gt;</description></item><item><title>第3章：IAM 认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&amp;ldquo;我已经登录了，为什么还不能访问这个页面？&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
