@@ -38,3 +38,4 @@ menu:
 | [Dex 身份联邦指南：从原理到 K8s 集成]({{< relref "dex-identity-federation" >}}) | Dex OIDC Connector、Kubernetes OIDC 认证、多上游 IDP 联邦、groups claim 映射 |
 | [IAM 最小权限原则落地指南]({{< relref "iam-least-privilege-guide" >}}) | Least Privilege、权限反模式、JIT 提权、角色粒度分层、Keycloak 权限审计、等保最小权限要求 |
 | [Keycloak 条件认证与 Step-Up 实战]({{< relref "keycloak-conditional-step-up-auth" >}}) | Authentication Flow、条件 OTP、角色分级 MFA、IP 位置条件、Step-Up 二次认证、LoA 认证级别 |
+| [IAM SCIM 用户自动配置实战]({{< relref "iam-scim-provisioning-guide" >}}) | IAM 自动化供应、Joiner-Mover-Leaver、HR→IDP→应用全链路同步、Keycloak SCIM 插件、Azure AD SCIM、常见排错 |
