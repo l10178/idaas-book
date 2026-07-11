@@ -115,33 +115,69 @@
 &lt;p&gt;IDaaS 系统从外部身份源（如 LDAP）导入或实时查询用户。&lt;/p&gt;
 &lt;p&gt;关键特征：&lt;strong&gt;IDaaS 拉取外部数据&lt;/strong&gt;，&lt;strong&gt;用户在外部系统管理&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="122-身份联邦详解"&gt;12.2 身份联邦详解&lt;/h2&gt;
-&lt;h3 id="联邦的信任模型"&gt;联邦的信任模型&lt;/h3&gt;
+&lt;h3 id="iam-联邦拓扑模式"&gt;IAM 联邦拓扑模式&lt;/h3&gt;
+&lt;p&gt;在企业 IAM 实践中，联邦拓扑决定了身份信任如何在组织间传递。以下是三种核心拓扑及其适用场景：&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ flowchart LR
+ subgraph SP_IDP[&amp;#34;模式一：SP-IdP 直接联邦（点对点）&amp;#34;]
+ direction LR
+ IdP_A[&amp;#34;🏢 IdP-A&amp;lt;br/&amp;gt;corp-a.com&amp;#34;] --&amp;gt;|&amp;#34;SAML/OIDC&amp;lt;br/&amp;gt;信任&amp;#34;| SP_B[&amp;#34;📱 App-B&amp;lt;br/&amp;gt;corp-b.com&amp;#34;]
+ end
 
+ subgraph CHAIN[&amp;#34;模式二：链式联邦（IdP Chain）&amp;#34;]
+ direction LR
+ IdP_C[&amp;#34;🏢 IdP-C&amp;lt;br/&amp;gt;子公司&amp;#34;] --&amp;gt;|&amp;#34;联邦&amp;#34;| IdP_D[&amp;#34;🏢 IdP-D&amp;lt;br/&amp;gt;母公司&amp;#34;]
+ IdP_D --&amp;gt;|&amp;#34;联邦&amp;#34;| SP_E[&amp;#34;📱 App-E&amp;lt;br/&amp;gt;合作伙伴&amp;#34;]
+ end
 
+ subgraph HUB[&amp;#34;模式三：Hub-and-Spoke（中心辐射）&amp;#34;]
+ direction TB
+ HUB_CENTER[&amp;#34;🔷 联邦 Hub&amp;lt;br/&amp;gt;Keycloak/Dex&amp;lt;br/&amp;gt;统一策略 + 协议转换&amp;#34;]
+ SPOKE1[&amp;#34;🏢 AD/LDAP&amp;#34;] --&amp;gt; HUB_CENTER
+ SPOKE2[&amp;#34;☁️ Google&amp;#34;] --&amp;gt; HUB_CENTER
+ SPOKE3[&amp;#34;💬 企业微信&amp;#34;] --&amp;gt; HUB_CENTER
+ SPOKE4[&amp;#34;🔑 GitHub&amp;#34;] --&amp;gt; HUB_CENTER
+ HUB_CENTER --&amp;gt; APP1[&amp;#34;📱 App-1&amp;#34;]
+ HUB_CENTER --&amp;gt; APP2[&amp;#34;📱 App-2&amp;#34;]
+ HUB_CENTER --&amp;gt; APP3[&amp;#34;📱 App-3&amp;#34;]
+ end
+&lt;/pre&gt;
 
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt;企业A 企业B
-┌─────────────┐ ┌─────────────┐
-│ 员工目录 │ │ 员工目录 │
-│ IdP-A │←─── 信任关系 ────→│ IdP-B │
-│ │ │ │
-│ [App-A1] │ │ [App-B1] │
-│ [App-A2] │ │ [App-B2] │
-└─────────────┘ └─────────────┘
-
-企业 A 的员工访问企业 B 的应用时：
-1. 用户通过 IdP-A 认证（自己的企业）
-2. IdP-A 和 IdP-B 之间存在信任
-3. IdP-B 接受 IdP-A 的断言
-4. 用户无缝访问 App-B1&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;h3 id="saml-联邦"&gt;SAML 联邦&lt;/h3&gt;
-&lt;p&gt;SAML 是联邦的&amp;quot;第一语言&amp;quot;：&lt;/p&gt;</description></item><item><title>第13章：IDaaS 审计与合规 — 等保、ISO 27001 与异常检测实践 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</link><pubDate>Mon, 04 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</guid><description>&lt;h2 id="131-审计的价值"&gt;13.1 审计的价值&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;模式&lt;/th&gt;
+					&lt;th&gt;结构&lt;/th&gt;
+					&lt;th&gt;信任管理&lt;/th&gt;
+					&lt;th&gt;适合场景&lt;/th&gt;
+					&lt;th&gt;不适合&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;点对点&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;两两建立信任关系&lt;/td&gt;
+					&lt;td&gt;每对关系独立维护，N 方需 N×(N-1) 条信任链&lt;/td&gt;
+					&lt;td&gt;2-3 个组织间的双边合作&lt;/td&gt;
+					&lt;td&gt;组织超过 5 个时维护成本爆炸&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;链式&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;IdP 逐级传递信任&lt;/td&gt;
+					&lt;td&gt;沿链路逐级验证，任一环节断裂则下游全部失效&lt;/td&gt;
+					&lt;td&gt;母子公司、多层级组织架构&lt;/td&gt;
+					&lt;td&gt;需要高可用性的跨域场景&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;strong&gt;Hub-and-Spoke&lt;/strong&gt;&lt;/td&gt;
+					&lt;td&gt;所有 IdP/SP 对接中心 Hub&lt;/td&gt;
+					&lt;td&gt;信任集中在 Hub，Hub 做协议转换和策略统一&lt;/td&gt;
+					&lt;td&gt;多 IdP 多应用的企业 IAM，是最常用的生产模式&lt;/td&gt;
+					&lt;td&gt;Hub 成为单点——需要高可用部署&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;联邦的信任模型（以点对点为例）：&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>第13章：IDaaS 审计与合规 — 等保、ISO 27001 与异常检测实践 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</link><pubDate>Mon, 04 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/audit-and-compliance/</guid><description>&lt;h2 id="131-审计的价值"&gt;13.1 审计的价值&lt;/h2&gt;
 &lt;p&gt;身份审计不仅仅是&amp;quot;记录日志&amp;quot;，它是安全运营的三大支柱之一：&lt;/p&gt;
 
 
