@@ -55,7 +55,9 @@ toc: true
 | **a) 审计功能开启** | 审计覆盖所有用户、所有安全事件 | Keycloak Event Listener 开启，记录 LOGIN/LOGOUT/TOKEN_EXCHANGE/ADMIN 事件 | Keycloak Events、Syslog |
 | **b) 审计记录完整性** | 记录时间、用户、事件类型、结果、来源 IP | Event 包含：时间戳（timestamp）、用户 ID、事件类型（type）、结果（success/error）、IP | Keycloak Event 结构 |
 | **c) 审计记录保护** | 防篡改、防删除，定期备份 | 审计事件推送到不可篡改存储（ELK + 只读索引、Syslog 远程服务器），定期归档 | Logstash → Elasticsearch |
-| **d) 审计记录留存** | 留存 ≥ 6 个月 | 日志归档策略：热数据 30 天（ES）、温数据 90 天（S3/对象存储）、冷数据 6 个月（归档存储） | 日志生命周期管理 |
+|| **d) 审计记录留存** | 留存 ≥ 6 个月 | 日志归档策略：热数据 30 天（ES）、温数据 90 天（S3/对象存储）、冷数据 6 个月（归档存储） | 日志生命周期管理 |
+
+> 实践指南：Keycloak 事件日志的具体配置步骤（CLI 参数、环境变量、Syslog/ELK 导出、数据库膨胀处理）见 [Keycloak 审计日志配置与 IAM 合规实践]({{< relref "../solution-blogs/keycloak-audit-logging-compliance" >}})。
 
 ## 等保 IAM 合规评估流程
 
