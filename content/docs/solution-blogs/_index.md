@@ -33,3 +33,7 @@ menu:
 | [Keycloak 生产数据库配置 — PostgreSQL 实战]({{< relref "keycloak-postgresql-config" >}}) | H2 迁移 PostgreSQL、Kubernetes Secret 凭据管理、连接池调优、Liquibase 自动建表、常见数据库错误排错 |
 | [Keycloak 直连 K8s OIDC — API Server 认证与 RBAC]({{< relref "keycloak-kubernetes-rbac" >}}) | kube-apiserver OIDC 参数、groups claim 映射、kubelogin 接入、RBAC 绑定、与 Dex 方案对比 |
 | [Keycloak SMTP 邮件配置与密码重置]({{< relref "keycloak-smtp-email-config" >}}) | SMTP 配置（Gmail/企业微信/AWS SES）、忘记密码流程、邮箱验证、网络层排错、生产检查清单 |
+| [Keycloak 集群缓存调优与排错指南]({{< relref "keycloak-cluster-cache-tuning" >}}) | InfiniSpan 分布式缓存、JGroups 发现、缓存穿透、会话亲和性、集群脑裂诊断 |
+| [Supabase Auth 与 Keycloak 对比及集成]({{< relref "supabase-keycloak-integration" >}}) | Supabase GoTrue、Row Level Security、Keycloak 作为外部 OIDC 源、JWT 自定义 Claims、社交登录互通 |
+| [Dex 身份联邦指南：从原理到 K8s 集成]({{< relref "dex-identity-federation" >}}) | Dex OIDC Connector、Kubernetes OIDC 认证、多上游 IDP 联邦、groups claim 映射 |
+| [IAM 最小权限原则落地指南]({{< relref "iam-least-privilege-guide" >}}) | Least Privilege、权限反模式、JIT 提权、角色粒度分层、Keycloak 权限审计、等保最小权限要求 |
