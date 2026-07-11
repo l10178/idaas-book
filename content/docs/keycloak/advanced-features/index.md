@@ -112,6 +112,8 @@ Browser Flow
 
 如此即实现「内网免 OTP、外网且已注册设备者强制 OTP」。配合自定义 `Authenticator`，可实现短信验证码、设备指纹、风控回调等任意步骤。
 
+> 更完整的条件认证模式（角色分级、IP 位置条件、Step-Up 认证、LoA 机制）和排错指南，见 [Keycloak 条件认证与 Step-Up 实战]({{< relref "../solution-blogs/keycloak-conditional-step-up-auth" >}})。
+
 ## 事件总线与审计
 
 Keycloak 区分两类事件：
