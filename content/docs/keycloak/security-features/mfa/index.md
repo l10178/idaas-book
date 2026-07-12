@@ -104,6 +104,10 @@ Passkey 是 WebAuthn 的消费者品牌名称（FIDO Alliance + Apple/Google/Mic
 
 **TOTP** Time-based One-Time Password，基于时间戳算法，是时间同步，基于客户端的动态口令和服务器的时间比对，一般每 N 秒产生一个新口令，要求客户端和服务器能够保持正确的时钟，客户端和服务端基于时间计算的动态口令才能一致。算法协议为 [RFC 6238](https://tools.ietf.org/html/rfc6238).
 
+## 进一步阅读
+
+- [Passkey / WebAuthn / FIDO2 IAM 企业落地指南]({{< relref "docs/solution-blogs/keycloak-passkey-webauthn" >}})：FIDO2 协议 Mermaid 流程图解、Keycloak Passkey Conditional UI 配置、企业恢复策略与常见踩坑
+
 开源实现
 
 - [FreeOTP](https://github.com/freeotp)。
