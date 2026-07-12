@@ -3,7 +3,7 @@ title: "第4章：身份生命周期管理 — 从创建到注销的全流程治
 description: "从创建到注销的完整身份生命周期管理指南：涵盖身份供应、权限流转、自动化审批、定期审查与合规治理"
 date: 2024-01-04T00:00:00+08:00
 draft: false
-weight: 14
+weight: 15
 menu:
   docs:
     parent: "fundamentals"

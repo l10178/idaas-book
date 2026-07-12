@@ -3,7 +3,7 @@ title: "第2章：IAM 核心理念 — AAA 模型、设计原则与身份架构 
 description: "IAM 完整入门指南：AAA 认证授权审计模型、数字身份类型、IAM 与 IDaaS 区别、最小权限与纵深防御等核心设计原则"
 date: 2024-01-02T00:00:00+08:00
 draft: false
-weight: 12
+weight: 13
 menu:
   docs:
     parent: "fundamentals"
