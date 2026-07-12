@@ -196,7 +196,7 @@ graph TD
 | 考量 | 答案 |
 |------|------|
 | 推荐协议 | **OAuth 2.0 Device Code Grant**（首次配网时）或 **Client Credentials**（设备已有凭证） |
-| Device Code 流程 | 设备向 IdP 请求一个 device_code + user_code → 用户在手机上访问验证 URL 输入 user_code 确认 → 设备轮询获得 Token |
+| Device Code 流程 | 设备向 IdP 请求一个 device_code + user_code → 用户在手机上访问验证 URL 输入 user_code 确认 → 设备轮询获得 Token | 完整实战见 [OAuth 2.0 设备授权流程指南]({{< relref "docs/solution-blogs/oauth2-device-authorization-grant.md" >}}) |
 | 为什么不是 Client Credentials 直接 | 设备出厂时可能没有唯一凭证，Device Code 提供了"人在环"的授权确认 |
 | 后续会话 | 设备获取 Refresh Token 后可长期保持会话，不再需要用户交互 |
 
