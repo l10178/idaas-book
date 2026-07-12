@@ -16,7 +16,8 @@ menu:
 
 | 主题 | 关键词 |
 |------|--------|
-| [Keycloak 26.7 新特性深度解读]({{< relref "keycloak-26-7-whats-new" >}}) | SCIM API, 多集群 HA, AuthZEN, OpenID SSF, SAML Step-up, Identity Brokering API V2 |
+| [Keycloak 社交登录配置：Google / GitHub / Apple / Microsoft]({{< relref "keycloak-social-identity-providers" >}}) | Google OAuth, GitHub OAuth, Apple Sign In, Microsoft Entra ID, JIT Provisioning, 属性映射, 回调 URI 排错 |
+|| [Keycloak 26.7 新特性深度解读]({{< relref "keycloak-26-7-whats-new" >}}) | SCIM API, 多集群 HA, AuthZEN, OpenID SSF, SAML Step-up, Identity Brokering API V2 |
 | [Keycloak 审计日志配置与 IAM 合规实践]({{< relref "keycloak-audit-logging-compliance" >}}) | 登录审计、管理员事件、Syslog/ELK 导出、等保 2.0 对齐、事件数据库维护 |
 | [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}}) | OIDC, audience, CSRF, redirect loop, Nginx Ingress, ForwardAuth |
 | [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}}) | ERR_TOO_MANY_REDIRECTS, 401 Unauthorized, Cookie, TLS 终结, SameSite |
