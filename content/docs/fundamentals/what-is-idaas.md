@@ -137,7 +137,7 @@ IDaaS 不是简单的"云上的 AD"，而是一种全新的身份管理范式。
 | 扩展性 | 受限于硬件采购周期 | 弹性伸缩 |
 | 典型产品 | 传统 AD、SiteMinder、Oracle IAM | Okta、Auth0、Keycloak、Entra ID |
 
-> **记忆方法**：问「IAM 还是 IDaaS」就像问「数据库还是 RDS」——IAM 是能力，IDaaS 是产品形态。实际选型时，你选的是「用什么产品来实现 IAM」，而不是在 IAM 和 IDaaS 之间二选一。
+> **记忆方法**：问「IAM 还是 IDaaS」就像问「数据库还是 RDS」——IAM 是能力，IDaaS 是产品形态。实际选型时，你选的是「用什么产品来实现 IAM」，而不是在 IAM 和 IDaaS 之间二选一。完整对比——包括选型决策树、混合部署方案和迁移考量，见 [IAM 和 IDaaS 区别]({{< relref "iam-vs-idaas" >}})。
 
 ### Q2：企业已经部署了 Active Directory / LDAP，还需要 IDaaS 吗？
 
