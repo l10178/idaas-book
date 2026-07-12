@@ -193,7 +193,7 @@ grant_type=authorization_code&code=xxx&...
 
 ### Device Code Flow 还在吗？
 
-在。Device Authorization Grant（RFC 8628）——给电视、IoT 等无浏览器设备用的流程——在 OAuth 2.1 中保留且推荐。
+在。Device Authorization Grant（RFC 8628）——给电视、IoT 等无浏览器设备用的流程——在 OAuth 2.1 中保留且推荐。详细原理和配置实战见 [OAuth 2.0 设备授权流程实战指南]({{< relref "docs/solution-blogs/oauth2-device-authorization-grant.md" >}})。
 
 ### Client Credentials Flow 还需要 PKCE 吗？
 
