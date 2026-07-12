@@ -319,6 +319,8 @@ curl -sS -o /dev/null -w "%{http_code}" https://myapp.example.com/
 
 ## 常见错误排错表
 
+> **完整版速查**：这里列出了最常见错误。12 个高频错误的完整诊断命令、根因分析和修复步骤见 **[oauth2-proxy 常见错误排错速查表]({{< relref "oauth2-proxy-common-errors" >}})**。
+
 | 错误现象 | 根本原因 | 解决方案 |
 |----------|----------|----------|
 | `expected audience "oauth2-proxy" got ["account"]` | Keycloak 未配置 Audience Mapper | 在客户端上添加 Audience mapper，勾选 "Add to ID token" |
