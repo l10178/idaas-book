@@ -34,7 +34,7 @@
 &lt;/pre&gt;
 
 &lt;p&gt;实现方式：通常通过 OIDC 或 SAML 2.0。
-代表：Keycloak 单域部署。&lt;/p&gt;</description></item><item><title>第11章：多因素认证（MFA）— TOTP、FIDO2、WebAuthn 与自适应认证 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</guid><description>&lt;h2 id="111-密码已死"&gt;11.1 密码已死？&lt;/h2&gt;
+代表：Keycloak 单域部署。&lt;/p&gt;</description></item><item><title>多因素认证（MFA）— IAM 安全核心：TOTP、FIDO2、WebAuthn 与自适应认证 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</link><pubDate>Sat, 02 Mar 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/core-capabilities/multi-factor-authentication/</guid><description>&lt;h2 id="111-密码已死"&gt;11.1 密码已死？&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&amp;ldquo;密码就像是蟑螂——你灭不掉它，但你可以让它不再那么讨厌。&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -44,7 +44,7 @@
 &lt;li&gt;用户平均有 100+ 个在线账户，但只使用约 5 个不同的密码&lt;/li&gt;
 &lt;li&gt;即使是最强的密码策略，用户也会想方设法绕过（如 Password123!）&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;MFA（Multi-Factor Authentication）不是可选项，&lt;strong&gt;是必需品&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;MFA（Multi-Factor Authentication）不是可选项，&lt;strong&gt;是必需品&lt;/strong&gt;——在 IAM 安全体系中，它是防止凭证泄露导致横向移动的最后一道防线。&lt;/p&gt;
 &lt;h2 id="112-认证因素分类"&gt;11.2 认证因素分类&lt;/h2&gt;
 &lt;p&gt;三种基础因素：&lt;/p&gt;
 &lt;table&gt;
