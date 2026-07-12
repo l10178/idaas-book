@@ -406,6 +406,7 @@ kcadm.sh get clients/<client-id> -r <realm> > client-backup.json
 ## 延伸阅读
 
 - [OAuth 2.0 深度解读 — 授权码流程与 PKCE]({{< relref "docs/protocols/oauth2-authorization-code-pkce" >}})：理解 oauth2-proxy 底层的 OAuth 2.0 授权码 + PKCE 流程
+- [JWT 深入解读]({{< relref "docs/protocols/jwt-deep-dive" >}})：oauth2-proxy 验证的 ID Token 本质就是 JWT——理解其结构、签名和声明验证逻辑
 - [第 18 章：IDaaS 集成模式与实践]({{< relref "docs/implementation/integration-patterns" >}})：网关模式与其他集成模式的对比
 - [第 14 章：Keycloak 架构与部署]({{< relref "docs/implementation/keycloak-architecture" >}})：Keycloak 生产部署的完整指南
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)

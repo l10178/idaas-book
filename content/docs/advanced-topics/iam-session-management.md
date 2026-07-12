@@ -232,6 +232,7 @@ Keycloak 在 Realm Settings → Tokens → **Remember Me** 中控制此功能。
 - [OAuth 2.0 深度解读]({{< relref "../protocols/oauth2-deep-dive.md" >}})：理解 Token 的基础——四种 Grant Type 的完整流程
 - [OAuth 2.0 攻击面与防护图解]({{< relref "../protocols/oauth2-attack-surface.md" >}})：Token 泄露、CSRF、重放攻击的 Mermaid 图解
 - [OpenID Connect 详解]({{< relref "../protocols/openid-connect.md" >}})：ID Token 和 UserInfo 端点的完整说明
+- [JWT 深入解读]({{< relref "../protocols/jwt-deep-dive" >}})：Token 的底层格式 JWT——结构、签名验证、JWS/JWE/JWK 与安全实践
 - [IAM 安全最佳实践]({{< relref "security-best-practices.md" >}})：从安全角度看的 Session Cookie 配置和 Token 保护
 - [Keycloak OAuth2-Proxy 配置与排错]({{< relref "../solution-blogs/keycloak-oauth2-proxy.md" >}})：Token audience 问题实战
 - [Keycloak 高可用与灾备方案]({{< relref "../solution-blogs/keycloak-ha-dr.md" >}})：会话复制和集群架构
