@@ -161,6 +161,8 @@ Keycloak 的生产部署可以支撑：
 
 Red Hat 官方有大规模部署的最佳实践文档。详见 [Keycloak 高可用部署]({{< relref "../solution-blogs/keycloak-ha-dr" >}})。
 
+> 🗺️ **部署导航**：如果你是第一次部署 Keycloak 到生产环境，建议先看 [Keycloak 生产环境完整部署路线图]({{< relref "../solution-blogs/keycloak-production-roadmap" >}})——从部署方式选型到安全加固的八步全景指南。
+
 ### Q2：Keycloak 能替代 Okta / Auth0 吗？
 
 能，但不是完全对等的替代：

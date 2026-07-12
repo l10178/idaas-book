@@ -40,3 +40,4 @@ menu:
 | [Keycloak 条件认证与 Step-Up 实战]({{< relref "keycloak-conditional-step-up-auth" >}}) | Authentication Flow、条件 OTP、角色分级 MFA、IP 位置条件、Step-Up 二次认证、LoA 认证级别 |
 | [Passkey / WebAuthn / FIDO2 IAM 企业落地指南]({{< relref "keycloak-passkey-webauthn" >}}) | FIDO2 注册认证 Mermaid 流程图解、Keycloak Passkey 配置、Conditional UI 自动填充、CTAP 认证器管理、企业恢复策略与常见踩坑 |
 | [IAM SCIM 用户自动配置实战]({{< relref "iam-scim-provisioning-guide" >}}) | IAM 自动化供应、Joiner-Mover-Leaver、HR→IDP→应用全链路同步、Keycloak SCIM 插件、Azure AD SCIM、常见排错 |
+| [Keycloak 生产环境完整部署路线图]({{< relref "keycloak-production-roadmap" >}}) | 从零到高可用全景路线：部署方式选型、数据库、反向代理、集群、监控、备份、安全加固、运维巡检八步走 |
