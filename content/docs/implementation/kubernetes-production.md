@@ -1,6 +1,6 @@
 ---
-title: "第19章：Keycloak Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book"
-description: "Keycloak 在 Kubernetes 上的生产级部署：Operator、Helm、高可用、备份恢复、监控指标与反向代理配置"
+title: "第19章：Keycloak IAM Kubernetes 生产环境部署 — Helm、Operator 与高可用 | IDaaS Book"
+description: "Keycloak IAM 在 Kubernetes 上的生产级部署完整指南：Operator 自动化运维、Helm Chart 配置、高可用集群、备份恢复、Prometheus 监控指标、IAM 会话 affinity 与反向代理配置"
 date: 2024-04-06T00:00:00+08:00
 draft: false
 weight: 46
@@ -419,6 +419,7 @@ spec:
 
 ## 19.12 延伸阅读
 
+- [Keycloak IAM 架构深度解析]({{< relref "../implementation/keycloak-architecture" >}}) — Realm/Client/Role/Group 组织模型、认证流引擎、SPI 扩展机制和集群架构全景
 - [Keycloak 高可用集群部署与灾难恢复实战]({{< relref "../solution-blogs/keycloak-ha-dr" >}}) — 多节点集群、JGroups 发现机制、InfiniSpan 缓存一致性、备份恢复演练流程
 - [Keycloak Prometheus 监控指标详解]({{< relref "../solution-blogs/keycloak-prometheus-metrics" >}}) — 监控指标采集和告警规则
 - [IDaaS 性能与扩展性]({{< relref "../advanced-topics/performance-and-scaling" >}}) — 缓存策略与容量规划
