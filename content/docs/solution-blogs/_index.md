@@ -46,3 +46,4 @@ menu:
 || [Keycloak 生产环境完整部署路线图]({{< relref "keycloak-production-roadmap" >}}) | 从零到高可用全景路线：部署方式选型、数据库、反向代理、集群、监控、备份、安全加固、运维巡检八步走 |
 ||| [IAM 多协议集成实战：OAuth 2.0、OIDC、SAML 在统一身份平台中的协同]({{< relref "iam-multi-protocol-integration" >}}) | IAM 多协议架构、OIDC+SAML 共存、sub/NameID 统一、跨协议 SSO 会话、SAML 证书轮换、协议桥接排错 |
 ||| [OAuth 2.0 设备授权流程（Device Authorization Grant）IAM 实战]({{< relref "oauth2-device-authorization-grant" >}}) | RFC 8628、CLI 工具 SSO 登录、Device Code Flow 原理与 Mermaid 时序图、Keycloak Device Flow 配置、Public Client 安全考量 |
+||| [OAuth 2.0 Token Introspection 实践 — API 网关验证 Token 的正确方式]({{< relref "oauth2-token-introspection-guide" >}}) | RFC 7662、API 网关验证 Token、Nginx auth_request 集成、Kong/APISIX 方案、Introspection 缓存策略、vs JWT 本地验证、Keycloak 配置 |
