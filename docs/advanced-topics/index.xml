@@ -204,7 +204,64 @@ db-pool-max-size: 单节点合理的最大连接数
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h3 id="读写分离"&gt;读写分离&lt;/h3&gt;
-&lt;p&gt;对于大规模部署（&amp;gt;100K 用户）：&lt;/p&gt;</description></item><item><title>IAM 安全合规与等保 2.0 要求 Checklist — 身份认证、访问控制与审计落地指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-compliance-dengbao/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-compliance-dengbao/</guid><description>&lt;h2 id="为什么-iam-是等保-20-的核心控制域"&gt;为什么 IAM 是等保 2.0 的核心控制域&lt;/h2&gt;
+&lt;p&gt;对于大规模部署（&amp;gt;100K 用户）：&lt;/p&gt;</description></item><item><title>第23章：IAM 监控与可观测性最佳实践 — Metrics、日志、Trace 三位一体 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-monitoring-observability/</link><pubDate>Sun, 12 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-monitoring-observability/</guid><description>&lt;h2 id="231-iam-为什么需要专门的可观测性策略"&gt;23.1 IAM 为什么需要专门的可观测性策略&lt;/h2&gt;
+&lt;p&gt;在企业 IT 架构中，IAM 是一个特殊的存在——它不是业务系统，却是所有业务系统的登录入口。当 IAM 出现性能退化时，症状不会首先出现在 IAM 自身，而是表现为&amp;quot;应用登录慢&amp;quot;&amp;ldquo;Token 刷新失败&amp;quot;&amp;ldquo;新员工无法入职&amp;quot;等下游问题。等你从业务告警回溯到 IAM 时，往往已经过了十分钟。&lt;/p&gt;
+&lt;p&gt;IAM 可观测性要回答的核心问题不是&amp;quot;CPU 满没满&amp;rdquo;，而是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;当前有几条认证链路在排队？&lt;/strong&gt; 每一秒的排队都在影响用户登录体验&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Token 签发的 P99 延迟有没有漂移？&lt;/strong&gt; 今天 50ms，下周变成 200ms——IAM 自身可能还在正常范围内，但上游应用已经在报超时&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;哪些 Client 在频繁请求？&lt;/strong&gt; 可能是业务扩容的正常行为，也可能是一个忘记加缓存的微服务正在 DoS 你的 Token Endpoint&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;审计日志里有没有异常模式？&lt;/strong&gt; 凌晨 3 点突然冒出一堆 admin 角色的 Token 签发——要不就是运维在加班，要不就是凭证泄露&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;关于 IAM 整体架构设计（包括高可用和性能扩展）请参阅 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/"&gt;IAM 架构设计指南&lt;/a&gt;和 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/performance-and-scaling/"&gt;IAM 高可用与性能扩展&lt;/a&gt;。本章专注于&amp;quot;怎么看到问题正在发生&amp;rdquo;。&lt;/p&gt;
+&lt;h2 id="232-iam-可观测性三层模型"&gt;23.2 IAM 可观测性三层模型&lt;/h2&gt;
+&lt;p&gt;IAM 可观测性可以按照数据形态分为三层——这不是凭空造的框架，而是 Google SRE 的&amp;quot;三大支柱&amp;quot;（Metrics / Logs / Traces）在身份领域的工程化映射：&lt;/p&gt;
+&lt;pre class="mermaid"&gt;
+ graph TB
+ subgraph &amp;#34;第一层：Metrics（指标）&amp;#34;
+ M1[&amp;#34;认证请求 QPS&amp;#34;]
+ M2[&amp;#34;Token 签发延迟 P50/P95/P99&amp;#34;]
+ M3[&amp;#34;LDAP/DB 后端延迟&amp;#34;]
+ M4[&amp;#34;Session 活跃数&amp;#34;]
+ M5[&amp;#34;错误率（4xx/5xx）&amp;#34;]
+ end
+
+ subgraph &amp;#34;第二层：Logs（日志）&amp;#34;
+ L1[&amp;#34;审计日志 Audit Logs&amp;#34;]
+ L2[&amp;#34;应用日志 App Logs&amp;#34;]
+ L3[&amp;#34;安全事件日志 Security Events&amp;#34;]
+ end
+
+ subgraph &amp;#34;第三层：Traces（链路追踪）&amp;#34;
+ T1[&amp;#34;Browser → IDP → LDAP&amp;#34;]
+ T2[&amp;#34;OAuth Token 完整链路&amp;#34;]
+ T3[&amp;#34;SAML Assertion 签发过程&amp;#34;]
+ end
+
+ subgraph &amp;#34;告警层&amp;#34;
+ A1[&amp;#34;延迟 SLO 告警&amp;#34;]
+ A2[&amp;#34;错误率突增&amp;#34;]
+ A3[&amp;#34;审计异常检测&amp;#34;]
+ end
+
+ M1 &amp;amp; M2 &amp;amp; M3 --&amp;gt; A1
+ M5 --&amp;gt; A2
+ L1 &amp;amp; L3 --&amp;gt; A3
+ M4 --&amp;gt; A1
+
+ T1 &amp;amp; T2 --&amp;gt; M2
+ L2 --&amp;gt; M3
+
+ style A1 fill:#f96,stroke:#333
+ style A2 fill:#f96,stroke:#333
+ style A3 fill:#f96,stroke:#333
+&lt;/pre&gt;
+
+&lt;p&gt;&lt;strong&gt;图释&lt;/strong&gt;：Metrics 层是实时监控的主力——你通过 QPS、延迟、错误率判断&amp;quot;系统是否健康&amp;quot;；Logs 层回答&amp;quot;刚才发生了什么&amp;quot;，尤其是审计日志是合规审计的硬需求；Traces 层解决&amp;quot;认证请求慢在哪一步&amp;quot;——当 P99 延迟从 50ms 漂移到 500ms 时，Trace 告诉你瓶颈是 LDAP 查询还是 Token 签名运算。三层叠加形成告警规则。&lt;/p&gt;</description></item><item><title>IAM 安全合规与等保 2.0 要求 Checklist — 身份认证、访问控制与审计落地指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-compliance-dengbao/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-compliance-dengbao/</guid><description>&lt;h2 id="为什么-iam-是等保-20-的核心控制域"&gt;为什么 IAM 是等保 2.0 的核心控制域&lt;/h2&gt;
 &lt;p&gt;等保 2.0（GB/T 22239-2019《信息安全技术 网络安全等级保护基本要求》）将安全要求分为技术和管理两大类。在技术层面，&lt;strong&gt;身份与访问管理（IAM）跨越了&amp;quot;安全计算环境&amp;quot;和&amp;quot;安全区域边界&amp;quot;两个控制域&lt;/strong&gt;，直接影响以下测评项：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;身份鉴别（Identification and Authentication）&lt;/strong&gt;：你是谁&lt;/li&gt;
@@ -690,63 +747,4 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 &lt;/pre&gt;
 
 &lt;h3 id="access-token访问令牌"&gt;Access Token（访问令牌）&lt;/h3&gt;
-&lt;p&gt;Access Token 是访问资源的&amp;quot;通行证&amp;quot;——资源服务器用它来判断&amp;quot;这个请求有没有权限&amp;quot;。&lt;/p&gt;</description></item><item><title>多租户 IAM 架构设计与方案对比 — 隔离模式、实现与选型 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/multi-tenant-iam/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/multi-tenant-iam/</guid><description>&lt;h2 id="多租户-iam-要解决什么问题"&gt;多租户 IAM 要解决什么问题&lt;/h2&gt;
-&lt;p&gt;多租户（Multi-Tenancy）是 SaaS 平台和企业 IAM 系统中绕不开的架构命题。核心问题是：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;在同一个 IAM 系统中，如何安全隔离不同租户（组织/客户/部门）的身份数据，同时保持运维效率和成本可控？&lt;/strong&gt;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;多租户 IAM 不是简单的&amp;quot;加一个 org_id 字段&amp;quot;，它涉及：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;数据隔离&lt;/strong&gt;：租户 A 的管理员不能看到租户 B 的用户&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;认证隔离&lt;/strong&gt;：租户 A 的用户不能登录到租户 B 的应用&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;授权隔离&lt;/strong&gt;：租户 A 的权限策略不污染租户 B&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;可观测性隔离&lt;/strong&gt;：租户 A 的审计日志不能让租户 B 看到&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;运维效率&lt;/strong&gt;：新增一个租户的成本是分钟级还是天级？&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;关于 IAM 的整体架构设计思路，请参阅 
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/"&gt;IAM 架构设计指南&lt;/a&gt;；IAM 基础概念见 
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/iam-fundamentals/"&gt;IAM 基础&lt;/a&gt;。&lt;/p&gt;
-&lt;h2 id="三种多租户-iam-隔离模式"&gt;三种多租户 IAM 隔离模式&lt;/h2&gt;
-&lt;h3 id="模式一共享-idp--逻辑隔离"&gt;模式一：共享 IDP + 逻辑隔离&lt;/h3&gt;
-&lt;p&gt;所有租户共享同一个身份提供者（IDP）实例，通过属性/组/组织单元做逻辑区分。&lt;/p&gt;
-&lt;pre class="mermaid"&gt;
- graph TB
- subgraph &amp;#34;共享 IDP 实例&amp;#34;
- IDP[IDP Server&amp;lt;br/&amp;gt;共享实例]
- R[(身份存储)]
-
- subgraph &amp;#34;租户 A&amp;#34;
- UA[用户组 A]
- PA[策略 A]
- end
- subgraph &amp;#34;租户 B&amp;#34;
- UB[用户组 B]
- PB[策略 B]
- end
- subgraph &amp;#34;租户 C&amp;#34;
- UC[用户组 C]
- PC[策略 C]
- end
- end
-
- subgraph &amp;#34;应用层&amp;#34;
- APP_A[应用 A]
- APP_B[应用 B]
- APP_C[应用 C]
- end
-
- UA --&amp;gt; IDP
- UB --&amp;gt; IDP
- UC --&amp;gt; IDP
- IDP --&amp;gt; R
- APP_A --&amp;gt; IDP
- APP_B --&amp;gt; IDP
- APP_C --&amp;gt; IDP
-
- style IDP fill:#f9f,stroke:#333,stroke-width:2px
- style R fill:#bbf,stroke:#333
-&lt;/pre&gt;
-
-&lt;p&gt;&lt;strong&gt;实现方式&lt;/strong&gt;：在 Keycloak 中用同一个 Realm，通过 Group、Role、Attribute 区分租户；在 Auth0/Okta 中用 Organization 特性。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;Access Token 是访问资源的&amp;quot;通行证&amp;quot;——资源服务器用它来判断&amp;quot;这个请求有没有权限&amp;quot;。&lt;/p&gt;</description></item></channel></rss>
