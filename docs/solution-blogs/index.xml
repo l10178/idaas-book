@@ -105,7 +105,123 @@
 &lt;/pre&gt;
 
 &lt;h2 id="第一关反向代理-header"&gt;第一关：反向代理 Header&lt;/h2&gt;
-&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>oauth2-proxy 常见错误排错速查表 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</link><pubDate>Mon, 13 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你按照文档配好了 oauth2-proxy + Keycloak，部署到 Kubernetes，打开浏览器——白屏、401、无限跳转、或者 &amp;ldquo;csrf cookie not found&amp;rdquo;。这些错误 oauth2-proxy 的日志里写得很直白，但&lt;strong&gt;为什么发生、怎么修&lt;/strong&gt;才是真正的卡点。&lt;/p&gt;
+&lt;p&gt;这篇文章把 GitHub Issues 和 Stack Overflow 上反复出现的高频错误整理成速查表：每条有诊断命令、根因分析、修复步骤。不需要逐条 Google——直接对号入座。&lt;/p&gt;
+&lt;p&gt;适用：oauth2-proxy v7.x + Keycloak（任意版本），auth-url 或 ForwardAuth 模式。&lt;/p&gt;
+&lt;p&gt;不适用：oauth2-proxy 旧版（v6 及以下，部分参数名不同）、非 Keycloak Provider（GitHub/Google 等 Provider 有各自特有的错误）。&lt;/p&gt;
+&lt;h2 id="错误速查导航"&gt;错误速查导航&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;错误关键词&lt;/th&gt;
+					&lt;th&gt;出现阶段&lt;/th&gt;
+					&lt;th&gt;严重程度&lt;/th&gt;
+					&lt;th&gt;跳转&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;csrf cookie not found&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录回调&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#1-csrf-cookie-not-found"&gt;错误 1&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;expected audience&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Token 校验&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#2-expected-audience-got-account"&gt;错误 2&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;redirect loop&lt;/code&gt; / &lt;code&gt;ERR_TOO_MANY_REDIRECTS&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录后&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#3-登录后无限重定向-redirect-loop"&gt;错误 3&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;invalid_token&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Token 校验&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#4-invalid_token"&gt;错误 4&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;missing state parameter&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录回调&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#5-missing-state-parameter"&gt;错误 5&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;cookie too large&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录回调&lt;/td&gt;
+					&lt;td&gt;🟡 部分用户&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#6-cookie-too-large"&gt;错误 6&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;401&lt;/code&gt; 已登录却被拒&lt;/td&gt;
+					&lt;td&gt;请求阶段&lt;/td&gt;
+					&lt;td&gt;🟡 间歇性&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#7-401-已登录但认证被拒"&gt;错误 7&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;could not get claim: missing claim &amp;quot;email&amp;quot;&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Token 校验&lt;/td&gt;
+					&lt;td&gt;🟡 特定用户&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#8-missing-claim-email"&gt;错误 8&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;error=access_denied&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Keycloak 端&lt;/td&gt;
+					&lt;td&gt;🟡 配置&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#9-erroraccess_denied"&gt;错误 9&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;Nginx 503&lt;/code&gt; / &lt;code&gt;no live upstreams&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;请求阶段&lt;/td&gt;
+					&lt;td&gt;🟡 基础设施&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#10-nginx-ingress-返回-503"&gt;错误 10&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Cookie 只在主域名生效，子域名不行&lt;/td&gt;
+					&lt;td&gt;跨子域&lt;/td&gt;
+					&lt;td&gt;🟡 配置&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#11-cookie-跨子域不生效"&gt;错误 11&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登出一个应用导致全部退出&lt;/td&gt;
+					&lt;td&gt;共享 session&lt;/td&gt;
+					&lt;td&gt;🟢 体验&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#12-登出一个应用全部退出"&gt;错误 12&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="1-csrf-cookie-not-found"&gt;1. csrf cookie not found&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;日志典型输出&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你所在的企业已经用 Active Directory 或 OpenLDAP 管理员工账号多年。现在引入 Keycloak 做统一认证，但不可能把所有用户手动迁移到 Keycloak 本地数据库——需要 Keycloak 直接对接现有的 LDAP/AD，让用户用域账号登录，管理员在原系统维护用户。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;LDAP/AD 是权威用户源，Keycloak 消费但不拥有这些用户&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="适用--不适用"&gt;适用 / 不适用&lt;/h2&gt;
@@ -634,36 +750,4 @@
  K8s-&amp;gt;&amp;gt;User: kubectl 执行结果
 &lt;/pre&gt;
 
-&lt;p&gt;核心链路：&lt;strong&gt;kubectl/kubelogin → Dex（OIDC Provider）→ Keycloak（上游 OIDC 源）→ AD/LDAP/本地用户&lt;/strong&gt;。&lt;/p&gt;</description></item><item><title>Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-adapter-migration/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
-&lt;p&gt;你的项目几年前接入了 Keycloak，用的是官方推荐的 Keycloak Adapter（&lt;code&gt;keycloak-spring-security-adapter&lt;/code&gt;、&lt;code&gt;keycloak-connect&lt;/code&gt;、&lt;code&gt;keycloak-python&lt;/code&gt; 等）。最近升级依赖或做安全审查时发现：&lt;strong&gt;这些 Adapter 已经被 Keycloak 官方弃用，不再维护了&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;继续用会有什么问题？旧 Adapter 绑定了 Keycloak 特定版本、依赖老旧框架（如 WildFly、javax），安全补丁不再跟进，且与 Spring Boot 3+ / Jakarta EE 不兼容。需要迁移到各语言生态的标准 OIDC 库。&lt;/p&gt;
-&lt;p&gt;这篇文章按语言给出迁移路径、最小配置和常见踩坑。&lt;/p&gt;
-&lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
-&lt;table&gt;
-	&lt;thead&gt;
-			&lt;tr&gt;
-					&lt;th&gt;适用&lt;/th&gt;
-					&lt;th&gt;不适用&lt;/th&gt;
-			&lt;/tr&gt;
-	&lt;/thead&gt;
-	&lt;tbody&gt;
-			&lt;tr&gt;
-					&lt;td&gt;还在用 &lt;code&gt;keycloak-spring-security-adapter&lt;/code&gt; 的 Spring Boot 应用&lt;/td&gt;
-					&lt;td&gt;已经在用 Spring Security OAuth2 Client 或标准 OIDC 库（继续保持）&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;还在用 &lt;code&gt;keycloak-connect&lt;/code&gt; 的 Express.js/Node.js 应用&lt;/td&gt;
-					&lt;td&gt;用的是 Keycloak Admin Client（&lt;code&gt;keycloak-admin-client&lt;/code&gt;）——这是 REST API 客户端，不需要迁移&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;还在用 &lt;code&gt;keycloak-python&lt;/code&gt; 或自写的 Adapter 模式对接&lt;/td&gt;
-					&lt;td&gt;前端 SPA 直接对接 Keycloak（前端用 keycloak-js 的情况不同，需单独评估）&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;升级到 Spring Boot 3.x 后发现 Adapter 不兼容&lt;/td&gt;
-					&lt;td&gt;应用根本没有认证/授权需求&lt;/td&gt;
-			&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;注意区分&lt;/strong&gt;：&lt;code&gt;keycloak-admin-client&lt;/code&gt;（REST API 管理客户端，Maven artifact &lt;code&gt;org.keycloak:keycloak-admin-client&lt;/code&gt;）&lt;strong&gt;不需要迁移&lt;/strong&gt;。它是基于标准 REST API 的，与 Adapter 无关。本文讨论的是用于「保护应用、拦截请求」的认证 Adapter。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;核心链路：&lt;strong&gt;kubectl/kubelogin → Dex（OIDC Provider）→ Keycloak（上游 OIDC 源）→ AD/LDAP/本地用户&lt;/strong&gt;。&lt;/p&gt;</description></item></channel></rss>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Mon, 13 Jul 2026 00:21:59 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Mon, 13 Jul 2026 02:06:43 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
@@ -479,7 +479,123 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;/pre&gt;
 
 &lt;h2 id="配置参数"&gt;配置参数&lt;/h2&gt;
-&lt;p&gt;在 Realm Settings &amp;gt; Security Defenses &amp;gt; Brute Force Detection 中配置：&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;在 Realm Settings &amp;gt; Security Defenses &amp;gt; Brute Force Detection 中配置：&lt;/p&gt;</description></item><item><title>oauth2-proxy 常见错误排错速查表 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</link><pubDate>Mon, 13 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;你按照文档配好了 oauth2-proxy + Keycloak，部署到 Kubernetes，打开浏览器——白屏、401、无限跳转、或者 &amp;ldquo;csrf cookie not found&amp;rdquo;。这些错误 oauth2-proxy 的日志里写得很直白，但&lt;strong&gt;为什么发生、怎么修&lt;/strong&gt;才是真正的卡点。&lt;/p&gt;
+&lt;p&gt;这篇文章把 GitHub Issues 和 Stack Overflow 上反复出现的高频错误整理成速查表：每条有诊断命令、根因分析、修复步骤。不需要逐条 Google——直接对号入座。&lt;/p&gt;
+&lt;p&gt;适用：oauth2-proxy v7.x + Keycloak（任意版本），auth-url 或 ForwardAuth 模式。&lt;/p&gt;
+&lt;p&gt;不适用：oauth2-proxy 旧版（v6 及以下，部分参数名不同）、非 Keycloak Provider（GitHub/Google 等 Provider 有各自特有的错误）。&lt;/p&gt;
+&lt;h2 id="错误速查导航"&gt;错误速查导航&lt;/h2&gt;
+&lt;table&gt;
+	&lt;thead&gt;
+			&lt;tr&gt;
+					&lt;th&gt;错误关键词&lt;/th&gt;
+					&lt;th&gt;出现阶段&lt;/th&gt;
+					&lt;th&gt;严重程度&lt;/th&gt;
+					&lt;th&gt;跳转&lt;/th&gt;
+			&lt;/tr&gt;
+	&lt;/thead&gt;
+	&lt;tbody&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;csrf cookie not found&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录回调&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#1-csrf-cookie-not-found"&gt;错误 1&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;expected audience&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Token 校验&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#2-expected-audience-got-account"&gt;错误 2&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;redirect loop&lt;/code&gt; / &lt;code&gt;ERR_TOO_MANY_REDIRECTS&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录后&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#3-登录后无限重定向-redirect-loop"&gt;错误 3&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;invalid_token&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Token 校验&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#4-invalid_token"&gt;错误 4&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;missing state parameter&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录回调&lt;/td&gt;
+					&lt;td&gt;🔴 阻断&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#5-missing-state-parameter"&gt;错误 5&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;cookie too large&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;登录回调&lt;/td&gt;
+					&lt;td&gt;🟡 部分用户&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#6-cookie-too-large"&gt;错误 6&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;401&lt;/code&gt; 已登录却被拒&lt;/td&gt;
+					&lt;td&gt;请求阶段&lt;/td&gt;
+					&lt;td&gt;🟡 间歇性&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#7-401-已登录但认证被拒"&gt;错误 7&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;could not get claim: missing claim &amp;quot;email&amp;quot;&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Token 校验&lt;/td&gt;
+					&lt;td&gt;🟡 特定用户&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#8-missing-claim-email"&gt;错误 8&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;error=access_denied&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;Keycloak 端&lt;/td&gt;
+					&lt;td&gt;🟡 配置&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#9-erroraccess_denied"&gt;错误 9&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;&lt;code&gt;Nginx 503&lt;/code&gt; / &lt;code&gt;no live upstreams&lt;/code&gt;&lt;/td&gt;
+					&lt;td&gt;请求阶段&lt;/td&gt;
+					&lt;td&gt;🟡 基础设施&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#10-nginx-ingress-返回-503"&gt;错误 10&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;Cookie 只在主域名生效，子域名不行&lt;/td&gt;
+					&lt;td&gt;跨子域&lt;/td&gt;
+					&lt;td&gt;🟡 配置&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#11-cookie-跨子域不生效"&gt;错误 11&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+			&lt;tr&gt;
+					&lt;td&gt;登出一个应用导致全部退出&lt;/td&gt;
+					&lt;td&gt;共享 session&lt;/td&gt;
+					&lt;td&gt;🟢 体验&lt;/td&gt;
+					&lt;td&gt;
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#12-登出一个应用全部退出"&gt;错误 12&lt;/a&gt;&lt;/td&gt;
+			&lt;/tr&gt;
+	&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id="1-csrf-cookie-not-found"&gt;1. csrf cookie not found&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;日志典型输出&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你所在的企业已经用 Active Directory 或 OpenLDAP 管理员工账号多年。现在引入 Keycloak 做统一认证，但不可能把所有用户手动迁移到 Keycloak 本地数据库——需要 Keycloak 直接对接现有的 LDAP/AD，让用户用域账号登录，管理员在原系统维护用户。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;LDAP/AD 是权威用户源，Keycloak 消费但不拥有这些用户&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="适用--不适用"&gt;适用 / 不适用&lt;/h2&gt;
@@ -602,39 +718,4 @@ OFF 表示临时锁定。&lt;/p&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;blockquote&gt;
-&lt;p&gt;过滤器里的 &lt;code&gt;userAccountControl:1.2.840.113556.1.4.803:=2&lt;/code&gt; 是 AD 中标志“禁用账户”的位运算写法。生产环境务必过滤掉禁用账户，否则离职员工仍可通过 LDAP 同步拥有 Keycloak 账号。&lt;/p&gt;</description></item><item><title>Keycloak Kubernetes 导入导出与数据迁移实战 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/export-import-on-k8s/</guid><description>&lt;blockquote&gt;
-&lt;p&gt;本文以 &lt;strong&gt;Keycloak Quarkus 发行版（17+）&lt;/strong&gt; 为准。Keycloak 17 起官方已移除 WildFly 发行版，旧版用 &lt;code&gt;standalone.sh -Dkeycloak.migration.action=export&lt;/code&gt; 的导出方式不再适用，统一改用 &lt;code&gt;kc.sh export&lt;/code&gt; / &lt;code&gt;kc.sh import&lt;/code&gt;。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
-&lt;p&gt;Keycloak 集群跑在 Kubernetes 上，初始化了一些配置，想完整地导出来备份或迁移。&lt;/p&gt;
-&lt;h2 id="解决方案"&gt;解决方案&lt;/h2&gt;
-&lt;h3 id="命令行导出"&gt;命令行导出&lt;/h3&gt;
-&lt;p&gt;Quarkus 版本使用 &lt;code&gt;kc.sh export&lt;/code&gt; 一次性导出整个 Realm。&lt;code&gt;export&lt;/code&gt; 子命令以「仅导出」模式启动，不会常驻监听端口，因此&lt;strong&gt;无需&lt;/strong&gt;像旧 WildFly 版本那样设置端口偏移规避端口冲突。&lt;/p&gt;
-&lt;p&gt;导出为单个文件：&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame is-terminal not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl -n keycloak &lt;span class="nb"&gt;exec&lt;/span&gt; -it keycloak-0 -- /opt/keycloak/bin/kc.sh &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="se"&gt;\
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --file /tmp/keycloak-export.json --realm myrealm&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;p&gt;导出为目录（每个 Realm 一个文件）：&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame is-terminal not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-bash" data-lang="bash"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;kubectl -n keycloak -it &lt;span class="nb"&gt;exec&lt;/span&gt; keycloak-0 -- /opt/keycloak/bin/kc.sh &lt;span class="nb"&gt;export&lt;/span&gt; &lt;span class="se"&gt;\
-&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; --dir /tmp/export --realm myrealm&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;blockquote&gt;
-&lt;p&gt;若不指定 &lt;code&gt;--realm&lt;/code&gt;，则导出&lt;strong&gt;除 &lt;code&gt;master&lt;/code&gt; 外&lt;/strong&gt;的所有 Realm；&lt;code&gt;master&lt;/code&gt; Realm 不参与导出。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;过滤器里的 &lt;code&gt;userAccountControl:1.2.840.113556.1.4.803:=2&lt;/code&gt; 是 AD 中标志“禁用账户”的位运算写法。生产环境务必过滤掉禁用账户，否则离职员工仍可通过 LDAP 同步拥有 Keycloak 账号。&lt;/p&gt;</description></item></channel></rss>
