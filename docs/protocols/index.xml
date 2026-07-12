@@ -191,7 +191,24 @@
 &lt;hr&gt;
 &lt;h2 id="1-redirect-uri-劫持"&gt;1. Redirect URI 劫持&lt;/h2&gt;
 &lt;h3 id="攻击原理"&gt;攻击原理&lt;/h3&gt;
-&lt;p&gt;攻击者诱导用户点击一个精心构造的授权链接，其中 &lt;code&gt;redirect_uri&lt;/code&gt; 被替换为攻击者控制的地址。用户在授权服务器上正常登录后，授权码被重定向到攻击者服务器。&lt;/p&gt;</description></item><item><title>OAuth 2.1 相比 OAuth 2.0 的变化 — 废弃、新增与迁移指南</title><link>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</guid><description>&lt;h2 id="为什么需要-oauth-21"&gt;为什么需要 OAuth 2.1&lt;/h2&gt;
+&lt;p&gt;攻击者诱导用户点击一个精心构造的授权链接，其中 &lt;code&gt;redirect_uri&lt;/code&gt; 被替换为攻击者控制的地址。用户在授权服务器上正常登录后，授权码被重定向到攻击者服务器。&lt;/p&gt;</description></item><item><title>JWT 深入解读 — 结构、声明、验证与安全最佳实践 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/jwt-deep-dive/</link><pubDate>Sun, 12 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/jwt-deep-dive/</guid><description>&lt;h2 id="jwt-是什么"&gt;JWT 是什么&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;JWT（JSON Web Token，RFC 7519）&lt;/strong&gt; 是 IAM 领域最核心的数据格式之一。它不是认证协议，而是一种&lt;strong&gt;紧凑的、URL 安全的令牌格式&lt;/strong&gt;，用于在双方之间传递声明（Claims）。OAuth 2.0 的 Access Token、OpenID Connect 的 ID Token 都使用 JWT 作为载体。&lt;/p&gt;
+&lt;p&gt;一句话理解：JWT 是一个&lt;strong&gt;自包含的、可验证的 JSON 对象&lt;/strong&gt;——你把信息编码进去，接收方可以独立验证它的真实性和完整性，不需要回查颁发服务器。&lt;/p&gt;
+&lt;h3 id="jwt-在-iam-中的角色"&gt;JWT 在 IAM 中的角色&lt;/h3&gt;
+&lt;pre class="mermaid"&gt;
+ graph LR
+ A[认证请求] --&amp;gt; B[IDP 验证身份]
+ B --&amp;gt; C[签发 JWT]
+ C --&amp;gt; D1[Access Token&amp;lt;br/&amp;gt;访问 API]
+ C --&amp;gt; D2[ID Token&amp;lt;br/&amp;gt;身份信息]
+ C --&amp;gt; D3[Refresh Token&amp;lt;br/&amp;gt;续期]
+ D1 --&amp;gt; E[Resource Server&amp;lt;br/&amp;gt;验证 JWT 签名和声明]
+ D2 --&amp;gt; F[Client&amp;lt;br/&amp;gt;解析用户信息]
+&lt;/pre&gt;
+
+&lt;p&gt;JWT 不解决「你是谁」的问题（那是认证协议的事），它解决的是「我怎么相信你给我的信息是真的」。&lt;/p&gt;
+&lt;h2 id="jwt-的结构"&gt;JWT 的结构&lt;/h2&gt;
+&lt;p&gt;一个 JWT 由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>OAuth 2.1 相比 OAuth 2.0 的变化 — 废弃、新增与迁移指南</title><link>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</guid><description>&lt;h2 id="为什么需要-oauth-21"&gt;为什么需要 OAuth 2.1&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0（RFC 6749）发布于 2012 年。在接下来近十年里，安全研究者发现了若干严重攻击面——Redirect URI 劫持、授权码拦截、CSRF、Mix-Up Attack、Token 泄露重放。社区通过一系列补充 RFC 逐个修补：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;RFC 7636 (PKCE)&lt;/strong&gt;：防止授权码拦截（2015）&lt;/li&gt;
@@ -635,32 +652,4 @@ cn=张三 cn=engineers&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
 &lt;h2 id="83-active-directory"&gt;8.3 Active Directory&lt;/h2&gt;
-&lt;p&gt;Microsoft Active Directory 是最广泛部署的目录服务。了解 AD 对于 IAM 实践至关重要——大多数企业仍在使用 AD 作为员工身份的权威来源，IAM 平台需要与 AD 对接才能实现「员工入职即自动开通账号、离职即自动回收权限」的完整身份生命周期。&lt;/p&gt;</description></item><item><title>OAuth 2.0 DPoP 深度解析 — Sender-Constrained Token 的原理与实战 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/oauth2-dpop/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2-dpop/</guid><description>&lt;h2 id="dpop-要解决什么问题"&gt;DPoP 要解决什么问题&lt;/h2&gt;
-&lt;p&gt;OAuth 2.0 的 Access Token 默认是 &lt;strong&gt;Bearer Token&lt;/strong&gt;——谁持有这个 Token，谁就能用它访问资源。这个设计简单直接，但也留下了一个隐患：&lt;strong&gt;Bearer Token 一旦泄露，任何人都可以冒充合法用户&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;现实中的泄露场景比想象中更常见：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Access Token 不小心被打印在日志里，日志又被传到第三方服务&lt;/li&gt;
-&lt;li&gt;前端 SPA 把 Token 存在 localStorage，XSS 攻击直接读取&lt;/li&gt;
-&lt;li&gt;Token 在 TLS 终止代理和上游应用之间以明文传输（内网并不总是安全的）&lt;/li&gt;
-&lt;li&gt;Refresh Token 在移动设备上被恶意 App 提取&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;DPoP（Demonstration of Proof-of-Possession，RFC 9449）解决的就是这个问题：&lt;strong&gt;把 Token 绑定到一个只有合法客户端持有的私钥上，即使 Token 被窃取，攻击者拿不到对应的私钥就无法使用&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;这是 OAuth 安全模型从&amp;quot;持有即有权&amp;quot;到&amp;quot;持有+证明&amp;quot;的关键演进。它和 PKCE 一起构成了 OAuth 2.1 安全基线的两大支柱——PKCE 保护授权码不被截获，DPoP 保护 Token 不被重放。&lt;/p&gt;
-&lt;h2 id="dpop-核心原理"&gt;DPoP 核心原理&lt;/h2&gt;
-&lt;p&gt;DPoP 的核心思想是&lt;strong&gt;非对称密钥绑定&lt;/strong&gt;：客户端生成一对公私钥，每次发送 Token 请求时附上一个用私钥签名的 JWT（DPoP Proof），资源服务器用公钥验证签名后，确认&amp;quot;这个请求确实来自持有私钥的客户端&amp;quot;。&lt;/p&gt;
-&lt;p&gt;与之对比，Bearer Token 的工作方式是：&lt;/p&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt;客户端 ─── Bearer Token ───→ 资源服务器
- ↑
- 持有 = 有权
- 不需要额外证明&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;p&gt;DPoP 的工作方式则是：&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;Microsoft Active Directory 是最广泛部署的目录服务。了解 AD 对于 IAM 实践至关重要——大多数企业仍在使用 AD 作为员工身份的权威来源，IAM 平台需要与 AD 对接才能实现「员工入职即自动开通账号、离职即自动回收权限」的完整身份生命周期。&lt;/p&gt;</description></item></channel></rss>
