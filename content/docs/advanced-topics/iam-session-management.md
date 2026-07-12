@@ -236,6 +236,7 @@ Keycloak 在 Realm Settings → Tokens → **Remember Me** 中控制此功能。
 - [IAM 安全最佳实践]({{< relref "security-best-practices.md" >}})：从安全角度看的 Session Cookie 配置和 Token 保护
 - [Keycloak OAuth2-Proxy 配置与排错]({{< relref "../solution-blogs/keycloak-oauth2-proxy.md" >}})：Token audience 问题实战
 - [Keycloak 高可用与灾备方案]({{< relref "../solution-blogs/keycloak-ha-dr.md" >}})：会话复制和集群架构
+- [Keycloak Redis 外部会话缓存]({{< relref "../solution-blogs/keycloak-redis-session-cache.md" >}})：用 Redis 实现 IAM Session 跨节点共享与无状态化
 
 ## 小结
 

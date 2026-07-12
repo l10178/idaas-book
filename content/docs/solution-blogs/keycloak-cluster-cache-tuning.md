@@ -373,3 +373,4 @@ bin/kc.sh start --cache=ispn --cache-stack=jdbc-ping
 - [Keycloak Server Guide: Configuring distributed caches](https://www.keycloak.org/server/caching) — Keycloak 26.7.0 官方文档
 - [Infinispan Configuration Guide](https://infinispan.org/docs/stable/titles/configuring/configuring.html)
 - [Keycloak HA & DR Guide]({{< relref "keycloak-ha-dr" >}})
+- [Keycloak Redis 外部会话缓存]({{< relref "keycloak-redis-session-cache" >}}) — Infinispan 的替代方案，适合 Kubernetes 动态环境

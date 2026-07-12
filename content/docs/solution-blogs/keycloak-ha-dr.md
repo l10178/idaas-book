@@ -299,4 +299,5 @@ kubectl -n keycloak rollout restart deploy/keycloak
 - [Keycloak 生产部署 — Operator、Helm 与高可用]({{< relref "../implementation/kubernetes-production" >}}) — 完整 Operator 部署步骤
 - [Keycloak Prometheus 监控指标详解]({{< relref "keycloak-prometheus-metrics" >}}) — 集群节点监控和告警配置
 - [Keycloak 内部架构 — Realms、Clients、Users、Roles]({{< relref "../implementation/keycloak-architecture" >}}) — 理解集群各组件关系
+- [Keycloak Redis 外部会话缓存]({{< relref "keycloak-redis-session-cache" >}}) — 用 Redis 替代 Infinispan 实现无状态节点
 - [IDaaS 性能与扩展性]({{< relref "../advanced-topics/performance-and-scaling" >}}) — 缓存策略与容量规划
