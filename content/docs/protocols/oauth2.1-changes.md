@@ -1,6 +1,6 @@
 ---
-title: "OAuth 2.1 相比 OAuth 2.0 的变化 — 废弃、新增与迁移指南"
-description: "OAuth 2.1 安全最佳实践整合：PKCE 强制、Implicit 与 ROPC 废弃、Refresh Token 发件人约束、DPoP 及 OAuth 2.0 到 2.1 迁移指南"
+title: "OAuth 2.1 相比 OAuth 2.0 的变化 — IAM 协议升级与迁移指南 | IDaaS Book"
+description: "OAuth 2.1 安全最佳实践整合与 IAM 协议升级指南：PKCE 强制、Implicit 与 ROPC 废弃、Refresh Token 发件人约束、DPoP 及从 OAuth 2.0 到 2.1 的 IAM 迁移对照表"
 date: 2026-07-08T00:00:00+08:00
 draft: false
 weight: 24
@@ -10,8 +10,8 @@ menu:
     identifier: "oauth2.1-changes"
 toc: true
 seo:
-  title: "OAuth 2.1 变化详解：PKCE 强制、Implicit 废弃与迁移指南 | IDaaS Book"
-  description: "OAuth 2.1 完整变化解读：Implicit 流程移除、ROPC 废弃、PKCE 对所有客户端强制、Refresh Token 发件人约束（DPoP/mTLS）、iss 参数防 Mix-Up Attack。附带 OAuth 2.0 到 2.1 迁移对照表。"
+  title: "OAuth 2.1 变化详解：IAM 协议升级、PKCE 强制与迁移指南 | IDaaS Book"
+  description: "OAuth 2.1 完整变化解读与企业 IAM 协议升级指南：Implicit 流程移除、ROPC 废弃、PKCE 对所有客户端强制、Refresh Token 发件人约束（DPoP/mTLS）、iss 参数防 Mix-Up Attack。附带 OAuth 2.0 到 2.1 IAM 迁移对照表。"
 ---
 
 ## 为什么需要 OAuth 2.1
@@ -170,7 +170,9 @@ grant_type=authorization_code&code=xxx&...
 | response_type | code, token, id_token 等 | **仅 code** | 移除 token/id_token 响应类型 |
 | 公共客户端 secret | 不可用 | **不推荐使用** | 改用 PKCE，不再依赖 client_secret |
 
-## 对 IDP 开发者和运维意味着什么
+## 对 IAM 系统和运维意味着什么
+
+OAuth 2.1 不只是协议升级——它是企业 IAM 安全基线的重新定义。如果你的 IAM 系统（Keycloak、CAS、Dex 等）还在按 OAuth 2.0 的默认配置运行，以下几个变更直接影响到认证链路的安全性。更多 IAM 协议选型的整体考量可参阅 [IAM 认证协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}})。
 
 ### 如果你在维护授权服务器（Keycloak、CAS、Dex 等）
 
@@ -204,12 +206,26 @@ grant_type=authorization_code&code=xxx&...
 - DPoP：应用层实现，不需要 PKI 基础设施，适合大多数场景
 - mTLS：传输层绑定，需要维护客户端证书，适合已有 mTLS 基础设施的内部服务网格
 
+### 企业 IAM 升级到 OAuth 2.1 的风险点在哪？
+
+IAM 升级到 OAuth 2.1 的风险不在授权服务器自身（Keycloak 24+ / CAS 7.x 已基本就绪），而在**下游客户端**。实际升级中的三大踩坑点：
+
+1. **Implicit 客户端的迁移遗漏**：很多老旧内部应用（特别是 2018 年前开发的 SPA）仍在使用 Implicit Grant。IAM 端升级后在 Realm/Client 层面禁用 `response_type=token` 可能导致这些应用突然无法登录。建议先扫描所有 Client 的 `response_type` 配置，给每个 Implicit 客户端排迁移窗口。
+
+2. **ROPC 的替代方案选错**：很多运维脚本和自动化工具在用 ROPC（`grant_type=password`）拿 Token——迁移时最常见的错误是直接换成长期有效的 Client Credentials Token，导致\"服务凭证永不过期\"的新的安全问题。正确做法：Client Credentials + 短有效期 + Token 缓存。
+
+3. **PKCE 强制后的 SPA 适配**：如果你的 SPA 认证库（如 `oidc-client-ts`、`keycloak-js`）版本过旧，可能不支持自动 PKCE。升级库版本通常能解决，但需要同步更新回调处理和 Token 刷新逻辑。
+
+建议的 IAM 升级策略：先在 Staging 环境开启 OAuth 2.1 安全策略，用一周时间收集客户端兼容性报告，确认无误后再推广到生产。更多 IAM 安全配置细节见 [IAM 安全最佳实践]({{< relref "docs/advanced-topics/security-best-practices.md" >}})。
+
 ## 相关章节
 
 - [OAuth 2.0 深度解读]({{< ref "oauth2-deep-dive" >}})：OAuth 2.0 授权框架的基础概念和四种角色
 - [OAuth 2.0 授权码流程与 PKCE 完整图解]({{< ref "oauth2-authorization-code-pkce" >}})：授权码流程和 PKCE 的 Mermaid 时序图
 - [OAuth 2.0 攻击面与防护深度图解]({{< ref "oauth2-attack-surface" >}})：OAuth 2.1 解决了哪些攻击面
 - [OpenID Connect 深度解读]({{< ref "openid-connect" >}})：OAuth 2.1 是 OIDC 的授权层基础
+- [IAM 认证协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}})：企业 IAM 协议选型决策——OAuth 2.1/OIDC/SAML 如何选择
+- [IAM 安全最佳实践]({{< relref "docs/advanced-topics/security-best-practices.md" >}})：从 OAuth 2.1 角度看 IAM 安全基线配置
 
 ## 参考来源
 
