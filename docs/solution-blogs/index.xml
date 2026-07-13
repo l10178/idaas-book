@@ -105,7 +105,7 @@
 &lt;/pre&gt;
 
 &lt;h2 id="第一关反向代理-header"&gt;第一关：反向代理 Header&lt;/h2&gt;
-&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>oauth2-proxy 常见错误排错速查表 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</link><pubDate>Mon, 13 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</link><pubDate>Mon, 13 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你按照文档配好了 oauth2-proxy + Keycloak，部署到 Kubernetes，打开浏览器——白屏、401、无限跳转、或者 &amp;ldquo;csrf cookie not found&amp;rdquo;。这些错误 oauth2-proxy 的日志里写得很直白，但&lt;strong&gt;为什么发生、怎么修&lt;/strong&gt;才是真正的卡点。&lt;/p&gt;
 &lt;p&gt;这篇文章把 GitHub Issues 和 Stack Overflow 上反复出现的高频错误整理成速查表：每条有诊断命令、根因分析、修复步骤。不需要逐条 Google——直接对号入座。&lt;/p&gt;
 &lt;p&gt;适用：oauth2-proxy v7.x + Keycloak（任意版本），auth-url 或 ForwardAuth 模式。&lt;/p&gt;
