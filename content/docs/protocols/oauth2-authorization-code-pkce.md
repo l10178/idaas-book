@@ -1,6 +1,6 @@
 ---
-title: "OAuth 2.0 授权码流程与 PKCE 完整图解"
-description: "OAuth 2.0 授权码流程每一步详解、PKCE（RFC 7636）安全增强机制及 OAuth 2.1 带来的变化，附完整时序图和攻击面分析"
+title: "OAuth 2.0 授权码流程与 PKCE — IAM 认证授权核心协议图解 | IDaaS Book"
+description: "IAM OAuth 2.0 授权码流程完整图解：PKCE 安全增强机制、code_challenge/code_verifier 生命周期、OAuth 2.1 强制要求与 IAM 认证协议选型参考"
 date: 2026-07-07T00:00:00+08:00
 draft: false
 weight: 22
@@ -10,8 +10,8 @@ menu:
     identifier: "oauth2-auth-code-pkce"
 toc: true
 seo:
-  title: "OAuth 2.0 授权码流程与 PKCE 完整图解 | IDaaS Book"
-  description: "OAuth 2.0 Authorization Code Flow 完整时序图与 PKCE 安全增强机制。涵盖 code_challenge/code_verifier 生命周期、OAuth 2.1 变更和常见攻击面分析。"
+  title: "OAuth 2.0 授权码流程与 PKCE — IAM 认证授权核心协议图解 | IDaaS Book"
+  description: "IAM OAuth 2.0 授权码流程完整图解：PKCE 安全增强机制、code_challenge/code_verifier 生命周期、OAuth 2.1 强制要求与 IAM 认证协议选型参考"
 ---
 
 ## 为什么需要这份图解
@@ -265,3 +265,25 @@ code_challenge_method = "S256"
 - 理解授权码流程后，看 [OpenID Connect]({{< relref "openid-connect.md" >}}) ——它在此之上添加了身份认证层
 - 了解 [SAML 2.0]({{< relref "saml2.md" >}}) 的另一种 SSO 实现方式
 - 动手实践：[Keycloak 入门]({{< relref "../keycloak/getting-started.md" >}}) 中的 OIDC 客户端配置
+
+## FAQ——IAM 视角下 PKCE 的常见疑问
+
+**Q: IAM 系统中 PKCE 是必须的吗？**
+
+OAuth 2.1 规范草案已将 PKCE 列为所有客户端的强制要求，不再区分 public/confidential client。在 IAM 实践中，这意味着：无论你的客户端是 SPA、移动 App、CLI 还是后端服务，都应该启用 PKCE S256。即使你的授权服务器暂时不强制要求，也应在 IAM 安全策略中将其作为基线——PKCE 的额外成本几乎为零，但缺失它会让授权码流程暴露在拦截风险中。
+
+**Q: PKCE 和 IAM 中的 token binding（DPoP/mTLS）是什么关系？**
+
+它们是互补的，保护不同环节：
+- **PKCE** 保护授权码换 Token 这一跳——确保拿到 code 的人就是发起授权请求的人
+- **DPoP/mTLS** 保护 Token 使用环节——确保拿 Token 调 API 的人是 Token 的合法持有者，不是偷了 Token 的攻击者
+
+在 IAM 安全架构中，两者不是二选一，而是分层防御。低风险场景：PKCE + 短有效期 Access Token；高风险场景（金融、医疗）：PKCE + DPoP + Refresh Token Rotation。
+
+**Q: 我在配置 Keycloak 做 IAM 平台时，PKCE 是自动启用的吗？**
+
+Keycloak 默认对 public client（如 SPA、移动 App）自动启用 PKCE。对 confidential client（有 client_secret 的后端服务），默认不强制 PKCE——但建议你手动开启。在 Keycloak Admin Console 中，进入 Client → Settings → Advanced，将 `Proof Key for Code Exchange Code Challenge Method` 设置为 `S256`。也可以全局强制：在 Realm Settings → Security Defenses → Brute Force Detection 旁，确保 PKCE 策略对齐。
+
+**Q: IAM 系统从 OAuth 2.0 迁移到 2.1（强制 PKCE）需要改代码吗？**
+
+如果你的应用用的是标准 OIDC 库（如 `oauth2-proxy`、Spring Security OAuth2、Passport.js），升级到支持 OAuth 2.1 的版本后，PKCE 通常是透明的——库自动生成 code_verifier 和 code_challenge，你不需要改业务代码。需要检查的是：确保你的授权服务器（如 Keycloak）的 PKCE 设置不是 `plain`（应设为 `S256`），且没有 old client 在使用自定义 HTTP 客户端绕过 PKCE。
