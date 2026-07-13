@@ -229,7 +229,7 @@ graph LR
 | 强认证 | MFA、FIDO2、Passkey | Keycloak WebAuthn / 自定义 SPI |
 | 身份属性 | 用户属性、组、角色 | LDAP Federation / SCIM 同步 |
 | 设备信任 | 设备注册、设备属性 | Keycloak Device Representation |
-| 自适应策略 | 风险评分、上下文感知 | Keycloak Authenticator SPI / 外部 CIEM |
+|| 自适应策略 | 风险评分、上下文感知 | Keycloak Authenticator SPI / 参见 [IAM 条件访问策略设计]({{< relref "docs/advanced-topics/iam-conditional-access.md" >}}) |
 | 持续验证 | CAE、Token 吊销 | Session 管理 / Token Introspection |
 | 审计追踪 | 认证审计、访问日志 | Event Listener SPI / SIEM 对接 |
 
