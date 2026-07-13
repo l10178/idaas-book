@@ -170,29 +170,36 @@ graph LR
 
 **如果 Keycloak 没有正确识别 `X-Forwarded-Proto`**，它会认为请求是 HTTP，于是生成的 redirect_uri 也是 `http://`。浏览器访问 `http://` 又被重定向到 Keycloak（这次可能走 HTTPS），形成循环。
 
-### Keycloak 环境变量
+### Keycloak 26+：配置代理头，不要照搬旧版 `KC_PROXY`
+
+Keycloak 当前的 Quarkus 配置使用 `KC_PROXY_HEADERS`（命令行形式为 `--proxy-headers`）选择代理头格式。下面的示例适用于 TLS 在 Ingress 终结、Keycloak Pod 内使用 HTTP 的常见拓扑：
 
 ```yaml
-# Keycloak 23+ / 26+ 使用 KC_PROXY 或 KC_PROXY_HEADERS
 env:
-- name: KC_PROXY_HEADERS
-  value: "forwarded"
-# 或等价配置（Keycloak 26+）:
 - name: KC_HTTP_ENABLED
   value: "true"
-- name: KC_PROXY
-  value: "edge"
+- name: KC_PROXY_HEADERS
+  value: "xforwarded"
 ```
 
-| `KC_PROXY` 值 | 适用场景 |
-|---------------|----------|
-| `edge` | 反向代理在外部做 TLS 终结，Keycloak 内部 HTTP |
-| `reencrypt` | 代理层和 Keycloak 之间也走 HTTPS（内部 TLS） |
-| `passthrough` | 不做 TLS 终结，直接透传 |
+`xforwarded` 对应 `X-Forwarded-*` 头；如果你的代理发送标准 `Forwarded` 头，则使用 `forwarded`。两者不要混用。关键不是把某个旧版 `KC_PROXY=edge` 原样搬过来，而是让代理实际发送的头格式与 Keycloak 配置一致，并固定公网主机名：
 
-**Keycloak 24 之前**：使用 `KC_HOSTNAME_STRICT=false` + `KC_PROXY=edge` + `--proxy-headers=xforwarded`。
+```yaml
+env:
+- name: KC_HOSTNAME
+  value: "https://keycloak.example.com"
+```
 
-**Keycloak 26+**：配置改为 `KC_PROXY_HEADERS=forwarded`。
+> `KC_PROXY`、`proxy=edge` 等旧版示例在网上仍很常见，但不应作为 Keycloak 26+ 的默认配置。升级时先执行 `kc.sh show-config`，确认最终生效的配置，再删除已弃用或不再识别的参数。不要为了“先能跑”关闭 hostname 校验。
+
+| 检查项 | 正确做法 | 典型误区 |
+|---|---|---|
+| 代理头格式 | `KC_PROXY_HEADERS=xforwarded` 配合 `X-Forwarded-*` | 配置为 `forwarded`，代理却只发送 `X-Forwarded-*` |
+| 公网地址 | 使用 `KC_HOSTNAME=https://keycloak.example.com` | 依赖内部 Service 名称自动推断 |
+| TLS 终结 | 外部 HTTPS、内部 HTTP 时启用 `KC_HTTP_ENABLED=true` | 让 Keycloak 误以为外部也是 HTTP |
+| 旧配置 | 升级前后用 `kc.sh show-config` 对比 | 继续堆叠 `KC_PROXY=edge`、`KC_HOSTNAME_STRICT=false` |
+
+**Keycloak 24 及更早版本**的配置语义不同。维护旧集群时按对应版本文档操作；不要把旧配置和新配置混在同一个 Deployment 里。
 
 ### 验证
 
@@ -249,7 +256,7 @@ kubectl exec -n auth deploy/oauth2-proxy -- date
 | 症状 | 浏览器表现 | 最可能原因 | 优先检查 |
 |------|-----------|-----------|----------|
 | 登录后立即回到登录页 | URL 在 login 和 app 之间闪烁 | Cookie 未写入 / 被清除 | SameSite、Cookie Domain、Cookie Secure |
-| `ERR_TOO_MANY_REDIRECTS` | 浏览器直接报错 | redirect_uri 不匹配 / X-Forwarded-Proto 缺失 | 反向代理 Header、Keycloak KC_PROXY |
+| `ERR_TOO_MANY_REDIRECTS` | 浏览器直接报错 | redirect_uri 不匹配 / X-Forwarded-Proto 缺失 | 反向代理 Header、Keycloak `KC_PROXY_HEADERS` |
 | 登录成功显示 401 | 页面空白或 JSON 错误 | Token 校验失败 | Audience mapper、issuer URL、时钟偏差 |
 | 首次访问正常，刷新后 401 | Cookie 存在但被拒绝 | Cookie Secure 与 HTTP 冲突 | 确认外部 HTTPS→内部 HTTP 的 TLS 终结 |
 | Chrome 正常 Firefox 异常 | 浏览器差异 | SameSite 默认值不同 | Chrome 默认 Lax、Firefox 默认 Strict（部分版本） |
@@ -285,7 +292,7 @@ kubectl exec deploy/keycloak -- curl -s http://localhost:9000/metrics | grep key
 ## 生产环境注意事项
 
 1. **不要用 `SameSite=None` 作为万金油**：这是最弱的 Cookie 保护，应优先排查为什么 Lax 不生效。
-2. **`KC_HOSTNAME_STRICT=false` 不是长期方案**：在 Keycloak 24 之前常见这个配置，但它关闭了 hostname 校验，有安全风险。应正确配置 `KC_HOSTNAME` 和 `KC_PROXY`。
+2. **`KC_HOSTNAME_STRICT=false` 不是长期方案**：在旧版 Keycloak 中常见，但它会放宽 hostname 校验，有安全风险。Keycloak 26+ 应明确配置 `KC_HOSTNAME` 与 `KC_PROXY_HEADERS`。
 3. **监视管理员的登录体验**：如果终端用户能登录但管理员不能，检查 `KC_HOSTNAME_ADMIN_URL` 是否配置。
 4. **反向代理的 `proxy_set_header Host $host` 不能省**：Keycloak 需要知道外部 Host 来构建正确的 redirect_uri。
 
