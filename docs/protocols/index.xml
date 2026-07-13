@@ -208,7 +208,7 @@
 
 &lt;p&gt;JWT 不解决「你是谁」的问题（那是认证协议的事），它解决的是「我怎么相信你给我的信息是真的」。&lt;/p&gt;
 &lt;h2 id="jwt-的结构"&gt;JWT 的结构&lt;/h2&gt;
-&lt;p&gt;一个 JWT 由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>OAuth 2.1 相比 OAuth 2.0 的变化 — 废弃、新增与迁移指南</title><link>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</guid><description>&lt;h2 id="为什么需要-oauth-21"&gt;为什么需要 OAuth 2.1&lt;/h2&gt;
+&lt;p&gt;一个 JWT 由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>OAuth 2.1 相比 OAuth 2.0 的变化 — IAM 协议升级与迁移指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/oauth2.1-changes/</guid><description>&lt;h2 id="为什么需要-oauth-21"&gt;为什么需要 OAuth 2.1&lt;/h2&gt;
 &lt;p&gt;OAuth 2.0（RFC 6749）发布于 2012 年。在接下来近十年里，安全研究者发现了若干严重攻击面——Redirect URI 劫持、授权码拦截、CSRF、Mix-Up Attack、Token 泄露重放。社区通过一系列补充 RFC 逐个修补：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;RFC 7636 (PKCE)&lt;/strong&gt;：防止授权码拦截（2015）&lt;/li&gt;
