@@ -1,6 +1,6 @@
 ---
-title: "oauth2-proxy 常见错误排错速查表 | IDaaS Book"
-description: "oauth2-proxy 集成 Keycloak 时 12 个最高频错误的诊断与修复：csrf cookie not found、expected audience、redirect loop、invalid_token、missing state、cookie too large 等，每条含诊断命令与根因分析"
+title: "IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book"
+description: "IAM 网关 oauth2-proxy 集成 Keycloak 的 12 个高频错误排错：CSRF Cookie、expected audience、redirect loop、invalid_token 与 Nginx 401。"
 date: 2026-07-13T00:00:00+08:00
 lastmod: 2026-07-13T00:00:00+08:00
 draft: false
@@ -268,7 +268,9 @@ cookie value too long (4096 bytes max)
 
 ### 修复
 
-**方案 1（推荐）：使用 Redis Session Store，Cookie 只存 Session ID**
+**方案 1：使用 Redis Session Store，Cookie 只存 Session ID**
+
+Redis 是降低 Cookie 体积和集中管理会话的选项，不是多副本部署的硬性前提。普通 Cookie store 在所有副本共享同一个 `--cookie-secret` 时可以无状态工作；启用 Redis 后，需要把 Redis 的高可用、备份和故障切换纳入 IAM 网关的运维范围。
 
 ```yaml
 args:
@@ -299,7 +301,7 @@ args:
 
 **现象**：登录成功，Cookie 存在，但过一段时间（或刷新页面）返回 401。
 
-**根因**：oauth2-proxy 多副本部署时，用户首次登录的加密 Session 存在副本 A 的 Cookie 里。后续请求被负载均衡打到副本 B，副本 B 用的 `--cookie-secret` 虽然一样，但如果 Cookie 中的 Refresh Token 过期了，副本 B 无法独立完成刷新（oauth2-proxy v7.x 的加密 Cookie 本身不依赖服务端 Session，但 Refresh Token 刷新过程可能存在竞态）。
+**根因**：先区分两种 Session Store。默认 Cookie store 将会话加密放在浏览器 Cookie 中，因此副本 A、B 只要共享同一个 `--cookie-secret` 就能读取它；多副本本身不会造成“副本 B 不认识会话”。如果使用 Redis Session Store，则所有副本必须访问同一个 Redis。仍然出现 401 时，优先检查 Cookie 是否过期、刷新失败、Secret 是否不一致，以及代理是否丢失 Cookie，而不是先把问题归咎于副本数。
 
 ### 诊断
 
@@ -529,4 +531,4 @@ Keycloak 是 IAM 的身份提供者（IDP）：管理用户、组、角色、密
 
 ### 多副本 oauth2-proxy 一定要 Redis 吗？
 
-不一定要。oauth2-proxy 把 Session 加密存在 Cookie 里（JWT-like），本身是无状态的。但如果需要：① 多副本间 Session 状态一致（避免 Token 刷新竞态）；② 减小 Cookie 体积（只存 Session ID）；③ 统一管理登出/Session 失效——则需要 Redis。对大部分场景，不配 Redis + 合理设置 `--cookie-refresh` 足够。
+不一定。默认 Cookie store 是无状态的，多副本共享同一个 `--cookie-secret` 即可读取会话；Redis 主要用于减小 Cookie、集中撤销会话或把状态放到服务端。启用 Redis 后，Redis 也成为 IAM 网关的运行依赖，需要配置认证、TLS、监控和备份。
