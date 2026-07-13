@@ -11,6 +11,8 @@ menu:
 toc: true
 ---
 
+> DPoP 解决的是令牌被窃取后的重放风险，不会替代零信任 IAM 的 `iss`、`aud`、`exp`、权限和会话状态检查。若需要决定普通请求与高风险请求分别采用本地验签还是 introspection，可参考[零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})。
+
 ## DPoP 要解决什么问题
 
 OAuth 2.0 的 Access Token 默认是 **Bearer Token**——谁持有这个 Token，谁就能用它访问资源。这个设计简单直接，但也留下了一个隐患：**Bearer Token 一旦泄露，任何人都可以冒充合法用户**。

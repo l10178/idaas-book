@@ -240,7 +240,7 @@ graph TB
     style IDP fill:#9cf,stroke:#333
 ```
 
-在这个架构中，IAM 系统承担的角色从"登录时验证一次"变为"每次访问都提供身份上下文"——这就是 **持续验证（Continuous Verification）**。Keycloak 这类 IAM 通过 Token introspection endpoint 和实时会话状态为 PDP 提供决策依据。
+在这个架构中，IAM 系统承担的角色从"登录时验证一次"变为"为访问决策持续提供身份上下文"。但不要把 JWT 本地验签误写成持续验证：本地验签不会感知即时会话吊销；高风险操作才应按需调用 Token Introspection 或策略引擎。具体取舍见[零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})。
 
 ### 混合云 IAM 架构
 
