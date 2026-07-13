@@ -1,6 +1,6 @@
 ---
-title: "OAuth 2.0 攻击面与防护深度图解"
-description: "OAuth 2.0 五大攻击面完整分析：Redirect URI 劫持、CSRF/State 伪造、授权码拦截、Mix-Up 攻击与 Token 泄露，附防护措施"
+title: "OAuth 2.0 攻击面与防护 — IAM 安全威胁分析与防御指南 | IDaaS Book"
+description: "IAM OAuth 2.0 五大攻击面完整分析：Redirect URI 劫持、CSRF/State 伪造、授权码拦截、Mix-Up 攻击与 Token 泄露。附 IAM 安全防御措施、Mermaid 图解与生产检查清单"
 date: 2026-07-08T00:00:00+08:00
 draft: false
 weight: 23
@@ -10,8 +10,8 @@ menu:
     identifier: "oauth2-attack-surface"
 toc: true
 seo:
-  title: "OAuth 2.0 攻击面与防护深度图解 | IDaaS Book"
-  description: "OAuth 2.0 五大攻击面（Redirect URI 劫持、CSRF、授权码拦截、Mix-Up Attack、Token 泄露）的 Mermaid 图解与防护措施。涵盖 PKCE、DPoP、mTLS、state 参数和 RFC 9207。"
+  title: "OAuth 2.0 攻击面与防护 — IAM 安全威胁分析与防御指南 | IDaaS Book"
+  description: "IAM OAuth 2.0 五大攻击面（Redirect URI 劫持、CSRF、授权码拦截、Mix-Up Attack、Token 泄露）的 Mermaid 图解与防护措施。涵盖 PKCE、DPoP、mTLS、state 参数和 RFC 9207。"
 ---
 
 ## 为什么需要这份攻击面分析
