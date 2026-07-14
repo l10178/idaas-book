@@ -145,6 +145,8 @@ AAA 是 IAM 最经典的三要素模型：
 >
 > 关于认证协议的选型——OAuth 2.0、OIDC、SAML、LDAP、SCIM 该在什么场景下使用，参见 [IAM 协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}})，其中包含 10 种典型场景的选型推荐和决策树。
 
+> 如果目标是把入职、调岗、离职变成可回归的自动化流程，不能只配置 SSO；还要把 [SCIM 用户生命周期同步]({{< relref "docs/protocols/scim-protocol.md" >}}) 的 `active` 状态、会话吊销和下游验证分开设计。
+
 ## 2.5 IAM 的核心设计原则
 
 ### 最小权限原则（Least Privilege）
