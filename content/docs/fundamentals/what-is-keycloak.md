@@ -99,7 +99,7 @@ toc: true
 | **SAML 2.0** | 企业应用 SSO | 完整 SAML SP + IdP |
 | **LDAP/LDAPS** | 目录服务同步 | User Federation |
 | **Kerberos** | 内网 SSO | Kerberos Bridge |
-| **SCIM** | 用户自动配置 | SCIM API 端点 |
+| **SCIM** | 用户自动配置 | [SCIM API 端点与离职验证]({{< relref "../protocols/scim-protocol.md" >}}) |
 
 ## Keycloak 典型使用场景
 
