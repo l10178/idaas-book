@@ -223,6 +223,9 @@
 &lt;li&gt;&lt;strong&gt;授权（Authorization）&lt;/strong&gt;：你能做什么？能访问什么资源？&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;审计（Audit）&lt;/strong&gt;：谁在什么时候做了什么？&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;认证通过也不等于所有操作都应放行：高风险操作还可能要求更近的认证时间或更强的认证等级（Step-Up Authentication）。这也是 IAM 与零信任架构衔接的关键，详见
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/zero-trust-identity/"&gt;零信任 IAM 架构&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id="22-身份数字世界的通行证"&gt;2.2 身份：数字世界的通行证&lt;/h2&gt;
 &lt;h3 id="221-什么是数字身份"&gt;2.2.1 什么是数字身份&lt;/h3&gt;
 &lt;p&gt;数字身份是一组与实体（人、设备、服务）关联的属性集合，用于在信息系统中唯一标识和描述该实体。&lt;/p&gt;
@@ -280,9 +283,7 @@
 &lt;/table&gt;
 &lt;h3 id="223-身份存储目录服务"&gt;2.2.3 身份存储：目录服务&lt;/h3&gt;
 &lt;p&gt;身份数据需要持久化存储。常见的存储方式：&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;LDAP 目录&lt;/strong&gt;：树状结构，读取性能优异，写入性能一般。适合员工身份存储。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;关系数据库&lt;/strong&gt;：扁平表结构，灵活查询。适合需要复杂关联查询的场景。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;云目录&lt;/strong&gt;：如 Microsoft Entra ID（原 Azure AD）、Google Cloud Identity。原生支持云应用，弹性伸缩。&lt;/p&gt;</description></item><item><title>第3章：IAM 认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;LDAP 目录&lt;/strong&gt;：树状结构，读取性能优异，写入性能一般。适合员工身份存储。&lt;/p&gt;</description></item><item><title>第3章：IAM 认证与授权深度辨析 — AuthN vs AuthZ 的核心区别与设计原则 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</link><pubDate>Wed, 03 Jan 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/fundamentals/authentication-vs-authorization/</guid><description>&lt;h2 id="31-一个经典的误解"&gt;3.1 一个经典的误解&lt;/h2&gt;
 &lt;blockquote&gt;
 &lt;p&gt;&amp;ldquo;我已经登录了，为什么还不能访问这个页面？&amp;rdquo;&lt;/p&gt;
 &lt;/blockquote&gt;
