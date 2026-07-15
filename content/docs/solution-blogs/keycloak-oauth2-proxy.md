@@ -172,7 +172,8 @@ spec:
     spec:
       containers:
       - name: oauth2-proxy
-        image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.2
+        # 生产环境请固定到已验证的版本，不要直接使用 latest。
+        image: quay.io/oauth2-proxy/oauth2-proxy:<已验证版本>
         args:
         - --provider=keycloak-oidc
         - --oidc-issuer-url=https://keycloak.example.com/realms/myrealm
