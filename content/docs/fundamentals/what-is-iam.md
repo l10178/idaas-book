@@ -1,6 +1,6 @@
 ---
-title: "IAM 是什么——身份与访问管理完全指南 | IDaaS Book"
-description: "IAM（身份与访问管理）是什么？从概念、核心能力、架构模式到选型实践，一文读懂 IAM。覆盖认证、授权、用户管理、审计四大域。"
+title: "IAM 是什么：身份与访问管理入门 | IDaaS Book"
+description: "IAM（身份与访问管理）入门：理解认证、授权、用户生命周期和审计，并用 IAM 与 IDaaS 的区别、协议选型和落地检查项开始设计。"
 date: 2026-07-09T00:00:00+08:00
 draft: false
 weight: 10
@@ -157,3 +157,13 @@ IAM 本身是高价值攻击目标，需要：
 4. **团队**：有没有人维护（SaaS 省人力，自建要有人）
 
 详见 [IAM 协议选型指南]({{< relref "../advanced-topics/iam-protocol-selection-guide" >}})。
+
+### Q5：IAM 项目应该先选产品还是先定架构？
+
+先定**身份权威源、应用接入协议和故障回退路径**，再选产品。至少把下面三件事写进设计记录：
+
+1. 员工身份是否由 HR/AD 驱动，客户身份是否另建 CIAM 身份域；
+2. 新应用优先使用 OIDC，仍依赖 SAML 的应用如何联邦接入；
+3. IAM 不可用时，已签发 Token 是否允许短时间继续访问，以及管理员如何使用 break-glass 账号恢复。
+
+只比较“支持多少协议”容易得到一张漂亮的功能表，却没有得到可回滚的身份架构。可结合 [IAM 架构设计指南]({{< relref "../advanced-topics/iam-architecture-design" >}}) 和 [Keycloak + oauth2-proxy 集成指南]({{< relref "../solution-blogs/keycloak-oauth2-proxy" >}}) 检查真实请求链路。
