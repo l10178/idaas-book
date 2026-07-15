@@ -417,10 +417,11 @@ curl -v -H "Cookie: _oauth2_proxy=<复制值>" \
 
 1. **Cookie Secret 轮换**：cookie-secret 用于加密 Cookie，泄露后攻击者可伪造认证 Cookie。定期轮换需同步更新部署（旧 secret 签发的 Cookie 会失效，用户需重新登录）。
 2. **副本数**：至少 2 副本，配合 PodDisruptionBudget 保证高可用。
-3. **资源限制**：oauth2-proxy 是 Go 程序，内存开销很小（通常 < 50MB），CPU 取决于 QPS（中等流量下 < 100m）。
-4. **Redis Session Store**：如果 oauth2-proxy 副本 >1，推荐配置 `--session-store-type=redis` + `--redis-connection-url=redis://...`，避免 Cookie 状态在副本间不一致（不配 Redis 也可正常工作，因为 oauth2-proxy 只用加密 Cookie 存储状态，无服务端 session）。
-5. **TLS**：生产环境 Keycloak 和 Ingress 端到端 TLS 必须开启。oauth2-proxy 本身不要求外部 TLS（被反向代理包裹）。
-6. **监控**：oauth2-proxy 暴露 `/metrics` 端点（Prometheus 格式），包含认证请求总数、延迟、错误计数。
+3. **资源限制**：不要把未经压测的内存或 CPU 数字当成默认值。先用实际登录峰值、回调延迟和 OIDC 上游请求量建立基线，再设置 requests/limits；认证服务通常在发布或 Cookie 失效时出现突发流量。
+4. **Session Store 要按模式选择**：默认加密 Cookie 模式不要求多个副本共享服务端会话；只有需要 Redis 集中保存 Session、Cookie 过大，或希望服务端统一撤销时，才配置 `--session-store-type=redis` 和对应连接参数。引入 Redis 同时引入连接、超时、故障降级和凭据轮换问题，不能为了“多副本”机械添加。
+5. **TLS 与代理信任**：外部访问必须使用 HTTPS；如果 TLS 在 Ingress 终结，需正确传递并限制 `X-Forwarded-*`，避免客户端可以直接向 oauth2-proxy 注入代理头。Keycloak 也必须配置与公开地址一致的 hostname/proxy 模式。
+6. **监控**：按所用版本确认 `/metrics` 是否启用，并监控认证成功率、回调失败、上游 OIDC 错误、延迟和 401/403 比例；不要只看 Pod 是否存活。
+7. **后端再次验证 Token**：`X-Auth-Request-*` 是认证代理传递的请求头，后端必须只信任来自 Ingress 的请求。若后端使用 `Authorization` 或 `X-Auth-Request-Access-Token` 做 API 授权，仍要独立校验签名、`iss`、`aud`、过期时间和权限，不能把“已通过 `/oauth2/auth`”当成 API 授权结果。
 
 ## 回滚方式
 
@@ -453,4 +454,7 @@ kcadm.sh get clients/<client-id> -r <realm> > client-backup.json
 - [第 18 章：IDaaS 集成模式与实践]({{< relref "docs/implementation/integration-patterns" >}})：网关模式与其他集成模式的对比
 - [第 14 章：Keycloak 架构与部署]({{< relref "docs/implementation/keycloak-architecture" >}})：Keycloak 生产部署的完整指南
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
-- [oauth2-proxy GitHub — auth-url 模式使用方式](https://github.com/oauth2-proxy/oauth2-proxy)
+- [oauth2-proxy 官方配置总览](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
+- [ingress-nginx 外部认证示例](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
+- [oauth2-proxy Issue #2808：audience 缺失时的错误处理](https://github.com/oauth2-proxy/oauth2-proxy/issues/2808)
+- [Keycloak 反向代理配置](https://www.keycloak.org/server/reverseproxy)
