@@ -16,7 +16,7 @@ toc: true
 
 你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。
 
-一句话：**Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」**。
+一句话：**Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」**。如果应用还有转账、改密等高风险操作，不能把 `/oauth2/auth` 的放行结果当成授权或 Step-Up 已完成；应由后端按 `iss`、`aud`、权限和认证强度再次判断，参见 [零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "../advanced-topics/zero-trust-identity" >}})。
 
 ## 适用与不适用
 

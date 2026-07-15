@@ -22,6 +22,8 @@ IAM 的四大核心要素：
 - **授权（Authorization）**：你能做什么？能访问什么资源？
 - **审计（Audit）**：谁在什么时候做了什么？
 
+认证通过也不等于所有操作都应放行：高风险操作还可能要求更近的认证时间或更强的认证等级（Step-Up Authentication）。这也是 IAM 与零信任架构衔接的关键，详见[零信任 IAM 架构]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})。
+
 ## 2.2 身份：数字世界的通行证
 
 ### 2.2.1 什么是数字身份

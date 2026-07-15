@@ -296,11 +296,22 @@ graph LR
 
 **Q2: 企业 IAM 系统如何落地零信任的持续验证？**
 
-核心机制是缩短信任评估周期。传统模式下 Token 有效期可能设 8 小时，零信任模式下建议：
-- Token 有效期缩短到 15-30 分钟，配合 Refresh Token 轮换
-- 在 PEP（如 oauth2-proxy、Pomerium、Nginx auth_request）层对每个请求做 Token Introspection
-- 集成风险信号（登录地点跳跃、异常设备、暴力破解检测）触发强制 MFA 或会话吊销
+核心机制是缩短信任评估周期。传统模式下 Token 有效期可能设 8 小时，零信任模式下应按资源风险分层：
+- 普通读请求使用短生命周期 Access Token，并在资源服务本地校验 `iss`、`aud`、签名和权限；不要把本地 JWT 验签描述成即时吊销
+- 高风险操作按需调用 Token Introspection，或要求客户端重新认证；为回源设置超时、缓存和明确的失败策略
+- 资源服务发现认证强度不足时，使用 RFC 9470 的 `insufficient_user_authentication` challenge，并通过 `acr_values` 或 `max_age` 表达所需认证强度/新鲜度
+- 集成登录地点跳跃、异常设备、暴力破解等风险信号，触发 Step-Up MFA 或会话吊销
 - 通过 IAM 审计日志 + SIEM 做行为基线分析，异常时自动干预
+
+### Step-Up 不是重新登录按钮
+
+入口代理只能证明“有一个有效会话”，不能替后端证明该会话满足转账、改密或导出数据所需的认证强度。资源服务应先判断业务风险，再决定是否挑战；认证服务完成升级后，资源服务还要验证新令牌中的 `acr`/`amr`（具体 claim 以 IdP 实际配置为准）。
+
+RFC 9470 定义了资源服务向客户端返回认证不足挑战的协议语义：`acr_values` 表达认证等级，`max_age` 表达认证事件的新鲜度。它不会替应用选择 MFA 方法。对浏览器应用，客户端收到挑战后应带着原始 `redirect_uri` 和状态重新发起授权流程；对 API 客户端，则应明确记录无法完成 Step-Up 时的拒绝结果。
+
+> **实践检查**：普通查询走本地验签；高风险写操作在认证时间过旧或 `acr` 不足时得到 401 challenge，而不是由代理直接返回 403。先测清楚，再决定哪些路由值得付出 Introspection 的网络开销。
+
+参考：[RFC 9470 OAuth 2.0 Step-Up Authentication Challenge Protocol](https://www.rfc-editor.org/rfc/rfc9470)、[Keycloak Server Administration Guide](https://www.keycloak.org/docs/latest/server_admin/)。
 
 **Q3: 零信任 IAM 架构中 Keycloak 能扮演什么角色？**
 
