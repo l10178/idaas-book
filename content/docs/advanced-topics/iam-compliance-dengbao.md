@@ -36,6 +36,8 @@ toc: true
 | **e) 双因素认证** | 重要操作需两种以上鉴别技术组合 | 管理员强制 TOTP/WebAuthn，高敏感操作（删除用户/改权限）要求 Step-up MFA | TOTP（RFC 6238）、WebAuthn/FIDO2 |
 | **f) 口令复杂度** | 最小长度 ≥ 8，包含大小写+数字+特殊字符中 3 种 | Keycloak Password Policy：最小长度 8，至少 1 数字+1 特殊字符+1 大写 | Keycloak Password Policies |
 
+> **密码策略深度落地**：NIST SP 800-63B 与等保 2.0 的完整对照表、Argon2id 哈希切换、泄露密码黑名单部署、管理员分层策略及排错方法，见 [IAM 密码策略实战指南]({{< relref "docs/solution-blogs/iam-password-policy-guide" >}})。
+
 ### 8.1.4.3 访问控制（安全计算环境）
 
 | 等保要求 | 测评要点 | IAM 落地方式 | 对应协议/技术 |
