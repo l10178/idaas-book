@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Wed, 15 Jul 2026 23:05:01 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Thu, 16 Jul 2026 21:15:30 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」&lt;/strong&gt;。如果应用还有转账、改密等高风险操作，不能把 &lt;code&gt;/oauth2/auth&lt;/code&gt; 的放行结果当成授权或 Step-Up 已完成；应由后端按 &lt;code&gt;iss&lt;/code&gt;、&lt;code&gt;aud&lt;/code&gt;、权限和认证强度再次判断，参见 
 
@@ -271,6 +271,11 @@
 &lt;p&gt;启用方式，单击 &lt;code&gt;Authentication&lt;/code&gt; 菜单，选择 &lt;code&gt;Password Policy&lt;/code&gt; 选项卡。 在右侧下拉列表框中选择要添加的策略。根据策略提示设置不同的参数，保存。&lt;/p&gt;
 &lt;p&gt;密码策略只对新创建用户，或者用户修改密码生效，对已有用户不生效。如果想更快生效，就强制用户必须修改密码，在用户的 &lt;code&gt;Required User Actions&lt;/code&gt; 里增加 &lt;code&gt;Update Password&lt;/code&gt; 。&lt;/p&gt;
 &lt;h2 id="密码策略类型"&gt;密码策略类型&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;实战指南&lt;/strong&gt;：完整的 IAM 密码策略落地配置——NIST SP 800-63B 对照、Argon2id 哈希切换、泄露密码黑名单部署、等保 2.0 分层策略——见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/iam-password-policy-guide/"&gt;IAM 密码策略实战&lt;/a&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;HashAlgorithm&lt;/p&gt;
@@ -314,15 +319,7 @@
 &lt;p&gt;正则表达式，用 &lt;code&gt;java.util.regex.Pattern&lt;/code&gt; 解析。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;Expire Password&lt;/p&gt;
-&lt;p&gt;密码有效期，过期时间， N 天。超过这个时间后，用户必须修改密码。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Not Recently Used&lt;/p&gt;
-&lt;p&gt;密码历史，不能是最近使用过的 N 个密码。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Password Blacklist&lt;/p&gt;</description></item><item><title>Keycloak 重定向循环与 401 排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;Expire Password&lt;/p&gt;</description></item><item><title>Keycloak 重定向循环与 401 排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你已经部署好了 Keycloak +反向代理，用户能在 Keycloak 登录页输入用户名密码，但登录成功后浏览器在 Keycloak 和应用之间反复跳转，最终浏览器报 &lt;code&gt;ERR_TOO_MANY_REDIRECTS&lt;/code&gt;；或者直接返回 401，看起来&amp;quot;登录成功了但就是进不去&amp;quot;。&lt;/p&gt;
 &lt;p&gt;这类问题的根因几乎都在 &lt;strong&gt;Cookie、反向代理 Header、TLS 终结 和 OIDC 回调 URI&lt;/strong&gt; 四个环节。本文给出一个系统性的排查路线图。&lt;/p&gt;
 &lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
