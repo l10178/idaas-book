@@ -1,6 +1,6 @@
 ---
-title: "Traefik ForwardAuth + Keycloak + oauth2-proxy 完整配置与排错指南 | IDaaS Book"
-description: "使用 Traefik ForwardAuth 中间件集成 Keycloak OIDC 和 oauth2-proxy 保护 Web 应用的完整配置指南，覆盖 Middleware CRD 与 401 排错"
+title: "IAM 入口认证：Traefik ForwardAuth + Keycloak + oauth2-proxy | IDaaS Book"
+description: "IAM 入口认证实战：用 Traefik ForwardAuth、Keycloak OIDC 和 oauth2-proxy 保护 Kubernetes 应用，覆盖转发头信任边界、配置与 401 排错"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false
@@ -123,6 +123,8 @@ spec:
         - --http-address=0.0.0.0:4180
         # 反向代理模式：信任 Traefik 传过来的 X-Forwarded-* 头
         - --reverse-proxy=true
+        # 只信任 Traefik/入口代理的网段；不要让可直达 oauth2-proxy 的客户端伪造转发头
+        - --trusted-proxy-ip=10.42.0.0/16
         # 传递给后端的 headers
         - --set-xauthrequest=true
         - --set-authorization-header=true
@@ -145,8 +147,8 @@ spec:
 
 **Traefik 场景的配置要点**：
 
-1. `--reverse-proxy=true`：告诉 oauth2-proxy 它在反向代理后面，会自动从 `X-Forwarded-Proto` 和 `X-Forwarded-Host` 取原始请求的协议和域名来构造 redirect_uri。Traefik 默认会设置这些头。
-2. `--skip-auth-route=^/oauth2/callback$`：ForwardAuth 中间件会对**所有路径**发子请求，包括 `/oauth2/callback`。如果不跳过，回调请求会被二次拦截，导致循环。
+1. `--reverse-proxy=true`：告诉 oauth2-proxy 它在反向代理后面，会从受信任代理提供的 `X-Forwarded-Proto` 和 `X-Forwarded-Host` 取原始请求的协议和域名来构造 redirect_uri。生产环境必须同时配置 `--trusted-proxy-ip`（示例中的网段需替换为实际入口代理来源）；否则任何能直接访问 oauth2-proxy 的客户端都可能伪造转发头。
+2. `--skip-auth-route=^/oauth2/callback$`：仅用于 oauth2-proxy 自身路由的认证豁免。ForwardAuth 路由仍应把 `/oauth2/*`（尤其是 `/oauth2/callback`）直接转发到 oauth2-proxy，不能让回调再经过保护该业务应用的 ForwardAuth。
 3. oauth2-proxy Service 使用 ClusterIP 即可——只有 Traefik 会通过 ForwardAuth 调用它，不需要对外暴露。
 
 ## Traefik ForwardAuth Middleware 配置
@@ -173,6 +175,8 @@ spec:
     # 可选：Authorization 头（如果后端需要 Bearer token）
     - Authorization
 ```
+
+> **Traefik 入口的信任边界**：`trustForwardHeader: true` 只适合放在已经由 EntryPoint 清洗过转发头的链路上。生产配置还应把入口代理网段写入 `forwardedHeaders.trustedIPs`；不要把这个选项当成“所有请求头都可信”。Traefik 当前文档已将该 Middleware 选项标为待移除，后续升级应优先迁移到 EntryPoint 级别的可信 IP 配置。
 
 **`authResponseHeaders` 说明**：
 
@@ -379,7 +383,7 @@ kubectl get ingressroute -A -o json | jq '.items[].spec.routes[].middlewares'
 4. **多副本**：oauth2-proxy 至少 2 副本，配合 `PodDisruptionBudget`。oauth2-proxy 用加密 Cookie 存状态，即使不配 Redis 也能在多副本间正常工作。
 5. **Cookie Secret**：`--cookie-secret` 泄露后攻击者可伪造认证 Cookie。使用 `openssl rand -base64 32` 生成，通过 Kubernetes Secret 注入。
 6. **callback 路由**：必须有一条不经过 ForwardAuth 中间件的路由将 `/oauth2/callback` 指向 oauth2-proxy。最简单的做法是用单独的域名（如 `auth.example.com`）承载 oauth2-proxy，并通过 `--redirect-url` 参数指定。
-7. **Traefik 版本兼容性**：`ForwardAuth` 中间件在 Traefik v2.x 所有版本均可用，`trustForwardHeader` 从 v2.3+ 开始稳定。`authResponseHeaders` 从 v2.1+ 可用。
+7. **转发头信任边界**：Traefik 文档已将 ForwardAuth 的 `trustForwardHeader` 标为待移除的选项；应在 EntryPoint 级别用 `forwardedHeaders.trustedIPs` 清理来自不可信客户端的 `X-Forwarded-*`，再明确设置 Middleware 的 `trustForwardHeader`。oauth2-proxy 侧仍用 `--trusted-proxy-ip` 限制谁可以提供转发头。不要把“能跑通”误当成“信任边界已闭合”。
 8. **健康检查**：oauth2-proxy 暴露 `/ping` 端点（返回 200 OK），可用于 Kubernetes 的 `livenessProbe` 和 `readinessProbe`。
 
 ## 回滚方式
