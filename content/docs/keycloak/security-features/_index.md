@@ -15,7 +15,7 @@ toc: true
 
 ## 密码策略
 
-在 Realm → **Authentication → Password Policy** 中配置，支持多策略叠加，策略间以 ` and ` 连接。
+在 Realm → **Authentication → Password Policy** 中配置，支持多策略叠加，策略间以 ` and ` 连接。NIST SP 800-63B 与等保 2.0 的完整对照和落地步骤见 [IAM 密码策略实战指南]({{< relref "docs/solution-blogs/iam-password-policy-guide" >}})。
 
 | 策略 | 作用 | 推荐值 |
 |------|------|--------|
