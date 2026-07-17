@@ -36,7 +36,7 @@ toc: true
 | 复杂度 | 高 | 低 |
 | 行业采用 | 传统企业 | 现代应用 |
 
-一句话总结：**遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。**
+一句话总结：**遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。** 但多协议共存时，SAML `NameID` 不应随意选择可变的 email 作为跨系统主键；应先定义不可变业务标识和映射策略，参见 [IAM 多协议集成实战]({{< relref "docs/solution-blogs/iam-multi-protocol-integration.md" >}})。
 
 ## 7.2 SAML 的核心概念
 
