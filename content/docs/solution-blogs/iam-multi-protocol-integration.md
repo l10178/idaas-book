@@ -1,6 +1,6 @@
 ---
-title: "IAM 多协议集成实战：OAuth 2.0、OIDC、SAML 在统一身份平台中的协同 | IDaaS Book"
-description: "企业 IAM 多协议集成指南：OAuth 2.0、OIDC、SAML 三协议在统一身份平台中的架构设计、会话统一、协议桥接与 Keycloak 实战配置"
+title: "IAM 多协议身份映射：OIDC、SAML 与 OAuth | IDaaS Book"
+description: "IAM 多协议集成指南：用不可变身份键统一 OIDC、SAML 与 OAuth，并在 Keycloak 中验证会话、属性映射和回滚。"
 date: 2026-07-13T00:00:00+08:00
 draft: false
 weight: 30
@@ -295,8 +295,23 @@ Single Group Attribute: OFF  （让所有组在一个属性中）
 - [ ] SSO 会话超时在各协议中是否统一配置（Keycloak Realm Settings > Tokens/Sessions）？
 - [ ] 是否测试过跨协议的登出行为（OIDC 登出 → SAML 应用是否受影响）？
 - [ ] `ForceAuthn` 和 `prompt=login` 的使用场景是否有明确文档记录？
-- [ ] SAML Metadata 中的证书是否在监控范围内（Keycloak 的 SAML 签名证书默认 1 年有效）？
+- [ ] SAML Metadata 中的签名证书是否在监控范围内，并已与 SP 的更新/回滚窗口对齐？
 - [ ] 如果有跨 Realm 需求，Identity Brokering 的 User Federation 是否正确配置？
+
+### 上线前验证身份键
+
+不要只在浏览器里看到“登录成功”就结束验证。至少抽取一组测试用户，分别保存 OIDC 和 SAML 的结果，再检查它们是否能落到同一个内部用户 ID：
+
+```bash
+# OIDC：先用测试客户端获取 ID Token，再在本地解码 payload（不要把生产 Token 粘到第三方网站）
+jq -R 'split(".") | .[1] | @base64d | fromjson | {iss, sub, employee_id, email}' < id-token.txt
+
+# SAML：从测试登录响应中保存 Assertion，检查 NameID 和 employee_id
+xmllint --xpath 'string(//*[local-name()="NameID"])' response.xml; printf '\n'
+xmllint --xpath 'string(//*[local-name()="Attribute" and @Name="employee_id"]/*[local-name()="AttributeValue"])' response.xml; printf '\n'
+```
+
+预期结果不是“`sub` 和 `NameID` 字符串相等”，而是：OIDC 的 `(iss, sub)`、SAML 的稳定 `NameID`/`employee_id` 都能映射到同一个内部用户 ID。测试邮箱变更、员工离职后重新入职、用户删除后重建；如果内部 ID 被复用，历史审计会把两个不同的人串成一个人，这是比登录失败更难发现的事故。
 
 ## 回滚方式
 
@@ -337,7 +352,7 @@ Keycloak 的 SAML 签名证书在 Realm Settings > Keys > SAML 2.0 Identity Prov
 4. 在旧证书过期前 48 小时，确认所有 SP 已完成切换
 5. 移除旧密钥
 
-**不要**先删旧密钥再加新密钥——这会导致中间窗口所有 SAML 应用无法登录。
+**不要**先删旧密钥再加新密钥——这会导致中间窗口所有 SAML 应用无法登录。先确认 SP 支持多证书或已完成 Metadata 切换，再移除旧密钥。
 
 ## 延伸阅读
 
