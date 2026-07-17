@@ -279,46 +279,9 @@
 &lt;li&gt;&lt;strong&gt;发现文档&lt;/strong&gt;：自动发现服务器配置的标准机制&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;会话管理&lt;/strong&gt;：登录、登出、会话状态&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id="id-token-vs-access-token"&gt;ID Token vs Access Token&lt;/h3&gt;
-&lt;table&gt;
-	&lt;thead&gt;
-			&lt;tr&gt;
-					&lt;th&gt;特性&lt;/th&gt;
-					&lt;th&gt;ID Token&lt;/th&gt;
-					&lt;th&gt;Access Token&lt;/th&gt;
-			&lt;/tr&gt;
-	&lt;/thead&gt;
-	&lt;tbody&gt;
-			&lt;tr&gt;
-					&lt;td&gt;用途&lt;/td&gt;
-					&lt;td&gt;认证（这是谁）&lt;/td&gt;
-					&lt;td&gt;授权（能做什么）&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;受众&lt;/td&gt;
-					&lt;td&gt;客户端应用&lt;/td&gt;
-					&lt;td&gt;资源服务器&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;格式&lt;/td&gt;
-					&lt;td&gt;JWT&lt;/td&gt;
-					&lt;td&gt;JWT 或不透明字符串&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;包含用户信息&lt;/td&gt;
-					&lt;td&gt;是&lt;/td&gt;
-					&lt;td&gt;不一定&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;应该发送给资源服务器？&lt;/td&gt;
-					&lt;td&gt;不&lt;/td&gt;
-					&lt;td&gt;是&lt;/td&gt;
-			&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id="63-id-token-深度解析"&gt;6.3 ID Token 深度解析&lt;/h2&gt;
-&lt;h3 id="jwt-结构"&gt;JWT 结构&lt;/h3&gt;
-&lt;p&gt;JWT（JSON Web Token，RFC 7519）由三部分组成，用 &lt;code&gt;.&lt;/code&gt; 分隔：&lt;/p&gt;</description></item><item><title>第7章：IAM SAML 2.0 身份联邦 — 断言、绑定、元数据与 SSO 流程图解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2/</link><pubDate>Sat, 03 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2/</guid><description>&lt;h2 id="71-历史与现状"&gt;7.1 历史与现状&lt;/h2&gt;
+&lt;p&gt;在需要与 SAML 应用或其他 IAM 协议互通时，不要用 email 替代 &lt;code&gt;iss + sub&lt;/code&gt; 作为用户主键；跨协议的标识映射和生命周期测试见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/iam-multi-protocol-integration/"&gt;IAM 多协议集成实战&lt;/a&gt;。&lt;/p&gt;</description></item><item><title>第7章：IAM SAML 2.0 身份联邦 — 断言、绑定、元数据与 SSO 流程图解 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2/</link><pubDate>Sat, 03 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2/</guid><description>&lt;h2 id="71-历史与现状"&gt;7.1 历史与现状&lt;/h2&gt;
 &lt;p&gt;在企业 IAM（身份与访问管理）体系中，SAML（Security Assertion Markup Language）是由 OASIS 标准组织制定的基于 XML 的身份联邦协议。SAML 2.0 于 2005 年发布，是 Web 浏览器 SSO 的行业先驱，至今仍是 IAM 身份联邦场景中与 OIDC 并列的两大支柱协议之一。&lt;/p&gt;
 &lt;p&gt;尽管 OIDC 在新应用中的采用率已远超 SAML，但 SAML 2.0 在企业级应用中依然占有重要地位。特别是在以下场景：&lt;/p&gt;
 &lt;ul&gt;
@@ -384,7 +347,9 @@
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt;&lt;/p&gt;</description></item><item><title>SAML 2.0 攻击面与安全防护 — IAM 身份联邦安全深度分析 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2-attack-surface/</link><pubDate>Sun, 12 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2-attack-surface/</guid><description>&lt;h2 id="为什么需要-saml-安全分析"&gt;为什么需要 SAML 安全分析&lt;/h2&gt;
+&lt;p&gt;一句话总结：&lt;strong&gt;遗留系统用 SAML，新系统用 OIDC，作为 IDaaS 平台两者都要支持。&lt;/strong&gt; 但多协议共存时，SAML &lt;code&gt;NameID&lt;/code&gt; 不应随意选择可变的 email 作为跨系统主键；应先定义不可变业务标识和映射策略，参见 
+
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/iam-multi-protocol-integration/"&gt;IAM 多协议集成实战&lt;/a&gt;。&lt;/p&gt;</description></item><item><title>SAML 2.0 攻击面与安全防护 — IAM 身份联邦安全深度分析 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/saml2-attack-surface/</link><pubDate>Sun, 12 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/saml2-attack-surface/</guid><description>&lt;h2 id="为什么需要-saml-安全分析"&gt;为什么需要 SAML 安全分析&lt;/h2&gt;
 &lt;p&gt;上一章 
 
 &lt;a class="link link--text" href="https://idaas.xlabs.club/docs/protocols/oauth2-attack-surface/"&gt;OAuth 2.0 攻击面与防护&lt;/a&gt; 分析了 OAuth 的五类攻击——但 IAM 身份联邦的另一大支柱 SAML 2.0 同样拥有自己的攻击面。在企业实践中，SAML 承载着金融、政务、教育等领域的身份联邦流量，一次 SAML 安全漏洞就可能导致跨系统身份伪造。&lt;/p&gt;
