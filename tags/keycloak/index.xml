@@ -127,4 +127,4 @@
  K8s-&amp;gt;&amp;gt;User: Pod 列表
 &lt;/pre&gt;
 
-&lt;p&gt;流程要点：&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;流程要点：&lt;/p&gt;</description></item><item><title>Keycloak + PgBouncer 排错：prepared statement does not exist 与通过环境变量配 JDBC URL 参数</title><link>https://idaas.xlabs.club/blog/keycloak-pgbouncer-prepared-statement/</link><pubDate>Fri, 17 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/blog/keycloak-pgbouncer-prepared-statement/</guid><description>Keycloak 挂在 PgBouncer 后面后事务提交失败、报 prepared statement does not exist 的排错记录，顺带说清楚怎么通过环境变量给任意组件的 JDBC URL 追加参数。</description></item></channel></rss>
