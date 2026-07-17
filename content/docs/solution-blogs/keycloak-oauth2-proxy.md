@@ -1,6 +1,6 @@
 ---
-title: "Keycloak + oauth2-proxy 集成实战指南 | IDaaS Book"
-description: "Keycloak 搭配 oauth2-proxy 保护 Web 应用的完整配置指南，覆盖 audience 映射、Cookie 域配置、Nginx Ingress auth-url 与排错"
+title: "IAM 网关：Keycloak + oauth2-proxy 集成指南 | IDaaS Book"
+description: "IAM 网关用 Keycloak 与 oauth2-proxy 保护 Web 应用，覆盖 OIDC audience、Cookie、Nginx Ingress auth-url 与回滚排错"
 date: 2026-07-08T00:00:00+08:00
 lastmod: 2026-07-08T00:00:00+08:00
 draft: false
@@ -262,11 +262,6 @@ metadata:
     nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
     nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups,X-Auth-Request-Access-Token"
-    # 允许 oauth2-proxy 回调路径绕过认证
-    nginx.ingress.kubernetes.io/auth-snippet: |
-      if ($request_uri ~* "^/oauth2/") {
-        # oauth2-proxy 自身的回调路径不走 auth-url
-      }
 spec:
   ingressClassName: nginx
   tls:
@@ -287,7 +282,34 @@ spec:
 ```
 
 > **注意**：`auth-signin` 使用 `$host` 变量，确保重定向到当前访问的域名。oauth2-proxy 的 Service 必须和 Ingress 在同一个集群内可达。
+>
+> **不要用 `auth-snippet` 试图放行 `/oauth2/callback`。** `auth-url` 是当前 Ingress 对请求执行的外部认证检查；回调入口应单独创建一个不带 `auth-url` 的 Ingress，指向 oauth2-proxy Service。否则回调请求可能再次进入认证检查，形成登录循环。下面的业务 Ingress 只负责保护应用，`/oauth2/*` 由独立 Ingress 暴露。
 
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: oauth2-proxy-endpoints
+  namespace: auth
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts: [myapp.example.com]
+    secretName: myapp-tls
+  rules:
+  - host: myapp.example.com
+    http:
+      paths:
+      - path: /oauth2
+        pathType: Prefix
+        backend:
+          service:
+            name: oauth2-proxy
+            port:
+              number: 4180
+```
+
+这两个 Ingress 可以共享同一个 host；关键区别是业务 Ingress 有 `auth-url`，回调 Ingress 没有。若集群启用了 `server-snippet` 或其他全局认证策略，还要确认它没有覆盖这个例外路径。
 ## Traefik ForwardAuth 配置
 
 如果用 Traefik 替代 Nginx Ingress，使用 `ForwardAuth` 中间件。完整配置、排错和对比见专用指南：
@@ -424,6 +446,20 @@ curl -v -H "Cookie: _oauth2_proxy=<复制值>" \
 6. **监控**：按所用版本确认 `/metrics` 是否启用，并监控认证成功率、回调失败、上游 OIDC 错误、延迟和 401/403 比例；不要只看 Pod 是否存活。
 7. **后端再次验证 Token**：`X-Auth-Request-*` 是认证代理传递的请求头，后端必须只信任来自 Ingress 的请求。若后端使用 `Authorization` 或 `X-Auth-Request-Access-Token` 做 API 授权，仍要独立校验签名、`iss`、`aud`、过期时间和权限，不能把“已通过 `/oauth2/auth`”当成 API 授权结果。
 
+## IAM 常见问题（FAQ）
+
+### Keycloak、oauth2-proxy 和后端分别负责什么？
+
+Keycloak 是 IAM 的身份提供者，负责认证并签发 OIDC Token；oauth2-proxy 是入口认证网关，负责把浏览器会话转换成对应用的放行结果；后端仍负责资源授权和 Token 校验。`/oauth2/auth` 返回 2xx 只说明入口会话有效，不代表用户有权执行某个 API 操作。
+
+### 为什么登录成功后仍然出现 `expected audience`？
+
+先确认 Discovery 返回的 `issuer` 与 Token 的 `iss` 一致，再检查新签发的 ID Token 的 `aud` 是否包含 oauth2-proxy 的 client ID。Audience Mapper 修改后必须重新登录；旧 Cookie 或旧 Token 不会自动获得新的 claim。不要把后端 API 的 audience 填给 oauth2-proxy，两个接收方是不同的 IAM 边界。
+
+### 多个应用应该共用一个 oauth2-proxy 吗？
+
+只有当应用处于同一主域名、同一 Realm，且能接受共享 Cookie 会话时才适合共用。不同租户、不同安全等级或需要独立登出的应用应使用不同的 Cookie Name 或独立实例；共享 Cookie 会扩大会话泄露和误登出的影响范围，不能只因为少部署一个 Pod 就选它。
+
 ## 回滚方式
 
 如果新配置导致认证失败，快速回滚步骤：
@@ -456,6 +492,6 @@ kcadm.sh get clients/<client-id> -r <realm> > client-backup.json
 - [第 14 章：Keycloak 架构与部署]({{< relref "docs/implementation/keycloak-architecture" >}})：Keycloak 生产部署的完整指南
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 官方配置总览](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
-- [ingress-nginx 外部认证示例](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
+- [ingress-nginx 外部认证示例：auth-url 与 auth-signin](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
 - [oauth2-proxy Issue #2808：audience 缺失时的错误处理](https://github.com/oauth2-proxy/oauth2-proxy/issues/2808)
 - [Keycloak 反向代理配置](https://www.keycloak.org/server/reverseproxy)
