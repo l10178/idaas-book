@@ -42,6 +42,8 @@ OIDC 在 OAuth 2.0 基础上增加了：
 - **发现文档**：自动发现服务器配置的标准机制
 - **会话管理**：登录、登出、会话状态
 
+在需要与 SAML 应用或其他 IAM 协议互通时，不要用 email 替代 `iss + sub` 作为用户主键；跨协议的标识映射和生命周期测试见 [IAM 多协议集成实战]({{< relref "docs/solution-blogs/iam-multi-protocol-integration.md" >}})。
+
 ### ID Token vs Access Token
 
 | 特性 | ID Token | Access Token |

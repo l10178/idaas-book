@@ -98,19 +98,21 @@ graph TB
 
 ### 解决方案
 
-**方案一：统一 NameID 格式（Keycloak 推荐）**
+**方案一：统一业务标识，而不是强行复用协议字段**
 
-在 Keycloak 中，为 SAML Client 配置 NameID 时选择与 OIDC 一致的标识符：
+不要把 `email` 当成天然稳定的主键。邮箱可能因改名、域名迁移或离职再入职而变化；OIDC 的 `sub` 才是客户端识别用户的协议标识，应用侧应把它与 `iss` 一起作为外部身份键。跨协议审计若要关联同一用户，应在 IAM 用户目录中维护一个不可变的 `employee_id` 或随机 UUID，再分别映射到 OIDC claim 和 SAML Attribute/NameID。
+
+如果历史系统只能用邮箱，先确认邮箱在整个生命周期内唯一且不会复用，并把这个限制写进身份数据契约；不要因为两个系统当前显示的邮箱相同，就推断它们一定代表同一个人。
 
 ```xml
-<!-- SAML Client > Settings > Name ID Format: email -->
-<!-- 同时确保用户的 email 字段已填写且唯一 -->
+<!-- SAML Client > Settings > Name ID Format: persistent -->
+<!-- 将不可变 employee_id/UUID 映射为 NameID 或 Attribute -->
 ```
 
 | NameID Format | OIDC 对应 | 适用场景 |
 |---------------|-----------|---------|
-| `email` | `email` claim | 推荐，email 天然跨协议唯一 |
-| `persistent` | 需自定义 Mapper 映射到同一值 | 需要隐私保护（不暴露 email） |
+| `email` | `email` claim | 仅适合邮箱不可变、不可复用的存量系统 |
+| `persistent` | 需自定义 Mapper 映射到同一值 | 推荐用于跨协议稳定关联，不暴露邮箱 |
 | `transient` | 无对应 | 每次登录不同，不适用于需要跨协议识别用户的场景 |
 | `unspecified` | 取决于实现 | 不推荐，行为不可预测 |
 
@@ -132,7 +134,17 @@ SAML Client > Client Scopes > 新建 Mapper (User Attribute)
   Friendly Name: Employee ID
 ```
 
-> ⚠️ **关键约束**：`employee_id` 必须在用户存储中唯一且不可变。如果 HR 系统可能修改员工编号，用 UUID 更安全（代价是读起来不友好）。
+> ⚠️ **关键约束**：`employee_id` 必须在用户存储中唯一且不可变。如果 HR 系统可能修改员工编号，用随机 UUID 更安全（代价是读起来不友好）。应用数据库建议保存 `(issuer, subject)` 与内部用户 ID 的映射，而不是把 email 或显示名当主键。
+
+### 标识符决策检查
+
+上线前用一条身份数据契约把下面三件事写死，避免 OIDC 和 SAML 各自“看起来能用”：
+
+1. **规范键**：内部用户 ID/UUID 的生成方、唯一性、变更和回收策略。
+2. **协议映射**：OIDC 使用 `iss + sub`；SAML 使用 `persistent` NameID 或同值的 `employee_id` Attribute；邮箱只作为联系属性。
+3. **生命周期测试**：改邮箱、改部门、离职后重新入职、删除后重新创建四种情况，都验证审计记录是否仍能关联到正确的内部用户。
+
+这组测试比“登录成功”更能发现多协议 IAM 的数据一致性问题：认证流程绿了，不代表身份主键设计绿了。
 
 ## 会话统一：SSO 会话的跨协议传播
 
