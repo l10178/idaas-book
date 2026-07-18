@@ -96,7 +96,19 @@ args:
 3. 观察 Network 面板：`/oauth2/start` 的响应头应有 `Set-Cookie: _oauth2_proxy_csrf=...`
 4. 登录完成后不应再出现 403
 
-> **常见误区**：不是所有 "csrf cookie not found" 都是 Cookie 问题。如果你的 oauth2-proxy 有多个副本且没用 Redis Session Store，用户首次请求打到副本 A（生成 CSRF Cookie），Keycloak 回调时被负载均衡打到副本 B——副本 B 不认识这个 CSRF Cookie，返回 403。解决办法：加 `--session-store-type=redis` 或使用 Ingress 的 session affinity（见 [错误 7](#7-401-已登录但认证被拒)）。
+> **常见误区**：看到多副本就立刻加 Redis。这里有一个容易把排错方向带偏的细节：**默认 Cookie Session Store 并不要求回调落到同一个 Pod**。只要多个副本使用相同的 `--cookie-secret`，各副本都能解密由其他副本签发的会话 Cookie；把“多副本”直接等同于“必须上 Redis”会平白增加一个运行依赖。当前 oauth2-proxy 文档将 `cookie` 列为默认 Session Store，`redis` 是另一种可选后端。
+
+只有在以下情况才优先考虑 Redis：Cookie 体积超过浏览器或代理限制、需要服务端集中撤销会话，或希望不把 OAuth Token 放进 Cookie。迁移时先保留相同的外部回调地址和 Cookie 参数，在灰度副本上启用 Redis，并为 Redis 配置 TLS、认证、超时和监控；不要把 `--redis-insecure-skip-tls-verify=true` 当成生产修复。最小配置形态如下（连接字符串和密码放 Secret，不要写入 Git）：
+
+```yaml
+args:
+- --session-store-type=redis
+- --redis-connection-url=rediss://<redis-host>:<port>
+# 按部署版本确认对应的密码参数；不要把密码拼进公开的命令示例或日志
+- --redis-password=$(REDIS_PASSWORD)
+```
+
+**验证顺序**：先看 oauth2-proxy 启动日志确认 Session Store 初始化成功，再用浏览器完成一次全新的登录，最后滚动重启一个副本并访问受保护应用。如果 Redis 不可用，回滚到 `--session-store-type=cookie` 前要评估已有 Redis 会话是否失效；这不是无损切换，最好安排在可接受重新登录的维护窗口。
 
 ---
 
@@ -515,6 +527,7 @@ curl -v http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
 - [Traefik ForwardAuth + Keycloak + oauth2-proxy]({{< relref "traefik-forwardauth-keycloak" >}})——Traefik 网关下的配置与排错
 - [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive" >}})——架构原理、Provider 选型、Cookie/Session 机制
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
+- [oauth2-proxy 配置总览（Session Store、Cookie 与 Header 参数）](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
 - [oauth2-proxy GitHub Issues](https://github.com/oauth2-proxy/oauth2-proxy/issues)
 
 ---
