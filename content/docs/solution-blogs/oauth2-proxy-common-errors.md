@@ -155,6 +155,16 @@ echo "<id_token>" | cut -d. -f2 | base64 -d 2>/dev/null | jq .aud
 
 如果配置正确但仍然报错，检查 oauth2-proxy 的 `--client-id` 是否与 Keycloak 的 Client ID 完全一致（大小写敏感）。
 
+**不一定要改 Keycloak 的 Token**：如果同一个客户端需要接受多个明确的 audience，可以在 oauth2-proxy 中用 `--oidc-extra-audience` 增加允许值；它只是在校验时扩大白名单，不会把 audience 写进 Token，也不会替代 `iss`、签名和 `exp` 校验。例如：
+
+```yaml
+args:
+- --client-id=oauth2-proxy
+- --oidc-extra-audience=legacy-dashboard
+```
+
+只有在 `oauth2-proxy` 自己应当成为 Token audience、或者后端也依赖该 claim 时，才在 Keycloak 添加 Audience Mapper。不要为了“让报错消失”使用跳过 issuer 或 JWT 校验的参数；那会把配置错误变成认证绕过风险。
+
 ---
 
 ## 3. 登录后无限重定向（redirect loop）
@@ -287,7 +297,8 @@ Redis 是降低 Cookie 体积和集中管理会话的选项，不是多副本部
 ```yaml
 args:
 - --session-store-type=redis
-- --redis-connection-url=redis://redis.auth.svc.cluster.local:6379/0
+- --redis-connection-url=rediss://redis.auth.svc.cluster.local:6380/0
+# 生产环境还应通过 Secret 注入 Redis 凭据，并校验证书；不要把密码写进 Git
 ```
 
 **方案 2：精简 Cookie 内容**
