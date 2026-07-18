@@ -1,11 +1,11 @@
-# IDaaS Book · A Complete Guide to Identity & Access Management
+# IDaaS Book · 企业身份与访问管理实战全书
 
-> 🧭 *"Trust is hard. Knowing who to trust is even harder."* — this book helps you navigate both.
+> 🧭 *"信任很难，知道该信任谁更难。"*——这本书帮你理清两者。
 
-> **The most comprehensive Chinese-language technical book on enterprise identity.**
-> From IAM fundamentals and OAuth 2.0 / OIDC / SAML protocol deep-dives to Keycloak, CAS, and Dex production deployments — a systematic guide through the entire identity landscape.
+> **最完整的中文企业身份（IAM）技术书。**
+> 从 IAM 基础原理和 OAuth 2.0 / OIDC / SAML 协议深度解读，到 Keycloak、CAS、Dex 生产部署与零信任架构——一条主线贯穿整个身份领域。
 >
-> 🇨🇳 Written in Chinese · **[Read Online →](https://idaas.xlabs.club)**
+> 🇨🇳 全中文撰写 · **[在线阅读 →](https://idaas.xlabs.club)**
 
 [![Stars](https://img.shields.io/github/stars/l10178/idaas-book?style=social)](https://github.com/l10178/idaas-book/stargazers)
 [![Deploy](https://img.shields.io/github/actions/workflow/status/l10178/idaas-book/.github%2Fworkflows%2Fgh-pages.yml?label=deploy)](https://github.com/l10178/idaas-book/actions/workflows/gh-pages.yml)
@@ -13,144 +13,144 @@
 [![Release](https://img.shields.io/github/v/release/l10178/idaas-book)](https://github.com/l10178/idaas-book/releases/latest)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue)](https://creativecommons.org/licenses/by-nc/4.0/)
 
-**[📖 Read the Book](https://idaas.xlabs.club)** · **[⭐ Star This Repo](https://github.com/l10178/idaas-book/stargazers)** · **[🐛 Report an Issue](https://github.com/l10178/idaas-book/issues)** · **[🔀 Fork & Contribute](https://github.com/l10178/idaas-book/forks)**
+**[📖 在线阅读](https://idaas.xlabs.club)** · **[⭐ Star 收藏](https://github.com/l10178/idaas-book/stargazers)** · **[🐛 提交 Issue](https://github.com/l10178/idaas-book/issues)** · **[🔀 Fork 贡献](https://github.com/l10178/idaas-book/forks)**
 
-Language: **English** · [简体中文](README.zh-CN.md)
+语言：**简体中文** · [English](README.en.md)
 
 ---
 
-## Why This Book
+## 为什么读这本书
 
-Identity is the control plane of modern systems. Every application needs authentication, authorization, SSO, and audit — yet most teams learn these protocols the hard way: scattered docs, outdated blog posts, and vendor-specific manuals that never explain *why*.
+身份认证与授权是所有现代系统的控制平面。每个应用都需要登录、权限、SSO 和审计——但大多数团队学习这些协议的方式是零散的文档、过时的博客和从不解释"为什么"的厂商手册。
 
-This book fills the gap: **a single, coherent Chinese-language resource that connects principles, protocols, engineering practice, and emerging trends in enterprise identity** — not a pile of disconnected tutorials, but one continuous narrative from "what is authentication" to "zero-trust architecture."
+这本书填补了中文世界的空白：**一份把原理、协议、工程实践与前沿趋势完整串联的系统性中文资料**——不是一堆互不相干的文章，而是一条从"什么是认证"到"零信任架构"的连贯主线。
 
-| You need... | This book delivers |
-|-------------|-------------------|
-| Protocol deep-dives | OAuth 2.0 / 2.1, OIDC, SAML 2.0, LDAP, SCIM — with security boundaries, common pitfalls, and real-world flows |
-| Engineering recipes | Keycloak Operator, Helm charts, reverse proxy configs, HA setups, monitoring — copy-paste ready |
-| Decision frameworks | Keycloak vs CAS vs Dex vs Casdoor — side-by-side comparison with selection criteria |
-| Architecture patterns | Gateway integration, BFF, Sidecar, multi-tenant account design, federation topologies |
-| Future-proof knowledge | Zero Trust, DID/VC, ReBAC, Passkey/WebAuthn — standalone chapters, not footnotes |
+| 你需要…… | 这本书提供 |
+|----------|-----------|
+| 协议深度解读 | OAuth 2.0 / 2.1、OIDC、SAML 2.0、LDAP、SCIM——含安全边界、常见误区和真实流程 |
+| 工程落地配方 | Keycloak Operator、Helm Chart、反向代理配置、高可用搭建、监控——可直接复制使用 |
+| 选型决策框架 | Keycloak vs CAS vs Dex vs Casdoor——横向对比与选型标准 |
+| 架构模式 | 网关集成、BFF、Sidecar、多租户账号设计、联邦拓扑 |
+| 前沿知识 | 零信任、DID/VC、ReBAC、Passkey/WebAuthn——独立成章，不是脚注 |
 
-## ✨ Highlights
+## ✨ 这本书的不同之处
 
-- **One coherent narrative** — 24 chapters build on each other, so reading end-to-end gives you a complete mental model, not trivia.
-- **Protocol-first, not vendor-first** — understand *why* OAuth and SAML work the way they do before touching any product. The product then becomes obvious.
-- **Production-grade recipes** — every deployment chapter is built around real Kubernetes clusters, Helm charts, and Operator patterns, not toy examples.
-- **Honest comparisons** — Keycloak, CAS, Dex, and Casdoor weighed by the same criteria, so you can defend your choice to your team.
-- **Forward-looking, not legacy-locked** — dedicated chapters on ReBAC, AuthZEN/SSF, Passkey, Verifiable Credentials, and Zero Trust, so the book stays relevant as the field moves.
-- **Open and free** — no paywall, no registration, no vendor lock-in. CC BY-NC licensed and auto-deployed from `main`.
+- **一条连贯主线**——24 章环环相扣，通读下来获得的是完整的心智模型，而非零散知识点。
+- **协议优先，而非厂商优先**——先讲清 OAuth、SAML *为什么* 这么设计，再谈产品，产品就自然变得易懂。
+- **生产级配方**——每个部署章节都围绕真实 Kubernetes 集群、Helm Chart 与 Operator 模式构建，不是玩具示例。
+- **诚实的横向对比**——Keycloak、CAS、Dex、Casdoor 用同一套标准衡量，让你能在团队面前为选型决策辩护。
+- **面向前沿，不困于旧规**——ReBAC、AuthZEN/SSF、Passkey、可验证凭证、零信任均有独立章节，随领域演进而历久弥新。
+- **开放且免费**——没有付费墙，没有注册要求，没有厂商锁定。CC BY-NC 许可，随 `main` 分支自动部署。
 
-## What's Inside
+## 内容结构
 
-**5 parts, 24 chapters, ~130k Chinese characters**, plus a glossary.
+全书共 **5 部分、24 章、约 13 万字**，附术语速查表。
 
-| Part | Chapters | Covers |
-|------|----------|--------|
-| 📘 Part I: IDaaS Foundations | 1–4 | IAM principles, AuthN vs AuthZ, identity lifecycle |
-| 📗 Part II: Protocols & Standards | 5–9 | OAuth 2.0/2.1, OpenID Connect, SAML 2.0, LDAP, SCIM |
-| 📙 Part III: Core Capabilities | 10–13 | SSO, MFA, identity federation, audit & compliance |
-| 📕 Part IV: Implementation | 14–19 | Keycloak, Apereo CAS, Dex, solution comparison, integration patterns, K8s deployment |
-| 📓 Part V: Advanced Topics | 20–24 | RBAC/ABAC/ReBAC, security, DID/VC, Zero Trust, performance |
-| 📎 Appendix | — | IDaaS terminology quick reference |
+| 部分 | 章节 | 涵盖内容 |
+|------|------|----------|
+| 📘 第一部分：IDaaS 基础 | 1–4 | IAM 核心理念、认证 vs 授权、身份生命周期 |
+| 📗 第二部分：协议与标准 | 5–9 | OAuth 2.0/2.1、OpenID Connect、SAML 2.0、LDAP、SCIM |
+| 📙 第三部分：核心能力 | 10–13 | SSO、MFA、身份联邦、审计与合规 |
+| 📕 第四部分：实现与实践 | 14–19 | Keycloak、Apereo CAS、Dex、方案对比、集成模式、K8s 部署 |
+| 📓 第五部分：高级主题 | 20–24 | RBAC/ABAC/ReBAC、安全、DID/VC、零信任、性能扩展 |
+| 📎 附录 | — | IDaaS 核心术语速查表 |
 
 <details>
-<summary>📖 Full Table of Contents</summary>
+<summary>📖 完整目录</summary>
 
-**Part I · IDaaS Foundations**
-- Chapter 1: What is IDaaS — definition, evolution, and core value
-- Chapter 2: IAM core concepts — AAA model, design principles, and architecture
-- Chapter 3: Authentication vs Authorization deep dive
-- Chapter 4: Identity lifecycle management
+**第一部分 · IDaaS 基础**
+- 第 1 章：什么是 IDaaS —— 定义、演进与核心价值
+- 第 2 章：IAM 核心理念 —— AAA 模型、设计原则与架构
+- 第 3 章：认证与授权深度辨析 —— AuthN vs AuthZ
+- 第 4 章：身份生命周期管理 —— 从创建到注销的全流程
 
-**Part II · Protocols & Standards**
-- Chapter 5: OAuth 2.0 in depth — grant types, token management, OAuth 2.1
-- Chapter 6: OpenID Connect — ID Token, UserInfo, discovery
-- Chapter 7: SAML 2.0 — assertions, bindings, metadata, and federation
-- Chapter 8: LDAP & directory services — Active Directory integration
-- Chapter 9: SCIM protocol — standardized user provisioning
+**第二部分 · 协议与标准**
+- 第 5 章：OAuth 2.0 深度解读 —— 授权模式、令牌管理、OAuth 2.1
+- 第 6 章：OpenID Connect —— ID Token、UserInfo、发现机制
+- 第 7 章：SAML 2.0 —— 断言、绑定、元数据与联邦
+- 第 8 章：LDAP 与目录服务 —— Active Directory 集成
+- 第 9 章：SCIM 协议 —— 标准化用户配置
 
-**Part III · Core Capabilities**
-- Chapter 10: Single Sign-On (SSO) — architecture patterns and session management
-- Chapter 11: Multi-Factor Authentication (MFA) — TOTP, FIDO2, adaptive auth
-- Chapter 12: Identity federation & proxying — cross-domain trust
-- Chapter 13: Audit & compliance — ISO 27001, anomaly detection
+**第三部分 · 核心能力**
+- 第 10 章：单点登录（SSO）—— 架构模式与会话管理
+- 第 11 章：多因素认证（MFA）—— TOTP、FIDO2、自适应认证
+- 第 12 章：身份联邦与代理 —— 跨域身份互信
+- 第 13 章：审计与合规 —— 等保、ISO 27001、异常检测
 
-**Part IV · Implementation & Practice**
-- Chapter 14: Keycloak architecture deep dive
-- Chapter 15: Apereo CAS — education & enterprise SSO
-- Chapter 16: Dex identity proxy — Kubernetes-native solution
-- Chapter 17: IDaaS landscape comparison — decision framework
-- Chapter 18: Integration patterns — gateway, BFF, Sidecar
-- Chapter 19: Kubernetes production deployment
+**第四部分 · 实现与实践**
+- 第 14 章：Keycloak 架构深度解析
+- 第 15 章：Apereo CAS —— 教育与企业 SSO
+- 第 16 章：Dex 身份代理 —— Kubernetes 原生方案
+- 第 17 章：IDaaS 方案全景对比 —— 选型决策框架
+- 第 18 章：集成模式与实践 —— 网关、BFF、Sidecar
+- 第 19 章：Kubernetes 生产环境部署
 
-**Part V · Advanced Topics**
-- Chapter 20: Authorization models — RBAC, ABAC, ReBAC
-- Chapter 21: IDaaS security best practices
-- Chapter 22: Performance & scalability
-- Chapter 23: Decentralized identity & verifiable credentials
-- Chapter 24: Zero Trust & identity-driven security
+**第五部分 · 高级主题**
+- 第 20 章：授权模型深度对比 —— RBAC、ABAC、ReBAC
+- 第 21 章：IDaaS 安全最佳实践
+- 第 22 章：性能与扩展性
+- 第 23 章：去中心化身份与可验证凭证
+- 第 24 章：零信任与身份驱动安全
 
 </details>
 
-## 👥 Who Should Read
+## 👥 适合谁读
 
-Chinese-reading engineers, architects, and security professionals who need authoritative identity knowledge without language barriers:
+需要系统掌握企业身份知识、又不想被语言障碍挡在门外的中文读者：
 
-- 🏗️ **Architects & Tech Leads** — planning SSO, identity platforms, permission governance
-- 🔐 **Security Teams** — MFA, audit compliance, Zero Trust, identity federation
-- 🧑‍💻 **Backend / Platform Engineers** — integrating OAuth, OIDC, SAML, LDAP, or Keycloak
-- 🧭 **SaaS / Platform Teams** — multi-tenant account design, RBAC, user lifecycle
-- 🆕 **IAM Beginners** — build a complete identity domain knowledge system
+- 🏗️ **架构师 / 技术负责人**——规划 SSO、身份中台、权限治理方案
+- 🔐 **安全团队**——MFA、审计合规、零信任、身份联邦
+- 🧑‍💻 **后端 / 平台工程师**——对接 OAuth、OIDC、SAML、Keycloak 等
+- 🧭 **SaaS / 平台团队**——多租户账号设计、RBAC、用户生命周期
+- 🆕 **IAM 初学者**——建立完整的身份领域知识体系
 
-## 🧭 Reading Paths
+## 🧭 推荐阅读路线
 
-| Your goal | Start here |
-|-----------|-----------|
-| Quick overview | [Introduction & Reading Guide](https://idaas.xlabs.club/docs/guides/introduction/) → Chapters 1–9 |
-| Building SSO / protocol integration | OAuth 2.0 → OpenID Connect → SAML → SSO → Integration Patterns |
-| Choosing an identity platform | Keycloak Architecture → CAS / Dex → Comparison → K8s Deployment |
-| Designing authorization | AuthN vs AuthZ → RBAC/ABAC/ReBAC → Audit & Compliance |
-| Hardening security | MFA → Best Practices → Zero Trust |
+| 你的目标 | 从这里开始 |
+|----------|-----------|
+| 快速建立体系 | [简介与阅读指南](https://idaas.xlabs.club/docs/guides/introduction/) → 第 1–9 章 |
+| 做 SSO / 协议接入 | OAuth 2.0 → OpenID Connect → SAML → SSO → 集成模式 |
+| 做身份平台选型 | Keycloak 架构 → CAS / Dex → 方案对比 → K8s 部署 |
+| 做权限治理 | AuthN vs AuthZ → RBAC/ABAC/ReBAC → 审计与合规 |
+| 做安全增强 | MFA → 安全最佳实践 → 零信任 |
 
-## 🌐 Read Online
+## 🌐 在线阅读
 
-**[idaas.xlabs.club](https://idaas.xlabs.club)** — full-text search, dark mode, table of contents navigation. Auto-deployed from `main`.
+**[idaas.xlabs.club](https://idaas.xlabs.club)**——支持全文搜索、暗色模式、目录导航。随 `main` 分支自动部署。
 
-## 🚀 Local Development
+## 🚀 本地开发
 
-Built with [Hugo](https://gohugo.io/) + [Doks](https://github.com/thuliteio/doks) theme.
+基于 [Hugo](https://gohugo.io/) + [Doks](https://github.com/thuliteio/doks) 主题构建。
 
 ```bash
-npm install          # install dependencies
-npm run dev          # start dev server → http://localhost:1313
-npm run build        # production build → public/
+npm install          # 安装依赖
+npm run dev          # 启动开发服务器 → http://localhost:1313
+npm run build        # 生产构建 → public/
 ```
 
-Requires Node.js 26 and Hugo Extended.
+需要 Node.js 26 和 Hugo Extended。
 
-## 🤝 Contributing
+## 🤝 贡献
 
-This book is continuously improving. All contributions welcome:
+本书持续完善中，欢迎参与：
 
-- **Found an error?** → [Open an Issue](https://github.com/l10178/idaas-book/issues)
-- **Want to add content?** → [Submit a Pull Request](https://github.com/l10178/idaas-book/pulls)
-- **Have a topic request?** → Tag `discussion` in Issues
+- **发现错误？** → [提交 Issue](https://github.com/l10178/idaas-book/issues)
+- **想补充内容？** → [提交 Pull Request](https://github.com/l10178/idaas-book/pulls)
+- **有想看的主题？** → 在 Issue 中标记 `discussion`
 
-PRs should follow existing frontmatter conventions (`title`, `description`, `weight`, `menu`, `toc`) and maintain consistent chapter numbering and style.
+PR 请遵循现有 frontmatter 规范（`title`、`description`、`weight`、`menu`、`toc`），保持章节编号与排版风格一致。
 
-## ⭐ Why Star This Repo
+## ⭐ 为什么 Star 这个仓库
 
-If you're working with identity — or know you will — starring this repo:
+如果你正在做身份相关工作——或者知道自己将来会做——Star 这个仓库意味着：
 
-- 📌 Bookmarks a growing reference that stays current
-- 🔔 Notifies you of new chapters and protocol updates
-- 📈 Helps more Chinese-speaking engineers discover a systematic identity resource
+- 📌 收藏一份持续更新的系统性参考
+- 🔔 获取新章节和协议变更的通知
+- 📈 帮助更多中文工程师发现这份资源
 
-**No paywall, no registration, no vendor lock-in.** Just a book that wants to be useful.
+**没有付费墙，没有注册要求，没有厂商锁定。** 就是一本想把事情讲清楚的书。
 
-## ⚖️ License
+## ⚖️ 许可协议
 
-Content: [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) (Attribution-NonCommercial).
-Site scaffolding: follows upstream [Doks](https://github.com/thuliteio/doks) license.
+内容：[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)（署名-非商业性使用 4.0 国际）。
+站点脚手架：遵循上游 [Doks](https://github.com/thuliteio/doks) 许可。
