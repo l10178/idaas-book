@@ -492,7 +492,7 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 &lt;li&gt;审计完整，所有认证事件集中在一条日志流&lt;/li&gt;
 &lt;li&gt;接入简单，应用只需对接一个端点&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>IAM 认证协议选型指南 — OAuth 2.0 vs OIDC vs SAML vs LDAP vs SCIM 决策框架 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-protocol-selection-guide/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-protocol-selection-guide/</guid><description>&lt;h2 id="协议选型为什么重要"&gt;协议选型为什么重要&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;缺点&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>IAM 认证协议选型：OAuth、OIDC、SAML、LDAP、SCIM | IDaaS Book</title><link>https://idaas.xlabs.club/docs/advanced-topics/iam-protocol-selection-guide/</link><pubDate>Fri, 10 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/advanced-topics/iam-protocol-selection-guide/</guid><description>&lt;h2 id="协议选型为什么重要"&gt;协议选型为什么重要&lt;/h2&gt;
 &lt;p&gt;IAM 系统的核心任务是&amp;quot;把正确的身份信息，在正确的时机，以正确的方式，交给正确的应用&amp;quot;。而&lt;strong&gt;协议&lt;/strong&gt;就是这条信息传递通道的语法和合同。&lt;/p&gt;
 &lt;p&gt;选错协议的代价不是&amp;quot;功能少了几个&amp;quot;，而是：&lt;/p&gt;
 &lt;table&gt;
