@@ -450,15 +450,15 @@ kubectl exec -n ingress-nginx deploy/ingress-nginx-controller -- \
 
 **现象**：`app1.example.com` 登录成功，访问 `app2.example.com` 需要重新登录。
 
-**根因**：`--cookie-domain` 没有在前加点号 `.`。
+**根因**：Cookie 的 `Domain` 没有覆盖两个应用的主机名，或者两个应用使用了不同的 `cookie-domain` / `cookie-name`。不要把“前面有没有点号”当成判断依据：现代浏览器会忽略 `Domain` 属性值前的前导点号，`.example.com` 与 `example.com` 在这里等价；关键是 Domain 是否确实是两个主机名的共同父域。
 
 ### 修复
 
 ```yaml
-# ❌ 错误：只能匹配 example.com 本身
-- --cookie-domain=example.com
+# ❌ 错误：只覆盖 app1，app2 收不到这个 Cookie
+- --cookie-domain=app1.example.com
 
-# ✅ 正确：匹配 *.example.com 所有子域
+# ✅ 正确：覆盖 app1.example.com 与 app2.example.com
 - --cookie-domain=.example.com
 ```
 
@@ -466,8 +466,10 @@ kubectl exec -n ingress-nginx deploy/ingress-nginx-controller -- \
 
 ```bash
 # 浏览器 DevTools → Application → Cookies → 查看 _oauth2_proxy Cookie 的 Domain 属性
-# 应为 .example.com（带前导点号）
+# Domain 应覆盖两个应用；显示为 example.com 或 .example.com 都不代表有差异
 ```
+
+如果两个应用不应该共享登录会话，不要为了减少一次登录而扩大 Cookie Domain；分别使用主机专属 Domain 和不同的 `--cookie-name`。共享父域还会扩大 Cookie 的发送范围，子域被接管或存在不可信应用时，风险边界也会一起扩大。
 
 ---
 
@@ -540,6 +542,7 @@ curl -v http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 配置总览（Session Store、Cookie 与 Header 参数）](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
 - [oauth2-proxy GitHub Issues](https://github.com/oauth2-proxy/oauth2-proxy/issues)
+- [MDN：Set-Cookie 的 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#domaindomain-value)
 
 ---
 
