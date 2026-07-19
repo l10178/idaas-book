@@ -2,7 +2,7 @@
 title: "IAM 入口认证：Traefik ForwardAuth + Keycloak + oauth2-proxy | IDaaS Book"
 description: "IAM 入口认证实战：用 Traefik ForwardAuth、Keycloak OIDC 和 oauth2-proxy 保护 Kubernetes 应用，覆盖转发头信任边界、配置与 401 排错"
 date: 2026-07-09T00:00:00+08:00
-lastmod: 2026-07-09T00:00:00+08:00
+lastmod: 2026-07-19T21:00:00+08:00
 draft: false
 weight: 8
 menu:
@@ -190,6 +190,53 @@ spec:
 | `Authorization` | `Bearer <access_token>` | 后端直接用于 API 鉴权 |
 
 > **安全提示**：`X-Auth-Request-Access-Token` 和 `Authorization` 包含完整的 access token。只在你信任后端应用且后端确实需要时才传递。原则上后端应该通过 oauth2-proxy 的 Session 来确认身份，不应依赖客户端传过来的 header。
+
+### 处理并发登录请求导致的 CSRF Cookie 覆盖
+
+Traefik 的 `errors` 中间件如果把多个未认证请求都重定向到 oauth2-proxy 的登录入口，浏览器可能同时请求 HTML、JavaScript、favicon 或 service worker。若这些请求都触发登录流程，每次响应都可能重新设置 `_oauth2_proxy_csrf` Cookie；后写入的 Cookie 会覆盖先前与 `state` 配对的值，最终回调返回 `CSRF token mismatch` 或 `csrf cookie not found`。
+
+这不是 Keycloak 用户会话失效，而是**同一个浏览器会话里启动了多个授权事务**。oauth2-proxy 项目的 [Issue #3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 在 v7.11.0 + Traefik 场景报告了相同机制；截至本文更新时该 Issue 仍是问题讨论，不能把它当作已修复的版本承诺。
+
+先用一个最小化回调验证是否命中该分支：
+
+```bash
+# 保留浏览器 Network 的 Preserve log，过滤以下请求并比较 Set-Cookie 次数
+# /oauth2/sign_in 或 /oauth2/start → /oauth2/callback
+kubectl logs -n auth deploy/oauth2-proxy --since=10m \
+  | grep -E '(/oauth2/(sign_in|start|callback)|csrf)'
+```
+
+对于只使用单一 OIDC Provider 的内部应用，优先让错误处理器跳转到显式的 `/oauth2/start`，不要让每个静态资源的 401 都重新启动授权；同时将 `skip_provider_button` 保持为默认的 `false`，让 `/oauth2/sign_in` 先返回无副作用的登录页，由用户点击后再开始授权。示例（具体字段名以当前 oauth2-proxy 配置版本为准）：
+
+```yaml
+# oauth2-proxy 参数
+- --skip-provider-button=false
+
+# Traefik errors middleware：只把业务页面的 401 导向统一登录入口
+# 不要把 /oauth2/* 静态资源和 callback 再套回同一个 ForwardAuth
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: oauth2-errors
+  namespace: auth
+spec:
+  errors:
+    status:
+    - "401-403"
+    service:
+      name: oauth2-proxy
+      port: 4180
+    query: /oauth2/sign_in?rd={url}
+```
+
+**验证顺序：**
+
+1. 清除旧的 `_oauth2_proxy` 和 `_oauth2_proxy_csrf` Cookie。
+2. 只打开一个业务页面，确认一次登录开始前没有多个 `/oauth2/start`。
+3. 登录回调成功后，检查 `/oauth2/auth` 返回 2xx，再放行到应用。
+4. 恢复静态资源、service worker 和多标签页访问，确认没有重新出现 CSRF 覆盖。
+
+如果业务必须自动跳转且仍有并发请求，降低入口层并发触发登录的机会并保留该问题的回归测试；不要通过关闭 CSRF 校验、跳过 issuer 校验或把 Cookie 改成不安全属性来“修复”。回滚时删除新增的 `errors` 中间件引用，恢复原来的 ForwardAuth 路由即可，不需要修改 Keycloak Realm 或清空用户会话。
 
 ## Traefik IngressRoute 配置
 
