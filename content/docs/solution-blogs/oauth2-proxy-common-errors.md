@@ -69,25 +69,32 @@ kubectl logs -n auth deploy/oauth2-proxy --tail=20 | grep csrf
 # 3. 检查 oauth2-proxy 启动参数中的 Cookie 配置
 kubectl get deploy -n auth oauth2-proxy -o yaml | grep -E 'cookie-secure|cookie-samesite|cookie-domain|ssl-upstream-insecure-skip-verify'
 
-# 4. 验证 X-Forwarded-Proto 是否正确传递
-# 如果 oauth2-proxy 前置了 Nginx/Traefik，确认代理发送了 X-Forwarded-Proto
+# 4. 从入口代理所在位置检查转发头；不要只看 oauth2-proxy Pod 内的请求
+kubectl logs -n ingress-nginx deploy/ingress-nginx-controller --tail=50 | grep -E 'oauth2|X-Forwarded-Proto'
+# 5. 检查 oauth2-proxy 是否限制了可信代理来源
+kubectl get deploy -n auth oauth2-proxy -o yaml | grep -E 'reverse-proxy|trusted-proxy-ip'
 ```
 
 ### 修复
 
+先保持浏览器访问、Keycloak 回调和 `redirect_uri` 全部使用 HTTPS。TLS 在 Ingress/LB 终结并不意味着要关闭 Cookie 的 `Secure` 属性；应让入口代理正确传递 `X-Forwarded-Proto: https`，并只信任入口代理的地址段。
+
 ```yaml
 # oauth2-proxy 启动参数调整
 args:
-# 关键：SameSite 不能是 strict——Keycloak 回调是跨站请求（从 keycloak.example.com → myapp.example.com）
+# Keycloak 回调通常需要 Lax；只有明确需要跨站 Cookie 时才考虑 None（且必须 Secure）
 - --cookie-samesite=lax
-# 如果 TLS 在外部 LB 终结，oauth2-proxy 监听 HTTP，则关闭 Secure（仅限内网通信）
-# 更好的做法：在 oauth2-proxy 内部也启 TLS，或配置 --ssl-upstream-insecure-skip-verify
-- --cookie-secure=false   # 仅当 oauth2-proxy 自身监听 HTTP 时
-# 确保 Cookie Domain 覆盖回调域名
+- --cookie-secure=true
+# 确保 Cookie Domain 覆盖回调域名；单域名部署可省略此项
 - --cookie-domain=.example.com
-# 信任反向代理传入的转发头
 - --reverse-proxy=true
+# 换成实际 Ingress/LB 的 Pod 网段或固定出口 CIDR，不要照抄示例
+- --trusted-proxy-ip=10.42.0.0/16
 ```
+
+`--reverse-proxy=true` 只表示按反向代理场景处理请求；它不应被当成“任意客户端都可以提交可信转发头”。oauth2-proxy 当前文档说明，未设置 `--trusted-proxy-ip` 时出于兼容性会信任所有来源，这允许能够直连 oauth2-proxy 的客户端伪造 `X-Forwarded-*`。生产环境应限制 NetworkPolicy/Service 暴露面，并配置实际代理的 IP/CIDR；如果代理地址是动态变化的，优先固定出口或用网络层阻断直连，而不是放大信任范围。
+
+如果确实在没有 HTTPS 的本地开发环境运行，才临时使用 `--cookie-secure=false`；不要把这个开关作为生产环境 TLS 终结后的修复。
 
 **验证修复**：
 
