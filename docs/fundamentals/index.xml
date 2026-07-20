@@ -165,7 +165,7 @@
 &lt;/table&gt;
 &lt;p&gt;关于 IAM 的完整定义和四大核心域（认证、授权、用户管理、审计），见 
 
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/what-is-iam/"&gt;IAM 是什么&lt;/a&gt;；IDaaS 的起源和部署模式，见 
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/what-is-iam/"&gt;IAM 是什么&lt;/a&gt;；IDaaS 的部署模式，见 
 
 &lt;a class="link link--text" href="https://idaas.xlabs.club/docs/fundamentals/what-is-idaas/"&gt;什么是 IDaaS&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id="从演进角度看区别"&gt;从演进角度看区别&lt;/h2&gt;
