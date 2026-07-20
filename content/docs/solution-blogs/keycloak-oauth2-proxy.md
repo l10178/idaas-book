@@ -2,7 +2,7 @@
 title: "IAM 网关：Keycloak + oauth2-proxy 集成指南 | IDaaS Book"
 description: "IAM 网关用 Keycloak 与 oauth2-proxy 保护 Web 应用，覆盖 OIDC audience、Cookie、Nginx Ingress auth-url 与回滚排错"
 date: 2026-07-08T00:00:00+08:00
-lastmod: 2026-07-08T00:00:00+08:00
+lastmod: 2026-07-20T21:05:00+08:00
 draft: false
 weight: 1
 menu:
@@ -191,9 +191,7 @@ spec:
         - --http-address=0.0.0.0:4180
         - --reverse-proxy=true
         - --set-xauthrequest=true
-        - --set-authorization-header=true
         - --pass-access-token=true
-        - --pass-authorization-header=true
         - --email-domain=*
         - --scope=openid email profile
         env:
@@ -249,8 +247,20 @@ spec:
 | `--upstream=static://202` | 固定 202 响应 | auth-url 模式：oauth2-proxy 仅做认证判定，不代理到后端 |
 | `--reverse-proxy` | `true` | 信任反向代理传入的 `X-Forwarded-*` 头 |
 | `--set-xauthrequest` | `true` | 向后端传递 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups` 等头 |
-| `--pass-access-token` | `true` | 将 Access Token 传给后端（Header: `X-Auth-Request-Access-Token`） |
+| `--pass-access-token` | `true` | 在 auth-url 模式下将 Access Token 放入认证响应头 `X-Auth-Request-Access-Token`；只有 Ingress 明确转发它时后端才会收到 |
 | `--email-domain` | `*` | 允许所有邮箱域。如需限定，改为 `example.com` 或 `--authenticated-emails-file` |
+
+### 不要混用三种 Authorization 头
+
+`auth-url` 模式最容易出现的安全误配，是把 oauth2-proxy 的认证响应头和业务请求头当成同一层：
+
+| 参数/头 | 实际含义 | 本指南的处理 |
+|---|---|---|
+| `--pass-access-token` → `X-Auth-Request-Access-Token` | 把 OIDC Access Token 放进认证响应，供 Ingress 选择性转发 | 默认示例保留；只有后端确实需要 Bearer Token 时才转发 |
+| `--set-authorization-header` → `Authorization` | 在认证响应中设置 Bearer 头，供支持 auth-request 响应头复制的代理使用 | 不在最小示例启用，避免和后端原有 `Authorization` 语义冲突 |
+| `--pass-authorization-header` | 代理模式下把 **ID Token** 作为 Bearer 头传给 upstream | 不要把它当成 API Access Token；后端应验证面向自身的 Access Token |
+
+Nginx Ingress 的 `auth-response-headers` 只会把列出的认证响应头复制给业务后端。因此，若后端需要 Access Token，必须显式列出 `X-Auth-Request-Access-Token`，并在后端按自己的 `iss`、`aud`、签名、过期时间和 scope 验证；不需要 Token 时应删除该项，减少敏感信息传播面。通过 Header 传递用户信息也不能替代后端清理客户端同名 Header、限制 oauth2-proxy Service 的直连入口。
 
 ## Nginx Ingress 配置
 
