@@ -32,7 +32,7 @@ toc: true
 | **典型玩家** | Keycloak、Apereo CAS、Dex（自建部署） | Okta/Auth0、Microsoft Entra ID、自建 Keycloak 也被视为私有 IDaaS |
 | **适合谁** | 合规要求极高、定制需求深、有专业运维团队 | 希望快速上线、不想养 IAM 运维团队的中小团队 |
 
-关于 IAM 的完整定义和四大核心域（认证、授权、用户管理、审计），见 [IAM 是什么]({{< relref "docs/fundamentals/what-is-iam.md" >}})；IDaaS 的起源和部署模式，见 [什么是 IDaaS]({{< relref "docs/fundamentals/what-is-idaas.md" >}})。
+关于 IAM 的完整定义和四大核心域（认证、授权、用户管理、审计），见 [IAM 是什么]({{< relref "../fundamentals/what-is-iam" >}})；IDaaS 的部署模式，见 [什么是 IDaaS]({{< relref "../fundamentals/what-is-idaas" >}})。
 
 ## 从演进角度看区别
 
@@ -60,12 +60,12 @@ graph LR
 
 - **合规强制数据不出境/不出机房**——金融、政务、军工常见
 - **需要深度定制认证流程**——比如对接内部工单系统审批后发放临时 Token
-- **已有成熟的运维团队**——有人能做 Keycloak 集群运维、InfiniBand 网络调优、数据库高可用
-- **用户量巨大且增长稳定**——大规模下自建的单位用户成本可能低于 SaaS 订阅费
+- **已有成熟的运维团队**——有人能负责 Keycloak、数据库、密钥和灾备的持续运维
+- **成本模型更适合自建**——应以实际用户数、登录量、SLA、运维人力和基础设施成本测算，不能仅凭用户规模下结论
 
 ### 选 IDaaS 的场景
 
-- **团队不到 50 人，没有专职安全/身份工程师**——别自建，你不缺技术，缺的是凌晨 3 点爬起来修 Keycloak 的人
+- **没有专职身份运维能力**——优先评估托管 IDaaS；自建的隐性成本不只是部署，还包括升级、密钥轮换、备份恢复和故障值守
 - **需要快速接入多种社交登录和企业 IdP**——IDaaS 厂商预置了几十个连接器
 - **多产品线需要统一登录体验**——SaaS 版 IDaaS 天然多租户，控制台里点几下就行
 - **短期项目或 PoC**——按需付费，用完就停
@@ -94,9 +94,9 @@ AD 强在 Windows 生态和组策略，IDaaS 强在多协议（OIDC/SAML/SCIM）
 
 ## 延伸阅读
 
-- 如果已决定自建，参考 [开源 IAM 方案对比]({{< relref "docs/advanced-topics/opensource-iam-comparison.md" >}}) 选型
-- 如果在看 IDaaS 产品，[其他 IDaaS 解决方案]({{< relref "docs/implementation/other-idaas-solutions.md" >}}) 覆盖了主流商业和开源选择
-- 关于 IAM 架构层面如何设计，见 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}})
+- 如果已决定自建，参考 [开源 IAM 方案对比]({{< relref "../advanced-topics/opensource-iam-comparison" >}}) 选型
+- 如果在看 IDaaS 产品，[其他 IDaaS 解决方案]({{< relref "../implementation/other-idaas-solutions" >}}) 覆盖了主流商业和开源选择
+- 关于 IAM 架构层面如何设计，见 [IAM 架构设计指南]({{< relref "../advanced-topics/iam-architecture-design" >}})
 
 ## 常见问题（FAQ）
 
@@ -107,7 +107,7 @@ A: 不是。IDaaS 是 IAM 的一种交付方式。就像你不会问「云计算
 A: 看你从哪个角度。如果你把 Keycloak 部署在自己的 K8s 集群里，技术上你是自建 IAM；但如果你把它作为公司内部统一的身份服务平台、通过 API 对外提供认证服务，那它就是你的「私有 IDaaS」。很多公司的私有 IDaaS 就是这么来的。
 
 **Q: 用 IDaaS 后还能迁移回自建 IAM 吗？**
-A: 能，但需要准备。用户的密码 hash 通常能通过 SCIM 或批量导出拿到；OIDC/SAML 的 client 配置需要逐个重建；最大的坑是外部应用的回调 URL——你需要切换域名并通知所有对接方。建议从一开始就规划好迁移路径，不要等到被锁定才想退路。
+A: 能，但需要准备。SCIM 用于用户资源同步，不等于密码 hash 的迁移接口；密码是否可迁移取决于原 IDaaS 的导出能力和目标系统支持的导入格式。OIDC/SAML 的 client 配置需要逐个重建，外部应用的回调 URL 也要切换或兼容。建议先做一条端到端迁移演练，并保留旧 IdP 的只读/回滚窗口，不要等到被锁定才想退路。
 
 **Q: IAM 选型应该先看什么？**
 A: 先看你的约束条件：合规要求（数据能不能上云）、团队能力（有没有人运维）、用户规模（决定成本结构）、集成复杂度（需要对接多少老旧系统）。然后拿着这些约束去套上面的决策表。不要一上来就比功能——功能大家都差不多，约束才是真瓶颈。
