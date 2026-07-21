@@ -58,7 +58,105 @@
  App--&amp;gt;&amp;gt;Browser: 200 OK
 &lt;/pre&gt;
 
-&lt;p&gt;流程要点：&lt;/p&gt;</description></item><item><title>Keycloak 重定向循环与 401 排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;流程要点：&lt;/p&gt;</description></item><item><title>Keycloak User Profile 用正则限制企业邮箱注册 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-user-profile-pattern-validator/</link><pubDate>Tue, 21 Jul 2026 15:40:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-user-profile-pattern-validator/</guid><description>&lt;h2 id="要解决的问题"&gt;要解决的问题&lt;/h2&gt;
+&lt;p&gt;Keycloak 允许用户自助注册时，默认只验证邮箱格式，不会判断邮箱是否属于你的组织。如果业务只面向公司员工，可以在 Realm 的 User Profile 中给 &lt;code&gt;email&lt;/code&gt; 属性增加 &lt;code&gt;pattern&lt;/code&gt; validator，让注册表单拒绝非公司邮箱。&lt;/p&gt;
+&lt;p&gt;例如，公司域名是 &lt;code&gt;example.com&lt;/code&gt;，目标是只允许以下地址：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;bob@sub.example.com&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;不允许：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@gmail.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@example.com.evil.test
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@example.com@example.net&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;这个能力适合做&lt;strong&gt;入口筛选&lt;/strong&gt;，不等于企业身份认证。邮箱域名能证明“用户填写了这个格式”，不能证明用户拥有这个邮箱，更不能替代企业 IdP、邮箱验证或邀请制注册。&lt;/p&gt;
+&lt;h2 id="在管理控制台中配置"&gt;在管理控制台中配置&lt;/h2&gt;
+&lt;p&gt;使用具有管理权限的账号进入目标 Realm：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Realm settings → User profile → Attributes → email → Add validator&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;在 validator 类型中选择 &lt;code&gt;pattern&lt;/code&gt;，将正则表达式填入 &lt;code&gt;pattern&lt;/code&gt; 配置项。以只允许 &lt;code&gt;example.com&lt;/code&gt; 及其子域为例：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code class="language-regex" data-lang="regex"&gt;^[^@\s]+@([A-Za-z0-9-]+\.)*example\.com$&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;保存后，User Profile 的 &lt;code&gt;email&lt;/code&gt; 属性应至少有以下逻辑：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Attribute: email
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Validator: pattern
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pattern: ^[^@\s]+@([A-Za-z0-9-]+\.)*example\.com$&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;如果只允许根域，不允许 &lt;code&gt;sub.example.com&lt;/code&gt;，使用更窄的表达式：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code class="language-regex" data-lang="regex"&gt;^[^@\s]+@example\.com$&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="正则各部分的作用"&gt;正则各部分的作用&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;^ 从字符串开头匹配
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;[^@\s]+ 一个或多个非 @、非空白字符
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;@ 邮箱分隔符
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;([A-Za-z0-9-]+\.)* 可选的一个或多个子域
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;example\.com 精确匹配目标域名中的点
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ 匹配到字符串结尾&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;这里的 &lt;code&gt;\.&lt;/code&gt; 必须写成“字面量点”。如果写成 &lt;code&gt;example.com&lt;/code&gt;，正则里的 &lt;code&gt;.&lt;/code&gt; 会匹配任意字符，可能把 &lt;code&gt;exampleXcom&lt;/code&gt; 也放进去。&lt;code&gt;^&lt;/code&gt; 和 &lt;code&gt;$&lt;/code&gt; 也不能省略，否则只要字符串某一段匹配，整条值可能被错误接受。&lt;/p&gt;</description></item><item><title>IAM 网关 Keycloak 重定向循环与 401 排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你已经部署好了 Keycloak +反向代理，用户能在 Keycloak 登录页输入用户名密码，但登录成功后浏览器在 Keycloak 和应用之间反复跳转，最终浏览器报 &lt;code&gt;ERR_TOO_MANY_REDIRECTS&lt;/code&gt;；或者直接返回 401，看起来&amp;quot;登录成功了但就是进不去&amp;quot;。&lt;/p&gt;
 &lt;p&gt;这类问题的根因几乎都在 &lt;strong&gt;Cookie、反向代理 Header、TLS 终结 和 OIDC 回调 URI&lt;/strong&gt; 四个环节。本文给出一个系统性的排查路线图。&lt;/p&gt;
 &lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
@@ -107,7 +205,7 @@
 &lt;/pre&gt;
 
 &lt;h2 id="第一关反向代理-header"&gt;第一关：反向代理 Header&lt;/h2&gt;
-&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</link><pubDate>Mon, 13 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递代理头，且 Keycloak 必须配置为解析代理实际发送的格式。缺少或错误解析这些头时，Keycloak 可能构建出错误的重定向 URL；更危险的是，如果代理把客户端自己提交的 &lt;code&gt;X-Forwarded-*&lt;/code&gt; 原样转发，外部用户可以伪造来源协议或主机名。&lt;/p&gt;</description></item><item><title>IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</link><pubDate>Mon, 13 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你按照文档配好了 oauth2-proxy + Keycloak，部署到 Kubernetes，打开浏览器——白屏、401、无限跳转、或者 &amp;ldquo;csrf cookie not found&amp;rdquo;。这些错误 oauth2-proxy 的日志里写得很直白，但&lt;strong&gt;为什么发生、怎么修&lt;/strong&gt;才是真正的卡点。&lt;/p&gt;
 &lt;p&gt;这篇文章把 GitHub Issues 和 Stack Overflow 上反复出现的高频错误整理成速查表：每条有诊断命令、根因分析、修复步骤。不需要逐条 Google——直接对号入座。&lt;/p&gt;
 &lt;p&gt;适用：oauth2-proxy v7.x + Keycloak（任意版本），auth-url 或 ForwardAuth 模式。&lt;/p&gt;
@@ -708,48 +806,4 @@
 			&lt;/tr&gt;
 	&lt;/tbody&gt;
 &lt;/table&gt;
-&lt;p&gt;&lt;strong&gt;简单原则&lt;/strong&gt;：Group 说「你是谁的人」，Role 说「你能干什么」。一个用户可以有多个 Group 和多个 Role。&lt;/p&gt;</description></item><item><title>Dex + Keycloak 联合身份：Kubernetes 集群 OIDC 认证集成 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/dex-keycloak-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/dex-keycloak-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
-&lt;p&gt;组织用 Keycloak 管理全部用户和组（对接 AD/LDAP 或本地用户），同时需要为多个 Kubernetes 集群提供统一身份认证。直接在 Kubernetes API Server 挂 Keycloak 做 OIDC 可行，但有两个常见痛点：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;strong&gt;多集群管理&lt;/strong&gt;：每个集群的 API Server 需要指向同一个 issuer URL，Keycloak 的 realm 级别 issuer 不够灵活&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;上游身份源复用&lt;/strong&gt;：Keycloak 本身对接了 AD、LDAP、GitHub 等多个 IdP，Kubernetes 还想同时接受这些来源的用户&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;这时 Dex 作为 OIDC 代理层，Keycloak 作为上游身份源，是最成熟的生产组合。&lt;/p&gt;
-&lt;p&gt;一句话：&lt;strong&gt;Keycloak 管你是谁，Dex 把你的身份转换成 Kubernetes 认识的 OIDC&lt;/strong&gt;。&lt;/p&gt;
-&lt;h2 id="适用场景"&gt;适用场景&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;已有 Keycloak 部署，需要给 Kubernetes 加 OIDC 认证&lt;/li&gt;
-&lt;li&gt;多个 Kubernetes 集群需要共享同一套身份&lt;/li&gt;
-&lt;li&gt;需要 Keycloak 的用户组映射到 Kubernetes RBAC 的 groups claim&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id="不适用场景"&gt;不适用场景&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;没有 Keycloak，只想用 Dex 直连 LDAP/AD —— 直接在 Dex 配 LDAP connector 即可&lt;/li&gt;
-&lt;li&gt;只有一个小集群且用户都在 Keycloak 本地 —— 可以考虑直接对接 Keycloak OIDC&lt;/li&gt;
-&lt;li&gt;需要 Kubernetes 之外的完整 IAM 能力——直接用 Keycloak，不需要 Dex&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id="架构"&gt;架构&lt;/h2&gt;
-&lt;pre class="mermaid"&gt;
- sequenceDiagram
- participant User as kubectl / kubelogin
- participant K8s as Kubernetes API Server
- participant Dex as Dex&amp;lt;br/&amp;gt;(OIDC Provider)
- participant KC as Keycloak&amp;lt;br/&amp;gt;(上游 OIDC Provider)
-
- User-&amp;gt;&amp;gt;K8s: kubectl 请求
- K8s-&amp;gt;&amp;gt;User: 401 + OIDC redirect
- User-&amp;gt;&amp;gt;Dex: 浏览器打开 Dex 登录页
- Dex-&amp;gt;&amp;gt;KC: OIDC Authorization Code Flow&amp;lt;br/&amp;gt;(redirect 到 Keycloak 登录页)
- KC-&amp;gt;&amp;gt;User: 登录表单 / SSO session
- User-&amp;gt;&amp;gt;KC: 用户名+密码 / 已有 session
- KC-&amp;gt;&amp;gt;Dex: Authorization Code
- Dex-&amp;gt;&amp;gt;KC: Token Request&amp;lt;br/&amp;gt;(client_id + client_secret)
- KC-&amp;gt;&amp;gt;Dex: ID Token + Access Token
- Dex-&amp;gt;&amp;gt;Dex: 提取 claims (sub, email, groups)&amp;lt;br/&amp;gt;生成 Dex 自己的 ID Token
- Dex-&amp;gt;&amp;gt;User: Dex ID Token
- User-&amp;gt;&amp;gt;K8s: Bearer Token (Dex ID Token)
- K8s-&amp;gt;&amp;gt;K8s: 验证 JWT 签名、issuer、audience
- K8s-&amp;gt;&amp;gt;User: kubectl 执行结果
-&lt;/pre&gt;
-
-&lt;p&gt;核心链路：&lt;strong&gt;kubectl/kubelogin → Dex（OIDC Provider）→ Keycloak（上游 OIDC 源）→ AD/LDAP/本地用户&lt;/strong&gt;。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;&lt;strong&gt;简单原则&lt;/strong&gt;：Group 说「你是谁的人」，Role 说「你能干什么」。一个用户可以有多个 Group 和多个 Role。&lt;/p&gt;</description></item></channel></rss>

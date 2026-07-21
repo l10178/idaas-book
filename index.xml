@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 21 Jul 2026 15:37:48 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>IAM 网关：Keycloak + oauth2-proxy 集成指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</title><link>https://idaas.xlabs.club/</link><description>Recent content in IDaaS Book：企业身份与访问管理实战全书 on IDaaS Book</description><generator>Hugo</generator><language>zh-CN</language><copyright>Copyright (c) 2020-2024 xlabs.club</copyright><lastBuildDate>Tue, 21 Jul 2026 21:05:02 +0800</lastBuildDate><atom:link href="https://idaas.xlabs.club/index.xml" rel="self" type="application/rss+xml"/><item><title>IAM 网关：Keycloak + oauth2-proxy 集成指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你有一组内部 Web 应用（Grafana、Kibana、自研管理后台等），它们本身没有认证逻辑。你想用 Keycloak 做统一身份认证，用 oauth2-proxy 做反向代理层拦截所有未认证请求，在 Kubernetes 集群里通过 Nginx Ingress 暴露。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;Keycloak 负责「你是谁」，oauth2-proxy 负责「你能不能进这个应用」&lt;/strong&gt;。如果应用还有转账、改密等高风险操作，不能把 &lt;code&gt;/oauth2/auth&lt;/code&gt; 的放行结果当成授权或 Step-Up 已完成；应由后端按 &lt;code&gt;iss&lt;/code&gt;、&lt;code&gt;aud&lt;/code&gt;、权限和认证强度再次判断，参见 
 
@@ -319,7 +319,105 @@
 &lt;p&gt;正则表达式，用 &lt;code&gt;java.util.regex.Pattern&lt;/code&gt; 解析。&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;Expire Password&lt;/p&gt;</description></item><item><title>Keycloak 重定向循环与 401 排错指南 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;p&gt;Expire Password&lt;/p&gt;</description></item><item><title>Keycloak User Profile 用正则限制企业邮箱注册 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-user-profile-pattern-validator/</link><pubDate>Tue, 21 Jul 2026 15:40:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-user-profile-pattern-validator/</guid><description>&lt;h2 id="要解决的问题"&gt;要解决的问题&lt;/h2&gt;
+&lt;p&gt;Keycloak 允许用户自助注册时，默认只验证邮箱格式，不会判断邮箱是否属于你的组织。如果业务只面向公司员工，可以在 Realm 的 User Profile 中给 &lt;code&gt;email&lt;/code&gt; 属性增加 &lt;code&gt;pattern&lt;/code&gt; validator，让注册表单拒绝非公司邮箱。&lt;/p&gt;
+&lt;p&gt;例如，公司域名是 &lt;code&gt;example.com&lt;/code&gt;，目标是只允许以下地址：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@example.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;bob@sub.example.com&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;不允许：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@gmail.com
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@example.com.evil.test
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;alice@example.com@example.net&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;这个能力适合做&lt;strong&gt;入口筛选&lt;/strong&gt;，不等于企业身份认证。邮箱域名能证明“用户填写了这个格式”，不能证明用户拥有这个邮箱，更不能替代企业 IdP、邮箱验证或邀请制注册。&lt;/p&gt;
+&lt;h2 id="在管理控制台中配置"&gt;在管理控制台中配置&lt;/h2&gt;
+&lt;p&gt;使用具有管理权限的账号进入目标 Realm：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Realm settings → User profile → Attributes → email → Add validator&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;在 validator 类型中选择 &lt;code&gt;pattern&lt;/code&gt;，将正则表达式填入 &lt;code&gt;pattern&lt;/code&gt; 配置项。以只允许 &lt;code&gt;example.com&lt;/code&gt; 及其子域为例：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code class="language-regex" data-lang="regex"&gt;^[^@\s]+@([A-Za-z0-9-]+\.)*example\.com$&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;保存后，User Profile 的 &lt;code&gt;email&lt;/code&gt; 属性应至少有以下逻辑：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Attribute: email
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;Validator: pattern
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;pattern: ^[^@\s]+@([A-Za-z0-9-]+\.)*example\.com$&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;如果只允许根域，不允许 &lt;code&gt;sub.example.com&lt;/code&gt;，使用更窄的表达式：&lt;/p&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;pre tabindex="0"&gt;&lt;code class="language-regex" data-lang="regex"&gt;^[^@\s]+@example\.com$&lt;/code&gt;&lt;/pre&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;h3 id="正则各部分的作用"&gt;正则各部分的作用&lt;/h3&gt;
+
+
+
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-text" data-lang="text"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;^ 从字符串开头匹配
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;[^@\s]+ 一个或多个非 @、非空白字符
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;@ 邮箱分隔符
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;([A-Za-z0-9-]+\.)* 可选的一个或多个子域
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;example\.com 精确匹配目标域名中的点
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;$ 匹配到字符串结尾&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;这里的 &lt;code&gt;\.&lt;/code&gt; 必须写成“字面量点”。如果写成 &lt;code&gt;example.com&lt;/code&gt;，正则里的 &lt;code&gt;.&lt;/code&gt; 会匹配任意字符，可能把 &lt;code&gt;exampleXcom&lt;/code&gt; 也放进去。&lt;code&gt;^&lt;/code&gt; 和 &lt;code&gt;$&lt;/code&gt; 也不能省略，否则只要字符串某一段匹配，整条值可能被错误接受。&lt;/p&gt;</description></item><item><title>IAM 网关 Keycloak 重定向循环与 401 排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</link><pubDate>Wed, 08 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你已经部署好了 Keycloak +反向代理，用户能在 Keycloak 登录页输入用户名密码，但登录成功后浏览器在 Keycloak 和应用之间反复跳转，最终浏览器报 &lt;code&gt;ERR_TOO_MANY_REDIRECTS&lt;/code&gt;；或者直接返回 401，看起来&amp;quot;登录成功了但就是进不去&amp;quot;。&lt;/p&gt;
 &lt;p&gt;这类问题的根因几乎都在 &lt;strong&gt;Cookie、反向代理 Header、TLS 终结 和 OIDC 回调 URI&lt;/strong&gt; 四个环节。本文给出一个系统性的排查路线图。&lt;/p&gt;
 &lt;h2 id="适用与不适用"&gt;适用与不适用&lt;/h2&gt;
@@ -368,7 +466,7 @@
 &lt;/pre&gt;
 
 &lt;h2 id="第一关反向代理-header"&gt;第一关：反向代理 Header&lt;/h2&gt;
-&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递三个 Header，否则 Keycloak 构建的重定向 URL 会出错。&lt;/p&gt;</description></item><item><title>Keycloak Liquibase 与 MySQL 组复制冲突排查与解决 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
+&lt;p&gt;Keycloak 自身不面向公网时，反向代理必须正确传递代理头，且 Keycloak 必须配置为解析代理实际发送的格式。缺少或错误解析这些头时，Keycloak 可能构建出错误的重定向 URL；更危险的是，如果代理把客户端自己提交的 &lt;code&gt;X-Forwarded-*&lt;/code&gt; 原样转发，外部用户可以伪造来源协议或主机名。&lt;/p&gt;</description></item><item><title>Keycloak Liquibase 与 MySQL 组复制冲突排查与解决 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</link><pubDate>Mon, 01 Apr 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/keycloak/troubleshooting/liquibase-mysql-group-replication/</guid><description>&lt;h2 id="问题描述"&gt;问题描述&lt;/h2&gt;
 &lt;p&gt;Keycloak 对接的是一个 MGR(mysql group replication)的集群，安装时出错，数据初始化失败。&lt;/p&gt;
 &lt;p&gt;查看 Keycloak 启动日志，错误信息大致如下（Quarkus 版日志形如）。&lt;/p&gt;
 
@@ -594,127 +692,4 @@ OFF 表示临时锁定。&lt;/p&gt;
 &lt;/table&gt;
 &lt;hr&gt;
 &lt;h2 id="1-csrf-cookie-not-found"&gt;1. csrf cookie not found&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;日志典型输出&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
-&lt;p&gt;你所在的企业已经用 Active Directory 或 OpenLDAP 管理员工账号多年。现在引入 Keycloak 做统一认证，但不可能把所有用户手动迁移到 Keycloak 本地数据库——需要 Keycloak 直接对接现有的 LDAP/AD，让用户用域账号登录，管理员在原系统维护用户。&lt;/p&gt;
-&lt;p&gt;一句话：&lt;strong&gt;LDAP/AD 是权威用户源，Keycloak 消费但不拥有这些用户&lt;/strong&gt;。&lt;/p&gt;
-&lt;h2 id="适用--不适用"&gt;适用 / 不适用&lt;/h2&gt;
-&lt;table&gt;
-	&lt;thead&gt;
-			&lt;tr&gt;
-					&lt;th&gt;适用场景&lt;/th&gt;
-					&lt;th&gt;不适用场景&lt;/th&gt;
-			&lt;/tr&gt;
-	&lt;/thead&gt;
-	&lt;tbody&gt;
-			&lt;tr&gt;
-					&lt;td&gt;企业已有 AD/LDAP，不能动用户库&lt;/td&gt;
-					&lt;td&gt;新建系统、无遗留目录服务（直接用 Keycloak 本地用户即可）&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;需要 LDAP 用户和 Keycloak 本地用户混合认证&lt;/td&gt;
-					&lt;td&gt;需要 Keycloak 写入 LDAP（User Federation 默认只读同步）&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;多个 Realm 共享同一个 LDAP 源&lt;/td&gt;
-					&lt;td&gt;LDAP schema 与标准差异极大、需要大量自定义逻辑&lt;/td&gt;
-			&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h2 id="最小配置"&gt;最小配置&lt;/h2&gt;
-&lt;h3 id="keycloak-侧添加-ldap-user-federation"&gt;Keycloak 侧：添加 LDAP User Federation&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;进入目标 Realm → &lt;strong&gt;User federation&lt;/strong&gt; → &lt;strong&gt;Add Ldap provider&lt;/strong&gt;。&lt;/li&gt;
-&lt;li&gt;填写连接参数（以 AD 为例，OpenLDAP 见下节差异表）：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;table&gt;
-	&lt;thead&gt;
-			&lt;tr&gt;
-					&lt;th&gt;参数&lt;/th&gt;
-					&lt;th&gt;示例值 (AD)&lt;/th&gt;
-					&lt;th&gt;说明&lt;/th&gt;
-			&lt;/tr&gt;
-	&lt;/thead&gt;
-	&lt;tbody&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;Vendor&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;Active Directory&lt;/td&gt;
-					&lt;td&gt;选择 &lt;code&gt;Active Directory&lt;/code&gt; 后 Keycloak 会自动调整部分默认值&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;Connection URL&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;ldaps://dc.example.com:636&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;生产必须用 LDAPS（端口 636），不要用裸 LDAP&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;Bind DN&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;CN=svc_keycloak,CN=Users,DC=example,DC=com&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;专用服务账号，不要用域管理员&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;Bind Credential&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;服务账号密码&lt;/td&gt;
-					&lt;td&gt;使用 &lt;code&gt;vault&lt;/code&gt; / Kubernetes Secret 注入，别写死在配置里&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;Users DN&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;CN=Users,DC=example,DC=com&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;LDAP 中存放用户条目的基础 DN&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;Edit Mode&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;READ_ONLY&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;生产环境必须 READ_ONLY，避免 Keycloak 侧修改污染 LDAP&lt;/td&gt;
-			&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;ol start="3"&gt;
-&lt;li&gt;配置用户搜索：&lt;/li&gt;
-&lt;/ol&gt;
-&lt;table&gt;
-	&lt;thead&gt;
-			&lt;tr&gt;
-					&lt;th&gt;参数&lt;/th&gt;
-					&lt;th&gt;值&lt;/th&gt;
-					&lt;th&gt;说明&lt;/th&gt;
-			&lt;/tr&gt;
-	&lt;/thead&gt;
-	&lt;tbody&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;Username LDAP attribute&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;sAMAccountName&lt;/code&gt; (AD) / &lt;code&gt;uid&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
-					&lt;td&gt;作为 Keycloak 用户名的 LDAP 属性&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;RDN LDAP attribute&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;cn&lt;/code&gt; (AD) / &lt;code&gt;uid&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
-					&lt;td&gt;条目的命名属性&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;UUID LDAP attribute&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;objectGUID&lt;/code&gt; (AD) / &lt;code&gt;entryUUID&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
-					&lt;td&gt;不可变的唯一标识，用于追踪用户&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;strong&gt;User Object Classes&lt;/strong&gt;&lt;/td&gt;
-					&lt;td&gt;&lt;code&gt;person, organizationalPerson, user&lt;/code&gt; (AD) / &lt;code&gt;inetOrgPerson, organizationalPerson&lt;/code&gt; (OpenLDAP)&lt;/td&gt;
-					&lt;td&gt;过滤用户条目的 objectClass&lt;/td&gt;
-			&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;ol start="4"&gt;
-&lt;li&gt;可选：LDAP 过滤器限制同步范围：&lt;/li&gt;
-&lt;/ol&gt;
-
-
-
-&lt;div class="expressive-code"&gt;
- &lt;figure class="frame not-content"&gt;
- &lt;figcaption class="header"&gt;
- &lt;span class="title"&gt;&lt;/span&gt;
- &lt;/figcaption&gt;
- &lt;pre tabindex="0"&gt;&lt;code&gt;# 只同步 IT 部门的启用用户
-(&amp;amp;(objectCategory=person)(department=IT)(!(userAccountControl:1.2.840.113556.1.4.803:=2)))&lt;/code&gt;&lt;/pre&gt;
- &lt;/figure&gt;
-&lt;/div&gt;
-&lt;blockquote&gt;
-&lt;p&gt;过滤器里的 &lt;code&gt;userAccountControl:1.2.840.113556.1.4.803:=2&lt;/code&gt; 是 AD 中标志“禁用账户”的位运算写法。生产环境务必过滤掉禁用账户，否则离职员工仍可通过 LDAP 同步拥有 Keycloak 账号。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;&lt;strong&gt;日志典型输出&lt;/strong&gt;：&lt;/p&gt;</description></item></channel></rss>
