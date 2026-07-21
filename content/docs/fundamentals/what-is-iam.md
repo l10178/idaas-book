@@ -186,3 +186,23 @@ IAM 本身是高价值攻击目标，需要：
 3. IAM 不可用时，已签发 Token 是否允许短时间继续访问，以及管理员如何使用 break-glass 账号恢复。
 
 只比较“支持多少协议”容易得到一张漂亮的功能表，却没有得到可回滚的身份架构。可结合 [IAM 架构设计指南]({{< relref "../advanced-topics/iam-architecture-design" >}}) 和 [Keycloak + oauth2-proxy 集成指南]({{< relref "../solution-blogs/keycloak-oauth2-proxy" >}}) 检查真实请求链路。
+
+## IAM 方案的最小验收闭环
+
+“支持 OIDC、SAML、SCIM”只是产品能力清单，不是可上线的 IAM 方案。上线前至少用一条测试身份走完下面五个断言；每个断言都应留下命令输出、事件 ID 或工单记录：
+
+1. **身份权威明确**：写清 HR、AD、客户注册系统中谁是最终状态来源；IAM 中的手工改动是否会被下一次同步覆盖。
+2. **登录对象可验证**：OIDC 客户端用 Discovery 返回的 `issuer` 配置，而不是凭经验拼接 URL；授权码流程启用 PKCE，且回调地址使用精确匹配。Discovery 的元数据语义见 [RFC 8414](https://www.rfc-editor.org/rfc/rfc8414)，OAuth 安全建议见 [RFC 9700](https://www.rfc-editor.org/rfc/rfc9700)。
+3. **授权不依赖“登录成功”**：分别验证一个允许和一个拒绝用例。入口网关的 200/202 只说明会话通过，后端仍需按 `iss`、`aud`、scope/role 和资源关系做授权；不能把任意转发来的用户 Header 当作权限证明。
+4. **离职能收敛**：将测试用户标记为离职，验证 IAM 不再签发新 Token、会话按设计撤销，下游 SCIM 资源变为 `active=false`。SCIM 的资源更新语义见 [RFC 7644](https://www.rfc-editor.org/rfc/rfc7644)；已经签发的 JWT 是否立即失效，取决于资源服务的撤销或在线校验策略，不能从 SCIM 的 HTTP 200 推导出来。
+5. **故障可回退**：记录 IdP、数据库、密钥、下游同步任一环节故障时的降级边界。至少演练一次：IAM 暂时不可用时，已签发 Token 能否在限定窗口内继续访问，管理员如何通过 break-glass 账号恢复。
+
+一个不依赖具体产品的 OIDC 验收命令如下：
+
+```bash
+ISSUER='https://idp.example.com/realms/acme'
+curl --fail-with-body -sS "$ISSUER/.well-known/openid-configuration" \
+  | jq -e --arg issuer "$ISSUER" '.issuer == $issuer and (.authorization_endpoint | startswith($issuer))'
+```
+
+命令只验证 Discovery 的外部地址是否自洽，不验证登录、签名或授权策略。后续应使用脱敏测试账号完成真实回调，并在资源服务侧验证拒绝用例。若这一闭环没有通过，继续增加角色、Mapper 或产品插件通常只会扩大排错面；先修正身份边界和回滚路径，IAM 才不是“能登录的演示环境”。
