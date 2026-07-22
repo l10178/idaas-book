@@ -190,6 +190,8 @@ spec:
         - --upstream=static://202
         - --http-address=0.0.0.0:4180
         - --reverse-proxy=true
+        # 只信任 Ingress/反向代理的出口网段；按实际集群网段替换。
+        - --trusted-proxy-ip=10.42.0.0/16
         - --set-xauthrequest=true
         - --pass-access-token=true
         - --email-domain=*
@@ -246,6 +248,7 @@ spec:
 | `--cookie-samesite` | `lax` | 允许从外部链接跳转时携带 Cookie（`strict` 会拦截来自 Keycloak 的回调） |
 | `--upstream=static://202` | 固定 202 响应 | auth-url 模式：oauth2-proxy 仅做认证判定，不代理到后端 |
 | `--reverse-proxy` | `true` | 信任反向代理传入的 `X-Forwarded-*` 头 |
+| `--trusted-proxy-ip` | Ingress 出口 IP/CIDR | 限制哪些来源可以提供 `X-Forwarded-*`。不要在生产环境省略，否则能直连 oauth2-proxy 的请求方可能伪造 Host、Proto 或原始 URI |
 | `--set-xauthrequest` | `true` | 向后端传递 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups` 等头 |
 | `--pass-access-token` | `true` | 在 auth-url 模式下将 Access Token 放入认证响应头 `X-Auth-Request-Access-Token`；只有 Ingress 明确转发它时后端才会收到 |
 | `--email-domain` | `*` | 允许所有邮箱域。如需限定，改为 `example.com` 或 `--authenticated-emails-file` |
@@ -454,7 +457,7 @@ curl -v -H "Cookie: _oauth2_proxy=<复制值>" \
 2. **副本数**：至少 2 副本，配合 PodDisruptionBudget 保证高可用。
 3. **资源限制**：不要把未经压测的内存或 CPU 数字当成默认值。先用实际登录峰值、回调延迟和 OIDC 上游请求量建立基线，再设置 requests/limits；认证服务通常在发布或 Cookie 失效时出现突发流量。
 4. **Session Store 要按模式选择**：默认加密 Cookie 模式不要求多个副本共享服务端会话；只有需要 Redis 集中保存 Session、Cookie 过大，或希望服务端统一撤销时，才配置 `--session-store-type=redis` 和对应连接参数。引入 Redis 同时引入连接、超时、故障降级和凭据轮换问题，不能为了“多副本”机械添加。
-5. **TLS 与代理信任**：外部访问必须使用 HTTPS；如果 TLS 在 Ingress 终结，需正确传递并限制 `X-Forwarded-*`，避免客户端可以直接向 oauth2-proxy 注入代理头。Keycloak 也必须配置与公开地址一致的 hostname/proxy 模式。
+5. **TLS 与代理信任**：外部访问必须使用 HTTPS；如果 TLS 在 Ingress 终结，需正确传递并限制 `X-Forwarded-*`，避免客户端可以直接向 oauth2-proxy 注入代理头。`--reverse-proxy=true` 只表示启用反向代理模式，不等于来源已经可信；同时配置 `--trusted-proxy-ip`，并在网络策略或 Service 暴露层阻止绕过 Ingress 直接访问 oauth2-proxy。Keycloak 也必须配置与公开地址一致的 hostname/proxy 模式。
 6. **监控**：按所用版本确认 `/metrics` 是否启用，并监控认证成功率、回调失败、上游 OIDC 错误、延迟和 401/403 比例；不要只看 Pod 是否存活。
 7. **后端再次验证 Token**：`X-Auth-Request-*` 是认证代理传递的请求头，后端必须只信任来自 Ingress 的请求。若后端使用 `Authorization` 或 `X-Auth-Request-Access-Token` 做 API 授权，仍要独立校验签名、`iss`、`aud`、过期时间和权限，不能把“已通过 `/oauth2/auth`”当成 API 授权结果。
 
@@ -471,6 +474,10 @@ Keycloak 是 IAM 的身份提供者，负责认证并签发 OIDC Token；oauth2-
 ### 多个应用应该共用一个 oauth2-proxy 吗？
 
 只有当应用处于同一主域名、同一 Realm，且能接受共享 Cookie 会话时才适合共用。不同租户、不同安全等级或需要独立登出的应用应使用不同的 Cookie Name 或独立实例；共享 Cookie 会扩大会话泄露和误登出的影响范围，不能只因为少部署一个 Pod 就选它。
+
+### `--reverse-proxy=true` 为什么还要配置 `--trusted-proxy-ip`？
+
+`--reverse-proxy` 控制 oauth2-proxy 是否使用 `X-Forwarded-*` 参与原始请求和重定向判断；它不是“所有传入头都可信”的安全声明。官方配置文档说明，未设置 `--trusted-proxy-ip` 时，为兼容旧行为可能信任所有来源，能够直接访问 oauth2-proxy 的客户端就可能伪造这些头。应填入 Ingress 或其他反向代理的实际出口 IP/CIDR，并用 NetworkPolicy、内网 Service 或防火墙阻断旁路访问。改完后验证：通过 Ingress 的登录回调仍能生成正确的 HTTPS redirect，而直接访问 oauth2-proxy 的请求不能改变 `Host`、`X-Forwarded-Proto` 或回调目标。
 
 ## 回滚方式
 
