@@ -121,9 +121,11 @@ spec:
 
 如果配置了 `--cookie-domain=.example.com`，但实际访问 `app.other.com`，Cookie 不会随请求发送。
 
+**判断边界**：不要把“前面有没有点号”当成判断依据。现代浏览器会忽略 `Domain` 属性值前的前导点号，所以 `.example.com` 与 `example.com` 在这里等价；真正决定 Cookie 是否发送的是 Domain 是否覆盖当前主机名，以及当前请求是否满足 Secure、SameSite 和路径条件。`example.com` 可以覆盖 `app.example.com`，但不能覆盖 `other.example.net`。详见 [MDN：Set-Cookie 的 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#domaindomain-value)。
+
 **常见错误**：
-- 域名前少了一个点号：`example.com` 只匹配 `example.com` 自身，不匹配 `app.example.com`
-- 配置了点号但访问不同主域
+- 把不同主域名误当成同一 Cookie 作用域
+- 为了让多个应用复用会话，把 Domain 扩大到包含不可信子域的共同父域
 
 ### Cookie Secure 与 HTTP 冲突
 
@@ -294,7 +296,7 @@ kubectl exec deploy/keycloak -- curl -s http://localhost:9000/metrics | grep key
 
 ## 生产环境注意事项
 
-1. **不要用 `SameSite=None` 作为万金油**：这是最弱的 Cookie 保护，应优先排查为什么 Lax 不生效。
+1. **不要用 `SameSite=None` 作为万金油**：它允许跨站请求携带 Cookie，且必须同时设置 `Secure`；只有确实需要跨站上下文时才使用。优先确认 OIDC 回调是否是顶级 GET 导航，以及 `Lax` 是否已经满足场景。
 2. **`KC_HOSTNAME_STRICT=false` 不是长期方案**：在旧版 Keycloak 中常见，但它会放宽 hostname 校验，有安全风险。Keycloak 26+ 应明确配置 `KC_HOSTNAME` 与 `KC_PROXY_HEADERS`。
 3. **监视管理员的登录体验**：如果终端用户能登录但管理员不能，检查 `KC_HOSTNAME_ADMIN_URL` 是否配置。
 4. **反向代理的 `proxy_set_header Host $host` 不能省**：Keycloak 需要知道外部 Host 来构建正确的 redirect_uri。
@@ -316,6 +318,20 @@ kubectl rollout undo deployment/oauth2-proxy -n auth
 
 **重要**：在修改反向代理或 Keycloak 环境变量之前，先用 `kubectl get <resource> -o yaml > backup.yaml` 导出当前配置。
 
+## IAM FAQ
+
+### IAM 网关出现重定向循环，先查 Cookie 还是 Keycloak？
+
+先沿浏览器的实际跳转链路定位：如果回调响应没有写入会话 Cookie，先看 Domain、Secure、SameSite 和代理协议；如果 Cookie 已写入但随后 401，再检查 OIDC Discovery、`iss`、`aud` 和签名。不要把所有 401 都归因于 Keycloak 密码或 Cookie。
+
+### IAM 系统可以把 `SameSite=Strict` 作为默认值吗？
+
+不能直接假设可以。OIDC 登录通常需要从身份提供者返回应用回调端点；`Strict` 会缩小跨站请求携带 Cookie 的范围，可能使回调后的会话不可用。对常见的顶级 GET 回调，`Lax` 通常更符合需求，但最终应在目标浏览器的 Network/Storage 面板中验证，而不是只凭配置文件判断。
+
+### IAM 网关为什么不应该只靠扩大 Cookie Domain 修复登录？
+
+扩大 Domain 会让 Cookie 发送给更多子域；如果其中存在不可信或可被接管的子域，会扩大会话暴露面。只有多个应用确实需要共享会话、且共同父域的所有子域都在同一信任边界内时，才使用父域 Cookie；否则为每个应用使用主机专属 Domain 和独立 Cookie 名称。
+
 ---
 
 ## 延伸阅读
@@ -330,3 +346,4 @@ kubectl rollout undo deployment/oauth2-proxy -n auth
 - [Keycloak GitHub Issue #42997](https://github.com/keycloak/keycloak/issues/42997)：反向代理下登录重定向循环的实际案例
 - [oauth2-proxy GitHub Issue #3258](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258)：并发回调与 CSRF 校验问题
 - [oauth2-proxy GitHub Issues — redirect loop](https://github.com/oauth2-proxy/oauth2-proxy/issues?q=redirect+loop)
+- [MDN：Set-Cookie 的 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#domaindomain-value)：前导点号已被浏览器忽略，以及 Domain 的匹配边界
