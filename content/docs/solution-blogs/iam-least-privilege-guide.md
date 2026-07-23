@@ -132,19 +132,27 @@ kcadm.sh get users -r REALM --max 500 | jq '.[] | {username: .username, roles: .
 完成以上配置后，用以下测试用例验证最小权限是否生效：
 
 ```bash
-# 1. 用 viewer 账号获取 token
-TOKEN=$(curl -s -X POST "https://keycloak.example.com/realms/REALM/protocol/openid-connect/token" \
-  -d "client_id=CLIENT_ID" -d "username=viewer" -d "password=PASS" \
-  -d "grant_type=password" | jq -r '.access_token')
+# 1. 先用测试账号通过授权码 + PKCE 登录，得到 code 和 code_verifier。
+#    不要在脚本里提交用户密码；Keycloak 新项目不应使用 ROPC（password grant）。
+TOKEN=$(curl --fail-with-body -sS -X POST \
+  "https://keycloak.example.com/realms/REALM/protocol/openid-connect/token" \
+  -d "client_id=CLIENT_ID" \
+  -d "grant_type=authorization_code" \
+  -d "code=CODE_FROM_CALLBACK" \
+  -d "code_verifier=CODE_VERIFIER" \
+  -d "redirect_uri=https://app.example.com/callback" \
+  | jq -r '.access_token')
 
-# 2. 尝试访问 admin 接口 → 期望返回 403
-curl -s -o /dev/null -w "%{http_code}" \
+# 2. 尝试访问 admin 接口 → viewer 应返回 403
+curl -sS -o /dev/null -w "%{http_code}" \
   -H "Authorization: Bearer $TOKEN" \
   "https://api.example.com/admin/users"
 
-# 3. 检查 Token 中的角色是否不包含 admin
-echo "$TOKEN" | cut -d'.' -f2 | base64 -d 2>/dev/null | jq '.resource_access'
+# 3. 检查 Token 中的角色是否不包含 admin（仅诊断；不要以解码代替签名校验）
+printf '%s' "$TOKEN" | cut -d'.' -f2 | base64 -d 2>/dev/null | jq '.resource_access'
 ```
+
+这里故意没有使用 `grant_type=password`：密码凭据模式（ROPC）无法安全地表达 MFA、WebAuthn、条件访问等浏览器认证步骤，OAuth 安全最佳实践也要求客户端避免使用它。测试脚本应复用实际登录流程，或由受控的测试工具预先取得授权码；不要为了让验收脚本“更方便”而降低认证强度。参见 [RFC 9700 §2.4](https://www.rfc-editor.org/rfc/rfc9700#section-2.4)。
 
 ## 常见错误
 
