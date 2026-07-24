@@ -225,17 +225,25 @@ Okta SCIM 同时支持作为 Service Provider 和 Client，Keycloak 26.7 的 SCI
 
 ## 回滚方式
 
+回滚要分成两层：**应用镜像可以回退，数据库迁移不能默认当作可逆操作**。Keycloak 官方升级指南要求升级前备份数据库；如果启用了持久化用户 Session，还要按部署方式备份对应的 JDBC 或外部 Infinispan 数据。不要在 Liquibase 已经执行后直接运行下面这种通用 `pg_restore` 命令：它可能覆盖升级后产生的用户、客户端和会话数据，也不等于把 schema 安全降回旧版本。
+
+推荐先停止流量、保留故障现场，再在隔离环境用备份验证恢复；确认旧版本确实支持该数据库 schema 后，才回退镜像。若数据库已经完成 26.7.0 迁移，优先恢复到升级前的完整数据库快照并重新执行回滚演练；没有经过验证的快照时，不要把生产数据库直接交给旧版本启动。
+
 ```bash
-# 回滚 Keycloak 版本
-kubectl -n keycloak set image deploy/keycloak-operator \
-  keycloak-operator=quay.io/keycloak/keycloak-operator:26.6.4
-# 如果用了 Operator CR，更新 image 字段
+# 仅示意：回退应用镜像前，先确认数据库快照和恢复演练结果
 kubectl -n keycloak patch keycloak production-keycloak \
   --type=merge -p '{"spec":{"image":"quay.io/keycloak/keycloak:26.6.4"}}'
 
-# 回滚数据库（如果 Liquibase 已执行了迁移）
-pg_restore -h postgres-host -U keycloak -d keycloak /backup/keycloak-pre-upgrade.sql
+# PostgreSQL 自定义格式备份的恢复示例；必须在隔离数据库执行并先确认备份类型
+createdb -h postgres-host -U keycloak keycloak_restore
+pg_restore -h postgres-host -U keycloak -d keycloak_restore \
+  --clean --if-exists /backup/keycloak-pre-upgrade.dump
+
+# 恢复后先做只读验证，再切换流量；不要把 restore 直接指向生产库
+curl -fsS https://auth.example.com/health/ready
 ```
+
+> 这不是“按一个命令撤销升级”。Keycloak 升级指南只保证升级路径中的迁移步骤，数据库恢复、密钥材料、会话数据和流量切换必须按你的备份系统单独演练。若只回退镜像而保留已迁移数据库，先在 staging 验证旧版本是否能启动；否则宁可保持新版本并修复兼容性问题，也不要用生产库做降级实验。
 
 ## 延伸阅读
 
