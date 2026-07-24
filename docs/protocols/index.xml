@@ -170,14 +170,14 @@
 					&lt;td&gt;授权码拦截&lt;/td&gt;
 					&lt;td&gt;无 PKCE 时授权码可被恶意 App 截获&lt;/td&gt;
 					&lt;td&gt;PKCE（code_challenge + code_verifier）&lt;/td&gt;
-					&lt;td&gt;RFC 7636&lt;/td&gt;
+					&lt;td&gt;RFC 7636、RFC 9700&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;4&lt;/td&gt;
 					&lt;td&gt;Mix-Up Attack&lt;/td&gt;
-					&lt;td&gt;客户端未校验 issuer / 端点一致性&lt;/td&gt;
-					&lt;td&gt;验证 iss 参数 + redirect_uri 二次校验&lt;/td&gt;
-					&lt;td&gt;RFC 9207&lt;/td&gt;
+					&lt;td&gt;客户端未校验授权响应的 issuer / 端点一致性&lt;/td&gt;
+					&lt;td&gt;验证授权响应中的 &lt;code&gt;iss&lt;/code&gt; + 端点一致性&lt;/td&gt;
+					&lt;td&gt;RFC 9207、RFC 9700&lt;/td&gt;
 			&lt;/tr&gt;
 			&lt;tr&gt;
 					&lt;td&gt;5&lt;/td&gt;
@@ -216,7 +216,7 @@
 &lt;li&gt;&lt;strong&gt;RFC 9207 (iss 参数)&lt;/strong&gt;：防止 Mix-Up Attack（2022）&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;RFC 9449 (DPoP)&lt;/strong&gt;：Token 发件人约束（2024）&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;OAuth 2.1 不是全新协议，而是把这些分散的最佳实践整合成一份统一规范。它同时移除了已被证明不安全的流程，并强化了默认安全配置。&lt;/p&gt;
+&lt;p&gt;OAuth 2.1 不是全新协议，而是把这些分散的最佳实践整合成一份统一规范草案。已经发布的 RFC 9700（OAuth 2.0 Security BCP）则独立落地了其中一部分安全要求；两者不能混称为同一份规范。&lt;/p&gt;
 &lt;p&gt;如果你现在在写一个新的 OAuth 客户端或授权服务器，应该直接以 OAuth 2.1 为目标——2.0 的安全模型已经过期。&lt;/p&gt;
 &lt;h2 id="变化总览"&gt;变化总览&lt;/h2&gt;
 &lt;pre class="mermaid"&gt;
