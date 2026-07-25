@@ -154,12 +154,9 @@ Keycloak
 
 ### Q1：Keycloak 适合多大体量的用户？
 
-Keycloak 的生产部署可以支撑：
-- **单实例**：10 万以下用户，< 100 req/s 认证
-- **集群模式**：100 万+ 用户，数百 req/s
-- **大规模**：配合 Infinispan 缓存 + 外部数据库（PostgreSQL），可以线性扩展
+Keycloak 没有脱离部署拓扑、认证峰值、数据库、缓存和令牌策略的通用“用户数 / req/s”承诺。总用户数也不能替代容量证据：登录风暴、管理 API、令牌刷新、外部 User Federation 和数据库连接池可能分别成为瓶颈。生产评估至少应在目标版本和目标配置上测量认证峰值、P95/P99 延迟、数据库连接、缓存行为，并演练节点和数据库故障。
 
-Red Hat 官方有大规模部署的最佳实践文档。详见 [Keycloak 高可用部署]({{< relref "../solution-blogs/keycloak-ha-dr" >}})。
+因此，单实例还是集群不应按“10 万用户”这类固定数字切换：单实例只有在峰值压测和故障目标都满足时才成立；需要节点级故障切换、升级期间保持服务或更高峰值时，再按 Keycloak 当前版本的高可用和缓存文档设计集群。详见 [Keycloak 高可用部署]({{< relref "../solution-blogs/keycloak-ha-dr" >}})。
 
 > 🗺️ **部署导航**：如果你是第一次部署 Keycloak 到生产环境，建议先看 [Keycloak 生产环境完整部署路线图]({{< relref "../solution-blogs/keycloak-production-roadmap" >}})——从部署方式选型到安全加固的八步全景指南。
 
