@@ -193,7 +193,6 @@ spec:
         # 只信任 Ingress/反向代理的出口网段；按实际集群网段替换。
         - --trusted-proxy-ip=10.42.0.0/16
         - --set-xauthrequest=true
-        - --pass-access-token=true
         - --email-domain=*
         - --scope=openid email profile
         env:
@@ -250,7 +249,7 @@ spec:
 | `--reverse-proxy` | `true` | 信任反向代理传入的 `X-Forwarded-*` 头 |
 | `--trusted-proxy-ip` | Ingress 出口 IP/CIDR | 限制哪些来源可以提供 `X-Forwarded-*`。不要在生产环境省略，否则能直连 oauth2-proxy 的请求方可能伪造 Host、Proto 或原始 URI |
 | `--set-xauthrequest` | `true` | 向后端传递 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups` 等头 |
-| `--pass-access-token` | `true` | 在 auth-url 模式下将 Access Token 放入认证响应头 `X-Auth-Request-Access-Token`；只有 Ingress 明确转发它时后端才会收到 |
+| `--pass-access-token` | 默认不启用 | 将 OAuth Access Token 传给上游；只有后端确实要消费 Access Token 时才启用，并配合 Ingress 显式复制响应头 |
 | `--email-domain` | `*` | 允许所有邮箱域。如需限定，改为 `example.com` 或 `--authenticated-emails-file` |
 
 ### 不要混用三种 Authorization 头
@@ -259,11 +258,26 @@ spec:
 
 | 参数/头 | 实际含义 | 本指南的处理 |
 |---|---|---|
-| `--pass-access-token` → `X-Auth-Request-Access-Token` | 把 OIDC Access Token 放进认证响应，供 Ingress 选择性转发 | 默认示例保留；只有后端确实需要 Bearer Token 时才转发 |
+| `--pass-access-token` → `X-Auth-Request-Access-Token` | 配合 `--set-xauthrequest` 时，把 OAuth Access Token 放进认证响应，供 Ingress 选择性转发；代理模式还会向上游提供 `X-Forwarded-Access-Token` | 默认示例不启用；只有后端确实需要 Access Token 时才转发 |
 | `--set-authorization-header` → `Authorization` | 在认证响应中设置 Bearer 头，供支持 auth-request 响应头复制的代理使用 | 不在最小示例启用，避免和后端原有 `Authorization` 语义冲突 |
 | `--pass-authorization-header` | 代理模式下把 **ID Token** 作为 Bearer 头传给 upstream | 不要把它当成 API Access Token；后端应验证面向自身的 Access Token |
 
-Nginx Ingress 的 `auth-response-headers` 只会把列出的认证响应头复制给业务后端。因此，若后端需要 Access Token，必须显式列出 `X-Auth-Request-Access-Token`，并在后端按自己的 `iss`、`aud`、签名、过期时间和 scope 验证；不需要 Token 时应删除该项，减少敏感信息传播面。通过 Header 传递用户信息也不能替代后端清理客户端同名 Header、限制 oauth2-proxy Service 的直连入口。
+Nginx Ingress 的 `auth-response-headers` 只会把列出的认证响应头复制给业务后端。因此，若后端需要 Access Token，必须同时启用 `--pass-access-token`、显式列出 `X-Auth-Request-Access-Token`，并在后端按自己的 `iss`、`aud`、签名、过期时间和 scope 验证；不需要 Token 时应保持两处都关闭，减少敏感信息传播面。通过 Header 传递用户信息也不能替代后端清理客户端同名 Header、限制 oauth2-proxy Service 的直连入口。
+
+### 只有确实需要时才转发 Access Token
+
+最小的 `auth-url` 集成通常只需要用户标识和组信息，不需要把 OAuth Access Token 送进业务请求。若业务后端确实要调用 Keycloak 之外的资源服务，可在完成威胁建模后增加：
+
+```yaml
+# oauth2-proxy args
+- --set-xauthrequest=true
+- --pass-access-token=true
+
+# 业务 Ingress annotations
+nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups,X-Auth-Request-Access-Token"
+```
+
+后端必须把 `X-Auth-Request-Access-Token` 当作不可信输入边界之外的敏感凭据处理：只接受来自受控 Ingress 的请求，先清理客户端同名 Header，再独立验证 Token 的签名、`iss`、面向自身的 `aud`、`exp` 和 scope。oauth2-proxy 放行只证明入口会话通过，不能把代理的 audience（例如 `oauth2-proxy`）当成资源服务的 audience。
 
 ## Nginx Ingress 配置
 
@@ -276,7 +290,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/auth-url: "http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth"
     nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
-    nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups,X-Auth-Request-Access-Token"
+    nginx.ingress.kubernetes.io/auth-response-headers: "X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups"
 spec:
   ingressClassName: nginx
   tls:
@@ -347,7 +361,6 @@ spec:
     - X-Auth-Request-User
     - X-Auth-Request-Email
     - X-Auth-Request-Groups
-    - X-Auth-Request-Access-Token
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -389,11 +402,11 @@ curl -sS -o /dev/null -w "%{http_code}" https://myapp.example.com/
 # 4. 端到端测试：浏览器打开 https://myapp.example.com/
 # 预期：跳转到 Keycloak 登录页 → 登录 → 跳回应用
 
-# 5. 确认后端能读到认证信息
+# 3. 确认后端能读到认证信息
 # 在应用中打印 HTTP Headers，预期见到：
 # X-Auth-Request-User: <username>
 # X-Auth-Request-Email: <user@example.com>
-# X-Auth-Request-Access-Token: eyJ...
+# X-Auth-Request-Groups: <groups>
 ```
 
 ## 常见错误排错表
