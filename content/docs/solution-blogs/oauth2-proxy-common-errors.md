@@ -291,7 +291,7 @@ oauth2-proxy[1] <timestamp> <request> 403 missing state parameter
 cookie value too long (4096 bytes max)
 ```
 
-**根因**：oauth2-proxy 把 ID Token、Access Token、Refresh Token 全部加密存在 Cookie 里。如果 Token 中包含大量 claims（如组列表、角色列表），Cookie 可能超过浏览器 4096 字节限制。
+**根因**：Cookie Store 会把会话数据放入加密 Cookie；如果 Token 中包含大量 claims（如组列表、角色列表），Cookie 可能超过浏览器或代理的单 Cookie 大小限制。具体内容取决于 Provider、Session Store 和配置，不应假定三种 Token 都一定完整地存进 Cookie。
 
 高发于：Keycloak 用户属于几十个 group，每个 group 名字又很长。
 
@@ -308,12 +308,14 @@ args:
 # 生产环境还应通过 Secret 注入 Redis 凭据，并校验证书；不要把密码写进 Git
 ```
 
-**方案 2：精简 Cookie 内容**
+**方案 2：关闭不需要的凭据转发**
 
 ```yaml
 # 如果后端不需要 Access Token，不传递
 # --pass-access-token=false
 # --set-authorization-header=false
+# auth-url 模式也不需要 Basic Auth 头
+- --pass-basic-auth=false
 ```
 
 **方案 3：减少 Token 中的 claims**
