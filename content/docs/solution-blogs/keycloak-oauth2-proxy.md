@@ -192,6 +192,8 @@ spec:
         - --reverse-proxy=true
         # 只信任 Ingress/反向代理的出口网段；按实际集群网段替换。
         - --trusted-proxy-ip=10.42.0.0/16
+        # auth-url 模式通常不需要把 Basic Auth 头交给业务应用。
+        - --pass-basic-auth=false
         - --set-xauthrequest=true
         - --email-domain=*
         - --scope=openid email profile
@@ -248,6 +250,7 @@ spec:
 | `--upstream=static://202` | 固定 202 响应 | auth-url 模式：oauth2-proxy 仅做认证判定，不代理到后端 |
 | `--reverse-proxy` | `true` | 信任反向代理传入的 `X-Forwarded-*` 头 |
 | `--trusted-proxy-ip` | Ingress 出口 IP/CIDR | 限制哪些来源可以提供 `X-Forwarded-*`。不要在生产环境省略，否则能直连 oauth2-proxy 的请求方可能伪造 Host、Proto 或原始 URI |
+| `--pass-basic-auth` | `false` | auth-url 模式不需要 Basic Auth 头；显式关闭，避免把无用的认证信息传给后端 |
 | `--set-xauthrequest` | `true` | 向后端传递 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups` 等头 |
 | `--pass-access-token` | 默认不启用 | 将 OAuth Access Token 传给上游；只有后端确实要消费 Access Token 时才启用，并配合 Ingress 显式复制响应头 |
 | `--email-domain` | `*` | 允许所有邮箱域。如需限定，改为 `example.com` 或 `--authenticated-emails-file` |
