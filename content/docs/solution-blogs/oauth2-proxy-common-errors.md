@@ -56,6 +56,8 @@ oauth2-proxy[1] <timestamp> <request> 403 csrf cookie not found
 3. **HTTPS 前端 → HTTP 后端**：Cookie 设了 `Secure`，但 oauth2-proxy 收到的请求是 HTTP（TLS 在上一级终结，`X-Forwarded-Proto` 没传对）
 4. **跨域调用**：前端 SPA 在 `a.example.com`，oauth2-proxy 在 `auth.example.com`，Cookie Domain 不覆盖
 
+还有一个容易被误判成“Cookie 随机丢失”的分支：同一个浏览器同时发起多个未认证请求。默认情况下，oauth2-proxy 不为每个请求创建独立的 CSRF Cookie；多个标签页、前端并行加载资源，或用户连续点击登录，都可能让较早的 `state` 与回调不再对应。若日志同时出现 `csrf cookie not found`、`state mismatch`，并且响应头已经成功写入 CSRF Cookie，优先检查这个并发场景，而不是先扩大 Cookie Domain。
+
 ### 诊断
 
 ```bash
@@ -102,6 +104,18 @@ args:
 2. 重新访问应用 URL
 3. 观察 Network 面板：`/oauth2/start` 的响应头应有 `Set-Cookie: _oauth2_proxy_csrf=...`
 4. 登录完成后不应再出现 403
+
+如果问题只在并行登录或多个标签页复现，可以显式为每个授权请求启用独立 CSRF Cookie：
+
+```yaml
+args:
+- --cookie-csrf-per-request=true
+# 只在确认浏览器/代理出现 431 Request Header Fields Too Large 时设置上限；
+# 上限过小会让较早的并行登录请求失效
+- --cookie-csrf-per-request-limit=10
+```
+
+`--cookie-csrf-per-request-limit` 只有在 `--cookie-csrf-per-request=true` 时生效；它限制 oauth2-proxy 保留的并行 CSRF Cookie 数量，超出后删除最早的 Cookie。先不设置上限通常更容易验证根因，但生产环境应结合浏览器并发行为和代理 Header 大小限制决定是否加上限。改动后清理旧 Cookie，再用两个标签页同时访问受保护 URL，确认两次回调都能完成；若出现 431，回到上限、Cookie Domain 和代理 Header 限制一起检查。
 
 > **常见误区**：看到多副本就立刻加 Redis。这里有一个容易把排错方向带偏的细节：**默认 Cookie Session Store 并不要求回调落到同一个 Pod**。只要多个副本使用相同的 `--cookie-secret`，各副本都能解密由其他副本签发的会话 Cookie；把“多副本”直接等同于“必须上 Redis”会平白增加一个运行依赖。当前 oauth2-proxy 文档将 `cookie` 列为默认 Session Store，`redis` 是另一种可选后端。
 
@@ -546,6 +560,7 @@ curl -v http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
 - [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive" >}})——架构原理、Provider 选型、Cookie/Session 机制
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 配置总览（Session Store、Cookie 与 Header 参数）](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
+- [oauth2-proxy 配置总览：CSRF Cookie 并发与大小限制](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#cookie-options)——`cookie-csrf-per-request` 与 `cookie-csrf-per-request-limit` 的行为
 - [oauth2-proxy GitHub Issues](https://github.com/oauth2-proxy/oauth2-proxy/issues)
 - [MDN：Set-Cookie 的 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#domaindomain-value)
 
