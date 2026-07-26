@@ -237,14 +237,10 @@ curl -s https://keycloak.example.com/realms/myrealm/.well-known/openid-configura
 ### 修复
 
 - **issuer 不匹配**：`--oidc-issuer-url` 必须与 Keycloak OIDC Discovery 返回的 `issuer` 完全一致（注意尾部斜杠、端口号）
-- **签名校验失败**：Keycloak Realm 重建后，oauth2-proxy 可能需要重启来刷新 JWKS 缓存。如果 Keycloak 配置了多个签名密钥（轮换期间），确认 oauth2-proxy v7.5+ 版本（支持多 JWK）
-- **Token 过期**：检查 `--cookie-refresh` 参数是否小于 Token 有效期。Keycloak 默认 Access Token 5 分钟，ID Token 也是 5 分钟
+- **签名校验失败**：先确认 Discovery/JWKS 端点可从 oauth2-proxy Pod 访问，并检查日志中的 `kid` 是否能在当前 JWKS 中找到。Keycloak 密钥轮换或 Realm 重建后，先按运行版本确认 JWKS 缓存刷新行为，再重启 oauth2-proxy；不要用跳过校验的开关掩盖密钥或网络问题。
+- **Token 过期**：检查 `--cookie-refresh` 是否小于上游会话或 Token 的有效期；实际有效期以 Realm 和 Client 配置为准，不要把某个默认分钟数写死到生产判断里。
 
-```bash
-# 临时绕过 issuer 校验排查（仅测试用，不要在生产环境留这个参数）
-- --insecure-oidc-allow-unverified-email=true
-- --insecure-oidc-skip-issuer-verification=true
-```
+不要用 `--insecure-oidc-skip-issuer-verification` 或类似“不验证”参数作为修复。它会降低认证边界，且无法修复签名、`aud`、过期时间或错误的 Discovery 地址。需要定位时，分别记录 Discovery 返回的 `issuer`、JWKS URL、Token 的 `iss`/`aud`/`kid`，再恢复严格校验后验证。
 
 ---
 
