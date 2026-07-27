@@ -73,9 +73,7 @@ graph TD
     Q1B -->|是| REC_OAuth_CC["OAuth 2.0 Client Credentials Grant"]
     Q1B -->|否| Q1C{"是没有浏览器的设备？"}
     Q1C -->|是| REC_OAuth_DC["OAuth 2.0 Device Code Grant"]
-    Q1C -->|否| Q1D{"用户输入密码可信？"}
-    Q1D -->|是/仅内部| REC_OAuth_ROPC["OAuth 2.0 ROPC Grant<br/>⚠️ 不推荐，仅遗留兼容"]
-    Q1D -->|否| REC_OAuth_Code
+    Q1C -->|否| REC_OAuth_Code["OAuth 2.0 Authorization Code + PKCE<br/>让授权服务器处理用户认证"]
 
     Q1 -->|否| Q2{"需要跨组织 / 跨公司 SSO？"}
     Q2 -->|是| Q2A{"对方是否支持 OIDC？"}
@@ -102,14 +100,13 @@ graph TD
     style REC_SCIM fill:#ffe0b2
     style REC_OAuth_CC fill:#e1f5fe
     style REC_OAuth_DC fill:#e1f5fe
-    style REC_OAuth_ROPC fill:#ffcdd2
 ```
 
 **决策树使用说明**：
 
 1. 从顶部"我需要什么"开始，诚实回答自己的需求
 2. 一个项目可能涉及多个分支——例如一个 SaaS 产品可能同时需要 OAuth 2.0（第三方集成）、OIDC（用户登录）、SCIM（企业客户自动同步用户）
-3. 红色节点（ROPC Grant）表示有已知安全风险，仅限特定遗留场景
+3. 没有“把用户密码交给客户端”的分支：RFC 9700 §2.4 要求不得使用 ROPC。遗留系统应迁移到 Authorization Code + PKCE，而不是把密码模式包装成“内部专用”。
 
 ## 十个典型场景的协议选型
 
@@ -253,25 +250,31 @@ OAuth 2.0 是**授权**协议，不是**认证**协议。获取到 Access Token 
 
 **正确做法**：如果需要认证，使用 OIDC（在 OAuth 2.0 基础上增加 ID Token）。如果只能拿到 OAuth 2.0 的 Access Token，至少用 Token Introspection 或 UserInfo Endpoint 来验证用户身份。
 
-### 坑 2：在 Blazor/.NET/Java EE 之外用 SAML
+### 坑 2：把 ROPC 当成脚本或内网系统的快捷登录
+
+`grant_type=password` 要求客户端直接接收用户密码。RFC 9700 §2.4 明确要求不得使用该授权类型：它扩大了密码泄露面，也无法自然承载 MFA、Passkey 等需要授权服务器参与的多步认证。内网、测试环境和“只有自己维护的客户端”都不是绕过这条边界的理由。
+
+**迁移判断**：有人在场的交互式登录用 Authorization Code + PKCE；没有用户在场的服务调用用 Client Credentials，并为客户端凭证设置短有效期、最小 scope 和轮换机制；无浏览器设备用 Device Authorization Grant。旧系统暂时无法迁移时，应把它登记为隔离的遗留风险，而不是写进新架构决策树。
+
+### 坑 3：在 Blazor/.NET/Java EE 之外用 SAML
 
 SAML 的 XML 签名和加密对于现代 SPA 和移动 App 来说太重了。如果你在 React/Vue/Flutter 应用中接入 SAML，调试签名验证错误会让你怀疑人生。
 
 **正确做法**：新应用默认用 OIDC；只有在对接已有 SAML IdP（如 AD FS、Shibboleth）时才用 SAML。如果后端是 .NET 或 Spring Security，这些框架对 SAML 的支持反而比 OIDC 更成熟——要具体情况具体分析。
 
-### 坑 3：在公网暴露 LDAP
+### 坑 4：在公网暴露 LDAP
 
 LDAP 的默认安全模型假设它在内网中运行。把 LDAP 暴露到互联网等于邀请攻击者暴力破解你的目录。
 
 **正确做法**：用 SCIM 或 IdP 的 User Federation 功能封装 LDAP。如果需要外部访问，至少通过 VPN/Zero Trust 隧道，而不是直接开 389/636 端口。
 
-### 坑 4："五个协议全支持"的过度设计
+### 坑 5："五个协议全支持"的过度设计
 
 一些团队会追求"完美"——同时支持 OIDC、SAML、LDAP、SCIM，再自己封装一套。结果每个协议的实现都在 80% 完成度时被放弃。
 
 **正确做法**：MVP 阶段只支持 OIDC（覆盖 80% 场景），在客户明确需要 SAML 时再加。SCIM 在企业客户超过 10 个之前可以手动处理。LDAP 用 IdP 适配而不是自己裸写。
 
-### 坑 5：忽略 Token 生命周期和刷新策略
+### 坑 6：忽略 Token 生命周期和刷新策略
 
 选完协议只是第一步。Access Token 设多长？Refresh Token Rotation 要不要开？登出时前端 Token 清了但后端 Token 还有效怎么办？
 

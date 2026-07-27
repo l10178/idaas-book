@@ -84,7 +84,7 @@ Keycloak 的认证流是一个**有向执行图**，由多个 `Authenticator` �
 | 流类型 | 触发场景 |
 |--------|----------|
 | Browser | 浏览器交互登录（最常用） |
-| Direct Grant | 直接用 username/password 换 token（Resource Owner Password） |
+| Direct Grant | Keycloak 的直接授权入口；不要把它当作新应用的登录方案。ROPC（`grant_type=password`）会让客户端接收用户密码，RFC 9700 §2.4 已明确要求不得使用 |
 | Service Account | Client Credentials 流（机器到机器） |
 | Reset Credentials | 忘记密码重置流 |
 | First Broker Login | 首次通过第三方 IdP 登录时的账号关联 |
