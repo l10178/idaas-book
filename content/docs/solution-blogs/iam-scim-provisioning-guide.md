@@ -71,56 +71,38 @@ graph LR
 
 ### SCIM 在 Keycloak 中的定位
 
-Keycloak 自身没有内置完整的 SCIM Server，但可以通过社区扩展实现。目前主流方案是 `keycloak-scim-server`（Metatavu）插件。Keycloak 26.x 版本开始引入对 SCIM 的原生支持（作为技术预览），详情参考 [Keycloak 26.7 新特性深度解读]({{< relref "keycloak-26-7-whats-new" >}})。
+SCIM 不是 Keycloak 的通用内置用户供应接口。Keycloak 的官方文档主要覆盖 User Storage Federation、Identity Brokering 和管理 API；要让 Keycloak 作为 SCIM Server，通常需要经过版本验证的社区扩展，或在 Keycloak 外部部署 SCIM 网关。不要因为产品宣传或旧文章中的“支持 SCIM”就假设某个 Keycloak 镜像已经提供 `/scim/v2`。
 
-### 安装 keycloak-scim-server
+这条边界会直接影响选型：
 
-**环境要求：**
-- Keycloak 25.x 或 26.x
-- 支持 Docker 部署或裸机部署
+- **HR/Entra ID → Keycloak**：先确认接收端是否真的实现 SCIM 2.0 的资源、认证和 PATCH 语义；否则应使用受支持的连接器或中间服务，不要把 SCIM 请求直接发到 Admin REST API。
+- **Keycloak → SaaS 应用**：先确认谁负责 SCIM Client、重试、幂等和审计。Keycloak 的登录联邦能力不能自动等价为下游用户供应能力。
+- **只需要 Keycloak 管理用户**：使用官方支持的管理接口和用户存储方案，并把它们与 SCIM Server 的兼容性单独验收。
 
-**Docker 部署：**
-
-```bash
-# 基于 Keycloak 26 的 Dockerfile
-FROM quay.io/keycloak/keycloak:26.1
-
-# 下载 SCIM 插件 JAR
-ADD https://github.com/Metatavu/keycloak-scim-server/releases/download/v2.5.0/keycloak-scim-server-2.5.0.jar \
-    /opt/keycloak/providers/
-
-# 构建镜像时自动安装插件
-RUN /opt/keycloak/bin/kc.sh build
-```
-
-**环境变量配置：**
-
-```bash
-# realm 级别的 SCIM（全部用户）
-SCIM_AUTHENTICATION_MODE=KEYCLOAK_ADMIN
-SCIM_LINK_IDP=true
-
-# 如果使用外部 JWT 认证（如 Azure AD 作为 SCIM 客户端）
-# SCIM_AUTHENTICATION_MODE=EXTERNAL
-# SCIM_EXTERNAL_ISSUER=https://sts.windows.net/{tenant-id}/
-# SCIM_EXTERNAL_AUDIENCE=8adf8e6e-67b2-4cf2-a259-e3dc5476c621
-```
+选择扩展时至少锁定三项：扩展支持的 Keycloak 版本、发布物的校验来源，以及它对 `ServiceProviderConfig`、`Users`、`Groups`、PATCH 和 Bearer Token 认证的实际测试结果。本文不固定某个社区插件版本，避免把未经持续验证的插件当成 Keycloak 官方能力。
 
 ### 验证 SCIM 端点
 
-部署完成后，检查 SCIM 端点是否可达：
+先从 SCIM 服务提供方拿到实际的 Base URL；不要把旧版 Keycloak 常见的 `/auth` 前缀硬编码进所有部署。SCIM 服务端应公开 `ServiceProviderConfig`，客户端也应根据它判断是否支持 PATCH、过滤和批量操作。
 
 ```bash
-# 获取 Service Provider Config（SCIM 规范要求每个 SCIM Server 必须支持）
-curl -s -H "Authorization: Bearer $(< admin_token)" \
-  https://keycloak.example.com/auth/realms/{realm}/scim/v2/ServiceProviderConfig | jq .
+export SCIM_BASE_URL='https://scim.example.com/scim/v2'
+export SCIM_TOKEN='替换为短期测试令牌'
 
-# 查询用户列表
-curl -s -H "Authorization: Bearer $(< admin_token)" \
-  "https://keycloak.example.com/auth/realms/{realm}/scim/v2/Users?filter=userName+eq+%22zhangsan%22" | jq .
+# 先验证服务能力，再验证资源查询
+curl --fail-with-body --silent --show-error \\
+  -H "Authorization: Bearer ${SCIM_TOKEN}" \\
+  -H 'Accept: application/scim+json' \\
+  "${SCIM_BASE_URL}/ServiceProviderConfig" | jq .
+
+curl --fail-with-body --silent --show-error \\
+  -H "Authorization: Bearer ${SCIM_TOKEN}" \\
+  -H 'Accept: application/scim+json' \\
+  --get --data-urlencode 'filter=userName eq "zhangsan@example.com"' \\
+  "${SCIM_BASE_URL}/Users" | jq .
 ```
 
-如果返回 401/403，检查认证模式和 Token 有效性。如果返回 500，检查日志中的 `Invalid SCIM configuration` 错误。
+如果返回 401/403，先检查 Bearer Token 的签发方、受众、权限和有效期；如果返回 404，检查实际 Base URL、反向代理路径和扩展是否加载；如果返回 405，检查客户端是否错误地假设服务支持某个 HTTP 方法。只有在服务确实返回 SCIM 响应后，才继续排查属性映射和同步调度。
 
 ### SCIM 属性映射（连接 HR 系统到 Keycloak）
 
@@ -171,8 +153,8 @@ curl -X POST \
 1. **Azure Portal → Enterprise Applications → 新建应用** → 选择 "Non-gallery application"
 2. **Provisioning → Get started** → 选择 "Automatic"
 3. **Admin Credentials**：
-   - Tenant URL: `https://keycloak.example.com/auth/realms/{realm}/scim/v2`
-   - Secret Token: 从 Keycloak 获取的 Bearer Token
+   - Tenant URL: `https://scim.example.com/scim/v2`（以实际 SCIM Server 提供的 Base URL 为准）
+   - Secret Token: 为 SCIM Client 单独签发的短期 Bearer Token
 4. **Test Connection** → 确认连通性
 5. **Mappings** → 配置 Azure AD 属性到 SCIM 属性的映射（默认映射通常足够）
 6. **Settings** → 选择 Scope（同步已分配的用户和组 or 全部用户）
@@ -202,11 +184,11 @@ SCIM 集成最常见的失败点不在协议本身，而在配置和操作层面
 | 错误症状 | 可能原因 | 排查步骤 |
 |---------|---------|---------|
 | SCIM 端点返回 401 | Token 过期或认证模式错误 | 检查 Token 有效期；确认 `SCIM_AUTHENTICATION_MODE` 设置 |
-| SCIM 端点返回 404 | 端点路径错误或插件未加载 | 确认 URL 包含正确的 realm；检查 `providers/` 目录有无 JAR |
-| SCIM 端点返回 500 `Invalid SCIM configuration` | 环境变量缺失或配置不完整 | 检查所有 `SCIM_*` 环境变量；查看 Keycloak 日志 |
+| SCIM 端点返回 404 | Base URL、反向代理路径或服务端实现错误 | 先请求 `ServiceProviderConfig`；再检查实际部署文档和服务日志 |
+| SCIM 端点返回 500 | 服务端扩展或映射配置异常 | 查看 SCIM 服务日志，确认资源 Schema 和属性映射 |
 | 创建用户报 409 Conflict | `userName` 或 `externalId` 已存在 | 使用 PATCH 更新而非 POST 创建；确保 HR 系统的唯一标识正确传递 |
 | 用户同步后无组成员 | 组未在 SCIM 中配置或映射缺失 | Keycloak SCIM 需要额外配置 Group 映射；Azure AD 需要在 Provisioning Mappings 中添加组映射 |
-| 下游应用未收到用户变更 | SCIM Provisioning Interval 过长或应用端未配置 | Azure AD 默认每 40 分钟同步一次，可手动触发；检查应用端 SCIM 日志 |
+| 下游应用未收到用户变更 | 同步调度、重试队列或应用端配置异常 | 查看 Provisioning 日志和重试状态；不要把某个租户的调度间隔当成通用默认值 |
 
 ### 诊断命令速查
 
@@ -214,13 +196,14 @@ SCIM 集成最常见的失败点不在协议本身，而在配置和操作层面
 # 查看 Keycloak SCIM 相关日志
 docker logs keycloak-container 2>&1 | grep -i scim
 
-# 查看 SCIM Service Provider Config（验证插件运行）
-curl -s http://localhost:8080/auth/realms/master/scim/v2/ServiceProviderConfig \
-  -H "Authorization: Bearer $(cat /tmp/admin_token)" | jq '.schemas'
+# 查看 SCIM Service Provider Config（验证服务端实现）
+curl --fail-with-body --silent --show-error "${SCIM_BASE_URL}/ServiceProviderConfig" \
+  -H "Authorization: Bearer ${SCIM_TOKEN}" | jq '.schemas'
 
 # 查看特定用户是否存在
-curl -s "http://localhost:8080/auth/realms/master/scim/v2/Users?filter=userName+eq+%22testuser%22" \
-  -H "Authorization: Bearer $(cat /tmp/admin_token)" | jq '.totalResults'
+curl --fail-with-body --silent --show-error --get \
+  --data-urlencode 'filter=userName eq "testuser"' \
+  "${SCIM_BASE_URL}/Users" -H "Authorization: Bearer ${SCIM_TOKEN}" | jq '.totalResults'
 
 # Azure AD 检查 Provisioning 日志
 # Azure Portal → Enterprise Applications → {应用名} → Provisioning → Provisioning logs
@@ -251,7 +234,7 @@ SCIM 和 LDAP 解决的是 IAM 中不同层面的问题。LDAP 是**目录查询
 
 ### Keycloak SCIM 和 Azure AD SCIM 哪个更成熟？
 
-Azure AD（Entra ID）的 SCIM Provisioning 功能是内置的、生产级的产品能力，开箱即用，但只支持作为 SCIM Client（向其他应用推送用户）。Keycloak 的 SCIM 支持依赖社区插件（如 keycloak-scim-server），作为 SCIM Server 接收外部系统的用户同步请求。两者的典型组合：Azure AD 作为 HR→IDP 的 SCIM Client，Keycloak + SCIM 插件作为接收端，再由 Keycloak 的 Identity Brokering 或自定义逻辑推送到下游应用。
+Azure AD（Entra ID）的 SCIM Provisioning 功能可作为 SCIM Client 向支持 SCIM 的应用推送用户，但实际同步行为仍受租户配置、映射和调度影响。Keycloak 是否能作为 SCIM Server，取决于所部署的、经过版本验证的扩展或外部 SCIM 网关；不能把 Identity Brokering 或 Admin REST API 当成 SCIM 实现。组合方案应先分别验证 SCIM Server、SCIM Client、属性映射和离职回收。
 
 ### 怎么保证 SCIM 同步不出错导致用户数据混乱？
 
@@ -265,6 +248,6 @@ Azure AD（Entra ID）的 SCIM Provisioning 功能是内置的、生产级的产
 
 - RFC 7643: SCIM Core Schema — https://datatracker.ietf.org/doc/html/rfc7643
 - RFC 7644: SCIM Protocol — https://datatracker.ietf.org/doc/html/rfc7644
-- Keycloak SCIM Server (Metatavu) — https://github.com/Metatavu/keycloak-scim-server
+- Keycloak Server Administration Guide — https://www.keycloak.org/docs/latest/server_admin/
 - Azure AD SCIM Provisioning 文档 — https://learn.microsoft.com/en-us/entra/identity/app-provisioning/use-scim-to-provision-users-and-groups
-- Keycloak 26 Release Notes (SCIM 技术预览) — https://www.keycloak.org/2026/04/keycloak-2600-released
+- Keycloak Production Configuration — https://www.keycloak.org/server/configuration-production
