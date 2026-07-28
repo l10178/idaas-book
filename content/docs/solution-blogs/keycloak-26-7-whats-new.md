@@ -247,6 +247,7 @@ curl -fsS https://auth.example.com/health/ready
 
 ## 延伸阅读
 
+- [Keycloak Downloads（当前服务器稳定版）](https://www.keycloak.org/downloads)
 - [Keycloak 26.7.0 Release Notes](https://github.com/keycloak/keycloak/releases/tag/26.7.0)
 - [Keycloak 26.7.0 升级说明](https://www.keycloak.org/docs/latest/upgrading/index.html)
 - [Keycloak Server Features](https://www.keycloak.org/server/features)
