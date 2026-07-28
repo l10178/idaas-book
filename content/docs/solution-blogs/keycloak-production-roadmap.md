@@ -79,16 +79,16 @@ flowchart TD
 
 | 部署方式 | 适合场景 | 高可用能力 | 运维复杂度 | 推荐度 |
 |---------|---------|-----------|-----------|--------|
-| **K8s Operator** | 有 K8s 集群的团队 | ⭐⭐⭐ 最强（滚动更新、自动扩缩） | 中（需理解 CRD） | 🟢 生产首选 |
-| **Helm Chart** | 习惯 Helm 管理应用 | ⭐⭐⭐（需手动配置 HPA） | 中 | 🟢 生产可用 |
+| **K8s Operator** | 有 K8s 集群的团队 | ⭐⭐（生命周期与滚动更新） | 中（需理解 CRD） | 🟢 生产可用 |
+| **Helm Chart** | 习惯 Helm 管理应用 | ⭐⭐（由 K8s 工作负载负责扩缩） | 中 | 🟢 生产可用 |
 | **Docker Compose** | 小团队、单机或少量节点 | ⭐⭐（需外部 LB + 共享数据库） | 低 | 🟡 适合中小规模 |
 | **裸机 / VM** | 传统运维，无容器化 | ⭐（手动管理多节点） | 高（手动运维） | 🔴 不推荐新项目 |
 
 ### 关键决策因素
 
-- **Operator vs Helm**：Operator 管理 Keycloak 的完整生命周期（升级、备份、自动扩缩），Helm 更像是"一次性安装"。长期运维选 Operator。
-- **内存要求**：生产环境每个 Keycloak 节点建议至少 2 GB 堆内存。K8s 中设置 `-Xms1g -Xmx2g`，并通过 `resources.limits` 预留。
-- **CPU 要求**：至少 2 vCPU。Keycloak 的密码哈希（Argon2/bcrypt）是 CPU 密集型操作。
+- **Operator vs Helm**：两者都只是部署与生命周期管理入口，不会替数据库做备份，也不等于自动扩缩容。Operator 提供 Keycloak 自己的 CRD；Helm 交付 Kubernetes manifest。选型应看团队是否愿意维护 CRD 和 Operator 版本，而不是把 Operator 当成完整运维平台。
+- **资源规格**：不要把“每节点至少 2 GB、2 vCPU”当成通用容量结论。Keycloak 的并发、登录频率、密码哈希参数、缓存和数据库连接池都会改变需求。先用目标流量压测，再把 `resources.requests/limits` 和 JVM 设置写进部署清单。
+- **备份边界**：Operator/Helm 不会替你设计数据库备份、密钥托管和恢复演练；这些必须由数据库与平台运维流程负责。
 
 ---
 
@@ -130,10 +130,11 @@ Keycloak 默认监听 `http://localhost:8080`。生产环境中，必须在 Keyc
 Keycloak 需要知道自己在反向代理后面运行，否则会生成错误的 redirect URI（`http://localhost:8080` 而不是 `https://your-domain.com`）。
 
 ```bash
-kc.sh start --proxy=edge  # TLS 在反向代理层终止（最常见）
-# 或
-kc.sh start --proxy=reencrypt  # 反向代理做 TLS 再加密（更高安全要求）
+# 代理写入 X-Forwarded-* 时显式启用解析；不要同时让客户端决定这些头
+kc.sh start --proxy-headers=xforwarded
 ```
+
+TLS 终止方式和 Keycloak 到代理之间是否加密，是代理拓扑的选择；不要把旧版本的 `--proxy=edge` 示例直接复制到当前发行版。具体可用参数以目标版本的 `kc.sh build`/`kc.sh start --help` 和[全部配置参考](https://www.keycloak.org/server/all-config)为准。
 
 ### Nginx 最小配置
 
@@ -318,14 +319,9 @@ Keycloak 平均每 6-8 周发布一个新版本。升级路径：
 
 ### Q1：从零开始到生产环境，一般要多久？
 
-一个 2 人团队，从零开始部署 Keycloak 到生产就绪状态：
-- **部署方式选型 + 数据库配置**：1-2 天
-- **反向代理 + TLS**：半天
-- **集群 + 高可用**：1-2 天（含测试）
-- **监控 + 告警**：1 天
-- **备份 + 安全加固**：1 天
+不要用“2 人团队 5-7 个工作日”作为通用承诺。部署方式选型、反向代理、集群、监控、备份恢复和安全评审的工期取决于现有平台与验收标准；尤其恢复演练和协议回归不能按安装命令的执行时间估算。
 
-总计约 **5-7 个工作日**。如果使用 K8s Operator，第 1 和第 4 步可以合并，减少 1-2 天。
+不要把这些步骤压缩成固定工期承诺；备份恢复演练、协议回归和安全评审往往才是上线门槛。Operator 也不会自动消除这些工作。
 
 ### Q2：可以直接跳过集群，单节点跑到用户量大了再加吗？
 
@@ -338,10 +334,10 @@ Keycloak 平均每 6-8 周发布一个新版本。升级路径：
 
 ### Q3：Keycloak Operator 和 Helm 怎么选？
 
-- **选 Operator**：如果你希望 Keycloak 的升级、扩缩容、备份都由 K8s 原生 CRD 管理，且团队愿意学习 Operator 的工作方式
-- **选 Helm**：如果你的团队已经用 Helm 管理所有应用，希望部署方式统一，不介意手动处理升级和扩缩容
+- **选 Operator**：如果团队愿意维护 CRD、Operator 版本和其升级路径，并希望用 Kubernetes 资源描述 Keycloak 实例。
+- **选 Helm**：如果团队已有统一的 Helm 发布流程，愿意自行组合 Stateful/Deployment、Service、Ingress、Secret 和扩缩容策略。
 
-两者都能跑生产。Operator 的长期运维成本更低。
+两者都能用于生产，但都不替代数据库备份、容量压测、恢复演练和回滚设计。Operator 的运维成本不应脱离团队能力和版本生命周期单独判断。
 
 ### Q4：IaaS 上的托管数据库（RDS / Cloud SQL）还是自建 PostgreSQL？
 
@@ -365,3 +361,11 @@ Keycloak 平均每 6-8 周发布一个新版本。升级路径：
 ## 小结
 
 Keycloak 从零到生产就绪，核心是**八个里程碑**：部署方式选型 → 数据库 → 反向代理 → 集群 → 监控 → 备份 → 安全加固 → 运维巡检。每一步都有明确的决策依据和详细文档支撑。如果你按照这个顺序推进，可以避免 90% 的生产踩坑。
+
+## 依据与边界
+
+- [Keycloak Operator 安装文档](https://www.keycloak.org/operator/installation)：确认 Operator 的安装前提与受支持范围；不要把已归档的 WildFly Operator 当成 Quarkus 发行版的运维能力。
+- [Keycloak 反向代理配置](https://www.keycloak.org/server/reverseproxy)：确认 `proxy-headers` 与 `Forwarded`/`X-Forwarded-*` 的匹配关系。代理头必须由受信任代理覆盖写入，不能直接信任客户端传入值。
+- [Keycloak 全部配置参考](https://www.keycloak.org/server/all-config)：具体版本的 CLI 选项、默认值和可用性以实际发行版为准。
+
+本文的资源规格、RPO/RTO 和工期只能作为设计问题清单，不是 Keycloak 的通用性能或上线承诺。生产上线前至少完成目标版本的压测、数据库恢复和 OIDC/SAML 回归。
