@@ -2,6 +2,7 @@
 title: "IAM 认证协议选型：OAuth、OIDC、SAML、LDAP、SCIM | IDaaS Book"
 description: "企业 IAM 认证协议选型指南：OAuth 2.0、OIDC、SAML、LDAP、SCIM 五大协议功能对比、典型场景选型推荐与避坑指南"
 date: 2026-07-10T00:00:00+08:00
+lastmod: 2026-07-28T23:01:00+08:00
 draft: false
 weight: 57
 menu:
@@ -248,7 +249,7 @@ graph TD
 
 OAuth 2.0 是**授权**协议，不是**认证**协议。获取到 Access Token 不意味着你知道用户是谁——Access Token 是为资源访问设计的，格式和内容没有标准化。
 
-**正确做法**：如果需要认证，使用 OIDC（在 OAuth 2.0 基础上增加 ID Token）。如果只能拿到 OAuth 2.0 的 Access Token，至少用 Token Introspection 或 UserInfo Endpoint 来验证用户身份。
+**正确做法**：如果需要认证，使用 OIDC（在 OAuth 2.0 基础上增加 ID Token）。如果只有 OAuth 2.0 Access Token，应使用授权服务器提供的 Token Introspection 或资源服务自己的令牌校验规则；不要把 OIDC UserInfo Endpoint 当成通用 OAuth 认证接口，除非该授权服务器明确同时提供 OIDC 能力并定义了调用约定。
 
 ### 坑 2：把 ROPC 当成脚本或内网系统的快捷登录
 
@@ -272,13 +273,13 @@ LDAP 的默认安全模型假设它在内网中运行。把 LDAP 暴露到互联
 
 一些团队会追求"完美"——同时支持 OIDC、SAML、LDAP、SCIM，再自己封装一套。结果每个协议的实现都在 80% 完成度时被放弃。
 
-**正确做法**：MVP 阶段只支持 OIDC（覆盖 80% 场景），在客户明确需要 SAML 时再加。SCIM 在企业客户超过 10 个之前可以手动处理。LDAP 用 IdP 适配而不是自己裸写。
+**正确做法**：MVP 阶段先支持与实际应用匹配的协议，通常从 OIDC 开始；是否加入 SAML 取决于现有企业 IdP 和客户互操作要求。SCIM 是否值得引入，应根据入离职频率、下游数量、重试与审计要求评估，不能用一个用户数阈值替代判断。LDAP 优先通过 IdP 的 User Federation 或同步组件接入，而不是在业务应用中重复实现目录认证。
 
 ### 坑 6：忽略 Token 生命周期和刷新策略
 
 选完协议只是第一步。Access Token 设多长？Refresh Token Rotation 要不要开？登出时前端 Token 清了但后端 Token 还有效怎么办？
 
-**正确做法**：Access Token 设 5-15 分钟，Refresh Token 设 8-24 小时并开启 Rotation。登出时必须通知 IdP（OIDC RP-Initiated Logout 或 SAML SLO）。更多细节见 [OAuth 2.0 Token 管理]({{< relref "docs/protocols/oauth2-deep-dive.md" >}})。
+**正确做法**：根据资源风险、撤销能力、客户端类型和可接受的重新认证频率确定 Token 生命周期；不要把某个产品默认值当成通用安全基线。Refresh Token 应结合轮换、重放检测和安全存储设计。登出时是否需要通知 IdP，也要按协议和会话模型验证，不能只清理浏览器端状态。更多细节见 [OAuth 2.0 Token 管理]({{< relref "docs/protocols/oauth2-deep-dive.md" >}}) 和 [OAuth 2.0 Security BCP](https://www.rfc-editor.org/rfc/rfc9700)。
 
 ## IAM 协议选型 FAQ
 
@@ -288,7 +289,7 @@ LDAP 的默认安全模型假设它在内网中运行。把 LDAP 暴露到互联
 
 ### Q2: 中小企业只有 50 个员工，需要 IAM 协议吗？
 
-**需要，但不需要全量。** 50 人的公司不需要 SCIM（手动建帐号够用），也不需要 SAML（没有跨组织 SSO 需求）。但必须要有 OIDC——至少用 Google Workspace 或 Microsoft 365 作为 IdP，让所有内部工具统一登录。本地帐号 + LDAP 的维护成本在小团队中往往被低估。
+**需要，但不需要全量。** 小团队可以先从 OIDC 统一登录开始；是否需要 SCIM 取决于下游系统是否支持、离职回收时效和人工操作是否已成为风险。SAML 只有在现有 IdP 或业务伙伴要求时才引入。本地帐号、LDAP 和云 IdP 的选择应以现有身份源、运维能力和故障回退路径为准，而不是员工数阈值。
 
 ### Q3: SAML 和 OIDC 能共存吗？会有什么问题？
 
@@ -312,7 +313,7 @@ Keycloak 的不足是它不原生支持 SCIM 服务端（需要通过扩展或�
 - 正在做一个新项目，没有历史包袱
 - 身份数据存储在数据库中而不是目录服务中
 
-那你不需要 LDAP 的知识。但如果你的公司有超过 500 人的规模且用 Windows，你几乎一定会遇到 AD——这时理解 LDAP 的查询语法（特别是 memberOf 过滤器）是绕不过去的。
+那你可能不需要把 LDAP 作为应用接入协议。但只要现有身份源是 Active Directory，就仍需理解 LDAP/LDAPS 的连接、查询过滤器和属性映射；这个判断取决于目录是否存在，不取决于公司人数。
 
 ### Q6: OAuth 设备授权流程（Device Code）为什么不能用于 SPA？
 
