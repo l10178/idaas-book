@@ -2,6 +2,7 @@
 title: "OAuth 2.1 相比 OAuth 2.0 的变化 — IAM 协议升级与迁移指南 | IDaaS Book"
 description: "OAuth 2.1 安全最佳实践整合与 IAM 协议升级指南：PKCE 强制、Implicit 与 ROPC 废弃、Refresh Token 发件人约束、DPoP 及从 OAuth 2.0 到 2.1 的 IAM 迁移对照表"
 date: 2026-07-08T00:00:00+08:00
+lastmod: 2026-07-29T22:01:00+08:00
 draft: false
 weight: 24
 menu:
@@ -25,7 +26,7 @@ OAuth 2.0（RFC 6749）发布于 2012 年。在接下来近十年里，安全研
 
 OAuth 2.1 不是全新协议，而是把这些分散的最佳实践整合成一份统一规范草案。已经发布的 RFC 9700（OAuth 2.0 Security BCP）则独立落地了其中一部分安全要求；两者不能混称为同一份规范。
 
-如果你现在在写一个新的 OAuth 客户端或授权服务器，应该直接以 OAuth 2.1 为目标——2.0 的安全模型已经过期。
+如果你现在在写一个新的 OAuth 客户端或授权服务器，可以把 OAuth 2.1 草案和 RFC 9700 作为设计基线；但产品是否支持某项能力，仍要以产品文档和实际验证为准。草案名称不是兼容性认证，协议世界也没有“改个配置就自动升级”的魔法。
 
 ## 变化总览
 
@@ -104,7 +105,7 @@ GET /authorize?
 
 ### 4. redirect_uri 必须精确匹配
 
-**OAuth 2.0**：RFC 6749 允许授权服务器对 redirect_uri 做"宽松匹配"，例如注册了 `https://app.example.com/callback`，请求中带 `https://app.example.com/callback/sub/path` 也可能被接受。
+**OAuth 2.0**：RFC 6749 对带在授权请求中的 `redirect_uri` 要求与注册值相同；但早期产品和实际部署常自行支持通配符、前缀或子串匹配。这里要区分规范要求与产品行为：不能因为某个授权服务器接受了宽松规则，就把它当成 OAuth 2.0 的要求。
 
 **安全实现基线**：redirect_uri 应按注册值严格匹配，不应使用前缀、子串或宽松解析。不要把“OAuth 2.1 草案中的归纳”写成已发布 RFC 的原文要求；RFC 9700 同样把重定向 URI 校验列为关键防护。
 
@@ -191,7 +192,7 @@ OAuth 2.1 不只是协议升级——它是企业 IAM 安全基线的重新定�
 
 ### OAuth 2.1 已经是 RFC 了吗？
 
-截至 2026 年 7 月，OAuth 2.1（draft-ietf-oauth-v2-1）仍处于 IETF 草案阶段，尚未正式发布为 RFC。可以直接采用 RFC 9700 的已发布安全要求，但不能据此声称 OAuth 2.1 已经成为 RFC 或所有产品都完整实现了它。
+截至 2026 年 7 月 29 日，OAuth 2.1（draft-ietf-oauth-v2-1）仍处于 IETF 草案阶段，尚未正式发布为 RFC。可以采用已发布的 RFC 9700 安全要求，并把 OAuth 2.1 草案作为迁移目标；但不能据此声称 OAuth 2.1 已经成为 RFC，或所有产品都完整实现了它。
 
 ### Device Code Flow 还在吗？
 
