@@ -217,7 +217,7 @@
 &lt;li&gt;&lt;strong&gt;RFC 9449 (DPoP)&lt;/strong&gt;：Token 发件人约束（2024）&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;OAuth 2.1 不是全新协议，而是把这些分散的最佳实践整合成一份统一规范草案。已经发布的 RFC 9700（OAuth 2.0 Security BCP）则独立落地了其中一部分安全要求；两者不能混称为同一份规范。&lt;/p&gt;
-&lt;p&gt;如果你现在在写一个新的 OAuth 客户端或授权服务器，应该直接以 OAuth 2.1 为目标——2.0 的安全模型已经过期。&lt;/p&gt;
+&lt;p&gt;如果你现在在写一个新的 OAuth 客户端或授权服务器，可以把 OAuth 2.1 草案和 RFC 9700 作为设计基线；但产品是否支持某项能力，仍要以产品文档和实际验证为准。草案名称不是兼容性认证，协议世界也没有“改个配置就自动升级”的魔法。&lt;/p&gt;
 &lt;h2 id="变化总览"&gt;变化总览&lt;/h2&gt;
 &lt;pre class="mermaid"&gt;
  graph TD
