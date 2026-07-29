@@ -23,7 +23,7 @@ toc: true
 - 需要满足合规要求（如等保 2.0 的"身份信息应定期审查"、"离职用户应在 24 小时内回收权限"）
 
 **不适用场景：**
-- 用户数量极少（< 50），手动管理成本可接受
+- 用户数量少、变更频率低，手动管理成本仍然可接受
 - 下游应用不支持 SCIM 且无法通过中间层适配
 - 身份源（HR 系统）本身不稳定，无法保证数据质量
 
@@ -121,10 +121,10 @@ HR 系统中的字段需要映射到 SCIM User Schema。以下是一个常见映
 **创建用户的 SCIM 请求示例：**
 
 ```bash
-curl -X POST \
-  https://keycloak.example.com/auth/realms/{realm}/scim/v2/Users \
-  -H "Authorization: Bearer $(< admin_token)" \
-  -H "Content-Type: application/scim+json" \
+curl -X POST \\
+  "${SCIM_BASE_URL}/Users" \\
+  -H "Authorization: Bearer ${SCIM_TOKEN}" \\
+  -H "Content-Type: application/scim+json" \\
   -d '{
     "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
     "externalId": "EMP-20260701",
