@@ -120,7 +120,7 @@ graph TD
 | 推荐协议 | **OIDC** 为主，**SAML 2.0** 作为补充 |
 | 为什么不是纯 SAML | 大多数现代 IdP 已支持 OIDC；OIDC 客户端实现简单、调试方便、JSON 可读性远好于 XML |
 | 为什么还要 SAML | 传统企业（金融/政府）和 Microsoft AD FS 生态仍然主要使用 SAML——如果不支持 SAML，你就放弃了一批大客户 |
-| 实现策略 | OIDC 优先（80% 客户覆盖），SAML 作为"企业版"功能（剩余 20%） |
+| 实现策略 | 新接入优先使用 OIDC；只有客户现有 IdP 或互操作要求明确需要 SAML 时，再纳入 SAML 兼容范围 |
 
 > 实现时需要注意：Keycloak 可以同时作为 OIDC Provider 和 SAML IdP；Dex 只做 OIDC 到上游 IdP 的联邦代理，不原生支持 SAML。如果要用 SAML，Keycloak 比 Dex 更合适。
 
@@ -187,7 +187,7 @@ graph TD
 | 推荐协议 | **SAML 2.0**（企业互信的传统方案）或 **OIDC Federation**（新方案） |
 | 为什么 SAML 是默认 | 两家公司很可能已经各自有 IdP，SAML 是企业 IDP 互信的标准协议 |
 | 实现架构 | IdP-to-IdP 联邦：A 的 IdP 配置 B 的 IdP 为 Trusted IdP，用户在 A 登录后访问 B 系统时由 B 的 IdP 信任 A 的断言 |
-| 新趋势 | [OpenID Federation 1.0](https://openid.net/specs/openid-federation-1_0.html) 正在替代 SAML 的企业联邦场景，但生态成熟度还在爬坡 |
+| 新方案边界 | [OpenID Federation 1.0](https://openid.net/specs/openid-federation-1_0.html) 定义了基于 Trust Anchor 和 Entity Statement 的联邦信任配置；它不能自动替换已有 SAML 互信，是否采用要看参与方是否支持该规范及其信任运营方式 |
 
 ### 场景 8：IoT 设备需要上报数据到云平台
 
@@ -198,7 +198,7 @@ graph TD
 | 推荐协议 | **OAuth 2.0 Device Code Grant**（首次配网时）或 **Client Credentials**（设备已有凭证） |
 | Device Code 流程 | 设备向 IdP 请求一个 device_code + user_code → 用户在手机上访问验证 URL 输入 user_code 确认 → 设备轮询获得 Token | 完整实战见 [OAuth 2.0 设备授权流程指南]({{< relref "docs/solution-blogs/oauth2-device-authorization-grant.md" >}}) |
 | 为什么不是 Client Credentials 直接 | 设备出厂时可能没有唯一凭证，Device Code 提供了"人在环"的授权确认 |
-| 后续会话 | 设备获取 Refresh Token 后可长期保持会话，不再需要用户交互 |
+| 后续会话 | 是否能获得 Refresh Token 取决于授权服务器、scope 和客户端策略；长期运行时还要明确 Refresh Token 的轮换、存储和撤销策略 |
 
 ### 场景 9：需要在反向代理层做统一认证
 
@@ -271,9 +271,9 @@ LDAP 的默认安全模型假设它在内网中运行。把 LDAP 暴露到互联
 
 ### 坑 5："五个协议全支持"的过度设计
 
-一些团队会追求"完美"——同时支持 OIDC、SAML、LDAP、SCIM，再自己封装一套。结果每个协议的实现都在 80% 完成度时被放弃。
+一些团队会追求"完美"——同时支持 OIDC、SAML、LDAP、SCIM，再自己封装一套。结果每个协议都增加了注册、属性映射、密钥轮换和排错路径，维护责任却没有明确归属。
 
-**正确做法**：MVP 阶段先支持与实际应用匹配的协议，通常从 OIDC 开始；是否加入 SAML 取决于现有企业 IdP 和客户互操作要求。SCIM 是否值得引入，应根据入离职频率、下游数量、重试与审计要求评估，不能用一个用户数阈值替代判断。LDAP 优先通过 IdP 的 User Federation 或同步组件接入，而不是在业务应用中重复实现目录认证。
+**正确做法**：先按已确认的应用和客户约束确定协议边界：新应用通常从 OIDC 开始；已有 SAML 信任关系才引入 SAML；LDAP 交给 IdP 的 User Federation 或目录适配层；只有下游确实需要自动开通、变更和禁用时才实现 SCIM。每增加一种协议，都要同时补齐密钥/元数据轮换、失败重试、审计和回滚方案。
 
 ### 坑 6：忽略 Token 生命周期和刷新策略
 
@@ -313,7 +313,7 @@ Keycloak 的不足是它不原生支持 SCIM 服务端（需要通过扩展或�
 - 正在做一个新项目，没有历史包袱
 - 身份数据存储在数据库中而不是目录服务中
 
-那你可能不需要把 LDAP 作为应用接入协议。但只要现有身份源是 Active Directory，就仍需理解 LDAP/LDAPS 的连接、查询过滤器和属性映射；这个判断取决于目录是否存在，不取决于公司人数。
+如果你的环境使用 Windows 域控或已有目录联邦，你几乎一定会遇到 AD；这时理解 LDAP/LDAPS 的连接、查询过滤器和属性映射是绕不过去的。若应用只通过 OIDC 接入 IAM，应用本身不必直接实现 LDAP。
 
 ### Q6: OAuth 设备授权流程（Device Code）为什么不能用于 SPA？
 
