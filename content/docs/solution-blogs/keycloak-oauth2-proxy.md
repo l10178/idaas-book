@@ -383,7 +383,18 @@ spec:
       port: 80
 ```
 
-Traefik 的 ForwardAuth 行为与 Nginx Ingress auth-url 类似：返回 2xx 放行，返回 401 触发重定向。
+Traefik 的 ForwardAuth 行为与 Nginx Ingress `auth-url` 类似：返回 2xx 放行，非 2xx 拒绝请求；**ForwardAuth 本身不会把 401 变成登录重定向**。如果希望浏览器访问页面时跳转到登录页，需要另配 `Errors` 中间件处理 401，并将 `/oauth2/sign_in` 或 `/oauth2/start` 暴露为不经过认证检查的路由。API 路径通常应保留 401，不要统一重定向到 HTML 登录页。
+
+### Traefik 重定向的 CSRF 并发陷阱
+
+使用 `Errors` 中间件把 401 改写到登录入口时，不要让多个并发的未认证子请求都触发会生成 CSRF Cookie 的 OAuth 启动流程。浏览器加载页面时常会同时请求 JavaScript、favicon、service worker 等资源；如果这些请求都被改写到 `/oauth2/sign_in`，后一次响应可能覆盖前一次 `_oauth2_proxy_csrf` Cookie，最终回调出现 `403 CSRF token mismatch`。oauth2-proxy 项目在 [Issue #3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 记录了这一类 Traefik 场景（报告版本为 v7.11.0，具体行为应按部署版本复测）。
+
+可采用以下边界：
+
+- 页面路由才使用 Errors 重定向；API、WebSocket 和静态资源按 401/403 返回，由客户端自行处理。
+- 让重定向目标先进入不带 ForwardAuth 的 `/oauth2/sign_in` 路由，并避免通过服务端并发请求重复启动 OAuth 流程。
+- 变更后用浏览器 Network 面板检查一次登录过程中是否只有一个 `_oauth2_proxy_csrf` Cookie；回调失败时先看 Cookie 的 `Set-Cookie` 覆盖顺序，再怀疑 Keycloak 用户或 audience 配置。
+- 如果不需要自定义错误页，优先使用 oauth2-proxy 官方集成方式，并在当前版本上验证 401 的处理；不要照搬会改变 Nginx 状态码语义的示例。oauth2-proxy 的文档错误 Issue [#3467](https://github.com/oauth2-proxy/oauth2-proxy/issues/3467) 就指出过将 `error_page 401 =401` 误当成“透传 401”的问题。
 
 ## 验证
 
