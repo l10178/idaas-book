@@ -142,7 +142,7 @@ oauth2-proxy[1] <timestamp> <request> 401 error validating token:
 oidc: expected audience "oauth2-proxy" got ["account"]
 ```
 
-**根因**：oauth2-proxy 的 OIDC 校验会检查 ID Token 的 `aud`（audience）是否包含配置的 Client ID；`--insecure-oidc-skip-issuer-verification` 控制的是 `iss` 校验，不是 audience 校验。Keycloak 是否把 `oauth2-proxy` 写入 `aud` 取决于实际启用的 Client Scope/Protocol Mapper，不能仅凭版本或默认 Token 形状推断。
+**根因**：oauth2-proxy 的 OIDC 校验会按 `aud`（audience）检查 ID Token 的接收方；当前配置文档中，`--oidc-audience-claim` 默认读取 `aud`，而 `--oidc-extra-audience` 只是额外允许的 audience。Keycloak 只把 `account` 放进 `aud` 时，Token 没有包含 oauth2-proxy 的 Client ID，因此会被拒绝。不要把这个错误归因于某个固定版本号：应以实际运行镜像的启动参数和配置文档为准。
 
 ### 诊断
 
