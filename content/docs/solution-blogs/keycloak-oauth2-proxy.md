@@ -244,7 +244,7 @@ spec:
 |------|-----|--------|
 | `--provider=keycloak-oidc` | v7.3+ 专用 Provider | 设置正确的 OIDC discovery URL（自动拼接 `/realms/xxx`），默认 scope `openid email profile` |
 | `--oidc-issuer-url` | `https://<keycloak>/realms/<realm>` | 必须以 realm 路径结尾，不含尾部斜杠 |
-| `--cookie-domain` | `.example.com` | 主域名前加点号，使子域名也能共用 Cookie。单域名不加点号 |
+| `--cookie-domain` | `.example.com` | 设置 Domain 属性，让主域名及其子域名匹配。是否带前导点不应作为隔离手段；不设置该参数才是 host-only Cookie |
 | `--cookie-secure` | `true` | 生产环境必须开启，只通过 HTTPS 传输 Cookie |
 | `--cookie-samesite` | `lax` | 允许从外部链接跳转时携带 Cookie（`strict` 会拦截来自 Keycloak 的回调） |
 | `--upstream=static://202` | 固定 202 响应 | auth-url 模式：oauth2-proxy 仅做认证判定，不代理到后端 |
@@ -435,7 +435,7 @@ curl -sS -o /dev/null -w "%{http_code}" https://myapp.example.com/
 | 登录后返回 403 | `--email-domain` 过滤掉了用户 | 临时设置 `--email-domain=*` 验证，确认后再精确配置 |
 | `invalid_token` / `token contains an invalid number of segments` | ID Token 格式异常或 JWT 校验失败 | 检查 `--oidc-issuer-url` 是否正确，Keycloak Realm 名是否对 |
 | Nginx Ingress 返回 503 | oauth2-proxy Service 不可达 | 确认 Service 在 `auth` namespace 下，ClusterIP 可解析 |
-| Cookie 在子域名不生效 | `--cookie-domain` 未加点号前缀 | `.example.com`（带点号）= 所有子域共用；`example.com` = 仅该域名 |
+| Cookie 在子域名不生效 | 未设置覆盖子域的 `Domain` 属性，或实际主域名不一致 | `--cookie-domain=example.com`（或按部署规范写 `.example.com`）让浏览器按 Domain 属性匹配主域名及子域；不要把前导点当成隔离开关 |
 | 登出后其他应用也退出 | Cookie Domain 跨应用共享 | 不同应用用不同的 oauth2-proxy 实例，或不同 Cookie Name |
 
 ### 诊断命令速查
