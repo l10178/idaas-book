@@ -92,18 +92,18 @@ spec:
 
 | 操作 | 端点 | 说明 |
 |------|------|------|
-| 创建用户 | `POST /admin/realms/{realm}/scim/v2/Users` | 支持 Enterprise User 扩展 |
-| 查询用户 | `GET /admin/realms/{realm}/scim/v2/Users?filter=userName eq "alice"` | 支持过滤和分页 |
-| 更新用户 | `PUT /admin/realms/{realm}/scim/v2/Users/{id}` | 全量替换 |
-| 部分更新 | `PATCH /admin/realms/{realm}/scim/v2/Users/{id}` | RFC 7644 Patch 语义 |
-| 删除用户 | `DELETE /admin/realms/{realm}/scim/v2/Users/{id}` | 物理删除 |
-| 组管理 | `/admin/realms/{realm}/scim/v2/Groups` | 创建、查询、更新、删除 |
-| Schema 发现 | `GET /admin/realms/{realm}/scim/v2/Schemas` | 客户端发现支持的属性 |
-| ServiceProviderConfig | `GET /admin/realms/{realm}/scim/v2/ServiceProviderConfig` | 能力声明 |
+| 创建用户 | `POST /realms/{realm}/scim/v2/Users` | 支持 Enterprise User 扩展 |
+| 查询用户 | `GET /realms/{realm}/scim/v2/Users?filter=userName eq "alice"` | 支持过滤和分页 |
+| 更新用户 | `PUT /realms/{realm}/scim/v2/Users/{id}` | 全量替换 |
+| 部分更新 | `PATCH /realms/{realm}/scim/v2/Users/{id}` | RFC 7644 Patch 语义 |
+| 删除用户 | `DELETE /realms/{realm}/scim/v2/Users/{id}` | 物理删除 |
+| 组管理 | `/realms/{realm}/scim/v2/Groups` | 创建、查询、更新、删除 |
+| Schema 发现 | `GET /realms/{realm}/scim/v2/Schemas` | 客户端发现支持的属性 |
+| ServiceProviderConfig | `GET /realms/{realm}/scim/v2/ServiceProviderConfig` | 能力声明 |
 
 ### 与现有 SCIM 章节的关系
 
-本书第 7 章已详细阐述 [SCIM 协议原理]({{< relref "docs/protocols/scim-protocol.md" >}})，24.2 节覆盖了 [IAM 合规与等保 2.0]({{< relref "docs/advanced-topics/iam-compliance-dengbao.md" >}}) 中对用户生命周期管理的要求。Keycloak 26.7 的 SCIM API 让这些理论有了开箱即用的实现——你可以直接在 Keycloak 上运行 SCIM 客户端（如 [scim2-client](https://github.com/osiam/scim2-client)、Azure AD SCIM 配置等）。
+本书第 7 章已详细阐述 [SCIM 协议原理]({{< relref "../protocols/scim-protocol" >}})，24.2 节覆盖了 [IAM 合规与等保 2.0]({{< relref "../advanced-topics/iam-compliance-dengbao" >}}) 中对用户生命周期管理的要求。Keycloak 26.7 的 SCIM API 让这些理论有了开箱即用的实现——你可以直接在 Keycloak 上运行 SCIM 客户端（如 [scim2-client](https://github.com/osiam/scim2-client)、Azure AD SCIM 配置等）。
 
 > **生产建议**：SCIM API 是 Preview 功能，建议先在 staging 环境启用并验证与上游系统（HR、IGA）的兼容性。关注 Keycloak 后续版本的 GA 公告。
 
@@ -190,7 +190,7 @@ curl -s https://auth.example.com/ | grep -o 'Keycloak [0-9.]*'
 
 # 确认 SCIM API 端点可访问（需先启用）
 curl -s -H "Authorization: Bearer $TOKEN" \
-  https://auth.example.com/admin/realms/test/scim/v2/ServiceProviderConfig | jq .
+  https://auth.example.com/realms/test/scim/v2/ServiceProviderConfig | jq .
 
 # 确认 AuthZEN 端点
 curl -s -X POST -H "Authorization: Bearer $TOKEN" \
