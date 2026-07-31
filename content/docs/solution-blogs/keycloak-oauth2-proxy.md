@@ -2,7 +2,7 @@
 title: "IAM 网关：Keycloak + oauth2-proxy 集成指南 | IDaaS Book"
 description: "IAM 网关用 Keycloak 与 oauth2-proxy 保护 Web 应用，覆盖 OIDC audience、Cookie、Nginx Ingress auth-url 与回滚排错"
 date: 2026-07-08T00:00:00+08:00
-lastmod: 2026-07-20T21:05:00+08:00
+lastmod: 2026-07-31T21:00:00+08:00
 draft: false
 weight: 1
 menu:
@@ -501,6 +501,18 @@ Keycloak 是 IAM 的身份提供者，负责认证并签发 OIDC Token；oauth2-
 ### 多个应用应该共用一个 oauth2-proxy 吗？
 
 只有当应用处于同一主域名、同一 Realm，且能接受共享 Cookie 会话时才适合共用。不同租户、不同安全等级或需要独立登出的应用应使用不同的 Cookie Name 或独立实例；共享 Cookie 会扩大会话泄露和误登出的影响范围，不能只因为少部署一个 Pod 就选它。
+
+### oauth2-proxy 为什么会把错误表现成 500？
+
+Audience 不匹配发生在 oauth2-proxy 的回调会话创建阶段，不是后端 API 的 403。当前 oauth2-proxy 公共 issue [#2808](https://github.com/oauth2-proxy/oauth2-proxy/issues/2808) 记录了无效或缺失 `aud` 时返回 500 的现象，issue 仍处于 open 状态；因此排错时不要把 500 解读为“Keycloak 已允许请求”或直接放宽校验。先检查 oauth2-proxy 日志中的 `aud`、`iss` 和 issuer Discovery，再修正 Keycloak Audience Mapper 或 `--oidc-extra-audience`，最后清理旧 Cookie 并重新登录。若只是要确认入口认证是否通过，用 `/oauth2/auth` 的 2xx/401 结果；后端授权仍由资源服务独立决定。
+
+### 为什么 Audience Mapper 改了，旧会话仍然报错？
+
+Mapper 只影响后续签发的 Token；浏览器现有的加密 Cookie 不会被“补写”新的 `aud`。修改后应删除该域名的 `_oauth2_proxy` Cookie，或让用户访问 `/oauth2/sign_out` 后重新登录，再检查新回调对应的 Token。不要把 JWT 解码结果当成验证结果：签名、`iss`、`aud` 和时间窗口仍必须由 oauth2-proxy 或资源服务的 OIDC/JWT 库校验。
+
+### `--oidc-extra-audience` 和 Keycloak Audience Mapper 该选哪个？
+
+默认优先在 Keycloak 为实际接收方配置 Audience Mapper，让 Token 的受众表达真实边界；`--oidc-extra-audience` 适合 oauth2-proxy 需要兼容已有、且经过审查的 audience 值。两者都只是“允许哪些 audience”，不会修复错误的 issuer、签名或 Token 来源。官方 Keycloak provider 文档也要求 OIDC client 的 `aud` 包含 client ID 或配置的额外 audience。
 
 ### `--reverse-proxy=true` 为什么还要配置 `--trusted-proxy-ip`？
 
