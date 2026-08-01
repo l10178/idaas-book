@@ -239,8 +239,8 @@ graph TD
 
 **关键决策因素**：
 
-1. **租户数量是最重要的分水岭**：< 100 个租户，共享 IDP 通常够用；100~1000 个，独立 Realm 是主流；> 1000 个，需要考虑 Realm 的管理自动化甚至自研路由层
-2. **安全/合规要求是硬约束**：只要有一个租户有 GDPR 数据驻留要求，就必须走独立 Realm 或联邦模式
+1. **不要把租户数量阈值当成架构结论**：租户数量会影响自动化和运维成本，但不能单独推出共享 Realm 或独立 Realm；先用隔离测试、容量测试和恢复演练验证方案
+2. **安全/合规要求是硬约束**：数据驻留、独立密钥、独立备份或故障域要求，应分别映射到部署、存储、密钥和恢复边界；不能笼统地用“独立 Realm”替代所有边界
 3. **运维能力决定天花板**：独立 Realm 模式的"自动化新增 Realm"流程如果没做好，新增租户的周期会从分钟级变成天级
 
 ## Keycloak 多租户实战要点
@@ -319,7 +319,7 @@ curl -X POST "https://idp.example.com/admin/realms" \
 A: RBAC（基于角色的访问控制）是授权模型，决定"谁能访问什么"；多租户是架构模式，决定"谁的数据和谁隔离"。多租户 IAM 架构内部仍然使用 RBAC（或 ABAC/ReBAC）做权限管理。详请见 [IAM RBAC、ABAC、ReBAC 授权模型对比]({{< relref "docs/advanced-topics/authorization-models.md" >}})。
 
 **Q: Keycloak 每个 Realm 的资源开销有多大？**
-A: 一个空 Realm 约占用 5-10MB 内存和少量数据库记录。主要开销来自 Realm 内的 User/Session/Client 数量。1000 个轻度使用的 Realm 和一个有 10 万用户的单 Realm 相比，前者在 Infinispan 缓存上的开销更大。Keycloak 26 的 Infinispan 15 对此有明显改善，详见 [Keycloak 高可用集群部署]({{< relref "docs/solution-blogs/keycloak-ha-dr.md" >}})。
+A: 不应使用未经基准测试的固定内存数字做容量规划。Realm 数量、用户/客户端/会话数量、缓存配置、登录峰值和数据库连接池都会影响资源消耗；应在目标版本和代表性数据集上测量，并把创建、升级、备份恢复和删除演练纳入验收。详见 [Keycloak 高可用集群部署]({{< relref "docs/solution-blogs/keycloak-ha-dr.md" >}})。
 
 **Q: 如何实现多租户的审计日志隔离？**
 A: 在 Keycloak 中，审计事件（`Event`）天然包含 `realmId`，如果使用共享 Realm+Group 模式，需要通过自定义 Event Listener 在事件中注入 group/tenant 信息。下游日志系统（如 ELK/Loki）按 tenantId 做索引分区。
