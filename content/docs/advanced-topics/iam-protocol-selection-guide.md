@@ -166,7 +166,7 @@ graph TD
 | 推荐协议 | **SCIM 2.0**（用于用户生命周期管理）+ **LDAP**（用于数据读取和认证） |
 | 架构 | AD → LDAP 查询 → 同步工具/SCIM 网关 → SaaS 平台的 SCIM 端点 |
 | 为什么不是直接暴露 LDAP | 暴露 LDAP 给互联网等于把目录服务暴露在攻击面下；SCIM 是 RESTful、有 Token 认证、支持过滤和分页 |
-| 开源实现 | Keycloak 支持 LDAP User Federation（实时读取）、支持 SCIM 端点（通过扩展） |
+| 开源实现 | Keycloak 支持 LDAP User Federation（实时读取）；Keycloak 26.7 起可在启用 SCIM Preview 后提供 SCIM Service Provider 端点，生产使用前要按当前版本文档确认 Preview 边界 |
 
 ### 场景 6：电商网站需要"用微信/Google/Apple 登录"
 
