@@ -283,9 +283,11 @@ LDAP 的默认安全模型假设它在内网中运行。把 LDAP 暴露到互联
 
 ## IAM 协议选型 FAQ
 
-### Q1: OAuth 2.1 发布了，现有系统必须升级吗？
+### Q1：OAuth 2.1 发布了吗？现有系统必须升级吗？
 
-**不需要立即升级**，但应该逐步采纳 OAuth 2.1 的核心安全要求：强制 PKCE、禁止 Implicit Grant、要求精确的 redirect_uri 匹配、使用 `iss` 参数防止 Mix-Up Attack。这些改动可以在现有 OAuth 2.0 基础设施上实施。详情见 [OAuth 2.1 变化详解]({{< relref "docs/protocols/oauth2.1-changes.md" >}})。
+截至本页更新时，OAuth 2.1 仍是 IETF Internet-Draft，不是已发布的 RFC；不要把草案编号或草案措辞写成“已正式发布的协议版本”。现有 OAuth 2.0 系统也不需要为了版本号整体重写，但应按已发布的 [OAuth 2.0 Security BCP（RFC 9700）](https://www.rfc-editor.org/rfc/rfc9700)逐项整改：授权码流程使用 PKCE，不使用 Implicit Grant 和 ROPC，并精确校验 `redirect_uri`。`iss` 参数则应结合 RFC 9207 的 Mix-Up Attack 防护要求评估。
+
+这些安全改动可以在现有 OAuth 2.0 基础设施上分阶段实施。迁移时先做负向测试和小流量切换，不要用“支持 OAuth 2.1”替代具体验收项。详情见 [OAuth 2.1 变化详解]({{< relref "../protocols/oauth2.1-changes.md" >}})。
 
 ### Q2: 中小企业只有 50 个员工，需要 IAM 协议吗？
 
