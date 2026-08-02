@@ -184,6 +184,8 @@ spec:
         - --cookie-secret=$(OAUTH2_PROXY_COOKIE_SECRET)
         - --cookie-secure=true
         - --cookie-samesite=lax
+        # CSRF Cookie 默认继承 session Cookie 的 SameSite；显式写出，避免后续拆分配置时漂移。
+        - --cookie-csrf-samesite=lax
         - --cookie-domain=.example.com
         - --cookie-refresh=1h
         - --cookie-expire=24h
@@ -247,6 +249,7 @@ spec:
 | `--cookie-domain` | `.example.com` | 设置 Domain 属性，让主域名及其子域名匹配。是否带前导点不应作为隔离手段；不设置该参数才是 host-only Cookie |
 | `--cookie-secure` | `true` | 生产环境必须开启，只通过 HTTPS 传输 Cookie |
 | `--cookie-samesite` | `lax` | 允许从外部链接跳转时携带 Cookie（`strict` 会拦截来自 Keycloak 的回调） |
+| `--cookie-csrf-samesite` | `lax` | 单独控制 CSRF Cookie 的 SameSite 属性；默认值为空时继承 `--cookie-samesite`，显式设置便于审计 |
 | `--upstream=static://202` | 固定 202 响应 | auth-url 模式：oauth2-proxy 仅做认证判定，不代理到后端 |
 | `--reverse-proxy` | `true` | 信任反向代理传入的 `X-Forwarded-*` 头 |
 | `--trusted-proxy-ip` | Ingress 出口 IP/CIDR | 限制哪些来源可以提供 `X-Forwarded-*`。不要在生产环境省略，否则能直连 oauth2-proxy 的请求方可能伪造 Host、Proto 或原始 URI |
