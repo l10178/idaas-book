@@ -96,6 +96,8 @@ args:
 
 `--reverse-proxy=true` 只表示按反向代理场景处理请求；它不应被当成“任意客户端都可以提交可信转发头”。oauth2-proxy 当前文档说明，未设置 `--trusted-proxy-ip` 时出于兼容性会信任所有来源，这允许能够直连 oauth2-proxy 的客户端伪造 `X-Forwarded-*`。生产环境应限制 NetworkPolicy/Service 暴露面，并配置实际代理的 IP/CIDR；如果代理地址是动态变化的，优先固定出口或用网络层阻断直连，而不是放大信任范围。
 
+如果同时启用 `--trusted-ip` 作为认证绕过白名单，必须单独审查 `--real-client-ip-header` 的来源链：客户端可直接到达 oauth2-proxy 时，不应信任它提交的 `X-Forwarded-For`。oauth2-proxy 当前仍有关于沿代理链解析该 Header 的安全改进 PR（[#3478](https://github.com/oauth2-proxy/oauth2-proxy/pull/3478)，截至本页更新尚未合入）；在确认所用版本已包含修复前，优先不要用基于转发头的 `--trusted-ip` 绕过认证，或在网络层保证只有受控代理能访问该服务。
+
 如果确实在没有 HTTPS 的本地开发环境运行，才临时使用 `--cookie-secure=false`；不要把这个开关作为生产环境 TLS 终结后的修复。
 
 **验证修复**：
