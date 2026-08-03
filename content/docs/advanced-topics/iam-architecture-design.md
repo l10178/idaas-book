@@ -221,7 +221,7 @@ graph TB
 
 ### 零信任 IAM 架构
 
-零信任的核心原则是"永不信任，始终验证"。IAM 在零信任中承担持续认证和动态授权的角色。关于零信任的完整论述见[第24章]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})，这里聚焦 IAM 架构如何在零信任中落地。
+零信任的核心原则是"永不信任，始终验证"。IAM 在零信任中承担持续认证和动态授权的角色。关于零信任的完整论述见[第24章]({{< relref "zero-trust-identity" >}})，这里聚焦 IAM 架构如何在零信任中落地。
 
 ```mermaid
 graph TB
@@ -244,7 +244,7 @@ graph TB
     style IDP fill:#9cf,stroke:#333
 ```
 
-在这个架构中，IAM 系统承担的角色从"登录时验证一次"变为"为访问决策持续提供身份上下文"。但不要把 JWT 本地验签误写成持续验证：本地验签不会感知即时会话吊销；高风险操作才应按需调用 Token Introspection 或策略引擎。具体取舍见[零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})。
+在这个架构中，IAM 系统承担的角色从"登录时验证一次"变为"为访问决策持续提供身份上下文"。但不要把 JWT 本地验签误写成持续验证：本地验签不会感知即时会话吊销；高风险操作才应按需调用 Token Introspection 或策略引擎。具体取舍见[零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "zero-trust-identity" >}})。
 
 ### 混合云 IAM 架构
 
@@ -347,7 +347,7 @@ IAM 是高可用要求最高的基础设施之一——如果 IAM 挂了，所�
 | Introspection / 策略引擎 | 高风险操作、即时吊销、需要实时设备或风险上下文 | 每次或按需依赖 IAM 网络可用性，需设置超时、缓存和降级策略 |
 | IAM 会话 + 短期 Access Token | 浏览器登录、需要集中注销的场景 | 仍需正确处理 Cookie、代理 Header 和节点间缓存一致性 |
 
-这也是为什么“JWT 无状态化”不能替代 IAM 的灾备设计：它只降低资源服务器对在线校验的依赖，不会让登录、刷新令牌和管理员操作在 IAM 故障时自动可用。具体的 JWT 与 Introspection 边界见[零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}})。
+这也是为什么“JWT 无状态化”不能替代 IAM 的灾备设计：它只降低资源服务器对在线校验的依赖，不会让登录、刷新令牌和管理员操作在 IAM 故障时自动可用。具体的 JWT 与 Introspection 边界见[零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "zero-trust-identity" >}})。
 
 对内部 Web 应用采用网关认证时，还要把“入口认证”和“资源授权”拆开验证：例如 [Keycloak + oauth2-proxy 集成指南]({{< relref "../solution-blogs/keycloak-oauth2-proxy" >}}) 中的 `/oauth2/auth` 只回答请求是否有有效会话，后端若消费 Access Token 仍需按资源服务器规则校验 `iss`、`aud` 和权限。否则 IAM 架构图看起来是闭环，实际授权边界却在反向代理的一个 Header 上。
 
@@ -357,7 +357,7 @@ IAM 是高可用要求最高的基础设施之一——如果 IAM 挂了，所�
 - **备份**：备份数据库、Realm/客户端配置、密钥材料和部署清单；只备份数据库而没有密钥，恢复后可能无法验证旧令牌或解密凭据。
 - **恢复演练**：至少验证“数据库故障”“单节点故障”“整套 IAM 恢复”三条路径，并记录 RTO/RPO，而不是只检查备份文件是否生成。
 
-> **Keycloak 部署提示**：反向代理、缓存/集群和数据库是三个独立故障域。先按[Keycloak 高可用集群与容灾恢复指南]({{< relref "docs/solution-blogs/keycloak-ha-dr.md" >}})验证单节点故障，再引入跨可用区或跨集群方案。参考 Keycloak 的[反向代理配置文档](https://www.keycloak.org/server/reverseproxy)和[缓存配置文档](https://www.keycloak.org/server/caching)，不要把通用 IAM 经验直接套成 Keycloak 参数。
+> **Keycloak 部署提示**：反向代理、缓存/集群和数据库是三个独立故障域。先按[Keycloak 高可用集群与容灾恢复指南]({{< relref "../solution-blogs/keycloak-ha-dr" >}})验证单节点故障，再引入跨可用区或跨集群方案。参考 Keycloak 的[反向代理配置文档](https://www.keycloak.org/server/reverseproxy)和[缓存配置文档](https://www.keycloak.org/server/caching)，不要把通用 IAM 经验直接套成 Keycloak 参数。
 
 ## 常见误区
 
@@ -420,10 +420,10 @@ IAM 是高可用要求最高的基础设施之一——如果 IAM 挂了，所�
 
 ## 小结
 
-IAM 架构设计不是一次性决策。组织在成长，应用在增加，安全要求在变化——IAM 架构需要跟着演进。从中心化到联邦，从单体到多租户，每一步都是对"身份数据归谁管、认证决策谁来做、故障来了怎么办"这三个问题的重新回答。多租户场景下的隔离模式详解，参见 [多租户 IAM 架构设计与方案对比]({{< relref "docs/advanced-topics/multi-tenant-iam.md" >}})。
+IAM 架构设计不是一次性决策。组织在成长，应用在增加，安全要求在变化——IAM 架构需要跟着演进。从中心化到联邦，从单体到多租户，每一步都是对"身份数据归谁管、认证决策谁来做、故障来了怎么办"这三个问题的重新回答。多租户场景下的隔离模式详解，参见 [多租户 IAM 架构设计与方案对比]({{< relref "multi-tenant-iam" >}})。
 
 选架构时记住：简单够用 > 超前设计。一个维护良好的单实例 Keycloak，比一个没人能调通的微服务 IAM 栈有价值得多。
 
-> **架构选好了，协议怎么选？** 协议和架构是 IAM 的两个决策维度——协议决定"用什么语言"传递身份信息，架构决定"用什么结构"组织身份系统。继续阅读 [IAM 协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}})，用决策树确定 OAuth 2.0、OIDC、SAML、LDAP、SCIM 在你架构中的角色。
+> **架构选好了，协议怎么选？** 协议和架构是 IAM 的两个决策维度——协议决定"用什么语言"传递身份信息，架构决定"用什么结构"组织身份系统。继续阅读 [IAM 协议选型指南]({{< relref "iam-protocol-selection-guide" >}})，用决策树确定 OAuth 2.0、OIDC、SAML、LDAP、SCIM 在你架构中的角色。
 >
-> **架构和协议都定了，用哪个开源 IAM？** 参见 [开源 IAM 对比与选型指南]({{< relref "docs/advanced-topics/opensource-iam-comparison.md" >}})——Keycloak、Casdoor、Zitadel、Authentik、Ory、Dex、CAS 的功能矩阵与场景推荐。
+> **架构和协议都定了，用哪个开源 IAM？** 参见 [开源 IAM 对比与选型指南]({{< relref "opensource-iam-comparison" >}})——Keycloak、Casdoor、Zitadel、Authentik、Ory、Dex、CAS 的功能矩阵与场景推荐。

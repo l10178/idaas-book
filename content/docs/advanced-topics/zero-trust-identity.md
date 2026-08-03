@@ -38,7 +38,7 @@ toc: true
 >
 > （这一口号源自 John Kindervag / Forrester 2010 的零信任早期表述；NIST SP 800-207 将其具化为：不基于网络位置给予隐式信任、显式验证、最小权限、假设已沦陷等原则。）
 
-零信任不是一种产品，而是一种安全架构理念。在 IAM（身份与访问管理）体系中，零信任将"身份"提升为安全决策的核心依据——这与传统 IAM 以"认证通过后放行"的模式有根本区别。IAM 架构的整体设计思路可参考 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}})。
+零信任不是一种产品，而是一种安全架构理念。在 IAM（身份与访问管理）体系中，零信任将"身份"提升为安全决策的核心依据——这与传统 IAM 以"认证通过后放行"的模式有根本区别。这里的参考模型依据 [NIST SP 800-207](https://doi.org/10.6028/NIST.SP.800-207)；IAM 架构的整体设计思路可参考 [IAM 架构设计指南]({{< relref "iam-architecture-design" >}})。
 
 | 传统安全 | 零信任安全 |
 |---------|-----------|
@@ -101,7 +101,7 @@ graph TD
 | 调用 Token Introspection | 可读取当前 token 的 `active` 状态，适合高风险操作 | 增加 IAM 依赖、延迟和容量压力；必须设计超时和降级策略 |
 | 短有效期 JWT + 风险事件触发撤销 | 在性能与撤销速度之间折中 | 需要事件分发、缓存失效和可观测性，不能只改 token TTL |
 
-实践上，可以把普通读请求交给本地验签，把转账、改权限、导出数据等高风险操作交给 introspection 或独立策略引擎二次决策。若使用 introspection，资源服务器应设置明确的超时和“拒绝优先”策略，避免 IAM 故障被错误地当成允许访问。Keycloak 的 introspection 配置示例见 [OAuth 2.0 Token Introspection 实战指南]({{< relref "docs/solution-blogs/oauth2-token-introspection-guide.md" >}})。
+实践上，可以把普通读请求交给本地验签，把转账、改权限、导出数据等高风险操作交给 introspection 或独立策略引擎二次决策。若使用 introspection，资源服务器应设置明确的超时和“拒绝优先”策略，避免 IAM 故障被错误地当成允许访问。Keycloak 的 introspection 配置示例见 [OAuth 2.0 Token Introspection 实战指南]({{< relref "../solution-blogs/oauth2-token-introspection-guide" >}})。
 
 还有一个不同层次的防护：**sender-constrained token**。OAuth DPoP（RFC 9449）让客户端用私钥对请求生成证明，使窃取到的 bearer token 更难被另一台设备直接重放；它不能替代 `iss`、`aud`、过期时间和权限校验，也不能单独解决被攻陷客户端的问题。需要抗重放的 API，才值得承担密钥管理和代理兼容性的额外复杂度。
 
@@ -119,7 +119,7 @@ graph TD
 - 权限定期审查
 - 网络微隔离（应用间也做认证）
 
-权限模型的选择直接影响零信任的落地效果，RBAC、ABAC、ReBAC 各有适用场景，详见 [IAM 授权模型对比]({{< relref "docs/advanced-topics/authorization-models.md" >}})。
+权限模型的选择直接影响零信任的落地效果，RBAC、ABAC、ReBAC 各有适用场景，详见 [IAM 授权模型对比]({{< relref "authorization-models" >}})。
 
 ### 支柱三：持续验证
 
@@ -128,7 +128,7 @@ graph TD
 - 风险变化时主动吊销 Session/Token
 - 异常行为检测
 
-IAM 会话管理是实现持续验证的关键机制，包括 Token 刷新、吊销和会话生命周期控制，详见 [IAM 会话管理]({{< relref "docs/advanced-topics/iam-session-management.md" >}})。
+IAM 会话管理是实现持续验证的关键机制，包括 Token 刷新、吊销和会话生命周期控制，详见 [IAM 会话管理]({{< relref "iam-session-management" >}})。
 
 ### 支柱四：加密无处不在
 
@@ -243,7 +243,7 @@ graph LR
 | 强认证 | MFA、FIDO2、Passkey | Keycloak WebAuthn / 自定义 SPI |
 | 身份属性 | 用户属性、组、角色 | LDAP Federation / SCIM 同步 |
 | 设备信任 | 设备注册、设备属性 | Keycloak Device Representation |
-|| 自适应策略 | 风险评分、上下文感知 | Keycloak Authenticator SPI / 参见 [IAM 条件访问策略设计]({{< relref "docs/advanced-topics/iam-conditional-access.md" >}}) |
+|| 自适应策略 | 风险评分、上下文感知 | Keycloak Authenticator SPI / 参见 [IAM 条件访问策略设计]({{< relref "iam-conditional-access" >}}) |
 | 持续验证 | CAE、Token 吊销 | Session 管理 / Token Introspection |
 | 审计追踪 | 认证审计、访问日志 | Event Listener SPI / SIEM 对接 |
 
@@ -292,7 +292,7 @@ graph LR
 
 **Q1: 零信任 IAM 架构和传统 IAM 架构的核心区别是什么？**
 
-传统 IAM 架构以"一次认证，全程信任"为默认假设——用户登录后获得 Session/Token，在过期前可以持续访问。零信任 IAM 架构要求每次访问都重新评估：即使用户已经登录，如果设备合规状态变化、地理位置异常或行为出现偏差，策略引擎可以要求重新认证或直接阻断访问。简单说：传统 IAM 管"谁能进来"，零信任 IAM 管"每次请求是否还值得信任"。详细架构设计参见 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}})。
+传统 IAM 架构以"一次认证，全程信任"为默认假设——用户登录后获得 Session/Token，在过期前可以持续访问。零信任 IAM 架构要求每次访问都重新评估：即使用户已经登录，如果设备合规状态变化、地理位置异常或行为出现偏差，策略引擎可以要求重新认证或直接阻断访问。简单说：传统 IAM 管"谁能进来"，零信任 IAM 管"每次请求是否还值得信任"。详细架构设计参见 [IAM 架构设计指南]({{< relref "iam-architecture-design" >}})。
 
 **Q2: 企业 IAM 系统如何落地零信任的持续验证？**
 
@@ -324,7 +324,7 @@ Keycloak 不做 PEP（策略执行点），这一层通常由网关/代理（如
 
 **Q4: 零信任 IAM 和等保 2.0 的关系是什么？**
 
-等保 2.0 对身份鉴别、访问控制、安全审计的要求与零信任 IAM 高度契合。例如等保三级要求"采用两种或两种以上组合的鉴别技术"（对应零信任的 MFA）、"对主体、客体进行安全标记"（对应身份属性驱动决策）、"对系统资源访问的申请和授予应进行持续跟踪和监控"（对应持续验证与审计）。将 IAM 系统从"合规需要的认证模块"提升为"零信任架构的核心引擎"，是满足等保要求同时提升安全实质的有效路径。详见 [IAM 等保合规指南]({{< relref "docs/advanced-topics/iam-compliance-dengbao.md" >}})。
+等保 2.0 对身份鉴别、访问控制、安全审计的要求与零信任 IAM 高度契合。例如等保三级要求"采用两种或两种以上组合的鉴别技术"（对应零信任的 MFA）、"对主体、客体进行安全标记"（对应身份属性驱动决策）、"对系统资源访问的申请和授予应进行持续跟踪和监控"（对应持续验证与审计）。将 IAM 系统从"合规需要的认证模块"提升为"零信任架构的核心引擎"，是满足等保要求同时提升安全实质的有效路径。详见 [IAM 等保合规指南]({{< relref "iam-compliance-dengbao" >}})。
 
 **Q5: 中小企业如何以最低成本启动零信任 IAM？**
 
