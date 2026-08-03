@@ -78,7 +78,7 @@ sequenceDiagram
 
 ### 2. 配置 Audience Mapper（最容易遗漏）
 
-oauth2-proxy v7.4+ 默认验证 ID Token 的 `aud` 字段。Keycloak 默认不把 client ID 写入 audience，导致 `expected audience` 错误。
+oauth2-proxy 的 Keycloak OIDC Provider 会校验 ID Token 的 `aud`（audience），并要求其中包含 `--client-id` 或 `--oidc-extra-audience` 配置的值。Keycloak 客户端如果没有把 oauth2-proxy 的 client ID 写入 `aud`，就会出现 `expected audience` 错误；不要把这个结论绑定到某个旧版本号，实际行为应以所部署版本的 Provider 文档和启动日志为准。
 
 **Protocol Mapper 配置：**
 

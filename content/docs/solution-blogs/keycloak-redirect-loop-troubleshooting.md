@@ -221,7 +221,7 @@ env:
 
 ### Audience 不匹配
 
-oauth2-proxy v7.4+ 默认验证 `aud`（audience）。Keycloak 默认不把 client ID 写入 audience。
+oauth2-proxy 的 Keycloak OIDC Provider 会校验 `aud`（audience），并要求其中包含 `--client-id` 或 `--oidc-extra-audience` 配置的值。Keycloak 客户端如果没有把 oauth2-proxy 的 client ID 写入 `aud`，就会出现 `expected audience` 错误；不要把这个结论绑定到某个旧版本号，实际行为应以所部署版本的 Provider 文档和启动日志为准。
 
 ```json
 // 错误日志
