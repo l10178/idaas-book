@@ -166,7 +166,7 @@ oauth2-proxy 和 Keycloak 是最常见组合，但有几个容易踩坑的点：
 
 ### Audience（aud claim）
 
-Keycloak 默认不把 Client ID 写入 access token 的 `aud` 字段。oauth2-proxy v7.4+ 默认验证 audience，不匹配时返回：
+Keycloak 默认不把 Client ID 写入 access token 的 `aud` 字段。oauth2-proxy 的 Keycloak OIDC Provider 会校验 `aud`，并要求其中包含 `--client-id` 或 `--oidc-extra-audience` 配置的值；不匹配时返回：
 
 ```
 {"error": "invalid_token", "error_description": "expected audience \"oauth2-proxy\" got [\"account\"]"}
