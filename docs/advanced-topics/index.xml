@@ -417,7 +417,9 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&amp;ldquo;永远不信任，始终验证&amp;rdquo;（Never Trust, Always Verify）&lt;/p&gt;
 &lt;p&gt;（这一口号源自 John Kindervag / Forrester 2010 的零信任早期表述；NIST SP 800-207 将其具化为：不基于网络位置给予隐式信任、显式验证、最小权限、假设已沦陷等原则。）&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;零信任不是一种产品，而是一种安全架构理念。在 IAM（身份与访问管理）体系中，零信任将&amp;quot;身份&amp;quot;提升为安全决策的核心依据——这与传统 IAM 以&amp;quot;认证通过后放行&amp;quot;的模式有根本区别。IAM 架构的整体设计思路可参考 
+&lt;p&gt;零信任不是一种产品，而是一种安全架构理念。在 IAM（身份与访问管理）体系中，零信任将&amp;quot;身份&amp;quot;提升为安全决策的核心依据——这与传统 IAM 以&amp;quot;认证通过后放行&amp;quot;的模式有根本区别。这里的参考模型依据 
+
+&lt;a class="link link--text" href="https://doi.org/10.6028/NIST.SP.800-207" rel="external"&gt;NIST SP 800-207&lt;/a&gt;；IAM 架构的整体设计思路可参考 
 
 &lt;a class="link link--text" href="https://idaas.xlabs.club/docs/advanced-topics/iam-architecture-design/"&gt;IAM 架构设计指南&lt;/a&gt;。&lt;/p&gt;
 &lt;table&gt;
