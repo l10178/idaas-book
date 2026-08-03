@@ -229,7 +229,7 @@ graph TD
 |------|----------|------|----------|------|----------|
 | **核心目的** | 授权 | 认证 | 联邦认证 | 目录查询 | 用户生命周期 |
 | **标准化组织** | IETF | OpenID Foundation | OASIS | IETF | IETF |
-| **最新规范年份** | 2012 (RFC 6749) | 2014 (Core 1.0) | 2005 | 2006 (RFC 4510) | 2015 (RFC 7643/7644) |
+| **规范基线** | RFC 6749（OAuth 2.0） | OpenID Connect Core 1.0 | SAML 2.0 | RFC 4510（LDAP） | RFC 7643/7644（SCIM 2.0） |
 | **传输格式** | JSON (parameter) | JSON (JWT) | XML (SAML Assertion) | ASN.1 BER | JSON (REST) |
 | **绑定/传输** | HTTP Redirect/Form POST | HTTP Redirect/Form POST | HTTP Redirect/POST/Artifact | TCP/TLS | HTTP REST |
 | **实现复杂度** | 中等 | 中等（比 OAuth 多 ID Token 处理） | 高（XML 签名/加密复杂） | 低（简单查询） | 中等 |
@@ -283,9 +283,9 @@ LDAP 的默认安全模型假设它在内网中运行。把 LDAP 暴露到互联
 
 ## IAM 协议选型 FAQ
 
-### Q1：OAuth 2.1 发布了吗？现有系统必须升级吗？
+### Q1：OAuth 2.1 还在草案阶段，现有系统必须升级吗？
 
-截至本页更新时，OAuth 2.1 仍是 IETF Internet-Draft，不是已发布的 RFC；不要把草案编号或草案措辞写成“已正式发布的协议版本”。现有 OAuth 2.0 系统也不需要为了版本号整体重写，但应按已发布的 [OAuth 2.0 Security BCP（RFC 9700）](https://www.rfc-editor.org/rfc/rfc9700)逐项整改：授权码流程使用 PKCE，不使用 Implicit Grant 和 ROPC，并精确校验 `redirect_uri`。`iss` 参数则应结合 RFC 9207 的 Mix-Up Attack 防护要求评估。
+截至本页更新时，OAuth 2.1 仍是 IETF Internet-Draft，不是已发布的 RFC；不要把草案状态写成“已正式发布的协议版本”。现有 OAuth 2.0 系统也不需要为了版本号整体重写，但应按已发布的 [OAuth 2.0 Security BCP（RFC 9700）](https://www.rfc-editor.org/rfc/rfc9700)逐项整改：授权码流程使用 PKCE，不使用 Implicit Grant 和 ROPC，并精确校验 `redirect_uri`。`iss` 参数则应结合 RFC 9207 的 Mix-Up Attack 防护要求评估。
 
 这些安全改动可以在现有 OAuth 2.0 基础设施上分阶段实施。迁移时先做负向测试和小流量切换，不要用“支持 OAuth 2.1”替代具体验收项。详情见 [OAuth 2.1 变化详解]({{< relref "../protocols/oauth2.1-changes.md" >}})。
 
