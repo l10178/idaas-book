@@ -186,6 +186,27 @@ args:
 - --oidc-extra-audience=legacy-dashboard
 ```
 
+这里必须先确认 `legacy-dashboard` 确实是该 OIDC 客户端应接受的 audience，而不是为了让 401 消失就把任意值加入白名单。`--oidc-extra-audience` 只改变 oauth2-proxy 本地的允许列表，不会修改 Keycloak 已签发的 Token，也不会替代资源服务器对 `iss`、签名、`exp` 和自身 `aud` 的校验。若问题是上游没有把正确的接收方写入 Token，优先修正 Keycloak 的 Audience mapper，并用**新签发的同一种 Token**复核；不要拿 Access Token 的 `aud` 去推断 oauth2-proxy 校验的 ID Token，或反过来混用。
+
+**更稳妥的验证命令**（处理 JWT 常见的 Base64URL 无填充，而不是直接假设普通 Base64）：
+
+```bash
+TOKEN='<从实际回调或认证响应取得的 JWT>'
+python3 - "$TOKEN" <<'PY'
+import base64
+import json
+import sys
+
+parts = sys.argv[1].split('.')
+if len(parts) != 3:
+    raise SystemExit('not a JWT: expected 3 segments')
+payload = base64.urlsafe_b64decode(parts[1] + '=' * (-len(parts[1]) % 4))
+print(json.dumps(json.loads(payload), ensure_ascii=False, indent=2))
+PY
+```
+
+只把 `aud`、`iss`、`exp` 等字段用于诊断，不要把真实生产 Token 粘贴到工单、聊天或日志中。JWT Payload 只是可读编码，不是加密材料；验签仍必须由 oauth2-proxy 使用 Discovery/JWKS 完成。
+
 只有在 `oauth2-proxy` 自己应当成为 Token audience、或者后端也依赖该 claim 时，才在 Keycloak 添加 Audience Mapper。不要为了“让报错消失”使用跳过 issuer 或 JWT 校验的参数；那会把配置错误变成认证绕过风险。
 
 ---
