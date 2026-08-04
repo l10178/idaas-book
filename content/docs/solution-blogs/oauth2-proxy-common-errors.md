@@ -462,24 +462,33 @@ kubectl exec -n ingress-nginx deploy/ingress-nginx-controller -- \
 
 **现象**：`app1.example.com` 登录成功，访问 `app2.example.com` 需要重新登录。
 
-**根因**：Cookie 的 `Domain` 没有覆盖两个应用的主机名，或者两个应用使用了不同的 `cookie-domain` / `cookie-name`。不要把“前面有没有点号”当成判断依据：现代浏览器会忽略 `Domain` 属性值前的前导点号，`.example.com` 与 `example.com` 在这里等价；关键是 Domain 是否确实是两个主机名的共同父域。
+**先纠正一个容易误导排错的判断**：现代浏览器按照 RFC 6265 处理 `Domain=example.com` 和 `Domain=.example.com` 时，会忽略前导点号；两者都允许 Cookie 发送到 `example.com` 及其子域。真正的区别是：省略 `Domain` 属性时，Cookie 才是只对当前主机生效的 host-only Cookie。oauth2-proxy 的 `--cookie-domain` 应填写共享父域，但不应把“必须加点号”当成修复条件。
 
 ### 修复
 
 ```yaml
-# ❌ 错误：只覆盖 app1，app2 收不到这个 Cookie
-- --cookie-domain=app1.example.com
+# ✅ 跨子域共享：显式设置共享父域；前导点号可省略
+- --cookie-domain=example.com
 
-# ✅ 正确：覆盖 app1.example.com 与 app2.example.com
-- --cookie-domain=.example.com
+# ✅ 只保护单个主机：省略 --cookie-domain，使用 host-only Cookie
+# 不要为了“跨子域”写成不相关的父域，例如 .example.net
 ```
+
+还要同时检查以下边界：
+
+- 所有应用确实属于同一个注册域；`app1.example.com` 与 `app2.example.org` 不能通过 Cookie Domain 共享。
+- Cookie 的 `Path`、`Secure`、`SameSite` 和名称没有被入口代理或另一套 oauth2-proxy 配置覆盖。
+- `--cookie-domain` 不能扩大到不受你控制的父域；共享 Cookie 会扩大会话泄露和登出影响范围。单个应用不需要 SSO 时，优先省略该参数。
 
 **验证**：
 
 ```bash
-# 浏览器 DevTools → Application → Cookies → 查看 _oauth2_proxy Cookie 的 Domain 属性
-# Domain 应覆盖两个应用；显示为 example.com 或 .example.com 都不代表有差异
+# 浏览器 DevTools → Application → Cookies → 查看 _oauth2_proxy Cookie
+# 跨子域场景应看到 Domain=example.com（浏览器可能以不同 UI 形式显示）
+# 同时确认 Path、Secure、SameSite 与部署拓扑一致
 ```
+
+规范依据：[RFC 6265 §4.1.2.3 Domain 属性](https://www.rfc-editor.org/rfc/rfc6265#section-4.1.2.3)；oauth2-proxy 参数说明见[官方配置文档](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview)。
 
 如果两个应用不应该共享登录会话，不要为了减少一次登录而扩大 Cookie Domain；分别使用主机专属 Domain 和不同的 `--cookie-name`。共享父域还会扩大 Cookie 的发送范围，子域被接管或存在不可信应用时，风险边界也会一起扩大。
 
