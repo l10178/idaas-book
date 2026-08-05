@@ -163,8 +163,6 @@ spec:
   forwardAuth:
     # oauth2-proxy 的 Service 地址
     address: http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
-    # 信任 X-Forwarded-* 头，让 oauth2-proxy 拿到原始请求信息
-    trustForwardHeader: true
     # 认证成功后透传给后端的响应头
     authResponseHeaders:
     - X-Auth-Request-User
@@ -176,7 +174,19 @@ spec:
     - Authorization
 ```
 
-> **Traefik 入口的信任边界**：`trustForwardHeader: true` 只适合放在已经由 EntryPoint 清洗过转发头的链路上。生产配置还应把入口代理网段写入 `forwardedHeaders.trustedIPs`；不要把这个选项当成“所有请求头都可信”。Traefik 当前文档已将该 Middleware 选项标为待移除，后续升级应优先迁移到 EntryPoint 级别的可信 IP 配置。
+> **Traefik 入口的信任边界**：这里不设置 `trustForwardHeader`。该选项会让 ForwardAuth 使用请求中的 `X-Forwarded-*` 头；如果 Traefik 前面没有可信代理清洗这些头，客户端可以伪造协议、主机和原始 URI，进而影响回调地址和访问控制。若确实存在可信上游代理，应在 Traefik EntryPoint 级别配置其网段，而不是把 Middleware 示例默认设为信任：
+
+```yaml
+# Traefik 静态配置（示例网段必须替换为真实的上游代理网段）
+entryPoints:
+  websecure:
+    address: ":443"
+    forwardedHeaders:
+      trustedIPs:
+        - "192.0.2.0/24"
+```
+
+> oauth2-proxy 仍应设置 `--reverse-proxy=true`，并用 `--trusted-proxy-ip` 限制可提供转发头的来源。没有可信上游代理时，直接让 Traefik 处理客户端连接，不要为了“修好跳转”打开 `trustForwardHeader`。
 
 **`authResponseHeaders` 说明**：
 
@@ -430,7 +440,7 @@ kubectl get ingressroute -A -o json | jq '.items[].spec.routes[].middlewares'
 4. **多副本**：oauth2-proxy 至少 2 副本，配合 `PodDisruptionBudget`。oauth2-proxy 用加密 Cookie 存状态，即使不配 Redis 也能在多副本间正常工作。
 5. **Cookie Secret**：`--cookie-secret` 泄露后攻击者可伪造认证 Cookie。使用 `openssl rand -base64 32` 生成，通过 Kubernetes Secret 注入。
 6. **callback 路由**：必须有一条不经过 ForwardAuth 中间件的路由将 `/oauth2/callback` 指向 oauth2-proxy。最简单的做法是用单独的域名（如 `auth.example.com`）承载 oauth2-proxy，并通过 `--redirect-url` 参数指定。
-7. **转发头信任边界**：Traefik 文档已将 ForwardAuth 的 `trustForwardHeader` 标为待移除的选项；应在 EntryPoint 级别用 `forwardedHeaders.trustedIPs` 清理来自不可信客户端的 `X-Forwarded-*`，再明确设置 Middleware 的 `trustForwardHeader`。oauth2-proxy 侧仍用 `--trusted-proxy-ip` 限制谁可以提供转发头。不要把“能跑通”误当成“信任边界已闭合”。
+7. **转发头信任边界**：不要在 ForwardAuth Middleware 示例中默认设置 `trustForwardHeader: true`。没有可信上游代理时，客户端可伪造 `X-Forwarded-*`；需要可信代理时，在 EntryPoint 级别用 `forwardedHeaders.trustedIPs` 声明网段，并在 oauth2-proxy 侧用 `--trusted-proxy-ip` 限制来源。不要把“能跳转”误当成“信任边界已闭合”。
 8. **健康检查**：oauth2-proxy 暴露 `/ping` 端点（返回 200 OK），可用于 Kubernetes 的 `livenessProbe` 和 `readinessProbe`。
 
 ## 回滚方式
