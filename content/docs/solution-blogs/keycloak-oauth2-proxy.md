@@ -362,7 +362,6 @@ metadata:
 spec:
   forwardAuth:
     address: http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
-    trustForwardHeader: true
     authResponseHeaders:
     - X-Auth-Request-User
     - X-Auth-Request-Email
