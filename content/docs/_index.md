@@ -1,6 +1,6 @@
 ---
-title: "Docs"
-description: "IDaaS 身份即服务全书文档体系，覆盖基础理论、协议标准、核心能力与开源实践，提供系统化身份管理指南"
+title: "IAM 与 IDaaS 技术书 | IDaaS Book"
+description: "IAM 与 IDaaS 中文技术书，覆盖身份认证、授权、OAuth、OIDC、SAML、SCIM、Keycloak 与企业身份工程实践。"
 summary: ""
 date: 2024-04-01T00:00:00+08:00
 lastmod: 2024-04-01T00:00:00+08:00
