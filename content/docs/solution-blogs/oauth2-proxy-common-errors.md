@@ -227,9 +227,15 @@ PY
 **最快的排错方式**：
 
 ```bash
-# 1. 确认 oauth2-proxy 能否正确连接 Keycloak OIDC Discovery
-kubectl exec -n auth deploy/oauth2-proxy -- wget -qO- \
-  https://keycloak.example.com/realms/myrealm/.well-known/openid-configuration 2>&1 | head
+# 1. 从集群网络路径确认 oauth2-proxy 能否访问 OIDC Discovery
+# 不要默认 oauth2-proxy 镜像内含 wget/curl；用一次性排错 Pod，或换成集群已有的 debug 容器。
+kubectl run oidc-debug --rm -i --restart=Never \
+  --image=curlimages/curl:8.10.1 -- \
+  -fsS https://keycloak.example.com/realms/myrealm/.well-known/openid-configuration \
+  | jq '{issuer, authorization_endpoint, token_endpoint, jwks_uri}'
+
+# 如果集群禁止临时 Pod，使用已经存在的网络诊断容器执行同一 curl；
+# 关键是测试路径、DNS 和 CA 信任，而不是测试 oauth2-proxy 容器是否带 wget。
 
 # 2. 用浏览器 DevTools 跟踪完整流程
 # Network 面板 → 勾选 Preserve log
