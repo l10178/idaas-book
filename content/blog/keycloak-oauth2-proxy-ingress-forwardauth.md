@@ -1,6 +1,6 @@
 ---
-title: "Keycloak + oauth2-proxy 保护内部应用：Ingress 与 ForwardAuth 配置清单"
-description: "使用 Keycloak 与 oauth2-proxy 通过 NGINX Ingress 及 Traefik ForwardAuth 为内部应用添加 OIDC 认证的完整配置与排错指南"
+title: "IAM 网关：Keycloak + oauth2-proxy 保护内部应用"
+description: "IAM 网关使用 Keycloak 与 oauth2-proxy，通过 NGINX Ingress 或 Traefik ForwardAuth 为内部应用添加 OIDC 认证，覆盖可信代理、Cookie 与回滚。"
 summary: "一份面向内部应用的 Keycloak + oauth2-proxy 网关层 SSO 配置清单，覆盖 NGINX Ingress、Traefik ForwardAuth、常见报错和回滚。"
 date: 2026-07-04T00:00:00+08:00
 lastmod: 2026-07-04T00:00:00+08:00
@@ -13,8 +13,8 @@ contributors: []
 pinned: false
 homepage: false
 seo:
-  title: "Keycloak + oauth2-proxy 配置：Ingress / Traefik ForwardAuth 内部应用 SSO"
-  description: "Keycloak 与 oauth2-proxy 对接教程：OIDC issuer URL、audience mapper、groups claim、X-Auth-Request 头、cookie/CSRF redirect loop、NGINX Ingress auth-url 与 Traefik ForwardAuth 排错。"
+  title: "IAM 网关 Keycloak + oauth2-proxy 配置 | IDaaS Book"
+  description: "IAM 网关配置 Keycloak 与 oauth2-proxy：OIDC issuer、audience、可信代理、Cookie/CSRF、NGINX Ingress auth-url 与 Traefik ForwardAuth。"
   canonical: ""
   noindex: false
 ---
@@ -103,7 +103,11 @@ set_xauthrequest = true
 set_authorization_header = true
 pass_access_token = true
 reverse_proxy = true
+# 只填写实际反向代理的出口 CIDR；不要在生产环境无条件信任所有来源
+trusted_proxy_ip = "10.42.0.0/16"
 ```
+
+`reverse_proxy=true` 只表示 oauth2-proxy 运行在反向代理后面，不等于可以信任任意请求带来的 `X-Forwarded-*` 头。`trusted_proxy_ip` 应替换为 ingress-nginx/Traefik 到 oauth2-proxy 的实际源地址范围；如果 oauth2-proxy 可被客户端直连，未限制可信代理范围时，攻击者可能伪造转发头，影响外部协议、主机或客户端 IP 的判断。先用集群网络配置和访问日志确认 CIDR，再放行，不能把示例网段原样复制到生产环境。
 
 对应 Secret：
 
@@ -210,6 +214,8 @@ spec:
               number: 80
 ```
 
+`trustForwardHeader: true` 只能在 Traefik 位于已验证的受信任入口之后使用；它不是“让转发头正常工作”的通用开关。若 Traefik 直接暴露给客户端，外部请求可能伪造 `X-Forwarded-*`，进而污染 oauth2-proxy 对协议和 host 的判断。生产环境应限制 Traefik 的入口网络，并让 oauth2-proxy 只信任 Traefik 的源地址 CIDR；不需要信任上游转发头时，优先保持默认的严格边界。
+
 还需要把 `/oauth2` 路径路由到 oauth2-proxy，否则登录开始和回调没有入口。Traefik 场景下更容易遗漏这条路由，症状通常是 `/oauth2/start` 404 或登录后回不到应用。
 
 ## 验证命令
@@ -265,6 +271,7 @@ printf '%s' "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | jq '.aud,.groups'
 - [ ] groups/roles claim 命名和 oauth2-proxy 配置一致。
 - [ ] cookie secret 稳定保存，不随 Pod 重建变化。
 - [ ] 所有外部入口使用 HTTPS，Cookie `Secure` 生效。
+- [ ] `reverse_proxy`、`trusted_proxy_ip` 与 Traefik `trustForwardHeader` 只信任已核实的代理网络，oauth2-proxy 不可被客户端绕过直连。
 - [ ] 后端只信任来自入口代理的 `X-Auth-Request-*` 头，禁止绕过 Ingress/Traefik 直连。
 - [ ] 日志里不打印 access token、ID token、client secret。
 - [ ] 有一键回滚方式：移除认证中间件/注解，而不是删除 Keycloak Client。
