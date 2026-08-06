@@ -171,7 +171,7 @@ spec:
 
 | 症状 / 报错 | 常见根因 | 修正方式 |
 |-------------|----------|----------|
-| `expected audience` / `invalid aud`，日志里只有 `account` | Keycloak access token 的 `aud` 没有包含 oauth2-proxy 的 `client_id` | 在 Keycloak Client 增加 **Audience mapper**，把 `Included Client Audience` 设为 `oauth2-proxy`；或在 oauth2-proxy 显式配置 `--oidc-extra-audience`。 |
+| `expected audience` / `invalid aud`，日志里只有 `account` | oauth2-proxy 校验的 ID Token `aud` 没有包含其 `client_id` | 在 Keycloak Client 增加 **Audience mapper**，至少勾选 **Add to ID token**，把 `Included Client Audience` 设为 `oauth2-proxy`；只有后端确实验证 Access Token 时才额外勾选 **Add to access token**。也可在 oauth2-proxy 显式配置 `--oidc-extra-audience`，但不要用它掩盖错误的 Token 受众。 |
 | 登录后反复跳转 / `csrf cookie not found` | `redirect_url`、Ingress `auth-signin`、Cookie Domain / SameSite 与实际访问域名不一致 | `redirect_url` 固定为外部入口 `https://app.example.com/oauth2/callback`；Ingress 使用 `$host` 与 `$escaped_request_uri`；跨子域共享时再设置 `--cookie-domain=.example.com`。 |
 | `/oauth2/auth` 返回 401，但用户已登录 | 业务 Ingress 没把认证响应头传给后端，或 oauth2-proxy 未开启 header 输出 | oauth2-proxy 开启 `--set-xauthrequest=true`；NGINX Ingress 用 `auth-response-headers` 透传 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups`。 |
 | Keycloak 回调到 `http://` 或错误 host | Keycloak / oauth2-proxy 后面有反向代理，但 `X-Forwarded-*` 头或 proxy 配置缺失 | 入口层保留 `X-Forwarded-Proto`、`X-Forwarded-Host`；Keycloak 侧按生产反向代理章节配置 hostname/proxy headers。 |
