@@ -76,7 +76,7 @@ curl -fsS https://sso.example.test/realms/internal/.well-known/openid-configurat
 
 然后补两个 mapper：
 
-1. **Audience mapper**：把 `Included Client Audience` 设置为 `oauth2-proxy`。否则 oauth2-proxy 校验 access token 时常见 `expected audience` / `invalid aud`，日志里可能只看到 `account`。
+1. **Audience mapper**：把 `Included Client Audience` 设置为 `oauth2-proxy`。oauth2-proxy 的 OIDC 登录回调主要校验 ID Token 的 `aud`；如果只在 access token 上增加 audience，回调仍可能报 `expected audience` / `invalid aud`，日志里常见只看到 `account`。除非后端确实需要该 claim，否则不要为了代理登录把 audience 无条件加到 access token。
 2. **Group Membership mapper**：把组写入 `groups` claim。若只按 realm role 控制，也可以用 oauth2-proxy 的 Keycloak OIDC provider role 选项，但 groups 更容易给 Ingress/后端统一消费。
 
 生产环境建议单独建 Client，不要复用业务系统 Client。Client Secret 按密钥管理系统下发，轮换时先让 oauth2-proxy 支持新 Secret，再撤旧 Secret；别在发布窗口玩盲盒。
@@ -254,7 +254,7 @@ printf '%s' "$TOKEN" | cut -d. -f2 | base64 -d 2>/dev/null | jq '.aud,.groups'
 
 | 症状 / 日志 | 常见根因 | 修正方式 |
 |---|---|---|
-| `expected audience` / `invalid aud`，`aud` 里只有 `account` | Keycloak access token 没包含 oauth2-proxy 这个 audience | 在 Keycloak Client 增加 Audience mapper；或在 oauth2-proxy 配置额外允许的 audience。优先修 token，不要长期放宽校验。 |
+| `expected audience` / `invalid aud`，`aud` 里只有 `account` | oauth2-proxy 校验的 ID Token 没包含其 client ID | 在 Keycloak Client 增加 Audience mapper，至少勾选 **Add to ID token**；后端确实验证 Access Token 时再单独勾选 **Add to access token**。或在 oauth2-proxy 配置额外允许的 audience，但不要长期放宽校验。 |
 | 登录成功后反复跳转 | `redirect_url`、Ingress `auth-signin`、cookie domain 或 SameSite 与真实入口不一致 | 固定 `redirect_url=https://app.example.test/oauth2/callback`；跨子域再设置 `.example.test` cookie domain；检查外部 HTTPS 入口。 |
 | `csrf cookie not found` | 回调域名和发起登录域名不一致，或 cookie 被浏览器拒收 | 统一 host；启用 HTTPS；检查 `cookie_secure`、`cookie_samesite`、`cookie_domains`。 |
 | `/oauth2/auth` 一直 401 | 浏览器没有带 oauth2-proxy session cookie，或请求没有走同一个 host | 先确认 `/oauth2/callback` 是否成功 Set-Cookie，再查 Ingress/Traefik 路由是否共用同一 host。 |
