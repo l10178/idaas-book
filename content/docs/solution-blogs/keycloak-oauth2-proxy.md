@@ -72,7 +72,7 @@ sequenceDiagram
 | Client ID | `oauth2-proxy` | 客户端标识 |
 | Client type | `confidential` | 机密客户端（有密钥） |
 | Valid Redirect URIs | `https://<你的域名>/oauth2/callback` | oauth2-proxy 回调地址 |
-| Web Origins | `https://<你的域名>` | 允许的 CORS 来源 |
+| Web Origins | 留空 | oauth2-proxy 是服务端 OIDC 客户端，回调和 Token 交换不需要浏览器 CORS；只有确实存在浏览器跨源调用时才添加精确来源 |
 | Client Authentication | `On` | 启用客户端认证 |
 | Standard Flow | `Enabled` | 标准授权码流程（oauth2-proxy 默认使用） |
 
@@ -92,7 +92,7 @@ oauth2-proxy 的 Keycloak OIDC Provider 会校验 ID Token 的 `aud`（audience�
 
 如果后端只需要 oauth2-proxy 校验 ID Token，也可以只为 ID Token 增加 audience，避免无必要地扩大 Access Token 的 claim 集合。另一条路径是在 oauth2-proxy 配置 `--oidc-extra-audience=<已注册的 audience>`，适合兼容已有 Token audience 的场景；它不会修改 Keycloak 签发的 Token。两者都不应与跳过 issuer、签名或 audience 校验的“临时修复”混用。
 
-配置后 Keycloak 签发的 ID Token payload 会包含：
+配置后 Keycloak 签发的 ID Token payload 会包含 `oauth2-proxy` 这个受众；当 Token 只有一个受众时，`aud` 也可能是字符串，而不是数组。下面只展示多受众时的常见形式：
 ```json
 {
   "aud": ["account", "oauth2-proxy"],
@@ -418,7 +418,7 @@ curl -sS -o /dev/null -w "%{http_code}" https://myapp.example.com/
 # 4. 端到端测试：浏览器打开 https://myapp.example.com/
 # 预期：跳转到 Keycloak 登录页 → 登录 → 跳回应用
 
-# 3. 确认后端能读到认证信息
+# 5. 确认后端能读到认证信息
 # 在应用中打印 HTTP Headers，预期见到：
 # X-Auth-Request-User: <username>
 # X-Auth-Request-Email: <user@example.com>
