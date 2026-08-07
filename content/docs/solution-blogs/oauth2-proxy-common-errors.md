@@ -517,6 +517,25 @@ kubectl exec -n ingress-nginx deploy/ingress-nginx-controller -- \
 
 规范依据：[RFC 6265 §4.1.2.3 Domain 属性](https://www.rfc-editor.org/rfc/rfc6265#section-4.1.2.3)；oauth2-proxy 参数说明见[官方配置文档](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview)。
 
+### 不要把 `__Host-` Cookie 前缀和跨子域共享混用
+
+oauth2-proxy 官方配置文档建议在启用 `--cookie-secure` 时考虑使用 `__Host-` 或 `__Secure-` 前缀，但两者的边界不同：`__Host-` Cookie 必须带 `Secure`、`Path=/`，并且**不能设置 `Domain`**。因此它只能绑定当前主机，不能与 `--cookie-domain=example.com` 组合实现跨子域 SSO；跨子域场景应使用符合部署边界的普通名称或 `__Secure-` 名称，并保留 `Secure`。浏览器会拒绝不满足前缀约束的 `Set-Cookie`，表现仍可能只是“登录成功后 Cookie 不见了”。
+
+```yaml
+# 单主机部署：host-only Cookie，可考虑 __Host- 前缀
+- --cookie-name=__Host-oauth2_proxy
+- --cookie-secure=true
+- --cookie-path=/
+# 不要同时设置 --cookie-domain
+
+# 跨子域 SSO：不能使用 __Host-；显式设置共享父域
+- --cookie-name=__Secure-oauth2_proxy
+- --cookie-domain=example.com
+- --cookie-secure=true
+```
+
+验证时不要只看 Cookie 是否出现，还要检查 DevTools 中的 `Domain`、`Path`、`Secure` 和名称前缀。`__Host-` 约束见 [MDN Cookie prefixes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#cookie_prefixes)；oauth2-proxy 的名称与 Cookie 参数见[官方配置文档](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview)。
+
 如果两个应用不应该共享登录会话，不要为了减少一次登录而扩大 Cookie Domain；分别使用主机专属 Domain 和不同的 `--cookie-name`。共享父域还会扩大 Cookie 的发送范围，子域被接管或存在不可信应用时，风险边界也会一起扩大。
 
 ---
