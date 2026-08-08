@@ -210,6 +210,11 @@
 &lt;p&gt;这篇文章把 oauth2-proxy 的公开 Issue 与可复现的配置逻辑整理成速查表：每条有诊断命令、根因分析和修复步骤。Issue 只能说明问题曾被报告，不能替代当前版本的验证。&lt;/p&gt;
 &lt;p&gt;适用：oauth2-proxy v7.x + Keycloak（任意版本），auth-url 或 ForwardAuth 模式。&lt;/p&gt;
 &lt;p&gt;不适用：oauth2-proxy 旧版（v6 及以下，部分参数名不同）、非 Keycloak Provider（GitHub/Google 等 Provider 有各自特有的错误）。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;参数边界&lt;/strong&gt;：反向代理场景应同时设置 &lt;code&gt;--reverse-proxy=true&lt;/code&gt; 和受控的 &lt;code&gt;--trusted-proxy-ip&lt;/code&gt;。不要把“信任转发头”理解成“信任所有客户端发送的转发头”。oauth2-proxy 官方配置说明指出，未设置 &lt;code&gt;--trusted-proxy-ip&lt;/code&gt; 时会为兼容旧行为而信任所有来源；能直连 oauth2-proxy 的客户端因此可能伪造 &lt;code&gt;X-Forwarded-*&lt;/code&gt;。本文参数以
+
+&lt;a class="link link--text" href="https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/" rel="external"&gt;官方配置文档&lt;/a&gt;为准。&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;h2 id="错误速查导航"&gt;错误速查导航&lt;/h2&gt;
 &lt;table&gt;
 	&lt;thead&gt;
