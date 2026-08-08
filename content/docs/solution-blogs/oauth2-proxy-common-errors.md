@@ -22,6 +22,8 @@ toc: true
 
 不适用：oauth2-proxy 旧版（v6 及以下，部分参数名不同）、非 Keycloak Provider（GitHub/Google 等 Provider 有各自特有的错误）。
 
+> **参数边界**：反向代理场景应同时设置 `--reverse-proxy=true` 和受控的 `--trusted-proxy-ip`。不要把“信任转发头”理解成“信任所有客户端发送的转发头”。oauth2-proxy 官方配置说明指出，未设置 `--trusted-proxy-ip` 时会为兼容旧行为而信任所有来源；能直连 oauth2-proxy 的客户端因此可能伪造 `X-Forwarded-*`。本文参数以[官方配置文档](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)为准。
+
 ## 错误速查导航
 
 | 错误关键词 | 出现阶段 | 严重程度 | 跳转 |
@@ -494,6 +496,15 @@ kubectl exec -n ingress-nginx deploy/ingress-nginx-controller -- \
 - 如果 endpoint 为空：检查 oauth2-proxy Pod 是否 Ready，`kubectl describe pod` 看 readiness probe
 - 如果 Service 名不对：确认 Ingress annotation 中用的是 `<service>.<namespace>.svc.cluster.local`
 - 如果在 K3s/K0s 等非标准 K8s 发行版：确认 CoreDNS 正常，`svc.cluster.local` 可解析
+
+如果 `/ping` 返回 200 但受保护请求仍然失败，继续检查 `auth-url` 是否指向集群内可达的 `/oauth2/auth`，以及 `auth-signin` 是否使用了入口收到的原始请求 URI。ingress-nginx 官方外部认证示例把两者分成两个职责：`auth-url` 做认证判定，`auth-signin` 负责 401 后跳转；不要把登录回调地址误填成后端业务地址。
+
+```yaml
+nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
+```
+
+依据：[ingress-nginx External OAUTH Authentication](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)。
 
 ---
 
