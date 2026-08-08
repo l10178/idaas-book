@@ -646,7 +646,7 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
  U-&amp;gt;&amp;gt;IDP: 1. 登录请求（OIDC Authorization Code + PKCE）
  IDP-&amp;gt;&amp;gt;U: 2. 返回授权码（Authorization Code）
  U-&amp;gt;&amp;gt;IDP: 3. 授权码换取 Token（Token Endpoint）
- IDP-&amp;gt;&amp;gt;U: 4. Access Token (5min) + Refresh Token + ID Token
+ IDP-&amp;gt;&amp;gt;U: 4. Access Token + Refresh Token + ID Token
 
  Note over U,RS: 第二阶段：使用 Access Token
  U-&amp;gt;&amp;gt;RS: 5. API 请求 (Authorization: Bearer &amp;lt;AT&amp;gt;)
