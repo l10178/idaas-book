@@ -40,7 +40,7 @@ sequenceDiagram
     U->>IDP: 1. 登录请求（OIDC Authorization Code + PKCE）
     IDP->>U: 2. 返回授权码（Authorization Code）
     U->>IDP: 3. 授权码换取 Token（Token Endpoint）
-    IDP->>U: 4. Access Token (5min) + Refresh Token + ID Token
+    IDP->>U: 4. Access Token + Refresh Token + ID Token
 
     Note over U,RS: 第二阶段：使用 Access Token
     U->>RS: 5. API 请求 (Authorization: Bearer <AT>)
@@ -63,7 +63,7 @@ sequenceDiagram
 Access Token 是访问资源的"通行证"——资源服务器用它来判断"这个请求有没有权限"。
 
 - **格式**：通常是 JWT（自包含），也可以是 Opaque（引用型，需 Introspection）
-- **有效期**：5-15 分钟，越短越安全但增加刷新频率
+- **有效期**：由 IAM/Realm 配置决定；越短通常越能缩小泄露窗口，但会增加刷新频率
 - **验证方式**：资源服务器用 IDP 公钥验证签名（RS256/ES256），不依赖 IDP 在线
 - **关键声明**：`sub`（用户）、`iss`（签发者）、`aud`（接收方）、`exp`（过期时间）、`scope`（权限范围）、`iat`（签发时间）
 
@@ -78,7 +78,7 @@ Refresh Token 是获取新 Access Token 的凭证——它让用户不必反复�
 - **有效期**：通常几小时到几天，比 Access Token 长但不应超过 IDP Session 的绝对超时时间
 - **存储**：Web 应用用 HttpOnly Secure Cookie；SPA 用 BFF（Backend For Frontend）模式——SPA 不应直接持有 Refresh Token
 
-Refresh Token Rotation 是 OAuth 2.0 Security BCP（最佳实践）要求的核心防护措施。Keycloak 通过开箱即用地启用了这一机制。
+Refresh Token Rotation 是 OAuth 2.0 Security BCP（最佳实践）中的核心防护措施。Keycloak 是否轮换由 Realm 的 **Revoke Refresh Token** 配置决定；启用后，刷新请求会撤销旧 Refresh Token 并签发新的 Refresh Token。不要把“支持该能力”误写成“所有部署默认已启用”。
 
 ### ID Token（身份令牌）
 
@@ -125,10 +125,10 @@ Keycloak 提供两层超时控制（在 Realm Settings → Tokens 中配置）�
 
 | 配置项 | 默认值 | 建议 |
 |--------|--------|------|
-| **SSO Session Idle** | 30 分钟 | 普通应用 15-30min，敏感应用 5-10min |
-| **SSO Session Max** | 10 小时 | 普通应用 8h，高安全场景 1-2h |
-| **Access Token Lifespan** | 5 分钟 | 保持默认，缩短到 3min 可进一步降低泄露风险 |
-| **Refresh Token Max** | 30 天 | 生产环境建议 ≤ 24h（需要 Refresh Token Rotation） |
+| **SSO Session Idle** | 由 Realm 配置决定 | 按应用风险和用户操作模式设定 |
+| **SSO Session Max** | 由 Realm 配置决定 | 高风险管理面应明显短于普通办公应用 |
+| **Access Token Lifespan** | 由 Realm/客户端配置决定 | 在可接受的刷新开销下尽量缩短 |
+| **Refresh Token Max** | 由 Realm/客户端及会话策略共同决定 | 与会话最大时长、轮换和撤销策略一起验证 |
 
 `SSO Session Idle` 是用户无操作后的空闲超时，`SSO Session Max` 是绝对超时——无论用户是否活跃，到达时间后必须重新认证。
 
@@ -150,9 +150,9 @@ Keycloak 的 Admin Console → Sessions 中可以看到当前所有活跃 Sessio
 
 1. **不要为了"用户体验好"把 SSO Session Max 设成 30 天**——Token 刷新机制已经解决了反复登录的问题。超长 Session = 长期有效 Cookie = 更长的凭证窃取窗口。
 
-2. **密码修改后立即吊销所有 Session**。Keycloak 的 Realm Settings → Login → "Revoke Refresh Token" 需要在 Authentication Flow 中启用。很多团队漏掉这个配置，导致密码改了但旧 Session 还能用。
+2. **密码修改后验证旧会话是否失效**。Keycloak 的 **Revoke Refresh Token** 位于 Realm Settings → Tokens，用于刷新令牌轮换和撤销；它不等于自动销毁所有已经存在的 Access Token 或应用本地 Session。需要按部署的登出、会话撤销和 Token 校验策略分别验证，不能只看一个开关。
 
-3. **Refresh Token 的有效期不应超过 SSO Session Max**。如果 Refresh Token 30 天但 Session Max 10 小时，实际情况是：10 小时后用户重新认证但旧的 Refresh Token 仍然可用——这是个安全漏洞。
+3. **不要只比较一个“默认值”**。Refresh Token 的实际可用窗口受 Realm/客户端配置、SSO Session Max、轮换和撤销策略共同影响；上线前应使用真实配置验证：会话到期后刷新是否被拒绝、旧 Refresh Token 重用是否触发预期的撤销。
 
 4. **SPA 不要直接拿 Refresh Token**。浏览器的本地存储（localStorage/sessionStorage）对 XSS 不安全。SPA 场景应该用 BFF 模式：后端持有 Refresh Token 在 HttpOnly Cookie 中，前端只通过 `/token` 端点间接刷新。
 
@@ -196,10 +196,10 @@ Keycloak 的 Admin Console → Sessions 中可以看到当前所有活跃 Sessio
 Keycloak 的 Session 存储与部署模式相关：
 
 - **单节点**：存储在 Infinispan（内存缓存），重启后 Session 丢失
-- **集群模式**：Infinispan 分布式缓存，Session 在节点间复制。需配置 `jgroups` 或使用 Kubernetes `dns.DNS_PING` 做服务发现
+- **集群模式**：Infinispan 分布式缓存，Session 在节点间复制。节点发现和传输栈应按当前 Keycloak 版本的集群文档配置，不要直接复制旧版 `DNS_PING` 示例
 - **外部存储**：Keycloak 支持 Infinispan 外部缓存服务器（适用于大规模部署），但 Session 本身仍以内存为主，不建议通过数据库持久化 Session
 
-高可用场景下，建议至少 2 个节点 + Infinispan 分布式缓存。配置细节见 [Keycloak 高可用与灾备方案]({{< relref "../solution-blogs/keycloak-ha-dr.md" >}})。
+高可用场景下，建议至少 2 个节点 + Infinispan 分布式缓存。配置细节见 [Keycloak 高可用与灾备方案]({{< relref "../solution-blogs/keycloak-ha-dr.md" >}})；集群发现机制以 [Keycloak 官方集群文档](https://www.keycloak.org/server/high-availability) 为准。
 
 ### Q5：IAM 会话固定攻击是什么？怎么防？
 
