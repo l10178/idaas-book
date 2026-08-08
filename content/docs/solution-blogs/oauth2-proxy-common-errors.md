@@ -119,6 +119,18 @@ args:
 
 `--cookie-csrf-per-request-limit` 只有在 `--cookie-csrf-per-request=true` 时生效；它限制 oauth2-proxy 保留的并行 CSRF Cookie 数量，超出后删除最早的 Cookie。先不设置上限通常更容易验证根因，但生产环境应结合浏览器并发行为和代理 Header 大小限制决定是否加上限。改动后清理旧 Cookie，再用两个标签页同时访问受保护 URL，确认两次回调都能完成；若出现 431，回到上限、Cookie Domain 和代理 Header 限制一起检查。
 
+### Traefik `errors` 中间件造成的并发 CSRF 覆盖
+
+如果使用 Traefik `ForwardAuth`，再用 `errors` 中间件把 401 重定向到 `/oauth2/sign_in`，不要只测试“点击登录”这一条路径。页面加载时的 JavaScript、CSS、favicon 或 Service Worker 可能同时触发多个未认证请求；在 `--skip-provider-button=true` 时，这些请求可能各自启动授权流程并反复写入 CSRF Cookie。最后一个 Cookie 与浏览器正在完成的较早授权请求不匹配，就会得到 `CSRF token mismatch`，看起来像随机故障，实际是竞态。
+
+先看浏览器 Network 面板和 oauth2-proxy 访问日志：如果一次页面加载出现多个 `/oauth2/start` 或 `/oauth2/sign_in`，并且它们连续返回 `Set-Cookie: _oauth2_proxy_csrf=...`，就不要先改 SameSite 或加 Redis。可控的修复顺序是：
+
+1. 暂时将 `--skip-provider-button=false`，让 `/oauth2/sign_in` 只展示登录页，由用户的一次明确导航触发 `/oauth2/start`；这是降低并发启动的诊断和缓解措施，不是对所有代理拓扑的永久保证。
+2. 在确认确实需要并行授权后，再启用 `--cookie-csrf-per-request=true`，并按代理 Header 大小设置 `--cookie-csrf-per-request-limit`；不要无限制地把 Cookie 数量调大。
+3. 把静态资源和 Service Worker 的未认证请求从错误重定向链路中排除，或让入口只对页面导航触发登录。验证时保留浏览器 Network 日志，确认一次登录只产生预期的授权请求。
+
+这个现象已有 oauth2-proxy issue [#3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 的复现记录；该 issue 报告的版本和 Traefik 版本属于具体案例，不能据此推断所有版本都相同。最终应以所部署版本的行为为准。关于子域名场景下 CSRF Cookie 不出现的另一类排查线索，可参阅 [Stack Overflow 问题](https://stackoverflow.com/questions/77504002/oauth2-proxy-and-subdomains-unable-to-obtain-csrf-cookie)，但不要把社区问答当作配置规范。
+
 > **常见误区**：看到多副本就立刻加 Redis。这里有一个容易把排错方向带偏的细节：**默认 Cookie Session Store 并不要求回调落到同一个 Pod**。只要多个副本使用相同的 `--cookie-secret`，各副本都能解密由其他副本签发的会话 Cookie；把“多副本”直接等同于“必须上 Redis”会平白增加一个运行依赖。当前 oauth2-proxy 文档将 `cookie` 列为默认 Session Store，`redis` 是另一种可选后端。
 
 只有在以下情况才优先考虑 Redis：Cookie 体积超过浏览器或代理限制、需要服务端集中撤销会话，或希望不把 OAuth Token 放进 Cookie。迁移时先保留相同的外部回调地址和 Cookie 参数，在灰度副本上启用 Redis，并为 Redis 配置 TLS、认证、超时和监控；不要把 `--redis-insecure-skip-tls-verify=true` 当成生产修复。最小配置形态如下（连接字符串和密码放 Secret，不要写入 Git）：

@@ -72,6 +72,14 @@ sequenceDiagram
 
 Keycloak 端的客户端创建、Audience Mapper 配置、角色映射等步骤与 Nginx Ingress 方案完全一致。详细步骤参考 [Keycloak + oauth2-proxy 集成指南 — Keycloak 端配置]({{< relref "keycloak-oauth2-proxy#keycloak-端配置" >}})，这里只强调 Traefik 场景下容易遗漏的两个点：
 
+### 不要让 `errors` 中间件并发启动登录
+
+如果用 `errors` 中间件把 ForwardAuth 的 401 改写到 `/oauth2/sign_in`，并且设置了 oauth2-proxy 的 `--skip-provider-button=true`，页面中的多个静态资源请求可能同时启动 OIDC 流程。每次启动都会写一个 CSRF Cookie，后写入的 Cookie 可能覆盖先前请求对应的 Cookie，回调时就会出现 `CSRF token mismatch`。
+
+排错时先在浏览器 Network 面板和 oauth2-proxy 日志中确认是否有多个 `/oauth2/start` 或 `/oauth2/sign_in`。优先用 `--skip-provider-button=false` 做对照，让用户点击一次登录，再决定是否启用 `--cookie-csrf-per-request=true`；后者会增加请求头体积，应结合 `--cookie-csrf-per-request-limit`、Ingress Header 限制和实际并发量验证。静态资源不应被错误重定向链路反复触发登录。
+
+该竞态有 [oauth2-proxy issue #3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 的复现记录；issue 中的版本组合是案例，不是对所有版本的兼容性结论。oauth2-proxy 的当前配置说明了 `skip-provider-button` 和 `cookie-csrf-per-request` 的语义，最终仍应在实际版本上回归。
+
 ### redirect_uri 配置
 
 Traefik 场景下，oauth2-proxy 的回调地址是 `https://<你的域名>/oauth2/callback`——与 Nginx Ingress 模式完全一样。oauth2-proxy 默认用请求的 `Host` 头构造 redirect_uri，所以在 Keycloak Client 配置中需要把所有受保护域名的 callback 路径都加上：
