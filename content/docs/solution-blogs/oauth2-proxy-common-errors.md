@@ -2,7 +2,7 @@
 title: "IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book"
 description: "IAM 网关 oauth2-proxy 集成 Keycloak 的 12 个高频错误排错：CSRF Cookie、expected audience、redirect loop、invalid_token 与 Nginx 401。"
 date: 2026-07-13T00:00:00+08:00
-lastmod: 2026-07-27T23:00:00+08:00
+lastmod: 2026-08-09T22:00:00+08:00
 draft: false
 weight: 3
 menu:
@@ -394,30 +394,29 @@ args:
 # 1. 确认副本数
 kubectl get deploy -n auth oauth2-proxy
 
-# 2. 确认是否有 session affinity 配置
-kubectl get ingress -A -o yaml | grep -A5 'session-cookie'
+# 2. Cookie Session Store：确认所有副本使用同一个 Secret（不要打印 Secret 值）
+kubectl get deploy -n auth oauth2-proxy -o yaml | grep -A3 -E 'cookie-secret|secretKeyRef'
 
-# 3. 查看是否有 refresh token 相关错误
+# 3. Redis Session Store：确认所有副本指向同一个 Redis，并查看 refresh/session 错误
+kubectl get deploy -n auth oauth2-proxy -o yaml | grep -E 'session-store-type|redis-connection-url'
 kubectl logs -n auth deploy/oauth2-proxy --tail=50 | grep -E 'refresh|expired|session'
 ```
 
 ### 修复
 
 ```yaml
-# 方案 1：Redis Session Store（推荐）
+# 方案 1：需要服务端会话、集中撤销或 Cookie 过大时使用 Redis
 args:
 - --session-store-type=redis
-- --redis-connection-url=redis://redis:6379/0
+- --redis-connection-url=rediss://redis.auth.svc.cluster.local:6380/0
+# 凭据通过 Secret 注入；同时配置 Redis 的 TLS、认证、超时、监控和备份
 
-# 方案 2：Ingress 层 Session Affinity
-# Nginx Ingress:
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: "OAUTH2_PROXY_ROUTE"
-    nginx.ingress.kubernetes.io/session-cookie-path: "/"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
+# 方案 2：继续使用默认 Cookie Session Store
+# 所有副本必须共享同一个 cookie-secret；不需要为了多副本单独启用
+# Ingress session affinity。若 Secret 不一致，滚动发布后旧会话会间歇性失效。
 ```
+
+Session affinity 只能掩盖路由问题，不能修复不同副本使用不同 `--cookie-secret` 或 Redis 数据不一致的问题。改用 Redis 或修改 Secret 前，先安排可接受重新登录的窗口；Cookie Store 与 Redis Store 之间不是无损热切换。
 
 ---
 
