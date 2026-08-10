@@ -2,7 +2,7 @@
 title: "IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book"
 description: "IAM 网关 oauth2-proxy 集成 Keycloak 的 12 个高频错误排错：CSRF Cookie、expected audience、redirect loop、invalid_token 与 Nginx 401。"
 date: 2026-07-13T00:00:00+08:00
-lastmod: 2026-08-09T22:00:00+08:00
+lastmod: 2026-08-10T21:00:00+08:00
 draft: false
 weight: 3
 menu:
@@ -55,8 +55,8 @@ oauth2-proxy[1] <timestamp> <request> 403 csrf cookie not found
 
 1. **Cookie 被浏览器拒绝**：SameSite 过严 / Secure 标记与 HTTP 不匹配 / Domain 不匹配
 2. **Cookie 路径不匹配**：CSRF Cookie 默认 path 为 `/`，但如果被反向代理改写可能出现不一致
-3. **HTTPS 前端 → HTTP 后端**：Cookie 设了 `Secure`，但 oauth2-proxy 收到的请求是 HTTP（TLS 在上一级终结，`X-Forwarded-Proto` 没传对）
-4. **跨域调用**：前端 SPA 在 `a.example.com`，oauth2-proxy 在 `auth.example.com`，Cookie Domain 不覆盖
+3. **HTTPS 前端 → HTTP 后端的转发头错误**：浏览器访问的是 HTTPS，但入口没有把 `X-Forwarded-Proto: https` 传给 oauth2-proxy；不要仅因 Pod 内部监听 HTTP 就关闭 `Secure`
+4. **Cookie Domain 不覆盖回调主机**：例如应用在 `a.example.com`，认证入口在 `auth.example.com`，但 Cookie 没有显式设置共享父域
 
 还有一个容易被误判成“Cookie 随机丢失”的分支：同一个浏览器同时发起多个未认证请求。默认情况下，oauth2-proxy 不为每个请求创建独立的 CSRF Cookie；多个标签页、前端并行加载资源，或用户连续点击登录，都可能让较早的 `state` 与回调不再对应。若日志同时出现 `csrf cookie not found`、`state mismatch`，并且响应头已经成功写入 CSRF Cookie，优先检查这个并发场景，而不是先扩大 Cookie Domain。
 
