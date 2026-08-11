@@ -660,7 +660,7 @@ IdP 是必需的中间人 没有必需的中间人&lt;/code&gt;&lt;/pre&gt;
 
  Note over U,RS: 第四阶段：用户登出
  U-&amp;gt;&amp;gt;IDP: 11. 登出请求（/logout, 含 id_token_hint）
- IDP-&amp;gt;&amp;gt;IDP: 12. 吊销所有 Token + 销毁 IDP Session
+ IDP-&amp;gt;&amp;gt;IDP: 12. 销毁 IDP Session；按部署策略撤销/拒绝后续 Token
  IDP-&amp;gt;&amp;gt;App: 13. 可选：Backchannel Logout 通知
 &lt;/pre&gt;
 
