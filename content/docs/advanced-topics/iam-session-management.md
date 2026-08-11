@@ -54,7 +54,7 @@ sequenceDiagram
 
     Note over U,RS: 第四阶段：用户登出
     U->>IDP: 11. 登出请求（/logout, 含 id_token_hint）
-    IDP->>IDP: 12. 吊销所有 Token + 销毁 IDP Session
+    IDP->>IDP: 12. 销毁 IDP Session；按部署策略撤销/拒绝后续 Token
     IDP->>App: 13. 可选：Backchannel Logout 通知
 ```
 
@@ -136,7 +136,7 @@ Keycloak 提供两层超时控制（在 Realm Settings → Tokens 中配置）�
 
 | 场景 | 触发 | 吊销范围 |
 |------|------|---------|
-| 用户主动登出 | 用户点击登出 | 该用户的 IDP Session + 所有 Token |
+| 用户主动登出 | 用户点击登出 | 该用户的 IDP Session；Token 是否立即失效取决于撤销与校验策略 |
 | 密码修改 | 用户修改密码 | 该用户的所有 Session（可通过 Realm Settings 启用） |
 | 管理员吊销 | Admin Console 中 `Revoke` | 指定 Session |
 | 安全事件 | 风险检测触发 | 指定用户或所有用户 |
