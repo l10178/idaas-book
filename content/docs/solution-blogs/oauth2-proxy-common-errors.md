@@ -24,6 +24,16 @@ toc: true
 
 > **参数边界**：反向代理场景应同时设置 `--reverse-proxy=true` 和受控的 `--trusted-proxy-ip`。不要把“信任转发头”理解成“信任所有客户端发送的转发头”。oauth2-proxy 官方配置说明指出，未设置 `--trusted-proxy-ip` 时会为兼容旧行为而信任所有来源；能直连 oauth2-proxy 的客户端因此可能伪造 `X-Forwarded-*`。本文参数以[官方配置文档](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)为准。
 
+先验证网络边界，再看 Cookie 或 `redirect_uri`：oauth2-proxy Service 应使用 ClusterIP，网络策略只允许入口代理访问；不要把“能从 Pod 内 curl 通”误当成“公网路径和转发头可信”。如果入口代理的地址来自节点、云负载均衡或多个网段，应以实际连接来源和部署文档为准逐项收敛，不能直接填整个 VPC。
+
+```yaml
+# 示例：网段必须替换为实际 ingress-nginx/Traefik 的来源地址
+- --reverse-proxy=true
+- --trusted-proxy-ip=10.42.0.0/16
+```
+
+这条检查适用于 [Keycloak + oauth2-proxy 集成]({{< relref "keycloak-oauth2-proxy" >}})、[Traefik ForwardAuth]({{< relref "traefik-forwardauth-keycloak" >}}) 和 [Keycloak 重定向循环排错]({{< relref "keycloak-redirect-loop-troubleshooting" >}})；三者的入口组件不同，但转发头的信任边界相同。
+
 ## 错误速查导航
 
 | 错误关键词 | 出现阶段 | 严重程度 | 跳转 |
