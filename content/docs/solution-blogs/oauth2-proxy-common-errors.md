@@ -70,6 +70,8 @@ oauth2-proxy[1] <timestamp> <request> 403 csrf cookie not found
 
 还有一个容易被误判成“Cookie 随机丢失”的分支：同一个浏览器同时发起多个未认证请求。默认情况下，oauth2-proxy 不为每个请求创建独立的 CSRF Cookie；多个标签页、前端并行加载资源，或用户连续点击登录，都可能让较早的 `state` 与回调不再对应。若日志同时出现 `csrf cookie not found`、`state mismatch`，并且响应头已经成功写入 CSRF Cookie，优先检查这个并发场景，而不是先扩大 Cookie Domain。
 
+这里的 `state` 不是“登录成功标记”，而是把授权请求和回调绑定起来的不透明值。RFC 6749 §4.1.1 要求客户端在授权请求中携带它，§4.1.2 要求授权服务器在回调中原样返回；§10.12 建议用它防御 CSRF。因此，回调找不到对应 Cookie 时不能靠关闭校验解决。oauth2-proxy 的 [Issue #3258](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258) 记录了多标签页复现；另一个 Traefik `errors` 中间件案例 [Issue #3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 已关闭，但它只说明该具体版本和拓扑的行为，不能替代对当前部署的验证。
+
 ### 诊断
 
 ```bash
@@ -641,6 +643,8 @@ curl -v http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 配置总览（Session Store、Cookie 与 Header 参数）](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
 - [oauth2-proxy 配置总览：CSRF Cookie 并发与大小限制](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#cookie-options)——`cookie-csrf-per-request` 与 `cookie-csrf-per-request-limit` 的行为
+- [RFC 6749 §4.1.1–§4.1.2、§10.12](https://www.rfc-editor.org/rfc/rfc6749)——授权码流程中的 `state` 往返与 CSRF 防护语义
+- [oauth2-proxy Issue #3258：并行请求下的 CSRF Cookie 问题](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258)
 - [oauth2-proxy GitHub Issues](https://github.com/oauth2-proxy/oauth2-proxy/issues)
 - [MDN：Set-Cookie 的 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#domaindomain-value)
 
