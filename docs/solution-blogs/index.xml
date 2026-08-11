@@ -215,118 +215,27 @@
 
 &lt;a class="link link--text" href="https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/" rel="external"&gt;官方配置文档&lt;/a&gt;为准。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2 id="错误速查导航"&gt;错误速查导航&lt;/h2&gt;
-&lt;table&gt;
-	&lt;thead&gt;
-			&lt;tr&gt;
-					&lt;th&gt;错误关键词&lt;/th&gt;
-					&lt;th&gt;出现阶段&lt;/th&gt;
-					&lt;th&gt;严重程度&lt;/th&gt;
-					&lt;th&gt;跳转&lt;/th&gt;
-			&lt;/tr&gt;
-	&lt;/thead&gt;
-	&lt;tbody&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;csrf cookie not found&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;登录回调&lt;/td&gt;
-					&lt;td&gt;🔴 阻断&lt;/td&gt;
-					&lt;td&gt;
+&lt;p&gt;先验证网络边界，再看 Cookie 或 &lt;code&gt;redirect_uri&lt;/code&gt;：oauth2-proxy Service 应使用 ClusterIP，网络策略只允许入口代理访问；不要把“能从 Pod 内 curl 通”误当成“公网路径和转发头可信”。如果入口代理的地址来自节点、云负载均衡或多个网段，应以实际连接来源和部署文档为准逐项收敛，不能直接填整个 VPC。&lt;/p&gt;
 
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#1-csrf-cookie-not-found"&gt;错误 1&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;expected audience&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;Token 校验&lt;/td&gt;
-					&lt;td&gt;🔴 阻断&lt;/td&gt;
-					&lt;td&gt;
 
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#2-expected-audience-got-account"&gt;错误 2&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;redirect loop&lt;/code&gt; / &lt;code&gt;ERR_TOO_MANY_REDIRECTS&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;登录后&lt;/td&gt;
-					&lt;td&gt;🔴 阻断&lt;/td&gt;
-					&lt;td&gt;
 
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#3-登录后无限重定向-redirect-loop"&gt;错误 3&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;invalid_token&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;Token 校验&lt;/td&gt;
-					&lt;td&gt;🔴 阻断&lt;/td&gt;
-					&lt;td&gt;
+&lt;div class="expressive-code"&gt;
+ &lt;figure class="frame not-content"&gt;
+ &lt;figcaption class="header"&gt;
+ &lt;span class="title"&gt;&lt;/span&gt;
+ &lt;/figcaption&gt;
+ &lt;div class="highlight"&gt;&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="c"&gt;# 示例：网段必须替换为实际 ingress-nginx/Traefik 的来源地址&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;- --&lt;span class="l"&gt;reverse-proxy=true&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;- --&lt;span class="l"&gt;trusted-proxy-ip=10.42.0.0/16&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+ &lt;/figure&gt;
+&lt;/div&gt;
+&lt;p&gt;这条检查适用于 
 
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#4-invalid_token"&gt;错误 4&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;missing state parameter&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;登录回调&lt;/td&gt;
-					&lt;td&gt;🔴 阻断&lt;/td&gt;
-					&lt;td&gt;
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-oauth2-proxy/"&gt;Keycloak + oauth2-proxy 集成&lt;/a&gt;、
 
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#5-missing-state-parameter"&gt;错误 5&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;cookie too large&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;登录回调&lt;/td&gt;
-					&lt;td&gt;🟡 部分用户&lt;/td&gt;
-					&lt;td&gt;
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/traefik-forwardauth-keycloak/"&gt;Traefik ForwardAuth&lt;/a&gt; 和 
 
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#6-cookie-too-large"&gt;错误 6&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;401&lt;/code&gt; 已登录却被拒&lt;/td&gt;
-					&lt;td&gt;请求阶段&lt;/td&gt;
-					&lt;td&gt;🟡 间歇性&lt;/td&gt;
-					&lt;td&gt;
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#7-401-已登录但认证被拒"&gt;错误 7&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;could not get claim: missing claim &amp;quot;email&amp;quot;&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;Token 校验&lt;/td&gt;
-					&lt;td&gt;🟡 特定用户&lt;/td&gt;
-					&lt;td&gt;
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#8-missing-claim-email"&gt;错误 8&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;error=access_denied&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;Keycloak 端&lt;/td&gt;
-					&lt;td&gt;🟡 配置&lt;/td&gt;
-					&lt;td&gt;
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#9-erroraccess_denied"&gt;错误 9&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;&lt;code&gt;Nginx 503&lt;/code&gt; / &lt;code&gt;no live upstreams&lt;/code&gt;&lt;/td&gt;
-					&lt;td&gt;请求阶段&lt;/td&gt;
-					&lt;td&gt;🟡 基础设施&lt;/td&gt;
-					&lt;td&gt;
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#10-nginx-ingress-返回-503"&gt;错误 10&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;Cookie 只在主域名生效，子域名不行&lt;/td&gt;
-					&lt;td&gt;跨子域&lt;/td&gt;
-					&lt;td&gt;🟡 配置&lt;/td&gt;
-					&lt;td&gt;
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#11-cookie-跨子域不生效"&gt;错误 11&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-			&lt;tr&gt;
-					&lt;td&gt;登出一个应用导致全部退出&lt;/td&gt;
-					&lt;td&gt;共享 session&lt;/td&gt;
-					&lt;td&gt;🟢 体验&lt;/td&gt;
-					&lt;td&gt;
-
-&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/oauth2-proxy-common-errors/#12-登出一个应用全部退出"&gt;错误 12&lt;/a&gt;&lt;/td&gt;
-			&lt;/tr&gt;
-	&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;hr&gt;
-&lt;h2 id="1-csrf-cookie-not-found"&gt;1. csrf cookie not found&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;日志典型输出&lt;/strong&gt;：&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
+&lt;a class="link link--text" href="https://idaas.xlabs.club/docs/solution-blogs/keycloak-redirect-loop-troubleshooting/"&gt;Keycloak 重定向循环排错&lt;/a&gt;；三者的入口组件不同，但转发头的信任边界相同。&lt;/p&gt;</description></item><item><title>Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</link><pubDate>Thu, 09 Jul 2026 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/solution-blogs/keycloak-ldap-ad-federation/</guid><description>&lt;h2 id="场景"&gt;场景&lt;/h2&gt;
 &lt;p&gt;你所在的企业已经用 Active Directory 或 OpenLDAP 管理员工账号多年。现在引入 Keycloak 做统一认证，但不可能把所有用户手动迁移到 Keycloak 本地数据库——需要 Keycloak 直接对接现有的 LDAP/AD，让用户用域账号登录，管理员在原系统维护用户。&lt;/p&gt;
 &lt;p&gt;一句话：&lt;strong&gt;LDAP/AD 是权威用户源，Keycloak 消费但不拥有这些用户&lt;/strong&gt;。&lt;/p&gt;
 &lt;h2 id="适用--不适用"&gt;适用 / 不适用&lt;/h2&gt;
