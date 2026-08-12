@@ -422,10 +422,7 @@ App2: PUT /rest/user/create {&amp;#34;userName&amp;#34;: &amp;#34;...&amp;#34;}
 App3: SOAP &amp;lt;CreateUser&amp;gt;&amp;lt;Name&amp;gt;...&amp;lt;/Name&amp;gt;&amp;lt;/CreateUser&amp;gt;&lt;/code&gt;&lt;/pre&gt;
  &lt;/figure&gt;
 &lt;/div&gt;
-&lt;p&gt;&lt;strong&gt;SCIM（System for Cross-domain Identity Management）&lt;/strong&gt; 就是为了结束这种混乱而生的标准。它由 IETF 制定，共三份 RFC：&lt;strong&gt;RFC 7642&lt;/strong&gt;（定义、概念与概述）、&lt;strong&gt;RFC 7643&lt;/strong&gt;（Core Schema，含 User/Group 资源与 JSON 编码）、&lt;strong&gt;RFC 7644&lt;/strong&gt;（Protocol，REST API 与 PATCH 语义）。&lt;/p&gt;
-&lt;h2 id="92-scim-的核心概念"&gt;9.2 SCIM 的核心概念&lt;/h2&gt;
-&lt;h3 id="核心数据模型"&gt;核心数据模型&lt;/h3&gt;
-&lt;p&gt;SCIM 定义了核心资源类型：&lt;/p&gt;</description></item><item><title>第8章：LDAP 与目录服务 — IAM 身份源集成、Active Directory 对接与目录同步 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</link><pubDate>Sun, 04 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</guid><description>&lt;h2 id="81-iam-目录服务概述--ldap-与-active-directory-基础"&gt;8.1 IAM 目录服务概述 — LDAP 与 Active Directory 基础&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;SCIM（System for Cross-domain Identity Management）&lt;/strong&gt; 就是为了结束这种混乱而生的标准。它由 IETF 制定，基础规范包括：&lt;strong&gt;RFC 7642&lt;/strong&gt;（定义、概念与概述）、&lt;strong&gt;RFC 7643&lt;/strong&gt;（Core Schema，含 User/Group 资源与 JSON 编码）、&lt;strong&gt;RFC 7644&lt;/strong&gt;（Protocol，REST API 与 PATCH 语义）。需要注意，SCIM 规范仍在演进：&lt;strong&gt;RFC 9865&lt;/strong&gt;（2025-10）更新 RFC 7643/7644，定义了基于游标的分页；&lt;strong&gt;RFC 9967&lt;/strong&gt;（2026-05）更新 RFC 7643/7644，定义了基于 Security Event Token（SET）的异步安全事件交换。它们是可选的扩展能力，不代表每个现有 SCIM 服务端或连接器都已实现。&lt;/p&gt;</description></item><item><title>第8章：LDAP 与目录服务 — IAM 身份源集成、Active Directory 对接与目录同步 | IDaaS Book</title><link>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</link><pubDate>Sun, 04 Feb 2024 00:00:00 +0800</pubDate><guid>https://idaas.xlabs.club/docs/protocols/ldap-directory-services/</guid><description>&lt;h2 id="81-iam-目录服务概述--ldap-与-active-directory-基础"&gt;8.1 IAM 目录服务概述 — LDAP 与 Active Directory 基础&lt;/h2&gt;
 &lt;p&gt;目录服务是一种专门为读操作优化的分布式数据库，用于存储组织化的、层次化的信息。在 IAM 体系中，目录服务是最重要的身份数据源——大多数企业的员工身份仍然以 LDAP/AD 为权威来源，IAM 平台通过 LDAP 协议消费这些身份数据，再向现代应用暴露 OIDC/SAML 等标准协议。&lt;/p&gt;
 &lt;h3 id="为什么不是关系数据库"&gt;为什么不是关系数据库？&lt;/h3&gt;
 &lt;table&gt;
