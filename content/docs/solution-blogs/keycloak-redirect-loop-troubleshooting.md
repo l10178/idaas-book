@@ -2,7 +2,7 @@
 title: "IAM 网关 Keycloak 重定向循环与 401 排错 | IDaaS Book"
 description: "IAM 网关中 Keycloak 登录循环与 401 的诊断流程，覆盖 Cookie、反向代理 Header、OIDC 回调、TLS 终结和 SameSite 排查。"
 date: 2026-07-08T00:00:00+08:00
-lastmod: 2026-07-08T00:00:00+08:00
+lastmod: 2026-08-12T22:01:48+08:00
 draft: false
 weight: 2
 menu:
@@ -131,9 +131,9 @@ spec:
 
 生产环境 Keycloak 要求 `Cookie Secure=true`，但如果反向代理和 Keycloak 之间走 HTTP（内部网络），Keycloak 在收到 `X-Forwarded-Proto: https` 时会把 Cookie 标记为 Secure。
 
-**症状**：浏览器不接受 Secure Cookie（因为是通过 HTTP 连接的），导致每次请求都重新跳转登录。
+**症状**：如果用户实际通过 `http://` 访问，浏览器不会在后续 HTTP 请求中发送带 `Secure` 属性的 Cookie，导致每次请求都重新跳转登录。不要把这个现象与“代理到 Keycloak 的内部连接使用 HTTP”混淆：浏览器只看到它与外部入口之间的连接；典型的 HTTPS 终结拓扑中，浏览器到入口是 HTTPS，因此可以接受并发送 Secure Cookie，入口到 Keycloak 使用 HTTP 本身不会造成该问题。
 
-**解决方案**：确保浏览器到反向代理是 HTTPS（TLS 终结在代理层），代理到 Keycloak 走 HTTP 是正常的。
+**解决方案**：确保浏览器到反向代理是 HTTPS（TLS 终结在代理层），并让代理把 `X-Forwarded-Proto: https` 传给 Keycloak。代理到 Keycloak 走 HTTP 是正常的；如果外部确实只能使用 HTTP，开发环境才临时关闭 `Secure`，生产环境应修复外部 TLS，而不是把 Cookie 安全属性关掉。
 
 ## 第三关：OIDC 回调 URI 精确匹配
 
@@ -253,7 +253,8 @@ curl -s https://keycloak.example.com/realms/myrealm/.well-known/openid-configura
 # 检查各 Pod 的时间
 kubectl exec deploy/keycloak -- date
 kubectl exec -n auth deploy/oauth2-proxy -- date
-# 偏差在 30 秒内可接受，超过需要配置 NTP
+# 不要套用固定的“可接受秒数”；按实际 nbf/exp、部署的 clock-skew
+# 配置和验证库行为判断，并确保所有节点由 NTP/chrony 同步
 ```
 
 ## 常见错误症状速查表
