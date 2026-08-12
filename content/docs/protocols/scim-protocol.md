@@ -24,7 +24,13 @@ App2: PUT /rest/user/create {"userName": "..."}
 App3: SOAP <CreateUser><Name>...</Name></CreateUser>
 ```
 
-**SCIM（System for Cross-domain Identity Management）** 就是为了结束这种混乱而生的标准。它由 IETF 制定，共三份 RFC：**RFC 7642**（定义、概念与概述）、**RFC 7643**（Core Schema，含 User/Group 资源与 JSON 编码）、**RFC 7644**（Protocol，REST API 与 PATCH 语义）。
+**SCIM（System for Cross-domain Identity Management）** 就是为了结束这种混乱而生的标准。它由 IETF 制定，基础规范包括：**RFC 7642**（定义、概念与概述）、**RFC 7643**（Core Schema，含 User/Group 资源与 JSON 编码）、**RFC 7644**（Protocol，REST API 与 PATCH 语义）。需要注意，SCIM 规范仍在演进：**RFC 9865**（2025-10）更新 RFC 7643/7644，定义了基于游标的分页；**RFC 9967**（2026-05）更新 RFC 7643/7644，定义了基于 Security Event Token（SET）的异步安全事件交换。它们是可选的扩展能力，不代表每个现有 SCIM 服务端或连接器都已实现。
+
+### 分页不能只看 `startIndex`
+
+传统 SCIM 客户端通常使用 `startIndex` + `count` 分页。RFC 9865 为已有游标分页实现增加了标准化的查询参数和响应属性；这对大目录尤其重要，因为数据在多次 offset 请求之间发生新增或删除时，offset 分页可能重复或跳过记录。但客户端不能看到服务端支持 SCIM 就直接发送游标参数：应先读取 `ServiceProviderConfig` 或产品文档确认能力，未声明支持时继续使用基础规范定义的分页方式，并对不认识的参数和响应做兼容处理。
+
+同理，RFC 9967 的 SET 事件交换适合把资源变更以异步事件通知给接收方，但它不会自动把 `active=false` 变成 OAuth/OIDC Token 吊销。部署时仍要分别验证：SCIM 资源状态、事件投递/重试，以及资源服务对会话和 Token 的处理。
 
 ## 9.2 SCIM 的核心概念
 
@@ -445,4 +451,6 @@ SCIM 2.0 是企业 IAM 体系中"用户配置"的标准语言。它将 IAM 身�
 
 - [RFC 7643 — SCIM Core Schema](https://www.rfc-editor.org/rfc/rfc7643)：User、Group 和扩展属性模型。
 - [RFC 7644 — SCIM Protocol](https://www.rfc-editor.org/rfc/rfc7644)：HTTP 方法、PATCH 语义、过滤和错误处理；其中明确 `active` 是资源属性，并未定义 OAuth Token 吊销语义。
+- [RFC 9865 — Cursor-Based Pagination of SCIM Resources](https://www.rfc-editor.org/rfc/rfc9865)：更新 RFC 7643/7644，定义游标分页能力；使用前需确认服务端声明并实现该扩展。
+- [RFC 9967 — SCIM Profile for Security Event Tokens](https://www.rfc-editor.org/rfc/rfc9967)：更新 RFC 7643/7644，定义基于 SET 的异步安全事件交换；不等于自动吊销 OAuth/OIDC Token。
 - [OAuth 2.0 Security Best Current Practice](https://www.rfc-editor.org/rfc/rfc9700)：Token 生命周期和撤销设计的安全基线，不能由 SCIM `active` 字段替代。
