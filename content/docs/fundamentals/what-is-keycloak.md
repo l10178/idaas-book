@@ -13,7 +13,7 @@ toc: true
 
 ## Keycloak 是什么
 
-**Keycloak** 是 Red Hat 开源的**身份与访问管理（IAM）平台**，由 JBoss 社区维护，是目前全球使用最广泛的开源 IAM 解决方案（GitHub 20k+ stars）。
+**Keycloak** 是 Red Hat 赞助的开源**身份与访问管理（IAM）平台**，由 Keycloak 开源社区维护。它提供标准化的登录、令牌和用户联邦能力；项目的 GitHub star 数会变化，不能代替版本、兼容性或容量验证。
 
 一句话概括：**Keycloak 是你可以自己部署的 Okta / Auth0**。它提供了现代应用所需的全部身份能力，你不需要支付按用户计费的钱，只需要自己运维它。
 
@@ -48,7 +48,7 @@ toc: true
 |---------|----------|-----------|---------|---------|
 | 语言 | Java | Python | Go | Go |
 | 协议 | OIDC/SAML/LDAP | OIDC/SAML/LDAP | OIDC/SAML/OAuth | OIDC/SAML |
-| 社区 | 🔥 20k+ stars | 活跃增长 | 中文活跃 | 事件驱动架构 |
+| 社区 | 活跃开源项目 | 活跃增长 | 中文活跃 | 事件驱动架构 |
 | 企业级 | 生产成熟 | 功能齐全 | 轻量易用 | 多租户原生 |
 | 学习曲线 | 中高 | 中 | 低 | 中高 |
 
@@ -144,11 +144,11 @@ Keycloak
 
 | 版本 | 状态 | 建议 |
 |------|------|------|
-| Keycloak 26.7.0 | 官方下载页当前稳定版 | 新项目优先在目标拓扑上验证后采用 |
+| Keycloak 26.7.1 | 官方发布页当前可见的 26.7 补丁版本 | 新项目优先在目标拓扑上验证后采用 |
 | Keycloak 26.x 的其他维护版本 | 需按具体补丁版本核对支持状态 | 已有项目不要只因小版本号变化就盲目升级，先读升级说明 |
 | Keycloak 25.x 及更早 | 不应作为新项目基线 | 规划升级并在测试环境验证兼容性 |
 
-> **版本判断边界**：截至 2026-07-28，Keycloak 官方下载页列出的服务器稳定版为 26.7.0；这不是永久结论，发布后应重新核对官方 Downloads 和升级指南。Keycloak 的升级路径仍需结合数据库迁移、自定义 SPI、反向代理和扩展兼容性验证，不能把“最新”当成回滚方案。详见 [Keycloak 26.7 更新速览]({{< relref "../solution-blogs/keycloak-26-7-whats-new" >}})。
+> **版本判断边界**：截至 2026-08-13，Keycloak 官方 GitHub Release 页面可见的最新发布标签为 `26.7.1`。版本会继续变化，生产升级前应重新核对 [官方发布页](https://github.com/keycloak/keycloak/releases)、[升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html) 和 [反向代理配置](https://www.keycloak.org/server/reverseproxy)。升级仍需结合数据库迁移、自定义 SPI、反向代理和扩展兼容性验证；“最新”不是回滚方案。详见 [Keycloak 26.7 更新速览]({{< relref "../solution-blogs/keycloak-26-7-whats-new" >}})。
 
 ## Keycloak 常见问题
 
