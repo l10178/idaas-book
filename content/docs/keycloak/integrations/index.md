@@ -1,6 +1,6 @@
 ---
-title: "Keycloak 与第三方开源软件集成 — oauth2-proxy、Nginx、Traefik 等 | IDaaS Book"
-description: "Keycloak 单点登录集成实战：Grafana、GitLab、Jenkins、NGINX、Kubernetes、Vault、Harbor 等开源软件通过 OIDC/OAuth2 Proxy 对接 Keycloak"
+title: "Keycloak IAM 第三方软件集成指南 | IDaaS Book"
+description: "Keycloak IAM 集成 Grafana、GitLab、Vault、Harbor 等开源软件，说明原生 OIDC、oauth2-proxy 与 Nginx/Traefik 的配置边界。"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 15
@@ -11,7 +11,7 @@ menu:
 toc: true
 ---
 
-Keycloak 之所以成为 IDaaS 首选，很大程度是因为它天然适配开源生态——Grafana、GitLab、Jenkins、Kubernetes、Vault、Harbor 等常见软件要么原生支持 OIDC/SAML，要么通过 OAuth2 Proxy 轻松接入。本节给出一套「配方集」，按软件查配方，最小改动落地 SSO。
+Keycloak 接入开源软件时，先判断目标软件是否原生支持 OIDC/SAML；只有不支持或需要统一保护多个 Web 应用时，才把 `oauth2-proxy` 放在入口。Grafana、GitLab、Vault、Harbor 等常见软件的配置字段并不相同，本节只给出协议边界和最小可验证配置，不把“能跳转到登录页”当成集成完成。
 
 > 前置：先在 Keycloak 创建一个 `confidential` Client，记录 `client_id`、`client_secret`、`redirect_uri`。除非特别说明，统一用 **OIDC + 授权码模式 + PKCE**。
 
@@ -28,9 +28,16 @@ client_secret     = "SECRET"
 redirect_url      = "https://app.example.com/oauth2/callback"
 email_domains     = "example.com"
 cookie_secret     = "32字节随机"
-set_authorization_header = true
-pass_access_token        = true
+code_challenge_method    = "S256"
+set_xauthrequest         = true
+reverse_proxy            = true
+trusted_proxy_ips        = ["10.42.0.0/16"] # 替换为实际 Ingress 出口网段
+cookie_secure            = true
+cookie_samesite          = "lax"
+pass_access_token        = false
 ```
+
+默认不把 Access Token 转发给后端：入口会话通过，只说明认证代理接受了该会话，不等于后端 API 的 `aud`、scope 和资源权限已经验证。确实需要后端代表用户调用其他服务时，才同时开启 `pass_access_token` 和 Ingress 的响应头转发；后端仍须独立校验签名、`iss`、面向自身的 `aud`、`exp` 与 scope。`trusted_proxy_ip` 必须填写 oauth2-proxy 实际看到的代理来源，不能直接照抄示例网段。
 
 ```nginx
 # Nginx 前置
