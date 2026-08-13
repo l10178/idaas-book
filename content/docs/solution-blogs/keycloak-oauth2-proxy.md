@@ -396,7 +396,21 @@ Traefik 的 ForwardAuth 行为与 Nginx Ingress `auth-url` 类似：返回 2xx �
 - 页面路由才使用 Errors 重定向；API、WebSocket 和静态资源按 401/403 返回，由客户端自行处理。
 - 让重定向目标先进入不带 ForwardAuth 的 `/oauth2/sign_in` 路由，并避免通过服务端并发请求重复启动 OAuth 流程。
 - 变更后用浏览器 Network 面板检查一次登录过程中是否只有一个 `_oauth2_proxy_csrf` Cookie；回调失败时先看 Cookie 的 `Set-Cookie` 覆盖顺序，再怀疑 Keycloak 用户或 audience 配置。
-- 如果不需要自定义错误页，优先使用 oauth2-proxy 官方集成方式，并在当前版本上验证 401 的处理；不要照搬会改变 Nginx 状态码语义的示例。oauth2-proxy 的文档错误 Issue [#3467](https://github.com/oauth2-proxy/oauth2-proxy/issues/3467) 就指出过将 `error_page 401 =401` 误当成“透传 401”的问题。
+- 如果不需要自定义错误页，优先使用 oauth2-proxy 官方集成方式，并在当前版本上验证 401 的处理；不要照搬会改变 Nginx 状态码语义的示例。oauth2-proxy 的 GitHub Issue [#3467](https://github.com/oauth2-proxy/oauth2-proxy/issues/3467) 就指出过将 `error_page 401 =401` 误当成“透传 401”的问题。
+
+### 代理信任的可验证检查
+
+`--trusted-proxy-ip` 填的是 **oauth2-proxy 看到的 TCP 对端地址**，不是浏览器地址，也不一定等于 Kubernetes Service 的 ClusterIP。不同 CNI、负载均衡和 Ingress 部署方式可能让它看到节点地址、Ingress Pod 网段或负载均衡器网段；直接照抄 `10.42.0.0/16` 会造成“配置看似正确、所有请求仍被当成不可信”的故障。
+
+先从 oauth2-proxy 日志或临时抓包确认实际来源，再收紧 CIDR；不要用 `0.0.0.0/0` 让功能先跑起来后忘记回收。变更后同时验证两条路径：经 Ingress 的请求能按外部 HTTPS 地址完成回调；绕过 Ingress 直连 Service 时，客户端自行注入的 `X-Forwarded-Host`/`X-Forwarded-Proto` 不会改变重定向目标。官方配置参考明确警告，未限制可信代理来源时，能直连 oauth2-proxy 的客户端可能伪造 forwarded headers。
+
+```bash
+# 查看当前参数，确认没有遗漏可信代理限制
+kubectl -n auth get deploy oauth2-proxy -o jsonpath='{.spec.template.spec.containers[0].args}'
+
+# 查看 oauth2-proxy 启动时的代理信任警告；不要把日志中的客户端 IP 当作浏览器 IP
+kubectl -n auth logs deploy/oauth2-proxy --since=10m | grep -Ei 'trusted-proxy|forwarded|proxy'
+```
 
 ## 验证
 
