@@ -2,7 +2,7 @@
 title: "IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book"
 description: "IAM 网关 oauth2-proxy 集成 Keycloak 的 12 个高频错误排错：CSRF Cookie、expected audience、redirect loop、invalid_token 与 Nginx 401。"
 date: 2026-07-13T00:00:00+08:00
-lastmod: 2026-08-10T21:00:00+08:00
+lastmod: 2026-08-14T21:00:00+08:00
 draft: false
 weight: 3
 menu:
@@ -71,6 +71,19 @@ oauth2-proxy[1] <timestamp> <request> 403 csrf cookie not found
 还有一个容易被误判成“Cookie 随机丢失”的分支：同一个浏览器同时发起多个未认证请求。默认情况下，oauth2-proxy 不为每个请求创建独立的 CSRF Cookie；多个标签页、前端并行加载资源，或用户连续点击登录，都可能让较早的 `state` 与回调不再对应。若日志同时出现 `csrf cookie not found`、`state mismatch`，并且响应头已经成功写入 CSRF Cookie，优先检查这个并发场景，而不是先扩大 Cookie Domain。
 
 这里的 `state` 不是“登录成功标记”，而是把授权请求和回调绑定起来的不透明值。RFC 6749 §4.1.1 要求客户端在授权请求中携带它，§4.1.2 要求授权服务器在回调中原样返回；§10.12 建议用它防御 CSRF。因此，回调找不到对应 Cookie 时不能靠关闭校验解决。oauth2-proxy 的 [Issue #3258](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258) 记录了多标签页复现；另一个 Traefik `errors` 中间件案例 [Issue #3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 已关闭，但它只说明该具体版本和拓扑的行为，不能替代对当前部署的验证。
+
+### 多标签页或并行请求：启用按请求创建 CSRF Cookie
+
+如果确认浏览器确实收到 CSRF Cookie，且问题只在多个标签页或并行跳转时出现，可以让每次未认证请求使用独立的 CSRF Cookie：
+
+```yaml
+args:
+- --cookie-csrf-per-request=true
+# 只在确实出现 431 或请求头过大时设置；数值按并行登录场景压测后确定
+- --cookie-csrf-per-request-limit=10
+```
+
+这是针对并发授权请求的配置，不是 Cookie Domain、SameSite 或多副本会话问题的通用修复。官方配置说明中该开关默认为 `false`；设置上限后，最旧的 CSRF Cookie 会被移除，以避免浏览器请求头无限增长。验证时打开两个标签页，分别让登录流程完成，并确认每个回调都带有对应的 `state`；随后检查 oauth2-proxy 日志不再出现 `state mismatch`。如果开启后出现 `431 Request Header Fields Too Large`，先降低并发上限或恢复默认值，再处理真正的并行登录需求。回滚只需移除这两个参数并滚动更新，但未完成的登录流程需要重新发起。
 
 ### 诊断
 
