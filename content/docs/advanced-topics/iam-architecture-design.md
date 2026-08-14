@@ -343,7 +343,21 @@ IAM 是高可用要求最高的基础设施之一——如果 IAM 挂了，所�
 
 ### 2. 会话与令牌：先区分产品模型，再选组件
 
-“把会话放 Redis”不是通用的 Keycloak 高可用答案。以 Keycloak 为例，集群会通过其分布式缓存处理认证会话和登录流程；应按当前版本的缓存配置、数据库连接池和跨节点通信要求部署，而不是自行再加一层 Redis。官方反向代理文档也要求正确设置代理模式和主机名，否则最常见的结果是回调地址错误或重定向循环。
+“把会话放 Redis”不是通用的 Keycloak 高可用答案。以当前 Keycloak Server Guide 为准，生产集群使用分布式 Infinispan 缓存；`start-dev` 使用本地缓存只适合开发和测试，不能拿来证明多节点登录流程可用。应按当前版本的缓存配置、数据库连接池和跨节点通信要求部署，而不是自行再加一层 Redis。
+
+一个最小的生产验证片段如下，重点不是复制参数，而是确认启动模式和代理信任边界：
+
+```bash
+# 生产启动：显式启用分布式缓存；不要用 start-dev 验证集群
+bin/kc.sh start --cache=ispn \
+  --proxy-headers=xforwarded \
+  --proxy-trusted-addresses=10.0.10.0/24
+
+# 反向代理必须覆盖写入 X-Forwarded-*，并且只允许上述代理网段直达 Keycloak。
+# 若采用 TLS passthrough，不要同时启用 --proxy-headers；改用受支持的 PROXY protocol 路径。
+```
+
+验证时至少做三次：节点 A 登录后让回调落到节点 B；停止节点 A 后刷新已有会话；再检查节点 B 的就绪状态和数据库连接是否恢复。每次都记录 HTTP 状态、`iss`/`redirect_uri` 和节点日志。只看到两个 Pod 为 `Ready`，不能证明缓存、代理头和故障切换都正确。
 
 令牌策略则是另一个决策：
 
@@ -363,7 +377,7 @@ IAM 是高可用要求最高的基础设施之一——如果 IAM 挂了，所�
 - **备份**：备份数据库、Realm/客户端配置、密钥材料和部署清单；只备份数据库而没有密钥，恢复后可能无法验证旧令牌或解密凭据。
 - **恢复演练**：至少验证“数据库故障”“单节点故障”“整套 IAM 恢复”三条路径，并记录 RTO/RPO，而不是只检查备份文件是否生成。
 
-> **Keycloak 部署提示**：反向代理、缓存/集群和数据库是三个独立故障域。先按[Keycloak 高可用集群与容灾恢复指南]({{< relref "../solution-blogs/keycloak-ha-dr" >}})验证单节点故障，再引入跨可用区或跨集群方案。参考 Keycloak 的[反向代理配置文档](https://www.keycloak.org/server/reverseproxy)和[缓存配置文档](https://www.keycloak.org/server/caching)，不要把通用 IAM 经验直接套成 Keycloak 参数。
+> **Keycloak 部署提示**：反向代理、缓存/集群和数据库是三个独立故障域。先按[Keycloak 高可用集群与容灾恢复指南]({{< relref "../solution-blogs/keycloak-ha-dr" >}})验证单节点故障，再引入跨可用区或跨集群方案。参考 Keycloak 的[反向代理配置文档](https://www.keycloak.org/server/reverseproxy)和[分布式缓存文档](https://www.keycloak.org/server/caching)，不要把通用 IAM 经验直接套成 Keycloak 参数。
 
 ## 常见误区
 
