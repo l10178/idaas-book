@@ -12,6 +12,8 @@ menu:
 toc: true
 ---
 
+> **补丁版本更新（2026-08-15）**：本文记录的是 26.7.0 的功能变化；26.7.1 已于 2026-08-05 发布，主要价值是安全修复而不是新增架构能力。官方发布说明列出 JWE request object 签名算法校验绕过、管理权限提升、FGAP v2 权限绕过、SAML/LDAP/DCR 等多项安全修复。生产环境应先阅读 [26.7.1 发布说明](https://github.com/keycloak/keycloak/releases/tag/26.7.1) 和 [升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)，再安排备份、预发回归和滚动升级；不要把功能页中的 `26.7.0` 示例直接复制到新部署。
+
 ## 场景描述
 
 Keycloak 26.7.0 于 2026 年 7 月 9 日发布，是 26.x 系列中功能密度最高的版本之一。四个核心方向值得关注：**SCIM API 让用户自动配置成为可能**、**多集群 HA 不再依赖外部缓存**、**AuthZEN 和 OpenID SSF 让授权和安全事件标准化**、**SAML Step-up 从预览转正**。如果你正在维护 Keycloak 生产集群，或者评估开源 IAM 方案，这些变化直接影响你的架构决策。
