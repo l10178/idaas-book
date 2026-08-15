@@ -32,7 +32,7 @@ toc: true
 | **典型玩家** | Keycloak、Apereo CAS、Dex（自建部署） | Okta/Auth0、Microsoft Entra ID、自建 Keycloak 也被视为私有 IDaaS |
 | **适合谁** | 合规要求极高、定制需求深、有专业运维团队 | 希望快速上线、不想养 IAM 运维团队的中小团队 |
 
-关于 IAM 的完整定义和四大核心域（认证、授权、用户管理、审计），见 [IAM 是什么]({{< relref "../fundamentals/what-is-iam" >}})；IDaaS 的部署模式，见 [什么是 IDaaS]({{< relref "../fundamentals/what-is-idaas" >}})。
+关于 IAM 的完整定义和四大核心域（认证、授权、用户管理、审计），见 [IAM 是什么]({{< relref "what-is-iam" >}})；IDaaS 的起源和部署模式，见 [什么是 IDaaS]({{< relref "what-is-idaas" >}})。
 
 ## 从演进角度看区别
 
