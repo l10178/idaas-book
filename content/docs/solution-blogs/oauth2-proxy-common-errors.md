@@ -248,6 +248,17 @@ PY
 
 只有在 `oauth2-proxy` 自己应当成为 Token audience、或者后端也依赖该 claim 时，才在 Keycloak 添加 Audience Mapper。不要为了“让报错消失”使用跳过 issuer 或 JWT 校验的参数；那会把配置错误变成认证绕过风险。
 
+### 部署前先跑配置自检
+
+不要等到浏览器完成一半 OAuth 流程后才发现 YAML 或 Secret 配错。oauth2-proxy 提供 `--config-test`，会按启动时的校验路径检查配置文件；使用 Redis Session Store 时，也会把 Redis 连通性纳入检查。把它放进镜像启动前的 Kubernetes Job 或 CI 步骤，可以把“登录后才暴露的错误”提前到部署阶段。
+
+```bash
+# 配置文件只从 Secret 挂载；不要把 client secret 写进命令历史或日志
+oauth2-proxy --config=/etc/oauth2-proxy/oauth2-proxy.cfg --config-test
+```
+
+自检通过只代表参数、Provider 和会话存储配置满足启动校验，不代表 Redirect URI、`iss`/`aud`、Cookie 属性和后端授权已经正确。上线前仍要执行一次真实回调，并用一个无权限用户验证 403；否则“配置能启动”很容易被误当成“权限边界成立”。依据：[oauth2-proxy Configuration Overview](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview)。
+
 ---
 
 ## 3. 登录后无限重定向（redirect loop）
