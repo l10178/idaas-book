@@ -627,6 +627,57 @@ oauth2-proxy 官方配置文档建议在启用 `--cookie-secure` 时考虑使用
 
 ---
 
+## 13. 已登录，但后端收不到正确的 Token 或用户头
+
+**现象**：oauth2-proxy 日志显示 `AuthSuccess`，页面也能打开，但后端看不到 `X-Auth-Request-User`、`X-Auth-Request-Groups`，或者拿到的 `Authorization` 被当成 access token 后返回 `invalid audience`。
+
+**先区分两件事**：认证响应头不是自动转发到业务后端的。`--set-xauthrequest` 只让 oauth2-proxy 在 `/oauth2/auth` 响应中生成 `X-Auth-Request-*`；ingress-nginx 还必须用 `auth-response-headers` 显式复制它们。另一方面，`--pass-authorization-header` 在代理模式下传的是 **OIDC ID Token**，不是给资源服务器使用的 OAuth access token；不要用它替代 API 的 access token。
+
+### 最小检查
+
+```bash
+# 1. 确认 oauth2-proxy 的非敏感参数
+kubectl get deploy -n auth oauth2-proxy -o jsonpath='{.spec.template.spec.containers[0].args}' \
+  | jq -r '.[]' | grep -E 'set-xauthrequest|pass-access-token|pass-authorization-header'
+
+# 2. 确认业务 Ingress 明确复制了认证响应头
+kubectl get ingress -n app internal-app -o yaml \
+  | grep -E 'auth-response-headers|auth-url|auth-signin'
+```
+
+### 按需求修复
+
+只需要登录身份时，保持最小配置：
+
+```yaml
+# oauth2-proxy
+- --set-xauthrequest=true
+
+# ingress-nginx
+nginx.ingress.kubernetes.io/auth-response-headers: >-
+  X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups
+```
+
+后端确实要调用资源服务器时，才额外开启 access token：
+
+```yaml
+# oauth2-proxy
+- --set-xauthrequest=true
+- --pass-access-token=true
+
+# ingress-nginx：只列出真正需要的敏感头
+nginx.ingress.kubernetes.io/auth-response-headers: >-
+  X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Access-Token
+```
+
+后端仍要独立校验 access token 的签名、`iss`、面向自身的 `aud`、`exp` 和 scope。oauth2-proxy 通过认证只说明入口会话有效，不等于后端 API 授权成功。若后端收到 `aud=oauth2-proxy` 而自己的资源服务要求另一个 audience，应在 Keycloak 为资源服务配置 audience mapper，不能把 `--pass-authorization-header` 换上去碰运气。
+
+> **安全边界**：Ingress 必须覆盖或清理客户端提交的同名 Header，并阻止后端绕过 Ingress 直接访问。否则攻击者可以伪造 `X-Auth-Request-Email` 或 `X-Auth-Request-Groups`。Token 透传还会扩大凭据暴露面、日志脱敏范围和回滚复杂度；不用就不要开。
+
+依据：[oauth2-proxy Header Options](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#header-options) 和 [ingress-nginx External OAUTH Authentication](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)。
+
+---
+
 ## 诊断命令速查
 
 ```bash
@@ -667,6 +718,7 @@ curl -v http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
 - [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive" >}})——架构原理、Provider 选型、Cookie/Session 机制
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 配置总览（Session Store、Cookie 与 Header 参数）](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
+- [oauth2-proxy Header Options](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#header-options)——区分 `--pass-access-token`、`--pass-authorization-header` 与 `--set-xauthrequest`
 - [oauth2-proxy 配置总览：CSRF Cookie 并发与大小限制](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#cookie-options)——`cookie-csrf-per-request` 与 `cookie-csrf-per-request-limit` 的行为
 - [RFC 6749 §4.1.1–§4.1.2、§10.12](https://www.rfc-editor.org/rfc/rfc6749)——授权码流程中的 `state` 往返与 CSRF 防护语义
 - [oauth2-proxy Issue #3258：并行请求下的 CSRF Cookie 问题](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258)
