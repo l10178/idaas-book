@@ -191,8 +191,9 @@ oidc: expected audience "oauth2-proxy" got ["account"]
 # 1. 解码 ID Token 查看 aud 字段（在浏览器 DevTools → Network → /oauth2/callback 中找到 id_token）
 echo "<id_token>" | cut -d. -f2 | base64 -d 2>/dev/null | jq .aud
 
-# 预期输出包含你的 client ID，例如 ["account", "oauth2-proxy"]
-# 如果只有 ["account"]，说明缺 Audience Mapper
+# 预期输出包含 oauth2-proxy 的 client ID，例如 ["account", "oauth2-proxy"]
+# 如果只有 ["account"]，先确认回调实际使用的 client_id；只有在确认登录的是该客户端后，
+# 才能判断是缺 Audience Mapper 或 mapper 没绑定到实际生效的 Client Scope
 ```
 
 ### 修复
