@@ -94,7 +94,7 @@ https://argocd.example.com/oauth2/callback
 
 ### Web Origins
 
-Traefik ForwardAuth 模式下，浏览器不会直接向 oauth2-proxy 发跨域请求，所以 Keycloak Client 的 Web Origins 填 `+`（允许同 redirect_uri 域）即可。
+Traefik ForwardAuth 模式下，浏览器不会直接向 oauth2-proxy 发跨域请求，所以 Keycloak Client 的 Web Origins 通常留空；只有确实存在浏览器跨源请求时，才添加精确来源。
 
 ## oauth2-proxy 端配置
 
@@ -117,8 +117,8 @@ spec:
     spec:
       containers:
       - name: oauth2-proxy
-        # 示例按 2026-08-05 可查到的 v7.15.3 编写；生产发布前仍应在预发布环境验证镜像。
-        image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+        # 版本号仅作示例；生产环境应锁定已在预发布验证过的镜像摘要。
+        image: quay.io/oauth2-proxy/oauth2-proxy:<已验证版本>
         args:
         - --provider=keycloak-oidc
         - --oidc-issuer-url=https://keycloak.example.com/realms/myrealm
@@ -136,7 +136,6 @@ spec:
         - --trusted-proxy-ip=10.42.0.0/16
         # 传递给后端的 headers
         - --set-xauthrequest=true
-        - --set-authorization-header=true
         # 跳过对 /oauth2/callback 的认证检查
         - --skip-auth-route=^/oauth2/callback$
         # 可选：限制允许的邮箱域
@@ -178,9 +177,7 @@ spec:
     - X-Auth-Request-Email
     - X-Auth-Request-Groups
     - X-Auth-Request-Preferred-Username
-    - X-Auth-Request-Access-Token
-    # 可选：Authorization 头（如果后端需要 Bearer token）
-    - Authorization
+    # 默认只传递身份信息；后端需要令牌时再按最小权限显式增加对应响应头。
 ```
 
 > **Traefik 入口的信任边界**：这里不设置 `trustForwardHeader`。该选项会让 ForwardAuth 使用请求中的 `X-Forwarded-*` 头；如果 Traefik 前面没有可信代理清洗这些头，客户端可以伪造协议、主机和原始 URI，进而影响回调地址和访问控制。若确实存在可信上游代理，应在 Traefik EntryPoint 级别配置其网段，而不是把 Middleware 示例默认设为信任：
@@ -208,7 +205,7 @@ entryPoints:
 | `X-Auth-Request-Access-Token` | 完整的 access_token (JWT) | 后端调用其他服务时携带 |
 | `Authorization` | `Bearer <access_token>` | 后端直接用于 API 鉴权 |
 
-> **安全提示**：`X-Auth-Request-Access-Token` 和 `Authorization` 包含完整的 access token。只在你信任后端应用且后端确实需要时才传递。原则上后端应该通过 oauth2-proxy 的 Session 来确认身份，不应依赖客户端传过来的 header。
+> **安全提示**：`X-Auth-Request-Access-Token` 和 `Authorization` 可能包含完整的 access token。不要把它们放进默认模板；只有后端确实需要调用受保护资源时，才同时配置 oauth2-proxy 的令牌转发选项与 `authResponseHeaders`，并由后端独立验证 `iss`、`aud`、签名、过期时间和 scope。后端还必须只信任来自 Traefik 的请求，清理客户端伪造的同名 Header。
 
 ### 处理并发登录请求导致的 CSRF Cookie 覆盖
 
