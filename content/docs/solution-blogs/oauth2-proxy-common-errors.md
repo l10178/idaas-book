@@ -158,6 +158,20 @@ args:
 
 这个现象已有 oauth2-proxy issue [#3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 的复现记录；该 issue 报告的版本和 Traefik 版本属于具体案例，不能据此推断所有版本都相同。最终应以所部署版本的行为为准。关于子域名场景下 CSRF Cookie 不出现的另一类排查线索，可参阅 [Stack Overflow 问题](https://stackoverflow.com/questions/77504002/oauth2-proxy-and-subdomains-unable-to-obtain-csrf-cookie)，但不要把社区问答当作配置规范。
 
+### Cookie 名称前缀导致浏览器拒收
+
+如果日志显示 oauth2-proxy 找不到 CSRF Cookie，但 Network 面板中的 `Set-Cookie` 已经返回，继续检查 Cookie 名称本身。`--cookie-csrf-per-request=true` 会把 CSRF 后缀拼到 Cookie 名称上；设置 `--cookie-name=__Host-` 或 `__Host-Http-` 时，最终名称可能变成 `__Host-_abc123_csrf`。这不再满足浏览器对 `__Host-` 前缀的约束，浏览器会直接拒收，服务端随后只能报告“找不到 Cookie”。oauth2-proxy Issue [#3258](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258) 中记录了这一类现象；它是当前实现与 Cookie 前缀规则的组合问题，不是把 `--cookie-domain` 改成通配符就能解决的。
+
+排查时在浏览器 Console/Storage 中确认 Cookie 是否被拒绝，并临时使用普通名称验证：
+
+```yaml
+args:
+- --cookie-name=_oauth2_proxy
+- --cookie-csrf-per-request=true
+```
+
+如果普通名称能够完成回调，再决定是否需要安全前缀。不要为了保留 `__Host-` 前缀而关闭 CSRF 校验；如果必须使用前缀，应先在目标 oauth2-proxy 版本中验证其派生 CSRF 名称仍符合浏览器规则，并把浏览器实际收到的 `Set-Cookie` 作为验收证据。回滚是恢复原 Cookie 名称并滚动更新；更新后清理旧 Cookie，未完成的授权流程需要重新发起。
+
 > **常见误区**：看到多副本就立刻加 Redis。这里有一个容易把排错方向带偏的细节：**默认 Cookie Session Store 并不要求回调落到同一个 Pod**。只要多个副本使用相同的 `--cookie-secret`，各副本都能解密由其他副本签发的会话 Cookie；把“多副本”直接等同于“必须上 Redis”会平白增加一个运行依赖。当前 oauth2-proxy 文档将 `cookie` 列为默认 Session Store，`redis` 是另一种可选后端。
 
 只有在以下情况才优先考虑 Redis：Cookie 体积超过浏览器或代理限制、需要服务端集中撤销会话，或希望不把 OAuth Token 放进 Cookie。迁移时先保留相同的外部回调地址和 Cookie 参数，在灰度副本上启用 Redis，并为 Redis 配置 TLS、认证、超时和监控；不要把 `--redis-insecure-skip-tls-verify=true` 当成生产修复。最小配置形态如下（连接字符串和密码放 Secret，不要写入 Git）：
@@ -722,6 +736,8 @@ curl -v http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
 - [oauth2-proxy 配置总览：CSRF Cookie 并发与大小限制](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#cookie-options)——`cookie-csrf-per-request` 与 `cookie-csrf-per-request-limit` 的行为
 - [RFC 6749 §4.1.1–§4.1.2、§10.12](https://www.rfc-editor.org/rfc/rfc6749)——授权码流程中的 `state` 往返与 CSRF 防护语义
 - [oauth2-proxy Issue #3258：并行请求下的 CSRF Cookie 问题](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258)
+- [oauth2-proxy 官方配置总览：Cookie 前缀、CSRF Cookie 与可信代理](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
+- [MDN：Cookie 前缀与 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie)
 - [oauth2-proxy GitHub Issues](https://github.com/oauth2-proxy/oauth2-proxy/issues)
 - [MDN：Set-Cookie 的 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#domaindomain-value)
 
