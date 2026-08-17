@@ -126,6 +126,7 @@ spec:
 **常见错误**：
 - 把不同主域名误当成同一 Cookie 作用域
 - 为了让多个应用复用会话，把 Domain 扩大到包含不可信子域的共同父域
+- 使用 `__Host-` 前缀却同时设置了 `Domain`；该前缀要求 Cookie 不带 Domain 属性，浏览器会拒收
 
 ### Cookie Secure 与 HTTP 冲突
 
@@ -145,7 +146,7 @@ OAuth 2.0 规范要求 `redirect_uri` 必须与客户端注册的值**完全一�
 | `https://myapp.example.com/callback` | `https://myapp.example.com/callback/` | ❌ 多了尾部斜杠 |
 | `https://myapp.example.com/callback` | `http://myapp.example.com/callback` | ❌ 协议不同 |
 | `https://myapp.example.com/callback` | `https://myapp.example.com:8443/callback` | ❌ 端口不同 |
-| `https://myapp.example.com/*` | `https://myapp.example.com/callback` | ✅ 通配符匹配（Keycloak 支持） |
+| `https://myapp.example.com/*` | `https://myapp.example.com/callback` | ✅ Keycloak 可匹配，但生产环境仍建议收紧 |
 
 ### 在 Keycloak 中检查
 
