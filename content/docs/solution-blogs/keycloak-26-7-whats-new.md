@@ -2,7 +2,7 @@
 title: "Keycloak 26.7 新特性深度解读：SCIM 自动配置与 IAM 安全增强 | IDaaS Book"
 description: "Keycloak 26.7.0 重大更新：SCIM API 自动用户配置（预览）、多集群免外部缓存高可用、AuthZEN 标准授权、OpenID SSF 实时安全信号、SAML Step-up 认证等 IAM 核心能力详解"
 date: 2026-07-11T00:00:00+08:00
-lastmod: 2026-07-11T00:00:00+08:00
+lastmod: 2026-08-17T23:01:03+08:00
 draft: false
 weight: 56
 menu:
@@ -12,7 +12,9 @@ menu:
 toc: true
 ---
 
-> **补丁版本更新（2026-08-15）**：本文记录的是 26.7.0 的功能变化；26.7.1 已于 2026-08-05 发布，主要价值是安全修复而不是新增架构能力。官方发布说明列出 JWE request object 签名算法校验绕过、管理权限提升、FGAP v2 权限绕过、SAML/LDAP/DCR 等多项安全修复。生产环境应先阅读 [26.7.1 发布说明](https://github.com/keycloak/keycloak/releases/tag/26.7.1) 和 [升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)，再安排备份、预发回归和滚动升级；不要把功能页中的 `26.7.0` 示例直接复制到新部署。
+> **补丁版本更新（2026-08-17）**：本文记录的是 26.7.0 的功能变化；Keycloak 官方下载页和 Operator 安装文档当前显示 26.7.1。26.7.1 的主要价值是安全修复而不是新增架构能力，官方发布说明列出 JWE request object 签名算法校验绕过、管理权限提升、FGAP v2 权限绕过、SAML/LDAP/DCR 等多项安全修复。生产环境应先阅读 [26.7.1 发布说明](https://github.com/keycloak/keycloak/releases/tag/26.7.1) 和 [升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)，再安排备份、预发回归和滚动升级；不要把功能页中的 `26.7.0` 示例直接复制到新部署。
+
+本文的功能说明仍以 `26.7.0` 为范围；新部署的镜像、Operator 和验证环境应统一使用当前补丁版本，并在发布前重新核对[官方下载页](https://www.keycloak.org/downloads)与[Operator 安装文档](https://www.keycloak.org/operator/installation)。版本号不是装饰品，混用补丁版本会让回归结果失去可比性。
 
 ## 场景描述
 
