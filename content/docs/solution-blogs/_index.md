@@ -1,6 +1,6 @@
 ---
-title: "Keycloak 实战配置与排错指南 — 解决方案 | IDaaS Book"
-description: "Keycloak + oauth2-proxy 集成配置、Nginx Ingress auth-url 认证、Traefik ForwardAuth、重定向循环排错等身份网关实战方案"
+title: "IAM 网关实战配置与排错指南 | IDaaS Book"
+description: "IAM 网关实战：Keycloak、oauth2-proxy、Nginx Ingress auth-url 与 Traefik ForwardAuth 的配置、验证和回滚。"
 weight: 55
 menu:
   docs:
@@ -17,7 +17,7 @@ menu:
 | 主题 | 关键词 |
 |------|--------|
 | [Keycloak 社交登录配置：Google / GitHub / Apple / Microsoft]({{< relref "keycloak-social-identity-providers" >}}) | Google OAuth, GitHub OAuth, Apple Sign In, Microsoft Entra ID, JIT Provisioning, 属性映射, 回调 URI 排错 |
-|| [Keycloak 26.7 新特性深度解读]({{< relref "keycloak-26-7-whats-new" >}}) | SCIM API, 多集群 HA, AuthZEN, OpenID SSF, SAML Step-up, Identity Brokering API V2 |
+| [Keycloak 26.7 新特性深度解读]({{< relref "keycloak-26-7-whats-new" >}}) | SCIM API, 多集群 HA, AuthZEN, OpenID SSF, SAML Step-up, Identity Brokering API V2 |
 | [Keycloak 审计日志配置与 IAM 合规实践]({{< relref "keycloak-audit-logging-compliance" >}}) | 登录审计、管理员事件、Syslog/ELK 导出、等保 2.0 对齐、事件数据库维护 |
 | [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}}) | OIDC, audience, CSRF, redirect loop, Nginx Ingress, ForwardAuth |
 | [IAM 网关 oauth2-proxy 常见错误排错]({{< relref "oauth2-proxy-common-errors" >}}) | CSRF Cookie, expected audience, invalid_token, redirect loop, Session Store, 401/503 诊断 |
@@ -35,16 +35,16 @@ menu:
 | [Keycloak 生产数据库配置 — PostgreSQL 实战]({{< relref "keycloak-postgresql-config" >}}) | H2 迁移 PostgreSQL、Kubernetes Secret 凭据管理、连接池调优、Liquibase 自动建表、常见数据库错误排错 |
 | [Keycloak 直连 K8s OIDC — API Server 认证与 RBAC]({{< relref "keycloak-kubernetes-rbac" >}}) | kube-apiserver OIDC 参数、groups claim 映射、kubelogin 接入、RBAC 绑定、与 Dex 方案对比 |
 | [Keycloak SMTP 邮件配置与密码重置]({{< relref "keycloak-smtp-email-config" >}}) | SMTP 配置（Gmail/企业微信/AWS SES）、忘记密码流程、邮箱验证、网络层排错、生产检查清单 |
-|| [Keycloak 集群缓存调优与排错指南]({{< relref "keycloak-cluster-cache-tuning" >}}) | InfiniSpan 分布式缓存、JGroups 发现、缓存穿透、会话亲和性、集群脑裂诊断 |
-|| [Keycloak Redis 外部会话缓存配置]({{< relref "keycloak-redis-session-cache" >}}) | Redis 外部 Session 缓存、跨节点 Session 共享、Infinispan vs Redis 选型、Kubernetes 部署与排错 |
+| [Keycloak 集群缓存调优与排错指南]({{< relref "keycloak-cluster-cache-tuning" >}}) | InfiniSpan 分布式缓存、JGroups 发现、缓存穿透、会话亲和性、集群脑裂诊断 |
+| [Keycloak Redis 外部会话缓存配置]({{< relref "keycloak-redis-session-cache" >}}) | Redis 外部 Session 缓存、跨节点 Session 共享、Infinispan vs Redis 选型、Kubernetes 部署与排错 |
 | [Supabase Auth 与 Keycloak 对比及集成]({{< relref "supabase-keycloak-integration" >}}) | Supabase GoTrue、Row Level Security、Keycloak 作为外部 OIDC 源、JWT 自定义 Claims、社交登录互通 |
 | [Dex 身份联邦指南：从原理到 K8s 集成]({{< relref "dex-identity-federation" >}}) | Dex OIDC Connector、Kubernetes OIDC 认证、多上游 IDP 联邦、groups claim 映射 |
 | [IAM 最小权限原则落地指南]({{< relref "iam-least-privilege-guide" >}}) | Least Privilege、权限反模式、JIT 提权、角色粒度分层、Keycloak 权限审计、等保最小权限要求 |
 | [Keycloak 条件认证与 Step-Up 实战]({{< relref "keycloak-conditional-step-up-auth" >}}) | Authentication Flow、条件 OTP、角色分级 MFA、IP 位置条件、Step-Up 二次认证、LoA 认证级别 |
 | [Passkey / WebAuthn / FIDO2 IAM 企业落地指南]({{< relref "keycloak-passkey-webauthn" >}}) | FIDO2 注册认证 Mermaid 流程图解、Keycloak Passkey 配置、Conditional UI 自动填充、CTAP 认证器管理、企业恢复策略与常见踩坑 |
 | [IAM SCIM 用户自动配置实战]({{< relref "iam-scim-provisioning-guide" >}}) | IAM 自动化供应、Joiner-Mover-Leaver、HR→IDP→应用全链路同步、Keycloak SCIM 插件、Azure AD SCIM、常见排错 |
-|| [Keycloak 生产环境完整部署路线图]({{< relref "keycloak-production-roadmap" >}}) | 从零到高可用全景路线：部署方式选型、数据库、反向代理、集群、监控、备份、安全加固、运维巡检八步走 |
-||| [IAM 多协议集成实战：OAuth 2.0、OIDC、SAML 在统一身份平台中的协同]({{< relref "iam-multi-protocol-integration" >}}) | IAM 多协议架构、OIDC+SAML 共存、sub/NameID 统一、跨协议 SSO 会话、SAML 证书轮换、协议桥接排错 |
-||| [OAuth 2.0 设备授权流程（Device Authorization Grant）IAM 实战]({{< relref "oauth2-device-authorization-grant" >}}) | RFC 8628、CLI 工具 SSO 登录、Device Code Flow 原理与 Mermaid 时序图、Keycloak Device Flow 配置、Public Client 安全考量 |
-||| [OAuth 2.0 Token Introspection 实践 - API 网关验证 Token 的正确方式]({{< relref "oauth2-token-introspection-guide" >}}) | RFC 7662、API 网关验证 Token、Nginx auth_request 集成、Kong/APISIX 方案、Introspection 缓存策略、vs JWT 本地验证、Keycloak 配置 |
-|| [IAM 密码策略实战 - NIST SP 800-63B 与等保 2.0 在 Keycloak 中的落地]({{< relref "iam-password-policy-guide" >}}) | NIST SP 800-63B、等保 2.0 密码要求、Argon2id 哈希切换、泄露密码黑名单、分层密码策略、密码策略排错 |
+| [Keycloak 生产环境完整部署路线图]({{< relref "keycloak-production-roadmap" >}}) | 从零到高可用全景路线：部署方式选型、数据库、反向代理、集群、监控、备份、安全加固、运维巡检八步走 |
+| [IAM 多协议集成实战：OAuth 2.0、OIDC、SAML 在统一身份平台中的协同]({{< relref "iam-multi-protocol-integration" >}}) | IAM 多协议架构、OIDC+SAML 共存、sub/NameID 统一、跨协议 SSO 会话、SAML 证书轮换、协议桥接排错 |
+| [OAuth 2.0 设备授权流程（Device Authorization Grant）IAM 实战]({{< relref "oauth2-device-authorization-grant" >}}) | RFC 8628、CLI 工具 SSO 登录、Device Code Flow 原理与 Mermaid 时序图、Keycloak Device Flow 配置、Public Client 安全考量 |
+| [OAuth 2.0 Token Introspection 实践 - API 网关验证 Token 的正确方式]({{< relref "oauth2-token-introspection-guide" >}}) | RFC 7662、API 网关验证 Token、Nginx auth_request 集成、Kong/APISIX 方案、Introspection 缓存策略、vs JWT 本地验证、Keycloak 配置 |
+| [IAM 密码策略实战 - NIST SP 800-63B 与等保 2.0 在 Keycloak 中的落地]({{< relref "iam-password-policy-guide" >}}) | NIST SP 800-63B、等保 2.0 密码要求、Argon2id 哈希切换、泄露密码黑名单、分层密码策略、密码策略排错 |
