@@ -27,7 +27,7 @@ toc: true
 
 ## 路线图总览
 
-下图展示了一条典型的 Keycloak 生产部署路径。每个方框代表一个里程碑，里程碑之间的箭头代表依赖关系。**可以跳过第 3 步和第 6 步，但其他步骤不建议省略。**
+下图展示了一条典型的 Keycloak 生产部署路径。每个方框代表一个里程碑，里程碑之间的箭头代表依赖关系。**第 3 步和第 6 步的具体实现可以按部署环境调整，但代理边界、持久化、监控和恢复验证不能从生产方案中消失。**
 
 ```mermaid
 flowchart TD
@@ -79,7 +79,7 @@ flowchart TD
 
 | 部署方式 | 适合场景 | 高可用能力 | 运维复杂度 | 推荐度 |
 |---------|---------|-----------|-----------|--------|
-| **K8s Operator** | 有 K8s 集群的团队 | ⭐⭐（生命周期与滚动更新） | 中（需理解 CRD） | 🟢 生产可用 |
+| **K8s Operator** | 有 K8s 集群且接受 CRD 生命周期的团队 | 由实例、数据库和平台共同决定 | 中（需理解 CRD） | 🟢 可作为生产交付入口 |
 | **Helm Chart** | 习惯 Helm 管理应用 | ⭐⭐（由 K8s 工作负载负责扩缩） | 中 | 🟢 生产可用 |
 | **Docker Compose** | 小团队、单机或少量节点 | ⭐⭐（需外部 LB + 共享数据库） | 低 | 🟡 适合中小规模 |
 | **裸机 / VM** | 传统运维，无容器化 | ⭐（手动管理多节点） | 高（手动运维） | 🔴 不推荐新项目 |
@@ -125,16 +125,16 @@ Keycloak 默认监听 `http://localhost:8080`。生产环境中，必须在 Keyc
 2. 转发正确的 `X-Forwarded-*` 头
 3. 可选：限流、WAF、日志
 
-### Keycloak 端的 proxy 模式
+### Keycloak 端的代理头配置
 
 Keycloak 需要知道自己在反向代理后面运行，否则会生成错误的 redirect URI（`http://localhost:8080` 而不是 `https://your-domain.com`）。
 
 ```bash
-# 代理写入 X-Forwarded-* 时显式启用解析；不要同时让客户端决定这些头
+# 代理写入 X-Forwarded-* 时显式启用解析；代理必须覆盖客户端传入的同名 Header
 kc.sh start --proxy-headers=xforwarded
 ```
 
-TLS 终止方式和 Keycloak 到代理之间是否加密，是代理拓扑的选择；不要把旧版本的 `--proxy=edge` 示例直接复制到当前发行版。具体可用参数以目标版本的 `kc.sh build`/`kc.sh start --help` 和[全部配置参考](https://www.keycloak.org/server/all-config)为准。
+TLS 终止方式和 Keycloak 到代理之间是否加密，是代理拓扑的选择；不要把旧版 `--proxy` 示例直接复制到当前发行版。具体可用参数以目标版本的 `kc.sh build`/`kc.sh start --help` 和[全部配置参考](https://www.keycloak.org/server/all-config)为准。
 
 ### Nginx 最小配置
 
@@ -161,9 +161,9 @@ server {
 
 | 症状 | 原因 | 解决 |
 |------|------|------|
-| `HTTPS required` 错误 | Keycloak 未配置 `--proxy` | 添加 `--proxy=edge` |
+| `HTTPS required` 错误 | TLS 在代理终止，但 Keycloak 没有解析代理头 | 配置 `--proxy-headers=xforwarded`，并确认代理覆盖 `X-Forwarded-Proto` |
 | 重定向到 `localhost:8080` | 缺少 `X-Forwarded-Proto` 或 `X-Forwarded-Host` | 检查反向代理的 Header 转发 |
-| 重定向循环 | 反向代理做了 HTTP → HTTPS 但不传 `X-Forwarded-Proto` | 确保反向代理传了该 Header，且 Keycloak 配了 `--proxy` |
+| 重定向循环 | 反向代理做了 HTTP → HTTPS 但不传 `X-Forwarded-Proto` | 确保反向代理传了该 Header，且 Keycloak 配了匹配的 `--proxy-headers` |
 
 > 📖 详细排错：[Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}})
 
@@ -171,7 +171,7 @@ server {
 
 ## 第四步：集群 & 高可用
 
-单节点 Keycloak = 单点故障。生产环境至少 2 个节点组成集群。
+单节点 Keycloak = 单点故障。是否部署多个节点，应由可用性目标、数据库能力、容量压测和故障演练共同决定；“两个节点”本身不是高可用验收标准。
 
 ### 最小集群配置
 
@@ -179,9 +179,9 @@ server {
 # 节点 1
 kc.sh start \
   --db=postgres --db-url=... --db-username=... --db-password=... \
-  --proxy=edge \
+  --proxy-headers=xforwarded \
   --cache=ispn \
-  --cache-stack=jdbc-ping  # 或 kubernetes / tcp
+  --cache-stack=jdbc-ping  # 先按目标版本文档验证传输栈
 
 # 节点 2（相同命令，不同主机）
 ```
@@ -246,8 +246,7 @@ Keycloak 的分布式缓存由 Infinispan 驱动，三种缓存类型：
 pg_dump -h db-host -U keycloak -Fc keycloak > keycloak-$(date +%Y%m%d).dump
 ```
 
-**RPO（恢复点目标）建议**：≤ 1 小时（连续归档 + WAL）
-**RTO（恢复时间目标）建议**：≤ 30 分钟
+RPO/RTO 不应从示例文章复制。应根据登录中断可接受时间、数据库备份频率、跨可用区设计和恢复演练结果设定，并在上线前用实际演练结果验收。
 
 ### Realm 导出（补充）
 
@@ -304,7 +303,7 @@ IDP 是整个 IAM 体系的安全基石，被攻破 = 所有应用失守。
 
 ### 升级策略
 
-Keycloak 平均每 6-8 周发布一个新版本。升级路径：
+不要把固定发布周期写进运行手册。升级路径应以目标版本的发布说明和安全公告为准：
 
 1. 在 staging 环境先升级并跑完整回归测试
 2. 数据库备份（升级前！）
@@ -327,10 +326,10 @@ Keycloak 平均每 6-8 周发布一个新版本。升级路径：
 
 **可以，但要做好准备。** 单节点部署的 Keycloak 切换到集群模式需要：
 1. 确认数据库支持多节点并发（PostgreSQL 天然支持）
-2. 配置缓存栈（`jdbc-ping` 或 `kubernetes`）
+2. 按目标版本文档配置缓存传输栈（当前生产模式默认使用 `jdbc-ping`）
 3. 在 LB 层加上会话亲和性
 
-建议在单节点阶段就把 `--cache=ispn` 和 `--cache-stack` 参数配置好（不会影响单节点运行），后续加节点只需横向扩展。
+不要为了“以后扩容”预先复制未经验证的缓存参数。先确认目标版本的缓存默认值、传输栈和网络策略，再在 staging 中用多节点回归；扩容仍需要容量、会话和故障切换验证。
 
 ### Q3：Keycloak Operator 和 Helm 怎么选？
 
@@ -366,6 +365,7 @@ Keycloak 从零到生产就绪，核心是**八个里程碑**：部署方式选�
 
 - [Keycloak Operator 安装文档](https://www.keycloak.org/operator/installation)：确认 Operator 的安装前提与受支持范围；不要把已归档的 WildFly Operator 当成 Quarkus 发行版的运维能力。
 - [Keycloak 反向代理配置](https://www.keycloak.org/server/reverseproxy)：确认 `proxy-headers` 与 `Forwarded`/`X-Forwarded-*` 的匹配关系。代理头必须由受信任代理覆盖写入，不能直接信任客户端传入值。
-- [Keycloak 全部配置参考](https://www.keycloak.org/server/all-config)：具体版本的 CLI 选项、默认值和可用性以实际发行版为准。
+- [Keycloak 分布式缓存配置](https://www.keycloak.org/server/caching)：确认生产模式的缓存启用方式；当前文档说明 `jdbc-ping` 是默认传输栈，不能把旧版 `kubernetes` 等值当作无条件推荐。
+- [Keycloak 配置参考](https://www.keycloak.org/server/all-config)：按目标发行版核对 CLI 选项；`proxy` 已被标记为弃用，`proxy-headers` 优先级更高。
 
 本文的资源规格、RPO/RTO 和工期只能作为设计问题清单，不是 Keycloak 的通用性能或上线承诺。生产上线前至少完成目标版本的压测、数据库恢复和 OIDC/SAML 回归。
