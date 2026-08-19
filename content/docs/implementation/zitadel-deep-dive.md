@@ -13,7 +13,7 @@ toc: true
 
 ## Zitadel 简介
 
-Zitadel 是一个用 Go 编写的开源身份与访问管理平台，截至 2026 年 7 月最新稳定版为 **v4.15.3**（AGPL-3.0 许可证），GitHub 约 14,300 星。项目的核心理念是"Identity infrastructure, simplified for you"——通过事件驱动架构和原生多租户设计，把身份基础设施的复杂性封装成简洁的 API 和管理界面。
+Zitadel 是一个用 Go 编写的开源身份与访问管理平台，截至 2026 年 8 月最新稳定版为 **v4.17.1**（AGPL-3.0 许可证），GitHub 约 14,800 星。项目的核心理念是"Identity infrastructure, simplified for you"——通过事件驱动架构和原生多租户设计，把身份基础设施的复杂性封装成简洁的 API 和管理界面。
 
 一句话定位：**事件溯源架构 + CQRS + 原生多租户的开源 IAM，适合需要完整审计追踪和多租户隔离的服务型平台**。
 
@@ -149,7 +149,7 @@ Zitadel 的授权分两层：
 services:
   zitadel:
     restart: always
-    image: ghcr.io/zitadel/zitadel:v4.15.3
+    image: ghcr.io/zitadel/zitadel:v4.17.1
     command: start-from-init --masterkey "MasterkeyNeedsToHave32Characters" --tlsMode disabled
     ports:
       - "8080:8080"
@@ -190,7 +190,7 @@ volumes:
 | 维度 | Zitadel | Keycloak |
 |---|---|---|
 | **技术栈** | Go + Angular | Java/Quarkus |
-| **最新版本** | v4.15.3 | 26.x（社区） |
+| **最新版本** | v4.17.1 | 26.7.2（社区） |
 | **许可证** | AGPL-3.0 | Apache 2.0 |
 | **数据模型** | 事件溯源 + CQRS | 传统 ORM（JPA/Hibernate） |
 | **审计能力** | 天然完整审计（所有操作都是事件） | 依赖 Event Listener 扩展 |
@@ -200,7 +200,7 @@ volumes:
 | **部署** | 单二进制/Docker/K8s Helm | Operator/Helm/Docker |
 | **资源占用** | 较低（Go 单二进制 ~50MB） | 中等（JVM，~500MB 起步） |
 | **扩展性** | 读写分离可独立扩展 | 水平扩展（Infinispan 缓存同步） |
-| **社区成熟度** | 增长中，14k+ star | 成熟，Red Hat 背书 |
+| **社区成熟度** | 增长中，14.8k+ star | 成熟，Red Hat 背书 |
 | **中文体验** | 界面不支持中文（英文为主） | 界面支持中文（翻译偏生硬） |
 | **备份恢复** | 事件重放机制，PostgreSQL 级别备份 | 数据库导出/导入 + 文件备份 |
 | **企业功能** | 审计日志导出、SAML、LDAP 等在开源版中 | 集群、跨 DC 复制、令牌撤销等 |
@@ -222,6 +222,22 @@ volumes:
 - 社区中文资源丰富，问题更容易搜到
 
 **两者结合**：可以用 Zitadel 做面向客户的多租户认证（利用其原生多租户和审计能力），Keycloak 做企业内部应用的 SSO 中心。通过 OIDC 联合可以互相信任。
+
+## v4.16–v4.17 关键变化
+
+v4.16.0（2026-07-10）到 v4.17.1（2026-08-14）期间，Zitadel 引入了几个影响架构决策的变化：
+
+| 版本 | 变化 | 影响 |
+|------|------|------|
+| v4.16.0 | **FIPS 140-3 合规构建**和运行时检查 | 金融、政府等要求 FIPS 加密合规的场景可用；需使用专用构建镜像 |
+| v4.16.0 | Invite Code 纳入 Secret Generators 管理 | 邀请码的长度、字符集、有效期可统一配置 |
+| v4.17.0 | **RFC 7591/7592 动态客户端注册和管理** | OIDC 客户端可通过标准 API 自动注册和轮换，不再需要手动在控制台创建每个 Client |
+| v4.17.0 | **Zitadel IdP 联合**（Sign in with Zitadel） | 一个 Zitadel 实例可以作为另一个 Zitadel 实例的身份提供者，支持多租户场景下的身份联邦 |
+| v4.17.0 | **Passkey 原生 App 链接** | 移动应用可通过原生链接唤起 Passkey 认证，不再依赖浏览器跳转 |
+| v4.17.0 | events2 表 autovacuum 调优 | PostgreSQL 事件表自动维护策略优化，减少大实例下的膨胀 |
+| v4.17.1 | 安全修复：停用组织用户阻止登录、Passkey 注册码权限检查、MFA 注册前强制提示 | 生产环境应尽快升级 |
+
+**RFC 7591/7592 动态客户端注册**是 v4.17 的重点。之前 Zitadel 的 OIDC Client 需要在管理控制台或通过 Management API 手动创建——对 SaaS 平台来说，每个新租户的每个应用都要手动注册 Client 是一个瓶颈。RFC 7591 让 Client 可以通过标准化的注册端点自动完成初始注册，RFC 7592 进一步支持已注册 Client 的读取、更新和删除。这让多租户 SaaS 的自动化 onboarding 流程不再需要把 Zitadel 管理员凭据暴露给租户。
 
 ## 常见误区
 

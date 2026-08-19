@@ -12,7 +12,12 @@ menu:
 toc: true
 ---
 
-> **补丁版本更新（2026-08-15）**：本文记录的是 26.7.0 的功能变化；26.7.1 已于 2026-08-05 发布，主要价值是安全修复而不是新增架构能力。官方发布说明列出 JWE request object 签名算法校验绕过、管理权限提升、FGAP v2 权限绕过、SAML/LDAP/DCR 等多项安全修复。生产环境应先阅读 [26.7.1 发布说明](https://github.com/keycloak/keycloak/releases/tag/26.7.1) 和 [升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)，再安排备份、预发回归和滚动升级；不要把功能页中的 `26.7.0` 示例直接复制到新部署。
+> **补丁版本更新（2026-08-19）**：本文记录的是 26.7.0 的功能变化。26.7.1（2026-08-05）和 26.7.2（2026-08-19）是安全修复版本，不新增架构能力，但包含多项**必须升级**的 CVE 修复：
+>
+> - **26.7.2 关键 CVE**：CVE-2026-59888/59889（jackson-databind 升级到 2.21.5）、CVE-2026-17048（Admin REST API 泄露 Vault 中已轮换的 Client Secret）、CVE-2026-15571（可预测的 account-linking hash 导致通过恶意 OIDC Client 接管账户）、CVE-2026-18963（未认证的 reset-credentials 流程绕过导致账户接管）、CVE-2026-15945（FGAP v2 组层级搜索泄露隐藏的父组）、CVE-2026-14613（FGAP v2 Role Groups 端点权限绕过）。其中 reset-credentials 流程绕过和 account-linking hash 可预测性是**可直接利用的账户接管漏洞**，生产环境必须尽快升级。
+> - **26.7.1 关键 CVE**：JWE request object 签名算法校验绕过（CVE-2026-9793）、manage-clients 硬编码 Role Mapper 注入导致提权（CVE-2026-4629）、FGAP v2 多个权限绕过、SAML IdP-Initiated broker login 绕过 link-only 限制（CVE-2026-16442）、SAML broker metadata 导入关闭响应签名验证（CVE-2026-16443）、LDAP entry-dn 搜索绕过配置的 users DN 边界（CVE-2026-16071）、DCR 默认策略允许通过 User Property Mapper 伪造角色（CVE-2026-16102）。
+>
+> 生产环境应先阅读 [26.7.2 发布说明](https://github.com/keycloak/keycloak/releases/tag/26.7.2) 和 [升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)，再安排备份、预发回归和滚动升级；不要把功能页中的 `26.7.0` 示例直接复制到新部署。
 
 ## 场景描述
 
@@ -250,6 +255,7 @@ curl -fsS https://auth.example.com/health/ready
 ## 延伸阅读
 
 - [Keycloak Downloads（当前服务器稳定版）](https://www.keycloak.org/downloads)
+- [Keycloak 26.7.2 Release Notes](https://github.com/keycloak/keycloak/releases/tag/26.7.2)
 - [Keycloak 26.7.0 Release Notes](https://github.com/keycloak/keycloak/releases/tag/26.7.0)
 - [Keycloak 26.7.0 升级说明](https://www.keycloak.org/docs/latest/upgrading/index.html)
 - [Keycloak Server Features](https://www.keycloak.org/server/features)

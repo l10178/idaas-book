@@ -34,13 +34,13 @@ toc: true
 
 ## 19.2 使用 Keycloak Operator
 
-> 版本提示：Keycloak 官方 GitHub Release 当前可见的 26.7 补丁版本为 `26.7.1`（2026-08-05 发布）。安装 Operator 时应把 `keycloak-k8s-resources`、CRD 和 Keycloak 镜像固定到同一版本；不要把下面的版本号当作永久答案，部署前仍需复核 [keycloak.org/downloads](https://www.keycloak.org/downloads)、[Keycloak Releases](https://github.com/keycloak/keycloak/releases) 与 [Operator 安装文档](https://www.keycloak.org/operator/installation)。
+> 版本提示：Keycloak 官方 GitHub Release 当前可见的 26.7 补丁版本为 `26.7.2`（2026-08-19 发布，含未认证账户接管、Vault Secret 泄露等关键 CVE 修复）。安装 Operator 时应把 `keycloak-k8s-resources`、CRD 和 Keycloak 镜像固定到同一版本；不要把下面的版本号当作永久答案，部署前仍需复核 [keycloak.org/downloads](https://www.keycloak.org/downloads)、[Keycloak Releases](https://github.com/keycloak/keycloak/releases) 与 [Operator 安装文档](https://www.keycloak.org/operator/installation)。
 
 ### 安装 Operator
 
 ```bash
 # 安装 Operator（示例使用 26.7.1；生产环境先确认版本与 Operator/CRD 兼容）
-VERSION=26.7.1
+VERSION=26.7.2
 kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
 kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
 kubectl create namespace keycloak
@@ -68,7 +68,7 @@ metadata:
     app: keycloak
 spec:
   instances: 3
-  image: quay.io/keycloak/keycloak:26.7.1   # 示例版本；上线前复核当前稳定版
+  image: quay.io/keycloak/keycloak:26.7.2   # 示例版本；上线前复核当前稳定版
   hostname:
     hostname: auth.example.com
   http:
