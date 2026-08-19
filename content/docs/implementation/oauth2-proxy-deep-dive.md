@@ -124,7 +124,7 @@ spec:
     ports:
     - containerPort: 8080
   - name: oauth2-proxy
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.8.2
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
     args:
     - --http-address=0.0.0.0:4180
     - --upstream=http://localhost:8080
@@ -228,6 +228,8 @@ Cookie 内容用 AES 加密，密钥通过 `--cookie-secret` 传入。生产环�
 --skip-auth-route=GET=^/public/.*
 ```
 
+> **安全修复（v7.11.0）**：`skip_auth_routes` 的正则此前匹配完整请求 URI（路径 + 查询参数），可被构造为 `/api/private/sensitive?path=/status` 绕过认证。v7.11.0 修正为只匹配路径部分。如果你的白名单规则依赖查询参数匹配，升级前必须审查所有 `skip_auth_routes` 条目。旧参数 `--skip-auth-regex` 已标记为废弃，建议迁移到 `--skip-auth-route`。
+
 ### `GAP-Signature` 请求签名
 
 当前 oauth2-proxy 配置文档把 `--signature-key` 定义为 **GAP-Signature request signature key**，参数格式为 `algorithm:secretkey`。它不是“给所有 `X-Auth-Request-*` Header 自动加 HMAC”的通用开关；后端是否能验证签名，必须按实际使用的 GAP 接入协议实现并做联调。不要把它当成替代网络隔离、Ingress 清理客户端同名 Header 或后端授权校验的捷径。
@@ -239,6 +241,47 @@ Cookie 内容用 AES 加密，密钥通过 `--cookie-secret` 传入。生产环�
 ```
 
 `--set-xauthrequest` 的职责只是生成认证响应头；`--pass-access-token` 会额外产生 `X-Auth-Request-Access-Token`。如果后端不需要 Token，就不要打开透传，减少凭据传播面。后端仍必须只接受来自受信任 Ingress 的请求，并独立验证自己消费的 Token 的 `iss`、`aud`、签名、过期时间和权限。
+
+## 版本演进与安全更新（v7.9 → v7.15.3）
+
+oauth2-proxy 从 v7.8.2（2025-03）到 v7.15.3（2026-06）经历了多个版本，包含若干安全审计修复和配置行为变更。下表按版本列出影响生产部署的关键变更，升级前应逐条核对。
+
+| 版本 | 发布日期 | 关键变更 | 生产影响 |
+|------|----------|----------|----------|
+| v7.9.0 | 2025-04 | 修复 Keycloak OIDC Provider 从 access token 提取 role 的逻辑；支持 JWT 编码的 profile claims | 使用 `--allowed-role` 控制 Keycloak 访问的部署应验证角色提取行为 |
+| v7.10.0 | 2025-07 | GitHub/Gitea Provider 支持多个 org；Redis 空链接列表返回错误 | 多 org GitHub 集成可用；Redis 配置异常不再静默 |
+| v7.11.0 | 2025-11 | **安全修复**：`skip_auth_routes` 正则从匹配完整 URI 改为只匹配路径；修复 Alpha Config `$` 双重转义 | **必须审查白名单规则**——依赖查询参数匹配的 `skip_auth_routes` 会失效或行为改变 |
+| v7.13.0 | 2026-02 | OIDC Provider 刷新会话时改用 access_token 而非 id_token 验证；Header 名称归一化（`X-Forwarded-For` 与 `X_Forwarded_For` 等价处理） | 若 IDP 刷新时不签发新 id_token（符合 OIDC 规范），会话续期不再失败；自定义 Header 剥离规则需检查大小写兼容 |
+| v7.14.0 | 2026-01 | Alpha Config YAML 结构变更：`injectRequestHeaders` 的 `values` 必须显式嵌套为 `claimSource`/`secretSource`/`valueSource` | 使用 Alpha Config 的部署升级前必须迁移 Header 注入配置格式 |
+| v7.15.0 | 2026-03 | 支持 OIDC JWT signing algorithm 配置；CSRF Cookie 使用 `CSRFExpire` 而非 `Expire` 校验；新增 `--config-test` 标志；支持从 ID Token/UserInfo 注入任意 claim 到 Session | `cookie-csrf-expire` 配置需检查；`--config-test` 可用于 CI/CD 配置预检 |
+| v7.15.2 | 2026-04 | **安全审计修复**：health check User-Agent 认证绕过（Critical）、`X-Forwarded-Uri` 伪造认证绕过（Critical）、fragment 路由评估（High）、malformed multi-@ email 验证绕过（Moderate）；新增 `--trusted-proxy-ip` 参数 | **必须升级**——旧版本存在多个认证绕过漏洞；`--trusted-proxy-ip` 是新的生产加固必选项 |
+| v7.15.3 | 2026-06 | Go 1.26 升级、依赖更新、多个 CVE 修复 | 安全补丁版本 |
+
+### `--trusted-proxy-ip`：转发头信任边界
+
+v7.15.2 引入 `--trusted-proxy-ip`，用于显式指定允许发送 `X-Forwarded-*` 头的反向代理 IP 或 CIDR 范围。未设置时 oauth2-proxy 保留向后兼容行为（信任所有来源 `0.0.0.0/0`），并在启动时记录告警。
+
+```bash
+--reverse-proxy=true
+--trusted-proxy-ip=10.0.0.0/8     # 只信任集群内网代理
+--trusted-proxy-ip=172.16.0.0/12  # 可多次指定
+```
+
+生产部署中如果客户端能绕过 Ingress 直连 oauth2-proxy Service，未设置此参数意味着攻击者可以伪造 `X-Forwarded-Uri` 等头绕过认证——这正是 v7.15.2 修复的 Critical 漏洞（[GHSA-7x63-xv5r-3p2x](https://github.com/oauth2-proxy/oauth2-proxy/security/advisories/GHSA-7x63-xv5r-3p2x)）的利用路径。
+
+### CSRF Cookie 过期行为变更（v7.15.0）
+
+v7.15.0 之前，CSRF Cookie 的过期校验错误地使用了 `Expire`（Session Cookie 有效期）而非 `CSRFExpire`。如果你的 CSRF Cookie 寿命与 Session Cookie 不同（例如 Session 8h、CSRF 1h），升级后 CSRF 校验会按 `--cookie-csrf-expire` 独立判断。未显式设置 `--cookie-csrf-expire` 时使用默认值 12h。
+
+### `--config-test`：配置预检（v7.15.0）
+
+v7.15.0 新增 `--config-test` 标志，在 CI/CD 流水线中可先验证配置再部署：
+
+```bash
+oauth2-proxy --config=/etc/oauth2-proxy.cfg --config-test && echo "config OK"
+```
+
+退出码 0 表示配置有效，非 0 表示有错误。适合在 Helm hook 或 pre-deploy 阶段拦截配置问题。
 
 ## 与替代方案对比
 
@@ -263,8 +306,12 @@ Cookie 内容用 AES 加密，密钥通过 `--cookie-secret` 传入。生产环�
 - [ ] `--oidc-issuer-url` 与实际 Token `iss` 完全一致（无尾斜杠，无 `/auth` 差异）。
 - [ ] groups/roles claim 已映射，`--allowed-group` 按应用粒度生效。
 - [ ] `--skip-auth-route` 已配置健康检查和白名单路径。
+- [ ] `--skip-auth-route` 规则不依赖查询参数匹配（v7.11.0 修复后只匹配路径）。
+- [ ] 启用 `--reverse-proxy` 时已设置 `--trusted-proxy-ip` 为受控代理 IP/CIDR（v7.15.2+ 生产必选项）。
 - [ ] `/oauth2` 路径已路由到 oauth2-proxy（不是只配了 `/oauth2/auth`）。
 - [ ] 若启用 `--signature-key`，已按实际 GAP-Signature 协议完成后端验签联调；没有该需求时不启用。
+- [ ] 镜像版本不低于 v7.15.2（v7.15.2 修复多个 Critical 认证绕过漏洞）。
+- [ ] 若使用 Alpha Config，Header 注入配置已迁移到 v7.14.0+ 的嵌套格式。
 - [ ] 回滚方案：删除 Ingress 上的 `auth-url`/`auth-signin` 注解或 Traefik ForwardAuth middleware 引用，保留 oauth2-proxy 实例以便事后复盘。
 
 ## IAM FAQ
@@ -281,9 +328,16 @@ Cookie 内容用 AES 加密，密钥通过 `--cookie-secret` 传入。生产环�
 
 不必须。默认 Cookie Session Store 下，多副本共享同一个 `--cookie-secret` 即可读取会话。只有 Cookie 过大、需要服务端集中撤销或不希望 Token 留在 Cookie 中时，再引入 Redis；引入后要增加 TLS、凭据、容量、监控、故障和回滚验证。
 
+### 升级到 v7.15.2+ 后必须做什么？
+
+两件事：设置 `--trusted-proxy-ip` 限制可发送 `X-Forwarded-*` 头的代理来源，审查所有 `--skip-auth-route` 规则确认不依赖查询参数匹配。v7.15.2 修复了多个 Critical 认证绕过漏洞（health check User-Agent、`X-Forwarded-Uri` 伪造），旧版本在生产环境中存在实际攻击面。
+
 ## 参考与延伸阅读
 
 - oauth2-proxy 配置总览（`trusted-proxy-ip`、Header、Session Store、`signature-key`）：<https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/>
+- oauth2-proxy v7.15.2 安全公告（认证绕过修复与 `--trusted-proxy-ip` 引入）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.2>
+- oauth2-proxy v7.15.0 发行说明（CSRF Cookie、`--config-test`、OIDC signing algorithm）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.0>
+- oauth2-proxy v7.11.0 发行说明（`skip_auth_routes` 路径匹配修复）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.11.0>
 - oauth2-proxy 源码配置定义（`signature-key`）：<https://github.com/oauth2-proxy/oauth2-proxy/blob/master/pkg/apis/options/options.go>
 - Keycloak OIDC Provider 配置：<https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/>
 - 本站解决方案博客：[Keycloak + oauth2-proxy 集成指南]({{< relref "docs/solution-blogs/keycloak-oauth2-proxy" >}})
