@@ -144,11 +144,11 @@ Keycloak
 
 | 版本 | 状态 | 建议 |
 |------|------|------|
-| Keycloak 26.7.1 | 官方发布页当前可见的 26.7 补丁版本 | 新项目优先在目标拓扑上验证后采用 |
+| Keycloak 26.7.2 | 官方发布页当前可见的 26.7 补丁版本（2026-08-19 发布，含账户接管等关键 CVE 修复） | 新项目优先在目标拓扑上验证后采用；生产环境应尽快升级 |
 | Keycloak 26.x 的其他维护版本 | 需按具体补丁版本核对支持状态 | 已有项目不要只因小版本号变化就盲目升级，先读升级说明 |
 | Keycloak 25.x 及更早 | 不应作为新项目基线 | 规划升级并在测试环境验证兼容性 |
 
-> **版本判断边界**：截至 2026-08-13，Keycloak 官方 GitHub Release 页面可见的最新发布标签为 `26.7.1`。版本会继续变化，生产升级前应重新核对 [官方发布页](https://github.com/keycloak/keycloak/releases)、[升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html) 和 [反向代理配置](https://www.keycloak.org/server/reverseproxy)。升级仍需结合数据库迁移、自定义 SPI、反向代理和扩展兼容性验证；“最新”不是回滚方案。详见 [Keycloak 26.7 更新速览]({{< relref "../solution-blogs/keycloak-26-7-whats-new" >}})。
+> **版本判断边界**：截至 2026-08-19，Keycloak 官方 GitHub Release 页面可见的最新发布标签为 `26.7.2`。版本会继续变化，生产升级前应重新核对 [官方发布页](https://github.com/keycloak/keycloak/releases)、[升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html) 和 [反向代理配置](https://www.keycloak.org/server/reverseproxy)。升级仍需结合数据库迁移、自定义 SPI、反向代理和扩展兼容性验证；“最新”不是回滚方案。详见 [Keycloak 26.7 更新速览]({{< relref "../solution-blogs/keycloak-26-7-whats-new" >}})。
 
 ## Keycloak 常见问题
 
