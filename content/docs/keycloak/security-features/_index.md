@@ -1,6 +1,6 @@
 ---
-title: "Keycloak 安全增强功能"
-description: "Keycloak 安全防护实战：密码策略、暴力破解检测与账号锁定、MFA 多因子认证及安全加固清单"
+title: "Keycloak IAM 安全增强与加固清单 | IDaaS Book"
+description: "Keycloak IAM 安全加固：密码策略、暴力破解检测、MFA/OTP、Token 会话与反向代理配置，适合生产上线检查。"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 13
@@ -83,7 +83,7 @@ Keycloak 内置基于 **TOTP** 的 OTP 实现，与 Google Authenticator / FreeO
 ### 传输层
 
 - [ ] 全站 HTTPS，由 Nginx/Ingress 终结 TLS，Keycloak 仅监听内部。
-- [ ] 设置 `proxy=passthrough`（Quarkus 版 `KC_PROXY=passthrough` 或 `--proxy passthrough`，旧 WildFly 版对应 `proxy-address-forwarding=true`），正确识别客户端真实 IP（暴力检测/审计依赖）。
+- [ ] Keycloak 26+ 按代理实际发送的格式设置 `KC_PROXY_HEADERS=xforwarded` 或 `forwarded`，并配置固定的 `KC_HOSTNAME`；代理覆盖写入转发头且 Keycloak Service 不允许客户端直连。旧版 `KC_PROXY`/`proxy=edge` 配置不能直接作为新版本默认值。
 - [ ] HSTS、TLS 1.2+，禁用老 cipher。
 
 ### Token 与会话
