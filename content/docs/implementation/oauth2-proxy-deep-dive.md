@@ -67,6 +67,35 @@ sequenceDiagram
 4. 后续请求携带 Cookie，oauth2-proxy 校验通过后返回 202，并在响应头中注入 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups` 等身份信息。
 5. Nginx Ingress（通过 `auth_request`）或 Traefik（通过 `ForwardAuth`）透传这些响应头到后端。
 
+### 认证响应头不是自动传到业务后端的
+
+这是 auth-url 集成里最容易被误判的边界：`--set-xauthrequest=true` 只让 oauth2-proxy 在 `/oauth2/auth` 的响应中生成 `X-Auth-Request-*`；它不会替业务 Ingress 把 Header 复制到最终请求。以 ingress-nginx 为例，必须同时配置认证 URL、401 跳转和允许复制的响应头：
+
+```yaml
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/auth-url: "https://$host/oauth2/auth"
+    nginx.ingress.kubernetes.io/auth-signin: "https://$host/oauth2/start?rd=$escaped_request_uri"
+    nginx.ingress.kubernetes.io/auth-response-headers: >-
+      X-Auth-Request-User,X-Auth-Request-Email,X-Auth-Request-Groups
+```
+
+只列出后端确实需要的 Header。`X-Auth-Request-*` 不是客户端可自行声明的身份凭证：入口必须覆盖或清理客户端同名 Header，后端 Service 也应只允许来自入口的流量，否则用户可以直接伪造 `X-Auth-Request-Groups`。如果后端要验证 OAuth access token，另行开启 `--pass-access-token=true` 并透传 `X-Auth-Request-Access-Token`；不要把 `--pass-authorization-header` 产生的 ID Token 当成资源服务器的 access token。
+
+验证时分两段看，避免把“认证成功”误认为“身份已到达业务：
+
+```bash
+# 认证代理：确认生成认证响应头的开关
+kubectl get deploy -n auth oauth2-proxy -o jsonpath='{.spec.template.spec.containers[0].args}' \
+  | jq -r '.[]' | grep -E 'set-xauthrequest|pass-access-token|pass-authorization-header'
+
+# 入口：确认 auth-url、跳转和响应头复制均存在
+kubectl get ingress -n app internal-app -o yaml \
+  | grep -E 'auth-url|auth-signin|auth-response-headers'
+```
+
+依据：[oauth2-proxy Header Options](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#header-options) 和 [ingress-nginx 外部认证示例](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)。
+
 ## 核心概念
 
 ### Provider
