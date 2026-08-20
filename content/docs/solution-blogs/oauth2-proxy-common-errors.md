@@ -16,7 +16,7 @@ toc: true
 
 你按照文档配好了 oauth2-proxy + Keycloak，部署到 Kubernetes，打开浏览器——白屏、401、无限跳转、或者 "csrf cookie not found"。这些错误 oauth2-proxy 的日志里写得很直白，但**为什么发生、怎么修**才是真正的卡点。
 
-这篇文章把 oauth2-proxy 的公开 Issue 与可复现的配置逻辑整理成速查表：每条有诊断命令、根因分析和修复步骤。Issue 只能说明问题曾被报告，不能替代当前版本的验证。
+这篇文章把 oauth2-proxy 的公开 Issue 与可复现的配置逻辑整理成速查表：每条有诊断命令、根因分析和修复步骤。Issue 只能说明问题曾被报告，不能替代当前版本的验证。需要先理解 auth-url、Header 复制和后端信任边界的整体链路，可先看 [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive" >}}) 的架构说明。
 
 适用：oauth2-proxy v7.x + Keycloak（任意版本），auth-url 或 ForwardAuth 模式。
 
