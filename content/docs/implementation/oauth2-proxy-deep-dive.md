@@ -116,6 +116,14 @@ oauth2-proxy 的会话管理完全基于 Cookie：
 - **Session Cookie**（默认 `_oauth2_proxy`）：存储加密后的 access token、ID token、refresh token 和过期时间。
 - **CSRF Cookie**（默认 `_oauth2_proxy_csrf`）：防止跨站请求伪造，登录流程中校验 state 与 CSRF token 的一致性。
 
+配置来源的优先级是 **命令行参数 > 环境变量 > 配置文件**。这条规则在 Kubernetes 中很容易被 Helm values 和 Secret 覆盖：排查“配置看起来正确但进程行为不对”时，先检查最终容器参数和环境变量，不要只看挂载的配置文件。
+
+Cookie Secret 必须是解码后 16、24 或 32 字节的值。生产环境优先使用官方文档给出的 URL-safe Base64 生成方式，避免把普通 Base64 的 `+`、`/` 或换行直接复制进 Secret：
+
+```bash
+python -c 'import os,base64; print(base64.urlsafe_b64encode(os.urandom(32)).decode())'
+```
+
 Cookie 关键配置项：
 
 | 参数 | 作用 | 生产建议 |
@@ -327,7 +335,8 @@ oauth2-proxy --config=/etc/oauth2-proxy.cfg --config-test && echo "config OK"
 
 ## 生产上线检查清单
 
-- [ ] `--cookie-secret` 已配置，值 ≥ 32 字节随机串，所有实例一致。
+- [ ] `--cookie-secret` 已配置，值为解码后 16/24/32 字节的 URL-safe Base64，所有实例一致。
+- [ ] 配置来源已核对：命令行参数 > 环境变量 > 配置文件，未被 Helm 或 Secret 中的同名值覆盖。
 - [ ] `--cookie-secure=true`（HTTPS 环境）。
 - [ ] `--cookie-httponly=true`，未关闭。
 - [ ] `--cookie-samesite` 已根据部署拓扑设置（子域共享 Cookie 时注意）。
@@ -363,7 +372,7 @@ oauth2-proxy --config=/etc/oauth2-proxy.cfg --config-test && echo "config OK"
 
 ## 参考与延伸阅读
 
-- oauth2-proxy 配置总览（`trusted-proxy-ip`、Header、Session Store、`signature-key`）：<https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/>
+- oauth2-proxy 配置总览（配置优先级、Cookie Secret 生成、`config-test`）：<https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/>
 - oauth2-proxy v7.15.2 安全公告（认证绕过修复与 `--trusted-proxy-ip` 引入）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.2>
 - oauth2-proxy v7.15.0 发行说明（CSRF Cookie、`--config-test`、OIDC signing algorithm）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.0>
 - oauth2-proxy v7.11.0 发行说明（`skip_auth_routes` 路径匹配修复）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.11.0>
