@@ -22,7 +22,7 @@ toc: true
 3. **用户管理（User Management）**：账号的生命周期——创建、变更、禁用、删除
 4. **审计（Audit）**：记录谁在什么时候做了什么——合规、追溯、异常检测
 
-Gartner 将 IAM 定义为：**"确保正确的个体在正确的时间以正确的理由访问正确的资源的安全原则。"**
+这里要区分**能力域**和**规范要求**：NIST SP 800-63B-4 约束的是远程用户认证及认证保证等级（AAL），并不替企业定义完整的 IAM 产品边界；SCIM RFC 7644 则规定跨系统管理用户资源的 HTTP 接口语义，也不等于权限决策或 Token 撤销。把这些边界写进架构设计，能避免把“登录成功”误当成“访问已授权”。
 
 简单理解：IAM 就是企业的「门禁系统和访客登记簿」的结合体——它决定谁能进哪个门，进去后能做什么，并记录一切出入痕迹。
 
@@ -143,6 +143,8 @@ Gartner 将 IAM 定义为：**"确保正确的个体在正确的时间以正确�
 
 详见 [IDaaS 方案全景对比]({{< relref "../implementation/other-idaas-solutions" >}})。
 
+- [NIST SP 800-63B-4：数字身份认证指南](https://pages.nist.gov/800-63-4/sp800-63b.html)——认证保证等级与远程认证要求
+- [RFC 7644：SCIM Protocol](https://www.rfc-editor.org/rfc/rfc7644)——跨系统用户资源管理接口语义
 - [SCIM 用户生命周期管理]({{< relref "../protocols/scim-protocol" >}})——用户开通、变更与离职回收的接口语义
 - [IAM 会话管理]({{< relref "../advanced-topics/iam-session-management" >}})——会话、Access Token 与撤销窗口的设计
 
