@@ -104,6 +104,31 @@ curl --fail-with-body --silent --show-error \\
 
 如果返回 401/403，先检查 Bearer Token 的签发方、受众、权限和有效期；如果返回 404，检查实际 Base URL、反向代理路径和扩展是否加载；如果返回 405，检查客户端是否错误地假设服务支持某个 HTTP 方法。只有在服务确实返回 SCIM 响应后，才继续排查属性映射和同步调度。
 
+### 离职用户的最小 PATCH 与验证
+
+SCIM 的 `PATCH` 不是所有服务端都必须实现的能力；先读取 `ServiceProviderConfig`，确认 `patch.supported`，再决定使用 PATCH 还是服务端支持的替代流程。支持 PATCH 时，RFC 7644 要求请求使用 `PatchOp` schema 和 `Operations` 数组，不能把 JSON Merge Patch 当成 SCIM PATCH：
+
+```bash
+curl --fail-with-body --silent --show-error -X PATCH \\
+  "${SCIM_BASE_URL}/Users/{user-id}" \\
+  -H "Authorization: Bearer ***" \\
+  -H "Content-Type: application/scim+json" \\
+  -d '{
+    "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+    "Operations": [
+      {"op": "replace", "path": "active", "value": false}
+    ]
+  }'
+```
+
+验证要拆成三层：
+
+1. **IAM 层**：用户状态已变为 inactive，新的登录或 Token 签发被拒绝。
+2. **供应层**：下游 SCIM 资源返回 `active=false`（或实现约定的禁用状态），并记录响应时间、请求 ID 和重试结果。
+3. **资源层**：用原用户的旧会话和 Access Token 访问真实应用，确认结果符合设计的撤销窗口。仅验证 JWT 签名和 `exp` 的资源服务，可能在 Token 到期前仍接受旧 Token；这不是 SCIM PATCH 失败，而是 Token 撤销策略未覆盖该窗口。
+
+如果 `patch.supported=false`，不要强行发送上述请求：暂停自动同步，改用服务端支持的 `PUT`、专用禁用接口或人工补偿，并把该差异写入集成契约。规范依据：[RFC 7644 §3.5.2](https://www.rfc-editor.org/rfc/rfc7644#section-3.5.2)。
+
 ### SCIM 属性映射（连接 HR 系统到 Keycloak）
 
 HR 系统中的字段需要映射到 SCIM User Schema。以下是一个常见映射表：
