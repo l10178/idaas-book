@@ -147,7 +147,7 @@ graph LR
 
 **优点**：
 - 用户自主权——身份数据由用户控制，不是服务商控制
-- 无单点故障——没有中心 IdP 可以宕掉
+- 降低对单一 IdP 在线登录的依赖——但钱包、状态服务、信任注册表或验证方仍可能成为新的故障点
 - 隐私保护——选择性披露（只出示"已满 18 岁"，不出示出生日期）
 
 **缺点**：
@@ -161,7 +161,7 @@ graph LR
 - 供应链成员出示组织资质，平台不必复制整套员工目录；
 - 员工出示培训或技能凭证，外部服务只接收完成状态而不是内部人事属性。
 
-图中的“信任层”不是万能的可用性保证：验证方仍要决定信任哪些 Issuer、如何获取公钥、如何检查凭证状态，以及注册表不可用时是否拒绝。DID Core 只定义 DID 的解析和验证数据模型，VC Data Model 也不替应用决定业务授权；这些边界应写进故障和撤销演练。参见 [W3C DID Core](https://www.w3.org/TR/did-core/) 与 [W3C Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model-2.0/)。
+图中的“信任层”不是万能的可用性保证：验证方仍要决定信任哪些 Issuer、如何获取公钥、如何检查凭证状态，以及注册表不可用时是否拒绝。DID Core 只定义 DID 的解析和验证数据模型，VC Data Model 也不替应用决定业务授权；这些边界应写进故障和撤销演练。两份规范分别是 W3C Recommendation（DID Core，2022-07-19）和 W3C Recommendation（VC Data Model 2.0，2025-05-15），但规范状态不等于钱包、撤销服务或企业治理已经互操作。参见 [W3C DID Core](https://www.w3.org/TR/did-core/) 与 [W3C Verifiable Credentials Data Model 2.0](https://www.w3.org/TR/vc-data-model-2.0/)。
 
 ## 现代 IAM 架构模式
 
@@ -318,8 +318,8 @@ graph TD
     Q4 -->|不是 SaaS| Hybrid[混合架构<br/>中心化 + 联邦]
 
     Fed --> FQ{组织数量?}
-    FQ -->|< 5 个| Mesh[网状联邦]
-    FQ -->|> 5 个| Hub[Hub-and-Spoke<br/>中心 Hub IdP]
+    FQ -->|关系少且可逐一运维| Mesh[网状联邦]
+    FQ -->|伙伴多或需统一治理| Hub[Hub-and-Spoke<br/>中心 Hub IdP]
 
     style Central fill:#9f9,stroke:#333
     style HA fill:#9f9,stroke:#333
@@ -426,7 +426,7 @@ bin/kc.sh start --cache=ispn \
 
 ### Q3: 从传统 AD/LDAP 架构迁移到现代 IAM 架构，最关键的三步是什么？
 
-1. **先同步再切换**：用 SCIM 或同步工具把 AD 用户同步到新 IAM，保持双写一段时间
+1. **先接入再切换**：用受支持的目录同步或用户联邦方式把 AD 用户接入新 IAM。不要默认对 AD 和新 IAM 双写；先确定唯一身份权威源、冲突处理规则和离职回收路径，再用测试租户验证同步延迟与失败重试
 2. **按应用分批迁移**：不是一次性切所有应用，而是按"影响面小→大"的顺序，每切一个应用验证一个
 3. **保留回退路径**：在新 IAM 中配置 AD 作为 User Federation 源（Keycloak 支持），切换失败时能快速退回 AD 直连认证
 
