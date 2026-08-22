@@ -2,7 +2,7 @@
 title: "IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book"
 description: "IAM 网关 oauth2-proxy 集成 Keycloak 的 12 个高频错误排错：CSRF Cookie、expected audience、redirect loop、invalid_token 与 Nginx 401。"
 date: 2026-07-13T00:00:00+08:00
-lastmod: 2026-08-14T21:00:00+08:00
+lastmod: 2026-08-22T21:02:00+08:00
 draft: false
 weight: 3
 menu:
@@ -121,7 +121,9 @@ args:
 - --trusted-proxy-ip=10.42.0.0/16
 ```
 
-`--reverse-proxy=true` 只表示按反向代理场景处理请求；它不应被当成“任意客户端都可以提交可信转发头”。oauth2-proxy 当前文档说明，未设置 `--trusted-proxy-ip` 时出于兼容性会信任所有来源，这允许能够直连 oauth2-proxy 的客户端伪造 `X-Forwarded-*`。生产环境应限制 NetworkPolicy/Service 暴露面，并配置实际代理的 IP/CIDR；如果代理地址是动态变化的，优先固定出口或用网络层阻断直连，而不是放大信任范围。
+`--reverse-proxy=true` 只表示按反向代理场景处理请求；它不应被当成“任意客户端都可以提交可信转发头”。oauth2-proxy 当前配置文档说明，未设置 `--trusted-proxy-ip` 时出于兼容性会信任所有来源，这允许能够直连 oauth2-proxy 的客户端伪造 `X-Forwarded-*`。这不只是 redirect_uri 显示错误：公开 issue [#3506](https://github.com/oauth2-proxy/oauth2-proxy/issues/3506) 描述了在 v7.15.3 及更早版本中，伪造 `X-Forwarded-Uri` 可能影响 `skip_auth_routes` 的匹配；相关修复 PR [#3509](https://github.com/oauth2-proxy/oauth2-proxy/pull/3509) 截至本页更新仍未合入。因此，升级版本不能替代收紧信任边界。
+
+生产环境应限制 NetworkPolicy/Service 暴露面，并配置实际代理的 IP/CIDR；如果代理地址是动态变化的，优先固定出口或用网络层阻断直连，而不是放大信任范围。升级或修改信任配置后，必须用“直连 oauth2-proxy + 伪造 `X-Forwarded-Uri`”的请求验证未认证请求仍返回 401；不要只验证正常入口能登录。
 
 如果同时启用 `--trusted-ip` 作为认证绕过白名单，必须单独审查 `--real-client-ip-header` 的来源链：客户端可直接到达 oauth2-proxy 时，不应信任它提交的 `X-Forwarded-For`。oauth2-proxy 当前仍有关于沿代理链解析该 Header 的安全改进 PR（[#3478](https://github.com/oauth2-proxy/oauth2-proxy/pull/3478)，截至本页更新尚未合入）；在确认所用版本已包含修复前，优先不要用基于转发头的 `--trusted-ip` 绕过认证，或在网络层保证只有受控代理能访问该服务。
 
