@@ -116,7 +116,7 @@ graph TB
 
 ### 去中心化 IAM 架构（DID/VC）
 
-用户自己持有身份凭证（Verifiable Credential），不依赖任何中心化的身份提供者。这是 IAM 的未来方向，依赖 W3C DID 标准和可验证凭证（VC）技术。
+用户把可验证凭证（Verifiable Credential，VC）保存于自己的钱包，在出示时由验证方校验签名、Issuer 信任关系和凭证状态。它可以减少对中心化 IdP 在线登录的依赖，但不等于“没有中心化组件”：签发方、DID 解析服务、状态服务和企业信任治理仍可能是中心化的。DID/VC 是一组身份数据与验证模型，不是可以直接替换企业 IAM 的部署产品。
 
 ```mermaid
 graph LR
