@@ -70,6 +70,8 @@ oauth2-proxy[1] <timestamp> <request> 403 csrf cookie not found
 
 还有一个容易被误判成“Cookie 随机丢失”的分支：同一个浏览器同时发起多个未认证请求。默认情况下，oauth2-proxy 不为每个请求创建独立的 CSRF Cookie；多个标签页、前端并行加载资源，或用户连续点击登录，都可能让较早的 `state` 与回调不再对应。若日志同时出现 `csrf cookie not found`、`state mismatch`，并且响应头已经成功写入 CSRF Cookie，优先检查这个并发场景，而不是先扩大 Cookie Domain。
 
+先区分三个经常混用的词：**跨域（origin）不等于跨站（site），也不等于跨子域 Cookie**。`app.example.com` 与 `auth.example.com` 是不同 origin，但在同一注册域和同一 scheme 下通常属于同一 site；`SameSite` 主要控制 Cookie 是否随跨 site 请求发送，不能代替 CORS 配置。反过来，如果登录入口和应用使用不同注册域，或 scheme 不同，不能因为两者“都是 HTTPS”就假设 `SameSite=Lax` 会放行。判断时同时记录浏览器实际的 `Set-Cookie`、请求的 `Origin/Referer`、Cookie 的 `Domain/Path/SameSite/Secure`，不要只看地址栏上的主机名。可参阅 [MDN：Set-Cookie 的 SameSite 语义](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#samesitesamesite-value)。
+
 这里的 `state` 不是“登录成功标记”，而是把授权请求和回调绑定起来的不透明值。RFC 6749 §4.1.1 要求客户端在授权请求中携带它，§4.1.2 要求授权服务器在回调中原样返回；§10.12 建议用它防御 CSRF。因此，回调找不到对应 Cookie 时不能靠关闭校验解决。oauth2-proxy 的 [Issue #3258](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258) 记录了多标签页复现；另一个 Traefik `errors` 中间件案例 [Issue #3463](https://github.com/oauth2-proxy/oauth2-proxy/issues/3463) 已关闭，但它只说明该具体版本和拓扑的行为，不能替代对当前部署的验证。
 
 ### 多标签页或并行请求：启用按请求创建 CSRF Cookie
