@@ -2,7 +2,7 @@
 title: "IAM 认证协议选型：OAuth、OIDC、SAML、LDAP、SCIM | IDaaS Book"
 description: "企业 IAM 认证协议选型指南：OAuth 2.0、OIDC、SAML、LDAP、SCIM 五大协议功能对比、典型场景选型推荐与避坑指南"
 date: 2026-07-10T00:00:00+08:00
-lastmod: 2026-07-28T23:01:00+08:00
+lastmod: 2026-08-24T21:10:00+08:00
 draft: false
 weight: 57
 menu:
@@ -285,9 +285,9 @@ LDAP 的默认安全模型假设它在内网中运行。把 LDAP 暴露到互联
 
 ### Q1：OAuth 2.1 还在草案阶段，现有系统必须升级吗？
 
-截至本页更新时，OAuth 2.1 仍是 IETF Internet-Draft，不是已发布的 RFC；不要把草案状态写成“已正式发布的协议版本”。现有 OAuth 2.0 系统也不需要为了版本号整体重写，但应按已发布的 [OAuth 2.0 Security BCP（RFC 9700）](https://www.rfc-editor.org/rfc/rfc9700)逐项整改：授权码流程使用 PKCE，不使用 Implicit Grant 和 ROPC，并精确校验 `redirect_uri`。`iss` 参数则应结合 RFC 9207 的 Mix-Up Attack 防护要求评估。
+截至 2026-08-24，OAuth 2.1 仍是 IETF Internet-Draft（当前页面列出的版本为 `draft-ietf-oauth-v2-1-15`，2026-03-02 更新），不是已发布的 RFC；不要把草案状态写成“已正式发布的协议版本”。现有 OAuth 2.0 系统也不需要为了版本号整体重写，但应按已发布的 [OAuth 2.0 Security BCP（RFC 9700）](https://www.rfc-editor.org/rfc/rfc9700)逐项整改：授权码流程使用 PKCE，不使用 Implicit Grant 和 ROPC，并精确校验 `redirect_uri`。`iss` 参数则应结合 RFC 9207 的 Mix-Up Attack 防护要求评估。
 
-这些安全改动可以在现有 OAuth 2.0 基础设施上分阶段实施。迁移时先做负向测试和小流量切换，不要用“支持 OAuth 2.1”替代具体验收项。详情见 [OAuth 2.1 变化详解]({{< relref "../protocols/oauth2.1-changes.md" >}})。
+这些安全改动可以在现有 OAuth 2.0 基础设施上分阶段实施。迁移时先做负向测试和小流量切换，不要用“支持 OAuth 2.1”替代具体验收项。草案状态和版本应以 [IETF Datatracker 的 OAuth 2.1 页面](https://datatracker.ietf.org/doc/draft-ietf-oauth-v2-1/)为准；详情见 [OAuth 2.1 变化详解]({{< relref "../protocols/oauth2.1-changes.md" >}})。
 
 ### Q2: 中小企业只有 50 个员工，需要 IAM 协议吗？
 
