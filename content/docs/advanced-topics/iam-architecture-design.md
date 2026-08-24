@@ -215,7 +215,27 @@ graph TB
 | 共享实例 + 逻辑隔离 | 同一实例，通过 Realm/Organization 隔离 | ★★★★☆ | 中 | Keycloak Realm、Zitadel Organization |
 | 共享实例 + 字段隔离 | 所有租户在同一张表，tenant_id 区分 | ★★★☆☆ | 低 | 自研方案 |
 
-> **先校正一个容易误读的词：Realm 不是“自动完成 SaaS 租户隔离”。** 在 Keycloak 中，Realm 负责隔离用户、客户端、角色、组和认证配置；但应用自己的业务数据、租户路由、资源授权和运维人员的权限边界，仍需要由业务系统和部署层验证。把一个 Realm 当成租户边界，不能替代资源服务器的 `iss`/`aud`/租户声明校验。
+> **先校正一个容易误读的词：Realm 不是“自动完成 SaaS 租户隔离”。** 在 Keycloak 中，Realm 负责隔离用户、客户端、角色、组和认证配置；但应用自己的业务数据、租户路由、资源授权和运维人员的权限边界，仍需要由业务系统和部署层验证。把一个 Realm 当成租户边界，不能替代资源服务器的 `iss`/`aud`/租户声明校验。Keycloak 官方文档对 Realm 的边界说明见 [Server Administration Guide：Realms](https://www.keycloak.org/docs/latest/server_admin/index.html#_realms)。
+
+**多租户隔离的最小验收**：不要只登录两个租户的首页。用租户 A 和租户 B 各创建一个测试用户、一个客户端和一条业务资源，然后分别验证四个拒绝断言：
+
+```bash
+# 仅示意：两个 Realm 的 issuer 必须是明确且不同的配置值
+A_ISSUER='https://idp.example.com/realms/tenant-a'
+B_ISSUER='https://idp.example.com/realms/tenant-b'
+
+for issuer in "$A_ISSUER" "$B_ISSUER"; do
+  curl --fail-with-body -sS "$issuer/.well-known/openid-configuration" \\
+    | jq -e --arg issuer "$issuer" '.issuer == $issuer'
+done
+```
+
+1. A 的 Token 访问 B 的业务资源应被拒绝，而不是只在前端隐藏菜单；
+2. A 的 Token 调用 B 的管理 API 应被拒绝；
+3. A 的审计查询不能返回 B 的事件；
+4. 删除或禁用 A 的测试用户后，不能影响 B 的用户、客户端和会话。
+
+这些断言分别覆盖 `iss`、`aud`/权限、审计过滤和生命周期边界。Discovery 检查只能证明 issuer 配置自洽，不能证明业务授权隔离；还必须在资源服务和管理 API 侧记录实际的 403/拒绝日志。若要求独立密钥、备份或故障域，应把“独立 Realm”与“独立实例”分开评估，而不是从表格里的星级直接推导结论。
 
 **选择建议**：
 - 先把租户隔离要求写成可验收的边界：配置、用户、会话、密钥、审计和管理员权限分别是否隔离。
