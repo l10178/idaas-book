@@ -161,7 +161,7 @@ spec:
     ports:
     - containerPort: 8080
   - name: oauth2-proxy
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.4
     args:
     - --http-address=0.0.0.0:4180
     - --upstream=http://localhost:8080
@@ -279,9 +279,9 @@ Cookie 内容用 AES 加密，密钥通过 `--cookie-secret` 传入。生产环�
 
 `--set-xauthrequest` 的职责只是生成认证响应头；`--pass-access-token` 会额外产生 `X-Auth-Request-Access-Token`。如果后端不需要 Token，就不要打开透传，减少凭据传播面。后端仍必须只接受来自受信任 Ingress 的请求，并独立验证自己消费的 Token 的 `iss`、`aud`、签名、过期时间和权限。
 
-## 版本演进与安全更新（v7.9 → v7.15.3）
+## 版本演进与安全更新（v7.9 → v7.15.4）
 
-oauth2-proxy 从 v7.8.2（2025-03）到 v7.15.3（2026-06）经历了多个版本，包含若干安全审计修复和配置行为变更。下表按版本列出影响生产部署的关键变更，升级前应逐条核对。
+oauth2-proxy 从 v7.8.2（2025-03）到 v7.15.4（2026-08）经历了多个版本，包含若干安全审计修复和配置行为变更。下表按版本列出影响生产部署的关键变更，升级前应逐条核对。
 
 | 版本 | 发布日期 | 关键变更 | 生产影响 |
 |------|----------|----------|----------|
@@ -293,6 +293,7 @@ oauth2-proxy 从 v7.8.2（2025-03）到 v7.15.3（2026-06）经历了多个版�
 | v7.15.0 | 2026-03 | 支持 OIDC JWT signing algorithm 配置；CSRF Cookie 使用 `CSRFExpire` 而非 `Expire` 校验；新增 `--config-test` 标志；支持从 ID Token/UserInfo 注入任意 claim 到 Session | `cookie-csrf-expire` 配置需检查；`--config-test` 可用于 CI/CD 配置预检 |
 | v7.15.2 | 2026-04 | **安全审计修复**：health check User-Agent 认证绕过（Critical）、`X-Forwarded-Uri` 伪造认证绕过（Critical）、fragment 路由评估（High）、malformed multi-@ email 验证绕过（Moderate）；新增 `--trusted-proxy-ip` 参数 | **必须升级**——旧版本存在多个认证绕过漏洞；`--trusted-proxy-ip` 是新的生产加固必选项 |
 | v7.15.3 | 2026-06 | Go 1.26 升级、依赖更新、多个 CVE 修复 | 安全补丁版本 |
+| v7.15.4 | 2026-08 | 升级 Go 与依赖，并修复多个已公开 CVE | 应优先替换 v7.15.3；先在预发验证 Provider、Cookie 和代理头行为 |
 
 ### `--trusted-proxy-ip`：转发头信任边界
 
@@ -348,7 +349,7 @@ oauth2-proxy --config=/etc/oauth2-proxy.cfg --config-test && echo "config OK"
 - [ ] 启用 `--reverse-proxy` 时已设置 `--trusted-proxy-ip` 为受控代理 IP/CIDR（v7.15.2+ 生产必选项）。
 - [ ] `/oauth2` 路径已路由到 oauth2-proxy（不是只配了 `/oauth2/auth`）。
 - [ ] 若启用 `--signature-key`，已按实际 GAP-Signature 协议完成后端验签联调；没有该需求时不启用。
-- [ ] 镜像版本不低于 v7.15.2（v7.15.2 修复多个 Critical 认证绕过漏洞）。
+- [ ] 镜像版本不低于 v7.15.4（截至 2026-08-24 的最新 release；v7.15.2 及后续版本修复了多个认证绕过/安全问题）。
 - [ ] 若使用 Alpha Config，Header 注入配置已迁移到 v7.14.0+ 的嵌套格式。
 - [ ] 回滚方案：删除 Ingress 上的 `auth-url`/`auth-signin` 注解或 Traefik ForwardAuth middleware 引用，保留 oauth2-proxy 实例以便事后复盘。
 
@@ -366,14 +367,15 @@ oauth2-proxy --config=/etc/oauth2-proxy.cfg --config-test && echo "config OK"
 
 不必须。默认 Cookie Session Store 下，多副本共享同一个 `--cookie-secret` 即可读取会话。只有 Cookie 过大、需要服务端集中撤销或不希望 Token 留在 Cookie 中时，再引入 Redis；引入后要增加 TLS、凭据、容量、监控、故障和回滚验证。
 
-### 升级到 v7.15.2+ 后必须做什么？
+### 升级到 v7.15.4 后必须做什么？
 
-两件事：设置 `--trusted-proxy-ip` 限制可发送 `X-Forwarded-*` 头的代理来源，审查所有 `--skip-auth-route` 规则确认不依赖查询参数匹配。v7.15.2 修复了多个 Critical 认证绕过漏洞（health check User-Agent、`X-Forwarded-Uri` 伪造），旧版本在生产环境中存在实际攻击面。
+三件事：设置 `--trusted-proxy-ip` 限制可发送 `X-Forwarded-*` 头的代理来源，审查所有 `--skip-auth-route` 规则确认不依赖查询参数匹配，并在预发验证 v7.15.4 的 OIDC 登录、会话刷新和回调。v7.15.2 修复了多个 Critical 认证绕过漏洞；v7.15.4 的发行说明又列出多项依赖与安全修复，因此不应继续把 v7.15.3 作为新部署基线。
 
 ## 参考与延伸阅读
 
 - oauth2-proxy 配置总览（配置优先级、Cookie Secret 生成、`config-test`）：<https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/>
 - oauth2-proxy v7.15.2 安全公告（认证绕过修复与 `--trusted-proxy-ip` 引入）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.2>
+- oauth2-proxy v7.15.4 发行说明（依赖升级与安全修复）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.4>
 - oauth2-proxy v7.15.0 发行说明（CSRF Cookie、`--config-test`、OIDC signing algorithm）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.15.0>
 - oauth2-proxy v7.11.0 发行说明（`skip_auth_routes` 路径匹配修复）：<https://github.com/oauth2-proxy/oauth2-proxy/releases/tag/v7.11.0>
 - oauth2-proxy 源码配置定义（`signature-key`）：<https://github.com/oauth2-proxy/oauth2-proxy/blob/master/pkg/apis/options/options.go>
