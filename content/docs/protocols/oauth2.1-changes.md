@@ -2,7 +2,7 @@
 title: "OAuth 2.1 相比 OAuth 2.0 的变化 — IAM 协议升级与迁移指南 | IDaaS Book"
 description: "OAuth 2.1 安全最佳实践整合与 IAM 协议升级指南：PKCE 强制、Implicit 与 ROPC 废弃、Refresh Token 发件人约束、DPoP 及从 OAuth 2.0 到 2.1 的 IAM 迁移对照表"
 date: 2026-07-08T00:00:00+08:00
-lastmod: 2026-07-29T22:01:00+08:00
+lastmod: 2026-08-24T21:10:00+08:00
 draft: false
 weight: 24
 menu:
@@ -16,6 +16,8 @@ seo:
 ---
 
 ## 为什么需要 OAuth 2.1
+
+> **状态核对（2026-08-24）**：OAuth 2.1 仍是 IETF Internet-Draft，不是已发布的 RFC；IETF Datatracker 当前列出 `draft-ietf-oauth-v2-1-15`（2026-03-02 更新）。因此，本文把“OAuth 2.1 的草案方向”和“已经可以执行的 RFC 9700 安全要求”分开描述。生产整改不应等待版本号落定，也不应把实现宣传成“已通过 OAuth 2.1 认证”。
 
 OAuth 2.0（RFC 6749）发布于 2012 年。在接下来近十年里，安全研究者发现了若干严重攻击面——Redirect URI 劫持、授权码拦截、CSRF、Mix-Up Attack、Token 泄露重放。社区通过一系列补充 RFC 逐个修补：
 
