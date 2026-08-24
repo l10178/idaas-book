@@ -62,7 +62,7 @@ toc: true
 # docker-compose.yaml
 services:
   oauth2-proxy:
-    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.3
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.15.4
     command:
       - --provider=oidc
       - --oidc-issuer-url=https://idp.example.com/realms/myrealm
