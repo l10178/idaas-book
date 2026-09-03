@@ -77,8 +77,11 @@ location / {
 # 在 Keycloak 容器内检查它看到的头
 # 如果 Keycloak 有 admin 权限，检查 Server Info → 查看前端 URL
 # 或者直接 curl 测试：
-curl -v https://keycloak.example.com/auth/realms/myrealm/protocol/openid-connect/auth \
-  -d "client_id=myclient&redirect_uri=https://myapp.example.com/callback&response_type=code&scope=openid"
+curl -G -v https://keycloak.example.com/realms/myrealm/protocol/openid-connect/auth \
+--data-urlencode "client_id=myclient" \
+--data-urlencode "redirect_uri=https://myapp.example.com/callback" \
+--data-urlencode "response_type=code" \
+--data-urlencode "scope=openid"
 # 观察 Location 头中的 redirect_uri 是否使用 https:// 和正确域名
 # 仅用于诊断；不要把真实凭据或 Token 放进命令行/日志。
 ```
@@ -229,7 +232,9 @@ oauth2-proxy 的 Keycloak OIDC Provider 会校验 `aud`（audience），并要�
 {"error": "invalid_token", "error_description": "expected audience \"oauth2-proxy\" got [\"account\"]"}
 ```
 
-**解决**：在 Keycloak 客户端的 Mappers 中添加 Audience mapper，选择目标 client 并勾选 "Add to ID token"。
+**解决**：在 Keycloak 客户端的 dedicated client scope 中添加 Audience mapper，把 `Included Client Audience` 设为 oauth2-proxy 的 client ID。至少勾选 **Add to ID token**；如果 oauth2-proxy 配置了 `--pass-access-token`，或后端还会校验它转发的 Access Token，同时勾选 **Add to access token**。保存后必须重新走一遍登录流程，旧 Cookie/Token 不会被 mapper 修复。
+
+不要为了消除 401 而关闭 audience 校验或把任意 audience 加入白名单：`aud` 表示 Token 的预期接收方，扩大允许列表会把发给其他应用的 Token 引入当前网关。oauth2-proxy 官方 Keycloak OIDC 文档明确要求 audience mapper，并说明其校验 `--client-id` 或 `--oidc-extra-audience`；实际部署还应分别检查 ID Token 和 Access Token 的用途。
 
 ### Issuer URL 不一致
 
@@ -244,6 +249,7 @@ curl -s https://keycloak.example.com/realms/myrealm/.well-known/openid-configura
 # 正确: --oidc-issuer-url=https://keycloak.example.com/realms/myrealm
 # 错误: --oidc-issuer-url=https://keycloak.example.com/realms/myrealm/
 # 错误: --oidc-issuer-url=https://keycloak.example.com （漏了 /realms/myrealm）
+# Keycloak 17+ 默认使用 /realms/<realm>；旧版常见 /auth/realms/<realm>，不要跨版本照搬。
 ```
 
 ### Token 时间偏差 (nbf/exp)
@@ -344,6 +350,7 @@ kubectl rollout undo deployment/oauth2-proxy -n auth
 - [Keycloak 官方文档 — Configuring the hostname](https://www.keycloak.org/server/hostname)
 - [Keycloak 官方文档：Reverse proxy headers](https://www.keycloak.org/server/reverseproxy)：代理头格式、覆盖和来源校验
 - [oauth2-proxy 官方配置参考](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)：`redirect-url`、`cookie-samesite` 与 `set-xauthrequest`
+- [oauth2-proxy 官方 Keycloak OIDC 配置](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/)：issuer URL、Audience mapper、ID/Access Token claim 与角色/组授权
 - [ingress-nginx 外部认证示例](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)：`auth-url` 与 `auth-signin` 的 Ingress 关系
 - [Keycloak GitHub Issue #42997](https://github.com/keycloak/keycloak/issues/42997)：反向代理下登录重定向循环的实际案例
 - [oauth2-proxy GitHub Issue #3258](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258)：并发回调与 CSRF 校验问题
