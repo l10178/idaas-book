@@ -435,6 +435,20 @@ args:
 - --scope=openid   # 只要 openid，不加 email profile（如果不需要的话）
 ```
 
+### auth_request 模式下的一个隐藏问题：Set-Cookie 被截断
+
+如果 oauth2-proxy 使用 Cookie Session Store，并且启用了 `--cookie-refresh`，`/oauth2/auth` 在刷新会话时可能返回新的 `Set-Cookie`。ingress-nginx 的 `auth_request` 默认只把认证结果带回上游，不能自动把所有 `Set-Cookie` 响应头转发给浏览器；Cookie 被拆成多个分片时，只转发第一片也会造成下一次请求认证失败。
+
+这和“Cookie 太大”不是同一个根因：前者是浏览器拒绝或无法保存，后者是认证子请求的响应头没有完整回传。
+
+**处理顺序：**
+
+1. 先在浏览器 Network 面板确认 `/oauth2/auth` 或业务请求的响应是否出现 `Set-Cookie`，并检查是否有 `_oauth2_proxy_1` 等分片。
+2. 如果只有第一片，按 ingress-nginx 官方 `auth_request` 示例显式转发刷新 Cookie 的所有分片；不要只添加一个 `add_header Set-Cookie` 就认为已修复。
+3. 如果 Cookie 长期接近浏览器限制，改用 Redis Session Store 或精简 claims，并把 Redis 的可用性、备份和凭据轮换纳入变更范围。
+
+不要用增大 Nginx buffer 来掩盖 Cookie 分片没有转发的问题；buffer 解决的是代理处理大小，不会替你复制丢失的 `Set-Cookie` 头。
+
 ---
 
 ## 7. 401 已登录但认证被拒

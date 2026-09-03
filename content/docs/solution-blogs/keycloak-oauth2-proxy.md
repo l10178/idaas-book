@@ -567,5 +567,6 @@ kcadm.sh get clients/<client-id> -r <realm> > client-backup.json
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 官方配置总览](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
 - [ingress-nginx 外部认证示例：auth-url 与 auth-signin](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
+- [oauth2-proxy Integration：Nginx auth_request 与 Set-Cookie 分片转发](https://oauth2-proxy.github.io/oauth2-proxy/configuration/integration)
 - [oauth2-proxy Issue #2808：audience 缺失时的错误处理](https://github.com/oauth2-proxy/oauth2-proxy/issues/2808)
 - [Keycloak 反向代理配置](https://www.keycloak.org/server/reverseproxy)
