@@ -410,7 +410,7 @@ curl -sS -o /dev/null -w "%{http_code}" https://grafana.example.com/oauth2/callb
 | oauth2-proxy 日志报 `invalid_token: token contains an invalid number of segments` | ID Token 格式异常或 issuer URL 不匹配 | 确认 `--oidc-issuer-url` 末尾不带斜杠，且与 Keycloak `.well-known/openid-configuration` 返回的 issuer 完全一致 |
 | 登录成功但后端收不到 X-Auth-Request-* 头 | ForwardAuth 中间件未配置 `authResponseHeaders` | 检查 Middleware CRD 的 `spec.forwardAuth.authResponseHeaders` 列表是否包含需要的 header |
 | `/oauth2/callback` 返回 404 | IngressRoute 未正确路由 callback 路径到 oauth2-proxy | 确保有一条 IngressRoute 规则将 `oauth2.example.com`（或应用域名下的 `/oauth2/*`）路由到 oauth2-proxy Service，且该路由**不经过** ForwardAuth 中间件 |
-| 多个应用间频繁要求重新登录 | Cookie Domain 未覆盖全部应用域名 | `--cookie-domain=.example.com` 必须是 `.example.com`（带前导点号），确保所有 `*.example.com` 子域共享 Cookie |
+| 多个应用间频繁要求重新登录 | 未显式设置覆盖全部应用的父域，或 Cookie 的 Path/Secure/SameSite 被错误覆盖 | 设置 `--cookie-domain=example.com`（`.example.com` 也可以；RFC 6265 会忽略前导点号），确保所有 `*.example.com` 子域匹配；不要把“带点号”当成关键条件 |
 
 ### 诊断命令速查
 

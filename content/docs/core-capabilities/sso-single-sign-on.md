@@ -276,7 +276,7 @@ SSO 是 IAM 体系中最直观的入口功能，也是最核心的能力之一�
 | 不同用户组/角色要求不同 | 各自独立（或用 `--allowed-group` 分流） | 避免权限混淆 |
 | 都在 K8s 集群内、同一 Keycloak Realm | 可共用 | 降低部署复杂度 |
 
-共用时的注意事项：`--cookie-domain` 设置为 `.example.com`（前面带点号），`--cookie-secret` 保持一致。具体配置参考 [Keycloak + oauth2-proxy 集成实战]({{< relref "../solution-blogs/keycloak-oauth2-proxy" >}})。
+共用时的注意事项：显式设置 `--cookie-domain=example.com`（写成 `.example.com` 也可以；RFC 6265 会忽略前导点号），让 Cookie 覆盖所有应用；`--cookie-secret` 保持一致。省略 `--cookie-domain` 才会得到只对当前主机生效的 host-only Cookie。具体配置参考 [Keycloak + oauth2-proxy 集成实战]({{< relref "../solution-blogs/keycloak-oauth2-proxy" >}})。
 
 ### Q5：SSO 和零信任 IAM 矛盾吗？
 
