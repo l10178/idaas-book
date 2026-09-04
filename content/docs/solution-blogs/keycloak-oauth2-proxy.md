@@ -425,9 +425,9 @@ curl -sS http://oauth2-proxy.auth.svc.cluster.local:4180/ping
 curl -sS https://keycloak.example.com/realms/myrealm/.well-known/openid-configuration | jq .issuer
 # 预期："https://keycloak.example.com/realms/myrealm"
 
-# 3. 确认未经认证请求被拦截（返回 302 重定向到 Keycloak 登录）
+# 3. 确认未经认证请求被拦截
 curl -sS -o /dev/null -w "%{http_code}" https://myapp.example.com/
-# 预期：302
+# 浏览器页面通常应为 302（由 Ingress 的 auth-signin 处理）；API 路径应保留 401/403
 
 # 4. 端到端测试：浏览器打开 https://myapp.example.com/
 # 预期：跳转到 Keycloak 登录页 → 登录 → 跳回应用
@@ -438,6 +438,24 @@ curl -sS -o /dev/null -w "%{http_code}" https://myapp.example.com/
 # X-Auth-Request-Email: <user@example.com>
 # X-Auth-Request-Groups: <groups>
 ```
+
+### 浏览器路由和 API 路由不要共用重定向语义
+
+`/oauth2/auth` 是认证判定端点，不是登录页面：oauth2-proxy 官方 Nginx 集成文档规定，认证成功返回 2xx，未认证返回 401 或 403。浏览器页面可以由 Ingress 把 401 转成 302，跳转到 `/oauth2/start`；API 和机器客户端则应保留 401/403，否则客户端会收到 HTML 登录流程而不是可处理的认证错误。
+
+因此，验证命令不能笼统地把所有未登录请求都写成“预期 302”：
+
+```bash
+# 页面入口：由 Ingress 的 auth-signin 负责重定向，检查 Location 而不是只看状态码
+curl -sS -D - -o /dev/null https://myapp.example.com/ \
+  | grep -Ei '^(HTTP/|location:)'
+
+# API 入口：不要把认证失败改写成 HTML 登录跳转
+curl -sS -o /dev/null -w '%{http_code}\n' \
+  https://myapp.example.com/api/health
+```
+
+如果页面请求只得到 401，先检查 `auth-signin` 是否指向当前域名以及 `/oauth2/*` 是否有不带 `auth-url` 的独立路由；如果 API 被 302 到登录页，先拆分 Ingress/location 的错误处理。不要用 `error_page 401 =403 /oauth2/sign_in` 代替标准 302：这会把响应状态变成 403，浏览器不会按正常重定向自动跟随。该边界也解释了为什么把 `auth-url` 当成“登录接口”会让排错方向跑偏。
 
 ## 常见错误排错表
 
@@ -567,6 +585,6 @@ kcadm.sh get clients/<client-id> -r <realm> > client-backup.json
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 官方配置总览](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
 - [ingress-nginx 外部认证示例：auth-url 与 auth-signin](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
-- [oauth2-proxy Integration：Nginx auth_request 与 Set-Cookie 分片转发](https://oauth2-proxy.github.io/oauth2-proxy/configuration/integration)
+- [oauth2-proxy Integration：Nginx auth_request 与 Set-Cookie 分片转发](https://oauth2-proxy.github.io/oauth2-proxy/configuration/integrations/nginx)
 - [oauth2-proxy Issue #2808：audience 缺失时的错误处理](https://github.com/oauth2-proxy/oauth2-proxy/issues/2808)
 - [Keycloak 反向代理配置](https://www.keycloak.org/server/reverseproxy)
