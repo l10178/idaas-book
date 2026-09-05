@@ -94,7 +94,8 @@ args:
 kubectl logs -n auth deploy/oauth2-proxy --tail=20 | grep csrf
 
 # 2. 用浏览器 DevTools 看 Cookie 是否被写入
-# Application → Cookies → 检查 _oauth2_proxy_csrf 是否存在
+# Application → Cookies → 检查以 oauth2-proxy 为前缀的 CSRF Cookie 是否存在
+# 默认名称会带 state 相关的后缀；启用 --cookie-csrf-per-request=true 后每次请求的名称也不同
 # 如果 CSRF Cookie 缺失，再看 Console 是否有 SameSite/Secure 警告
 
 # 3. 检查 oauth2-proxy 启动参数中的 Cookie 配置
@@ -135,10 +136,10 @@ args:
 
 1. 清除浏览器所有 Cookie（DevTools → Application → Clear site data）
 2. 重新访问应用 URL
-3. 观察 Network 面板：`/oauth2/start` 的响应头应有 `Set-Cookie: _oauth2_proxy_csrf=...`
+3. 观察 Network 面板：`/oauth2/start` 的响应头应有以 `_oauth2_proxy` 开头的 CSRF `Set-Cookie`；不要只按固定的 `_oauth2_proxy_csrf` 名称搜索
 4. 登录完成后不应再出现 403
 
-如果问题只在并行登录或多个标签页复现，可以显式为每个授权请求启用独立 CSRF Cookie：
+如果问题只在并行登录或多个标签页复现，可以显式为每个授权请求启用独立 CSRF Cookie。注意：该开关改变的是 Cookie 名称和数量，不是把同一个固定 Cookie 覆盖得更快：
 
 ```yaml
 args:
@@ -148,7 +149,7 @@ args:
 - --cookie-csrf-per-request-limit=10
 ```
 
-`--cookie-csrf-per-request-limit` 只有在 `--cookie-csrf-per-request=true` 时生效；它限制 oauth2-proxy 保留的并行 CSRF Cookie 数量，超出后删除最早的 Cookie。先不设置上限通常更容易验证根因，但生产环境应结合浏览器并发行为和代理 Header 大小限制决定是否加上限。改动后清理旧 Cookie，再用两个标签页同时访问受保护 URL，确认两次回调都能完成；若出现 431，回到上限、Cookie Domain 和代理 Header 限制一起检查。
+`--cookie-csrf-per-request-limit` 只有在 `--cookie-csrf-per-request=true` 时生效；它限制 oauth2-proxy 保留的并行 CSRF Cookie 数量，超出后删除最早的 Cookie。官方配置文档将默认值列为无限制，并明确说明该上限用于避免 Cookie 数量增长导致 `431 Request Header Fields Too Large`。先不设置上限通常更容易验证根因，但生产环境应结合浏览器并发行为和代理 Header 大小限制决定是否加上限。改动后清理旧 Cookie，再用两个标签页同时访问受保护 URL，确认两次回调都能完成；若出现 431，回到上限、Cookie Domain 和代理 Header 限制一起检查。
 
 ### Traefik `errors` 中间件造成的并发 CSRF 覆盖
 
