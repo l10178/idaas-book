@@ -2,7 +2,7 @@
 title: "IAM 网关：Keycloak + oauth2-proxy 集成指南 | IDaaS Book"
 description: "IAM 网关用 Keycloak 与 oauth2-proxy 保护 Web 应用，覆盖 OIDC audience、Cookie、Nginx Ingress auth-url 与回滚排错"
 date: 2026-07-08T00:00:00+08:00
-lastmod: 2026-07-31T21:00:00+08:00
+lastmod: 2026-09-05T21:00:00+08:00
 draft: false
 weight: 1
 menu:
@@ -178,6 +178,8 @@ spec:
         image: quay.io/oauth2-proxy/oauth2-proxy:<已验证版本>
         args:
         - --provider=keycloak-oidc
+        # 授权码回调启用 PKCE；S256 是 oauth2-proxy 官方 Keycloak 示例使用的方式。
+        - --code-challenge-method=S256
         - --oidc-issuer-url=https://keycloak.example.com/realms/myrealm
         - --client-id=$(OAUTH2_PROXY_CLIENT_ID)
         - --client-secret=$(OAUTH2_PROXY_CLIENT_SECRET)
@@ -245,6 +247,7 @@ spec:
 | 参数 | 值 | 为什么 |
 |------|-----|--------|
 | `--provider=keycloak-oidc` | v7.3+ 专用 Provider | 设置正确的 OIDC discovery URL（自动拼接 `/realms/xxx`），默认 scope `openid email profile` |
+| `--code-challenge-method` | `S256` | 为授权码流程启用 PKCE；oauth2-proxy 官方 Keycloak 配置示例明确列出该参数。它保护授权码兑换，但不替代 `iss`、签名、`aud` 和 `exp` 校验 |
 | `--oidc-issuer-url` | `https://<keycloak>/realms/<realm>` | 必须以 realm 路径结尾，不含尾部斜杠 |
 | `--cookie-domain` | `.example.com` | 设置 Domain 属性，让主域名及其子域名匹配。是否带前导点不应作为隔离手段；不设置该参数才是 host-only Cookie |
 | `--cookie-secure` | `true` | 生产环境必须开启，只通过 HTTPS 传输 Cookie |
