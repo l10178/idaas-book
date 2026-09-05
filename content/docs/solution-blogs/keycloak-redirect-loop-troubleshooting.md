@@ -65,11 +65,16 @@ location / {
     proxy_pass http://keycloak:8080;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
-    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    # 单层公网入口覆盖客户端头；多级代理链需先在边界清洗后再保留链路
+    proxy_set_header X-Forwarded-For $remote_addr;
     proxy_set_header X-Forwarded-Proto $scheme;
     proxy_set_header X-Forwarded-Host $host;
 }
 ```
+
+`$proxy_add_x_forwarded_for` 会保留客户端提交的旧值并追加当前地址。只有在每一跳都已清洗来源头、且确实需要保留多级代理链时才使用它；单层公网入口应覆盖而不是追加。无论采用哪种写法，都要让入口代理覆盖 `X-Forwarded-Proto`、`X-Forwarded-Host` 和 `X-Forwarded-Port`，并用网络策略限制 Keycloak 只接受来自代理的连接。
+
+Keycloak 的 `KC_PROXY_HEADERS=xforwarded` 只是选择 `X-Forwarded-*` 的解析格式，不会替代理清洗客户端输入。生产环境还应按实际网络配置 `KC_PROXY_TRUSTED_ADDRESSES`（或 `--proxy-trusted-addresses`），并避免把后端 Service 或管理端口暴露给不受信任网络。若使用 TLS passthrough，则不要启用 `proxy-headers`，改用 PROXY protocol；两者不能同时启用。
 
 ### 快速验证
 
@@ -85,6 +90,17 @@ curl -G -v https://keycloak.example.com/realms/myrealm/protocol/openid-connect/a
 # 观察 Location 头中的 redirect_uri 是否使用 https:// 和正确域名
 # 仅用于诊断；不要把真实凭据或 Token 放进命令行/日志。
 ```
+
+再从代理外部发送故意伪造的来源头，确认上游不会照单全收：
+
+```bash
+curl -skI https://keycloak.example.com/realms/myrealm/.well-known/openid-configuration \
+  -H 'Host: attacker.example' \
+  -H 'X-Forwarded-Proto: http' \
+  -H 'X-Forwarded-Host: attacker.example'
+```
+
+验证重点不是响应码，而是响应中的 URL、日志中的客户端地址和 Keycloak 生成的 issuer 仍属于预期域名。若伪造头能改变这些值，先修复代理覆盖规则和后端网络边界，不要用关闭 hostname 校验来“修好”重定向。
 
 ### Traefik 配置检查
 
@@ -308,6 +324,7 @@ kubectl exec deploy/keycloak -- curl -s http://localhost:9000/metrics | grep key
 2. **`KC_HOSTNAME_STRICT=false` 不是长期方案**：在旧版 Keycloak 中常见，但它会放宽 hostname 校验，有安全风险。Keycloak 26+ 应明确配置 `KC_HOSTNAME` 与 `KC_PROXY_HEADERS`。
 3. **监视管理员的登录体验**：如果终端用户能登录但管理员不能，检查 `KC_HOSTNAME_ADMIN_URL` 是否配置。
 4. **反向代理的 `proxy_set_header Host $host` 不能省**：Keycloak 需要知道外部 Host 来构建正确的 redirect_uri。
+5. **不要把 `X-Forwarded-*` 当作普通透传头**：入口代理必须覆盖客户端同名头，Keycloak 后端只允许可信代理访问；否则修复了重定向循环，却留下了 Host/IP 伪造的安全边界漏洞。
 
 ## 回滚方式
 
@@ -348,6 +365,7 @@ kubectl rollout undo deployment/oauth2-proxy -n auth
 - [OAuth 2.0 深度解读 — 授权码流程与 PKCE]({{< relref "docs/protocols/oauth2-authorization-code-pkce" >}})：理解 redirect_uri 在授权码流程中的角色
 - [OAuth 2.0 攻击面图解]({{< relref "docs/protocols/oauth2-attack-surface" >}})：redirect_uri 劫持与 CSRF 防护
 - [Keycloak 官方文档 — Configuring the hostname](https://www.keycloak.org/server/hostname)
+- [Keycloak 官方文档 — Configuring a reverse proxy](https://www.keycloak.org/server/reverseproxy)
 - [Keycloak 官方文档：Reverse proxy headers](https://www.keycloak.org/server/reverseproxy)：代理头格式、覆盖和来源校验
 - [oauth2-proxy 官方配置参考](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)：`redirect-url`、`cookie-samesite` 与 `set-xauthrequest`
 - [oauth2-proxy 官方 Keycloak OIDC 配置](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/)：issuer URL、Audience mapper、ID/Access Token claim 与角色/组授权
