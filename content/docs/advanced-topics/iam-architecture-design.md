@@ -270,6 +270,16 @@ graph TB
     style IDP fill:#9cf,stroke:#333
 ```
 
+#### 术语边界：PDP/PEP 不是 NIST 的原词
+
+上图使用 `PDP/PEP/PIP` 是工程团队常见的授权模型表达；NIST SP 800-207 的核心组件名称是 **PE（Policy Engine）/PA（Policy Administrator）/PEP（Policy Enforcement Point）**。可以把 PDP 理解为“负责作出授权决定的组件”，但不能因此声称 NIST 定义了 PDP。NIST 的 PE 作出决定，PA 把决定转换为对 PEP 的会话建立或终止操作；PEP 最终控制到受保护资源的连接。[零信任 IAM 章节]({{< relref "zero-trust-identity" >}})给出了 NIST 术语的完整映射。
+
+这个区分会影响实现边界：
+
+- **API 网关 + OPA**：网关通常是 PEP，OPA 是 PDP/策略决策服务；网关仍需校验令牌的 `iss`、`aud`、有效期和权限，不能把 OPA 的 `allow=true` 当成身份认证结果。
+- **Keycloak + 应用本地授权**：Keycloak 负责认证和令牌签发，应用或 API 网关是 PEP；简单角色判断可在资源服务本地完成，不必为每个请求同步调用 Keycloak。
+- **设备合规或高风险操作**：PEP 在转账、改权限等请求上调用策略服务，由策略服务读取设备状态、风险信号和会话状态；策略服务超时应默认拒绝或进入明确的人工/只读降级路径，而不是“超时即放行”。
+
 在这个架构中，IAM 系统承担的角色从"登录时验证一次"变为"为访问决策持续提供身份上下文"。但不要把 JWT 本地验签误写成持续验证：本地验签不会感知即时会话吊销；高风险操作才应按需调用 Token Introspection 或策略引擎。具体取舍见[零信任 IAM 中 JWT 与 Introspection 的边界]({{< relref "zero-trust-identity" >}})。
 
 ### 混合云 IAM 架构
