@@ -187,6 +187,8 @@ spec:
 一个较稳的最小配置如下，重点是 issuer、audience、PKCE、cookie secret 与 header 输出都显式写清：
 
 ```bash
+# 只有业务确实需要时，才额外启用 pass-access-token 并配置 auth-response-headers。
+# 不要默认把 ID Token 放入 Authorization 头。
 oauth2-proxy \
   --provider=keycloak-oidc \
   --oidc-issuer-url=https://kc.example.com/realms/myrealm \
@@ -196,8 +198,7 @@ oauth2-proxy \
   --cookie-secret=$OAUTH2_PROXY_COOKIE_SECRET \
   --email-domain='*' \
   --code-challenge-method=S256 \
-  --set-xauthrequest=true \
-  --set-authorization-header=true
+  --set-xauthrequest=true
 ```
 
 验证顺序不要反：先访问 `https://kc.example.com/realms/myrealm/.well-known/openid-configuration` 确认 issuer；再登录一次并解码 access token，确认 `aud` 包含 `oauth2-proxy`；最后用浏览器开发者工具检查 `/oauth2/callback` 是否设置了同站点可用的 cookie。生产回滚最简单：移除业务 Ingress 的认证注解或 Traefik ForwardAuth middleware，保留 oauth2-proxy Deployment 以便排查，不要在事故中先删 Keycloak Client。需要完整的 Ingress / ForwardAuth 配置、验证命令和回滚步骤，可参考 [Keycloak + oauth2-proxy 集成实战指南]({{< relref "docs/solution-blogs/keycloak-oauth2-proxy" >}})。
