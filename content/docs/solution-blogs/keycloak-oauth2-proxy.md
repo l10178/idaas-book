@@ -258,8 +258,22 @@ spec:
 | `--trusted-proxy-ip` | Ingress 出口 IP/CIDR | 限制哪些来源可以提供 `X-Forwarded-*`。不要在生产环境省略，否则能直连 oauth2-proxy 的请求方可能伪造 Host、Proto 或原始 URI |
 | `--pass-basic-auth` | `false` | auth-url 模式不需要 Basic Auth 头；显式关闭，避免把无用的认证信息传给后端 |
 | `--set-xauthrequest` | `true` | 向后端传递 `X-Auth-Request-User`、`X-Auth-Request-Email`、`X-Auth-Request-Groups` 等头 |
-| `--pass-access-token` | 默认不启用 | 将 OAuth Access Token 传给上游；只有后端确实要消费 Access Token 时才启用，并配合 Ingress 显式复制响应头 |
-| `--email-domain` | `*` | 允许所有邮箱域。如需限定，改为 `example.com` 或 `--authenticated-emails-file` |
+- `--pass-access-token` | 默认不启用 | 将 OAuth Access Token 传给上游；只有后端确实要消费 Access Token 时才启用，并配合 Ingress 显式复制响应头 |
+- `--email-domain` | `*` | 允许所有邮箱域。如需限定，改为 `example.com` 或 `--authenticated-emails-file` |
+
+### 把配置检查放进发布门禁
+
+oauth2-proxy 提供 `--config-test`，可以在启动正式 Pod 前校验配置语法、必填项、Provider 配置以及已配置的 Session Store 连通性。它不能替代 OIDC Discovery、浏览器回调和 Ingress 的端到端测试，但能先拦住 Secret 引用错误、拼写错误和无效参数，适合放在镜像构建或 Helm 渲染后的发布检查中。配置检查必须使用与正式部署相同的配置文件和环境变量，不能只拿一份脱敏空配置“测绿”。
+
+```bash
+# 在与生产镜像相同的容器中执行；Secret 通过 CI/Kubernetes Secret 注入，
+# 不要把 client-secret 或 cookie-secret 写进仓库和命令历史。
+oauth2-proxy \
+  --config=/etc/oauth2-proxy/oauth2-proxy.cfg \
+  --config-test
+```
+
+检查通过后仍要按“Discovery → 回调 → `/oauth2/auth` → 业务请求”的顺序做集成验证。发布失败时，先回滚 Deployment 到上一份已验证配置；不要为了让 `--config-test` 通过而关闭 issuer、签名或 audience 校验。官方配置参考列出了 `--config-test` 的校验范围和退出行为，见文末来源。
 
 ### 不要混用三种 Authorization 头
 
@@ -555,6 +569,10 @@ Mapper 只影响后续签发的 Token；浏览器现有的加密 Cookie 不会�
 
 `--reverse-proxy` 控制 oauth2-proxy 是否使用 `X-Forwarded-*` 参与原始请求和重定向判断；它不是“所有传入头都可信”的安全声明。官方配置文档说明，未设置 `--trusted-proxy-ip` 时，为兼容旧行为可能信任所有来源，能够直接访问 oauth2-proxy 的客户端就可能伪造这些头。应填入 Ingress 或其他反向代理的实际出口 IP/CIDR，并用 NetworkPolicy、内网 Service 或防火墙阻断旁路访问。改完后验证：通过 Ingress 的登录回调仍能生成正确的 HTTPS redirect，而直接访问 oauth2-proxy 的请求不能改变 `Host`、`X-Forwarded-Proto` 或回调目标。
 
+### 为什么不能把 `__Host-` Cookie 前缀直接套到共享子域名方案？
+
+`__Host-` 前缀要求 Cookie 使用 `Secure`、`Path=/`，并且**不能设置 `Domain`**；因此它只适合单一 host 的会话。本文的多应用共享方案需要 `--cookie-domain=.example.com`，这两项约束互相冲突，不能同时使用。若要采用 `__Host-`，应取消跨子域共享、改用 host-only Cookie，并为每个应用设计独立的登录入口和会话；不要只改 Cookie 名称而保留 `Domain`，浏览器会拒绝不符合前缀约束的 Cookie。
+
 ## 回滚方式
 
 如果新配置导致认证失败，快速回滚步骤：
@@ -587,6 +605,7 @@ kcadm.sh get clients/<client-id> -r <realm> > client-backup.json
 - [第 14 章：Keycloak 架构与部署]({{< relref "docs/implementation/keycloak-architecture" >}})：Keycloak 生产部署的完整指南
 - [oauth2-proxy 官方文档 — Keycloak OIDC Provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc)
 - [oauth2-proxy 官方配置总览](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
+- [oauth2-proxy Cookie 配置与安全前缀说明](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#cookie-options)
 - [ingress-nginx 外部认证示例：auth-url 与 auth-signin](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)
 - [oauth2-proxy Integration：Nginx auth_request 与 Set-Cookie 分片转发](https://oauth2-proxy.github.io/oauth2-proxy/configuration/integrations/nginx)
 - [oauth2-proxy Issue #2808：audience 缺失时的错误处理](https://github.com/oauth2-proxy/oauth2-proxy/issues/2808)
