@@ -294,6 +294,8 @@ oauth2-proxy --config=/etc/oauth2-proxy/oauth2-proxy.cfg --config-test
 | OIDC 回调 | `redirect_uri` 是否精确匹配 | Keycloak 配置的 Redirect URI 和实际请求差一个斜杠/端口/协议 |
 | Token 校验 | `--oidc-issuer-url` 是否正确 | issuer URL 与 ID Token 中的 `iss` 声明不一致 |
 
+如果前四项都正常但重定向地址偶发变成内部域名或 `http://`，继续检查**代理头信任**：`--reverse-proxy=true` 配合未限制的 `--trusted-proxy-ip`，会让能直达 4180 端口的请求影响原始 Host/协议判断。生产配置应把 `--trusted-proxy-ip` 限定为 ingress-nginx 或负载均衡器的实际来源网段，并从网络层禁止其他来源访问该端口。oauth2-proxy 7.15.x 官方配置文档明确提示，未设置该参数时为兼容旧行为会信任所有来源。
+
 **最快的排错方式**：
 
 ```bash
@@ -312,6 +314,14 @@ kubectl run oidc-debug --rm -i --restart=Never \
 # 找到 /oauth2/start → /auth?（跳转 Keycloak）→ /oauth2/callback?code= → /app 这条链路
 # 哪个环节返回的 HTTP 状态码不对劲，就是那个环节的问题
 ```
+
+```bash
+# 检查当前 Deployment 是否设置了代理来源白名单
+kubectl get deploy -n auth oauth2-proxy -o jsonpath='{.spec.template.spec.containers[0].args}' \
+  | jq -r '.[]' | grep -E 'reverse-proxy|trusted-proxy-ip'
+```
+
+**回滚边界**：不要通过关闭 TLS Cookie 或跳过 issuer 校验来绕过代理头问题。先恢复上一份已验证的 `--trusted-proxy-ip`/Ingress 配置，再重新执行 Discovery 和浏览器回调验证；临时加入 `0.0.0.0/0` 只能用于隔离故障，不能作为生产修复。
 
 ---
 
