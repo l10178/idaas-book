@@ -1,8 +1,8 @@
 ---
-title: "Keycloak Adapter 弃用迁移指南 — 从专用 Adapter 迁移到标准 OIDC 库 | IDaaS Book"
-description: "Keycloak Adapter 弃用后迁移到标准 OIDC 库的完整指南：Java/Spring Boot、Node.js、Python、.NET 的迁移路径与常见踩坑"
+title: "IAM：Keycloak Adapter 弃用迁移指南 | IDaaS Book"
+description: "IAM 应用从 Keycloak 专用 Adapter 迁移到标准 OIDC 库：Java、Node.js、Python、.NET 路径与回滚检查"
 date: 2026-07-09T00:00:00+08:00
-lastmod: 2026-07-09T00:00:00+08:00
+lastmod: 2026-09-07T23:01:00+08:00
 draft: false
 weight: 10
 menu:
@@ -14,9 +14,9 @@ toc: true
 
 ## 场景
 
-你的项目几年前接入了 Keycloak，用的是官方推荐的 Keycloak Adapter（`keycloak-spring-security-adapter`、`keycloak-connect`、`keycloak-python` 等）。最近升级依赖或做安全审查时发现：**这些 Adapter 已经被 Keycloak 官方弃用，不再维护了**。
+你的项目几年前接入了 Keycloak，用的是专用 Adapter（`keycloak-spring-security-adapter`、`keycloak-connect`、`keycloak-python` 等）。最近升级依赖或做安全审查时发现：服务端专用 Adapter 的维护边界已经收缩，继续把它当成通用集成层会增加升级和框架兼容风险。
 
-继续用会有什么问题？旧 Adapter 绑定了 Keycloak 特定版本、依赖老旧框架（如 WildFly、javax），安全补丁不再跟进，且与 Spring Boot 3+ / Jakarta EE 不兼容。需要迁移到各语言生态的标准 OIDC 库。
+继续用会有什么问题？部分旧 Adapter 绑定了 Keycloak 特定版本、依赖老旧框架（如 WildFly、`javax.*`），安全修复和框架升级不能再按标准 OIDC 客户端的节奏独立进行。对于保护服务端应用，优先迁移到各语言生态的标准 OIDC 库；但不能把“服务端 Adapter 迁移”误写成“所有名为 adapter 的组件都已删除”。
 
 这篇文章按语言给出迁移路径、最小配置和常见踩坑。
 
@@ -31,15 +31,17 @@ toc: true
 
 > **注意区分**：`keycloak-admin-client`（REST API 管理客户端，Maven artifact `org.keycloak:keycloak-admin-client`）**不需要迁移**。它是基于标准 REST API 的，与 Adapter 无关。本文讨论的是用于「保护应用、拦截请求」的认证 Adapter。
 
-## Adapter 弃用时间线
+## 先确认：你用的是哪一种 Adapter
 
-| 版本 | 变化 |
+| 类型 | 本文判断 |
 |------|------|
-| Keycloak 17 | 首个 Quarkus 发行版；旧 WildFly 发行版停更；部分 Adapter 标记 deprecated |
-| Keycloak 19 | 大部分语言 Adapter 从主仓库移除，不再随发行版发布 |
-| Keycloak 24+ | 所有 Adapter 彻底弃用，官方文档中移除相关章节；明确推荐各语言生态的标准 OIDC 库 |
+| 用于保护 Spring、Node.js、Python、.NET 服务端请求的旧专用 Adapter | 纳入迁移评估；新项目优先使用标准 OIDC/OAuth 2.0 客户端 |
+| `keycloak-admin-client` | 不属于应用保护 Adapter，是 Admin REST API 客户端；按独立客户端库的版本策略维护 |
+| `keycloak-js` 等浏览器端组件 | 不要套用服务端 Adapter 的结论；按当前 Keycloak 文档、浏览器安全模型和依赖版本单独评估 |
 
-官方声明：**不要在新项目中使用 Keycloak Adapter，已用项目尽快迁移。** 参考 [Keycloak Securing Applications Guide](https://www.keycloak.org/docs/latest/securing_apps/) 中关于标准 OIDC 库的推荐。
+**本书建议**：新建服务端应用时直接使用框架的标准 OIDC 客户端；已有应用先盘点组件、协议流程和回滚路径，再分批迁移。Keycloak 当前升级指南仍单列了 JavaScript 与 Node.js Adapter 的升级说明，因此不能用“所有 Adapter 已彻底移除”作为事实判断。参考 [Securing Applications Guide](https://www.keycloak.org/docs/latest/securing_apps/) 与 [Upgrading Guide](https://www.keycloak.org/docs/latest/upgrading/index.html)。
+
+> **版本边界**：上面的判断针对本文维护时可见的 Keycloak 26.7.x 文档。升级前应以目标版本的官方文档和 release notes 为准；不要因为服务端迁移目标是标准 OIDC，就跳过 `keycloak-js`、Admin Client 或自定义 SPI 的兼容性检查。
 
 ## 迁移路径：逐语言
 
@@ -325,6 +327,20 @@ curl -s https://kc.example.com/realms/myrealm/.well-known/openid-configuration |
 4. **先灰度**：在一个测试实例或预发环境验证回滚后功能正常，再全量回滚。
 
 > 长期风险提示：回滚到旧 Adapter 只是临时方案。Keycloak 未来版本可能彻底移除对 Adapter 模式的协议兼容性。回滚后应尽快排期完成迁移。
+
+## 常见问题（IAM Adapter 迁移）
+
+### Q1：Keycloak Adapter 弃用后，`keycloak-js` 也必须立刻删除吗？
+
+不应这样推断。本文针对服务端应用保护 Adapter；浏览器端 `keycloak-js`、Admin Client 和自定义 SPI 的生命周期不同。先确认组件用途、当前版本和目标版本文档，再决定是升级、替换还是保留。
+
+### Q2：迁移到标准 OIDC 客户端后，Keycloak 还需要改配置吗？
+
+通常不需要重建 Realm 或用户。需要逐项核对 Client 的 redirect URI、Web Origins、logout 回调、scope，以及应用是否依赖 `realm_access.roles` 等非标准 claim。应用端认证成功不等于授权映射已经等价，角色负向测试必须单独保留。
+
+### Q3：能否先只升级 Keycloak 服务端，再慢慢迁移 Adapter？
+
+可以作为受控过渡，但不能把服务端升级当成 Adapter 兼容性证明。官方升级指南明确提醒，较新的服务端可能因 OIDC 实现变化影响旧 Adapter；先在预发验证登录、刷新、登出、角色映射和反向代理 issuer，再按应用灰度迁移。数据库升级也应单独准备备份和恢复演练。
 
 ## 迁移检查清单（可直接用于项目管理）
 
