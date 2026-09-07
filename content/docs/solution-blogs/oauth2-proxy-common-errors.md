@@ -2,7 +2,7 @@
 title: "IAM 网关 oauth2-proxy 常见错误排错 | IDaaS Book"
 description: "IAM 网关 oauth2-proxy 集成 Keycloak 的 12 个高频错误排错：CSRF Cookie、expected audience、redirect loop、invalid_token 与 Nginx 401。"
 date: 2026-07-13T00:00:00+08:00
-lastmod: 2026-08-22T21:02:00+08:00
+lastmod: 2026-09-07T21:00:00+08:00
 draft: false
 weight: 3
 menu:
@@ -18,9 +18,9 @@ toc: true
 
 这篇文章把 oauth2-proxy 的公开 Issue 与可复现的配置逻辑整理成速查表：每条有诊断命令、根因分析和修复步骤。Issue 只能说明问题曾被报告，不能替代当前版本的验证。需要先理解 auth-url、Header 复制和后端信任边界的整体链路，可先看 [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive" >}}) 的架构说明。
 
-适用：oauth2-proxy v7.x + Keycloak（任意版本），auth-url 或 ForwardAuth 模式。
+适用：oauth2-proxy 7.15.x 文档所述配置 + Keycloak，auth-url 或 ForwardAuth 模式。参数行为仍以实际部署版本为准；不要把本文的版本范围当成兼容性承诺。
 
-不适用：oauth2-proxy 旧版（v6 及以下，部分参数名不同）、非 Keycloak Provider（GitHub/Google 等 Provider 有各自特有的错误）。
+不适用：oauth2-proxy 旧版（v6 及以下，部分参数名不同）、非 Keycloak Provider（GitHub/Google 等 Provider 有各自特有的错误）。Keycloak 使用旧版 `/auth/realms/` 上下文路径时，应以该实例 Discovery 返回的 `issuer` 为准；新部署常见的公开路径是 `/realms/`，不能只凭产品版本猜 URL。
 
 > **参数边界**：反向代理场景应同时设置 `--reverse-proxy=true` 和受控的 `--trusted-proxy-ip`。不要把“信任转发头”理解成“信任所有客户端发送的转发头”。oauth2-proxy 官方配置说明指出，未设置 `--trusted-proxy-ip` 时会为兼容旧行为而信任所有来源；能直连 oauth2-proxy 的客户端因此可能伪造 `X-Forwarded-*`。本文参数以[官方配置文档](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)为准。
 
@@ -305,6 +305,10 @@ kubectl run oidc-debug --rm -i --restart=Never \
   --image=curlimages/curl:8.10.1 -- \
   -fsS https://keycloak.example.com/realms/myrealm/.well-known/openid-configuration \
   | jq '{issuer, authorization_endpoint, token_endpoint, jwks_uri}'
+
+# 如果你的 Keycloak 仍由反向代理发布在 /auth 上下文，先把 URL 改为
+# https://keycloak.example.com/auth/realms/myrealm/.well-known/openid-configuration，
+# 再用 jq 检查返回的 .issuer；路径必须以 Discovery 的实际值为准。
 
 # 如果集群禁止临时 Pod，使用已经存在的网络诊断容器执行同一 curl；
 # 关键是测试路径、DNS 和 CA 信任，而不是测试 oauth2-proxy 容器是否带 wget。
@@ -767,6 +771,7 @@ curl -v http://oauth2-proxy.auth.svc.cluster.local:4180/oauth2/auth
 - [oauth2-proxy Issue #3258：并行请求下的 CSRF Cookie 问题](https://github.com/oauth2-proxy/oauth2-proxy/issues/3258)
 - [oauth2-proxy 官方配置总览：Cookie 前缀、CSRF Cookie 与可信代理](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
 - [MDN：Cookie 前缀与 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie)
+- [Keycloak：反向代理与公开路径](https://www.keycloak.org/server/reverseproxy)——确认当前 Keycloak 部署公开的 OIDC `/realms/` 路径，避免把旧版 `/auth/realms/` 路径当成新部署的默认值
 - [oauth2-proxy GitHub Issues](https://github.com/oauth2-proxy/oauth2-proxy/issues)
 - [MDN：Set-Cookie 的 Domain 属性](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Set-Cookie#domaindomain-value)
 
