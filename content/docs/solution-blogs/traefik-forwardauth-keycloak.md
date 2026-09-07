@@ -63,10 +63,35 @@ sequenceDiagram
 ```
 
 **关键点**：
-1. Traefik 的 ForwardAuth 中间件在请求到达后端**之前**拦截，向 oauth2-proxy 发子请求
-2. oauth2-proxy 返回 2xx → Traefik 认为已认证，放行到后端；返回 4xx → Traefik 认为未认证，把响应原样返回给浏览器
-3. 浏览器看到 401 + `Location` 头，自动跟随重定向到 Keycloak 登录页——整个过程对后端应用透明
-4. `callback` 路径（`/oauth2/callback`）必须被 ForwardAuth 放行，否则认证循环无法完成
+1. Traefik 的 ForwardAuth 中间件在请求到达后端**之前**拦截，向 oauth2-proxy 发子请求。
+2. oauth2-proxy 返回 2xx → Traefik 认为已认证，放行到后端；返回 4xx → Traefik 默认把认证失败响应返回给浏览器。
+3. **不要把 401 响应中的 `Location` 头当成浏览器一定会执行的重定向。**需要面向浏览器自动登录时，用 Traefik `errors` 中间件把 401 改写为 302，再转到 `/oauth2/sign_in?rd={url}`；面向 API 或非浏览器客户端则保留 401，避免把 JSON/API 请求误导向 HTML 登录页。
+4. **认证失败响应**：浏览器路由应确认最终响应为 `302` 并带有 `/oauth2/sign_in?rd=...`；API 路由应保持 `401`，不能用“浏览器能跳转”证明 API 认证链路正确。
+5. `callback` 路径（`/oauth2/callback`）必须由不再套用业务 ForwardAuth 的路由直接转发给 oauth2-proxy，否则认证循环无法完成。
+
+### 401 到登录页：必须显式选择浏览器模式
+
+Traefik ForwardAuth 的职责是根据认证服务的 2xx/非 2xx 响应决定是否放行。oauth2-proxy 官方 Traefik 集成示例使用 `errors` 中间件处理浏览器跳转，并配置 `statusRewrites` 将 `401` 改为 `302`；省略这一步时，浏览器可能只显示 `401` 或“Found”链接，而不是自动跟随登录。
+
+```yaml
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: oauth2-errors
+  namespace: auth
+spec:
+  errors:
+    status:
+    - "401-403"
+    service:
+      name: oauth2-proxy
+      port: 4180
+    query: /oauth2/sign_in?rd={url}
+    statusRewrites:
+      "401": 302
+```
+
+这段中间件只应挂在需要浏览器交互登录的路由上。API 路由建议保留 401，并由客户端处理 `WWW-Authenticate`；否则一个认证失败的 API 请求可能被改写成登录页 HTML，调用方得到的是看似成功的 302，排错会更难。`/oauth2/*` 路由和 `/oauth2/callback` 路由不要再次套用同一个业务 ForwardAuth。
 
 ## Keycloak 端配置
 
