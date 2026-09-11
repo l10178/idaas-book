@@ -190,7 +190,7 @@ volumes:
 | 维度 | Zitadel | Keycloak |
 |---|---|---|
 | **技术栈** | Go + Angular | Java/Quarkus |
-| **最新版本** | v4.17.1 | 26.7.2（社区） |
+| **最新版本** | v4.17.1 | 26.7.3（社区） |
 | **许可证** | AGPL-3.0 | Apache 2.0 |
 | **数据模型** | 事件溯源 + CQRS | 传统 ORM（JPA/Hibernate） |
 | **审计能力** | 天然完整审计（所有操作都是事件） | 依赖 Event Listener 扩展 |

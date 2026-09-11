@@ -1,6 +1,6 @@
 ---
-title: "Keycloak 细粒度权限与授权策略实战 — Groups vs Roles、Authorization Services | IDaaS Book"
-description: "Keycloak 细粒度授权实战：Groups 与 Roles 的选择、Composite Roles 组合角色、Authorization Services 策略配置与 Policy Evaluation 调试"
+title: "Keycloak IAM 细粒度权限与授权策略实战 — Groups vs Roles、Authorization Services | IDaaS Book"
+description: "Keycloak IAM 细粒度授权实战：Groups 与 Roles 的选择、Composite Roles 组合角色、Authorization Services 策略配置、Policy Evaluation 调试，以及 26.7.3 FGAP v2 升级回归要点"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false
@@ -321,6 +321,12 @@ public List<Order> listOrders(Authentication auth) {
 | 改了策略不生效 | Authorization 缓存 | 清除 Keycloak 缓存或重启；生产环境设短 TTL |
 | `resource_access` 为空 | Client 没有定义 Client Roles | 先在 Client → Roles 创建角色 |
 | Composite Role 的子角色不生效 | 子角色分配到了 Realm Role 而非同一 Client | Composite Role 的子角色必须在同一 Client Scope 内 |
+
+## 升级到 Keycloak 26.7.3 前要回归的 IAM 管理面行为
+
+26.7.3 的 45 项已解决条目中有 10 项标注 `admin/fine-grained-permissions`，另有 1 项标注 `admin/rbac`——这一版改动的重心就是 FGAP v2 的授权判定本身。修复覆盖读、写和评估语义三类：通过 `POST /users` 创建用户时可以选择未被授权的组（CVE-2026-18571）；`GET /roles/{role}/users` 在缺少 per-user view filter 时返回用户 PII（CVE-2026-17059）；删除 role-composite 时委派管理员可越权移除特权子角色（CVE-2026-16106）；聚合策略的 partial evaluation 与运行时语义不一致（#51143）、漏掉 `extendChildren` 的祖先组策略（#51144）。
+
+对用 FGAP v2 做委派管理的部署，升级不等于换镜像：用一个只被授予部分权限的管理员账号，把实际授予它的操作重新走一遍（建用户、改组、改 client、查 role 用户列表），确认管理界面上的「有效权限预览」与真实判定一致。分组解读与验证清单见 [Keycloak 26.7.3 安全补丁解读]({{< relref "keycloak-26-7-3-security-patch" >}})。
 
 ## 回滚方式
 

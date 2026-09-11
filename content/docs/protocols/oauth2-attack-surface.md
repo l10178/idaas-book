@@ -77,6 +77,9 @@ sequenceDiagram
 - 利用 URL parser 差异绕过（`https://example.com@evil.com` 被不同 parser 解析不同）
 - 利用开放重定向（先跳转到合法 redirect_uri，再通过开放重定向跳转到攻击者服务器）
 - 利用子路径注册绕过（注册 `https://app.example.com/auth/callback`，攻击者注册 `https://app.example.com/auth/callback/../evil`）
+- 利用 URL fragment 绕过参数检查：Keycloak 26.7.3 修复的 CVE-2026-18209 属于这一类——forbidden-parameter 检查只覆盖 query string，未覆盖 URL fragment，因此是对既有修复的**补齐**而不是新问题
+
+这组案例的共性是：校验逻辑与最终解析位置不在同一处代码里。评估一个授权服务器的 redirect_uri 防护，要看它是否同时处理 query、fragment、路径归一化和编码差异，而不只是「是否精确匹配」。26.7.3 中与令牌/会话语义相关的修复分组见 [Keycloak 26.7.3 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-3-security-patch.md" >}})。
 
 ---
 
