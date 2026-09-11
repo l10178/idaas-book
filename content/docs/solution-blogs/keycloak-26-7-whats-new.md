@@ -53,6 +53,8 @@ Keycloak 26.7.0 于 2026 年 7 月 9 日发布，是 26.x 系列中功能密度�
 | MCP Authorization 增强 | Supported | AI 工具接入 Keycloak 的标准化方式 |
 | OID4VCI 可验证凭证 | Experimental（持续改进） | 去中心化身份方向的重要进展 |
 | 反向代理蓝图（HAProxy/Traefik） | Supported | 降低反向代理配置门槛 |
+| 组织组的自动角色继承 | Supported | 组织组可承载 realm/client 角色映射并继承给成员，租户内批量授权不必再逐用户配置 |
+| 组织管理细粒度委派 | Supported | 新增 `manage-organizations` / `query-organizations`，租户管理权限不再只有 `manage-realm` 一条路 |
 
 ## 升级前先检查的兼容性变化
 
@@ -180,6 +182,15 @@ AuthZEN 解决了这个问题——应用只需要知道 `POST /authzen/v1/evalu
 Step-up 认证允许：「正常访问用密码就够了，但执行敏感操作（如转账、删除用户）时要额外验证」。之前这个能力只对 OIDC 客户端可用，26.7.0 把 SAML Step-up 从 Preview 提升为 Supported。
 
 SAML SP 在 `AuthnRequest` 中指定 `RequestedAuthnContext`，Keycloak 根据配置的认证流级别判断是否需要 Step-up。对于还有大量 SAML 应用的企业（金融、政务、教育行业常见），这是一个重要的安全增强。
+
+## Organizations：两个容易被忽略的 26.7 变化（Supported）
+
+26.7.0 的 Administration 部分有两条和组织（Organizations）相关的改动，官方发布说明把它们放在功能列表里，没有进入前面的「四大方向」，但对已经在用 Organizations 做 B2B 多租户的部署影响很直接：
+
+- **组织组的角色继承**：组织组现在可以承载 realm 和 client 角色映射，授予一次即可自动出现在所有组员的 role claim 中。这解决了「一个组织有几百个用户、权限却要逐个授予」的扩展性问题。Organization Group Membership mapper 还多了一个 *Add group role mappings* 选项，可以把这些角色映射一并放进 `organization` claim。
+- **组织管理细粒度委派**：新增 `manage-organizations`（组织的完整读写，含成员管理）和 `query-organizations`（只搜索和列出组织，类似 `query-users` / `query-groups` 的模式）。**`manage-realm` 仍然隐式包含全部组织管理权限**——这是为了向后兼容，也意味着升级后如果想让租户管理员权限收敛，需要主动改用新权限，而不是指望升级自动收紧。
+
+两条改动都是 Supported 状态，不需要额外 feature flag。组织组本身是 26.6 引入的，组织能力从 26.0 起正式支持；三者叠加后，Organizations 才具备「租户内批量授权 + 租户级委派管理」的完整形态。落地细节（成员 managed/unmanaged 生命周期、`organization` claim 映射、存量 Realm 认证流迁移）见 [Keycloak Organizations 多租户实践]({{< relref "keycloak-organizations-multitenancy" >}})。
 
 ## Identity Brokering API V2（Supported，默认仍未启用）
 

@@ -51,3 +51,4 @@ menu:
 | [IAM 密码策略实战 - NIST SP 800-63B 与等保 2.0 在 Keycloak 中的落地]({{< relref "iam-password-policy-guide" >}}) | NIST SP 800-63B、等保 2.0 密码要求、Argon2id 哈希切换、泄露密码黑名单、分层密码策略、密码策略排错 |
 | [AD FS 迁移 Microsoft Entra ID：IAM 联邦退场实战]({{< relref "adfs-migration-entra-id" >}}) | 域联邦转托管、staged rollout 边界、60 分钟转换窗口、NameID 受限声明集、SAML 150 组上限、回滚命令、故障对照表 |
 | [Keycloak User Profile 用正则限制企业邮箱注册]({{< relref "keycloak-user-profile-pattern-validator" >}}) | User Profile pattern validator、邮箱后缀白名单、正则边界、验证方法、可绕开场景 |
+| [Keycloak Organizations 多租户实践：B2B 身份隔离与成员生命周期]({{< relref "keycloak-organizations-multitenancy" >}}) | Organizations 启用、managed/unmanaged 成员、邀请与 Admin REST API、organization claim 映射、组织组、存量 Realm 认证流迁移、排错表 |
