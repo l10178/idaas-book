@@ -261,7 +261,7 @@ OAuth 2.0 是**授权**协议，不是**认证**协议。获取到 Access Token 
 
 SAML 的 XML 签名和加密对于现代 SPA 和移动 App 来说太重了。如果你在 React/Vue/Flutter 应用中接入 SAML，调试签名验证错误会让你怀疑人生。
 
-**正确做法**：新应用默认用 OIDC；只有在对接已有 SAML IdP（如 AD FS、Shibboleth）时才用 SAML。如果后端是 .NET 或 Spring Security，这些框架对 SAML 的支持反而比 OIDC 更成熟——要具体情况具体分析。
+**正确做法**：新应用默认用 OIDC；只有在对接已有 SAML IdP（如 AD FS、Shibboleth）时才用 SAML。如果后端是 .NET 或 Spring Security，这些框架对 SAML 的支持反而比 OIDC 更成熟——要具体情况具体分析。已有 AD FS 的企业在选型时还要把"AD FS 自身的退场路径"算进去：迁到 Entra ID 还是迁到自建 IdP，判断依据和迁移步骤见 [AD FS 迁移 Microsoft Entra ID]({{< relref "../solution-blogs/adfs-migration-entra-id" >}})。
 
 ### 坑 4：在公网暴露 LDAP
 

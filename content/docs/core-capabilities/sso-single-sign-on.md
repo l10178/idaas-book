@@ -245,7 +245,7 @@ SSO 是 IAM 体系中最直观的入口功能，也是最核心的能力之一�
 
 **企业 IAM 选型建议**：
 - 新项目优先 OIDC SSO（生态更好，开发体验更佳）
-- 已有大量 SAML 基础设施（如 Shibboleth IDP、AD FS），保持 SAML 并逐步迁移
+- 已有大量 SAML 基础设施（如 Shibboleth IDP、AD FS），保持 SAML 并逐步迁移；AD FS 环境的迁移顺序（先域联邦转托管、再逐应用迁 claims）与常见失败点见 [AD FS 迁移 Microsoft Entra ID]({{< relref "docs/solution-blogs/adfs-migration-entra-id" >}})
 - 需要对接学校/政府 SAML 联邦，必须支持 SAML
 
 如果同一 IAM 平台同时服务 OIDC 和 SAML 应用，SSO 之外还要验证跨协议用户标识是否稳定；不要仅凭 email 相同就合并账户，具体检查项见 [IAM 多协议集成实战]({{< relref "docs/solution-blogs/iam-multi-protocol-integration.md" >}})。
