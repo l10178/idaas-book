@@ -1,6 +1,6 @@
 ---
 title: "多租户 IAM 架构设计与方案对比 — 隔离模式、实现与选型 | IDaaS Book"
-description: "企业多租户 IAM 架构完整指南：共享 IDP、独立 Realm、联邦模式三种隔离方案对比、Mermaid 架构图解、Keycloak 多租户实践及选型决策树"
+description: "企业多租户 IAM 架构完整指南：共享 IDP、独立 Realm、联邦模式对比与 Mermaid 图解，含 Keycloak Organizations 组织级隔离、成员生命周期与选型决策树"
 date: 2026-07-10T00:00:00+08:00
 draft: false
 weight: 59
@@ -70,7 +70,7 @@ graph TB
     style R fill:#bbf,stroke:#333
 ```
 
-**实现方式**：在 Keycloak 中用同一个 Realm，通过 Group、Role、Attribute 区分租户；在 Auth0/Okta 中用 Organization 特性。
+**实现方式**：在 Keycloak 中用同一个 Realm，通过 Group、Role、Attribute 区分租户；从 Keycloak 26.0 起还可以直接用 Organizations 把租户建模为 Realm 内的组织对象，每个组织有自己的成员集合、组织组层级和上游 IdP 绑定，配置与排错见 [Keycloak Organizations 多租户实践]({{< relref "docs/solution-blogs/keycloak-organizations-multitenancy.md" >}})。在 Auth0/Okta 中对应各自的 Organization 特性。
 
 **适用场景**：
 - 租户数量和用户规模尚未超过压测、数据库连接池与运维自动化能够稳定承载的范围；“100”只能作为容量评估的起始假设，不能当成产品上限
@@ -264,6 +264,22 @@ Keycloak 原生支持上述三种模式，以下是生产实践中的关键经�
 - 审计日志中必须带上 group/tenant 维度，否则排查问题会非常痛苦
 - 不要用 Realm Role 做租户隔离——Role 是跨 Group 的
 
+### 模式一落地：Keycloak Organizations（26.0 起）
+
+用 Realm 级 Group 区分租户时，同名路径会冲突：租户 A 和租户 B 都需要 `/Engineering` 时要靠命名前缀绕开；组织成员关系也只能靠属性推断。Organizations 把这些收敛成 Realm 内的一等对象，是 26.0 起 Keycloak 官方推荐的 B2B 多租户建模方式。
+
+它和「Realm + Group」的关键区别：
+
+| 维度 | Realm + Group | Organizations |
+|------|--------------|---------------|
+| 成员身份 | 靠 group 路径推断 | 显式成员关系，区分 managed / unmanaged |
+| 组隔离 | 全 Realm 共享，路径必须唯一 | 每个组织一套组层级，同名路径互不冲突 |
+| 上游 IdP | 全 Realm 共用的 IdP | 可绑定到具体组织，按邮箱域名路由 |
+| Token 表达 | 标准 group mapper | `organization` claim（需客户端请求 `organization` scope） |
+| 角色映射 | Realm / client 角色直接授予用户 | 26.7 起组织组可承载角色映射并继承给成员 |
+
+三个必须在设计阶段决定的问题：**成员是 managed 还是 unmanaged**（决定删组织会不会连带删账号）、**是否用组织组承载角色**（26.7 起可行，但组织组不能用于 Keycloak authorization policies，需要 realm group）、**存量 Realm 的认证流是否已改**（只打开开关不生效）。完整的字段语义、认证流改法、Admin REST API 与排错表见 [Keycloak Organizations 多租户实践]({{< relref "docs/solution-blogs/keycloak-organizations-multitenancy.md" >}})。
+
 ### 模式二落地：Per-Tenant Realm
 
 Keycloak 26 中，每个 Realm 是独立的配置域。自动化新增 Realm 的典型流程：
@@ -322,6 +338,9 @@ A: RBAC（基于角色的访问控制）是授权模型，决定"谁能访问什
 **Q: Keycloak 每个 Realm 的资源开销有多大？**
 A: 不应使用未经基准测试的固定内存数字做容量规划。Realm 数量、用户/客户端/会话数量、缓存配置、登录峰值和数据库连接池都会影响资源消耗；应在目标版本和代表性数据集上测量，并把创建、升级、备份恢复和删除演练纳入验收。详见 [Keycloak 高可用集群部署]({{< relref "docs/solution-blogs/keycloak-ha-dr.md" >}})。
 
+**Q: Keycloak 的 Organizations 和「一个租户一个 Realm」应该怎么选？**
+A: 先看边界需求，而不是租户数量。需要独立签名密钥、独立数据库、独立备份粒度或独立故障域的客户，仍然要走 per-Realm 或独立实例——组织是同一 Realm 共享进程与存储内的数据对象，不提供这些边界。反过来，如果只是不想为每个客户维护一套 Realm 配置，且客户愿意用自己企业的 IdP 登录（BYOIDP），Organizations 的运维成本更低：公共 client、scope 和策略只维护一份，租户级差异由组织承担。实践上常见的是混合模式——少数有强隔离诉求的大客户用 per-Realm，长尾客户进 Organizations。启用前要先确认版本能力（26.0 起正式支持、26.6 才有组织组、26.7 才有组织组角色继承）并改好存量 Realm 的认证流，详见 [Keycloak Organizations 多租户实践]({{< relref "docs/solution-blogs/keycloak-organizations-multitenancy.md" >}})。
+
 **Q: 如何实现多租户的审计日志隔离？**
 A: 在 Keycloak 中，审计事件（`Event`）天然包含 `realmId`，如果使用共享 Realm+Group 模式，需要通过自定义 Event Listener 在事件中注入 group/tenant 信息。下游日志系统（如 ELK/Loki）按 tenantId 做索引分区。
 
@@ -338,4 +357,4 @@ A: 三种方式：(1) 共享数据库 + 共享表（tenant_id 字段过滤）—
 2. **合规需求**决定了隔离的上限
 3. **运维能力**决定了你能驾驭的复杂度上限
 
-从共享 IDP 起步，在租户数突破 100、出现差异化策略需求时切换到独立 Realm，在遇到 BYOIDP 客户时引入联邦层——这是最常见的安全增长路径。
+从共享 IDP 起步，在出现独立密钥、独立存储或独立故障域需求时切换到独立 Realm，在遇到 BYOIDP 客户时引入联邦层——这是最常见的安全增长路径。在 Keycloak 上，共享 IDP 这一步从 26.0 起有了更直接的实现：用 Organizations 把租户建模成 Realm 内对象，不必再用 Group 路径约定来模拟租户边界。

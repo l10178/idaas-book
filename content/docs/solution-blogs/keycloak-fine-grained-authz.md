@@ -311,6 +311,12 @@ public List<Order> listOrders(Authentication auth) {
 
 > **注意**：Keycloak 默认不会把 Groups 放进 JWT。需要添加 Group Mapper（Client → Client Scopes → 对应的 scope → Mappers → Add mapper → Group Membership），勾选 "Full group path"。
 
+### 方案三的边界：组织组不能用于授权策略
+
+如果租户是用 Keycloak Organizations 建的，要特别注意组的作用域：**组织组（Organization Groups）不能用于 Keycloak authorization policies**，Group-based Policy 只能选 realm group。这不是版本缺陷，而是有意的设计边界——authorization policy 在 Realm 级别评估，组织组在组织上下文里有独立的路径命名空间，两者不在同一个坐标系里。
+
+结果是：用 Organizations 做 B2B 多租户时，如果授权决策要在 Keycloak 内部完成，仍然需要把参与策略的组建在 Realm 级；组织组只适合承载租户内的组织结构和（26.7 起的）角色继承，并把结果通过 `organization` claim 下发给应用，由应用侧做判断。组织组与 realm group 的能力差异见 [Keycloak Organizations 多租户实践]({{< relref "keycloak-organizations-multitenancy" >}})。
+
 ## 常见错误
 
 | 症状 | 原因 | 解决 |
