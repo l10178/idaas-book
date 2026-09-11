@@ -100,7 +100,7 @@ toc: true
 | **Dex** | 最初由 CoreOS 开发、现由 dexidp 社区维护的轻量级 OIDC 身份代理 |
 | **OpenLDAP** | 开源 LDAP 实现 |
 | **AD** | Active Directory，微软目录服务 |
-| **AD FS** | Active Directory Federation Services |
+| **AD FS** | Active Directory Federation Services，Windows Server 的联邦身份服务角色；新部署已被建议改为 Microsoft Entra ID。迁移路径见 [AD FS 迁移 Microsoft Entra ID]({{< relref "docs/solution-blogs/adfs-migration-entra-id" >}}) |
 | **Okta** | 商业 IDaaS 领导者 |
 | **Auth0** | 面向开发者的 IDaaS（已被 Okta 收购） |
 | **Azure AD** | 微软的云身份服务，2023 年起更名为 Microsoft Entra ID |

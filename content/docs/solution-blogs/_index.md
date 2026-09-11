@@ -49,3 +49,5 @@ menu:
 | [OAuth 2.0 设备授权流程（Device Authorization Grant）IAM 实战]({{< relref "oauth2-device-authorization-grant" >}}) | RFC 8628、CLI 工具 SSO 登录、Device Code Flow 原理与 Mermaid 时序图、Keycloak Device Flow 配置、Public Client 安全考量 |
 | [OAuth 2.0 Token Introspection 实践 - API 网关验证 Token 的正确方式]({{< relref "oauth2-token-introspection-guide" >}}) | RFC 7662、API 网关验证 Token、Nginx auth_request 集成、Kong/APISIX 方案、Introspection 缓存策略、vs JWT 本地验证、Keycloak 配置 |
 | [IAM 密码策略实战 - NIST SP 800-63B 与等保 2.0 在 Keycloak 中的落地]({{< relref "iam-password-policy-guide" >}}) | NIST SP 800-63B、等保 2.0 密码要求、Argon2id 哈希切换、泄露密码黑名单、分层密码策略、密码策略排错 |
+| [AD FS 迁移 Microsoft Entra ID：IAM 联邦退场实战]({{< relref "adfs-migration-entra-id" >}}) | 域联邦转托管、staged rollout 边界、60 分钟转换窗口、NameID 受限声明集、SAML 150 组上限、回滚命令、故障对照表 |
+| [Keycloak User Profile 用正则限制企业邮箱注册]({{< relref "keycloak-user-profile-pattern-validator" >}}) | User Profile pattern validator、邮箱后缀白名单、正则边界、验证方法、可绕开场景 |

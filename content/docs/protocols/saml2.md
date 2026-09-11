@@ -324,7 +324,7 @@ IdP 使用自己的私钥对断言进行数字签名，SP 用 IdP 元数据中�
 
 用户使用域账号登录，通过 AD FS 签发 SAML 断言，无缝访问 SaaS 应用。
 
-> 趋势提示：Microsoft 已推荐将 AD FS 迁移至 Microsoft Entra ID（原 Azure AD），AD FS 不再新增功能、仅维护安全更新；新部署优先考虑 Entra ID 作为 SAML/OIDC IdP，已有 AD FS 可经联邦与 Entra ID 共存过渡。
+> 趋势提示：微软在 AD FS 概述文档中明确建议迁移到 Microsoft Entra ID（原 Azure AD），而不是升级到 AD FS 新版本；AD FS 本身仍是 Windows Server 角色，支持周期随所承载的 Windows Server 版本。新部署优先考虑 Entra ID 作为 SAML/OIDC IdP，已有 AD FS 可经联邦与 Entra ID 共存过渡。迁移的两条线（域联邦转托管、应用 claims 映射）、NameID 限制与回滚路径见 [AD FS 迁移 Microsoft Entra ID]({{< relref "../solution-blogs/adfs-migration-entra-id" >}})。
 
 ### 教育联邦（Shibboleth）
 
