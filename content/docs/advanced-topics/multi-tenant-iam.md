@@ -288,6 +288,7 @@ curl -X POST "https://idp.example.com/admin/realms" \
 
 **生产注意事项**：
 - Keycloak 在 1000+ Realm 时需注意 JVM 堆内存和 Infinispan 缓存配置，参见 [Keycloak 集群缓存调优]({{< relref "docs/solution-blogs/keycloak-cluster-cache-tuning.md" >}})
+- 按期检查管理 API 随 Realm 数量的伸缩表现：26.7.1 / 26.7.2 存在管理 API 每请求成本随 realm 数量超线性增长的回归（#51554），以及轻量 access token 的角色解析在每次管理 API 请求中扫描所有 realm 角色的回归（#51707）；两者均列在 26.7.3 的已解决问题列表中。Realm 数量多的部署应把升级前后管理 API 耗时作为对比基线，参见 [Keycloak 26.7.3 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-3-security-patch.md" >}})
 - 定期清理不再使用的 Realm，避免配置膨胀
 - 考虑 Realm 的数据库连接池独立配置（Keycloak 默认按 Realm 分配连接）
 

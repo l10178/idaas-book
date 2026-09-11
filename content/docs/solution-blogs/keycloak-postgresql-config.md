@@ -49,7 +49,7 @@ Keycloak 的数据库连接由 Quarkus 内置的连接池（Agroal）管理。�
 
 ## Keycloak 26.x 数据库配置方式
 
-Keycloak 26.x（当前最新 26.7.2）使用 Quarkus 配置体系，不再用旧的 `-Dkeycloak.connectionsJpa.*` 方式。所有数据库配置通过环境变量或 `conf/keycloak.conf` 文件设置。
+Keycloak 26.x（当前最新补丁版本 26.7.3，2026-08-31 发布）使用 Quarkus 配置体系，不再用旧的 `-Dkeycloak.connectionsJpa.*` 方式。所有数据库配置通过环境变量或 `conf/keycloak.conf` 文件设置。
 
 ### 最小生产配置
 
@@ -92,7 +92,7 @@ services:
       retries: 5
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.7.2
+    image: quay.io/keycloak/keycloak:26.7.3
     environment:
       KC_DB: postgres
       KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
@@ -137,7 +137,7 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:26.7.2
+          image: quay.io/keycloak/keycloak:26.7.3
           args: ["start", "--optimized"]
           env:
             - name: KC_DB

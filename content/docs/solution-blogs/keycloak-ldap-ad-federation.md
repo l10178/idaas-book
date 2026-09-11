@@ -193,7 +193,7 @@ spi-connections-ldap-read-timeout-millis=5000
 
 6. **缓存失效**：Keycloak 默认缓存 LDAP 用户数据。如果 LDAP 侧禁用了一个用户但 Keycloak 侧用户仍可访问（因为此前登录的 session 还在），可在 Realm → User federation → ldap → Cache Settings 中将 `Cache policy` 设为 `NO_CACHE` 或缩短 `EVICT_DAILY` 等。
 
-7. **安全传输**：生产必须用 LDAPS（636）。如需 StartTLS（389 升级），确认 LDAP 服务器已正确配置 StartTLS 且不存在降级风险。
+7. **安全传输**：生产必须用 LDAPS（636）。如需 StartTLS（389 升级），确认 LDAP 服务器已正确配置 StartTLS 且不存在降级风险。另外要注意：CA 受信任不等于目标主机可信——无论 Keycloak 版本如何，都应确认 LDAP 服务器证书的主机名/SAN 与 Keycloak 实际连接的主机名一致（可先用 `openssl s_client -connect dc.example.com:636 -verify_hostname dc.example.com </dev/null` 手工验证）。Keycloak 26.7.3 的安全修复列表中有一条 LDAP client 证书主机名校验相关条目（CVE-2026-35563），但该组件的实际暴露面需要在依赖树上确认，判断方法见 [Keycloak 26.7.3 安全补丁解读]({{< relref "keycloak-26-7-3-security-patch" >}})。
 
 ## 回滚方式
 
