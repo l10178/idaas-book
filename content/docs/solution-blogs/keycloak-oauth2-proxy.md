@@ -489,6 +489,8 @@ curl -sS -o /dev/null -w '%{http_code}\n' \
 | Cookie 在子域名不生效 | 未设置覆盖子域的 `Domain` 属性，或实际主域名不一致 | `--cookie-domain=example.com`（或按部署规范写 `.example.com`）让浏览器按 Domain 属性匹配主域名及子域；不要把前导点当成隔离开关 |
 | 登出后其他应用也退出 | Cookie Domain 跨应用共享 | 不同应用用不同的 oauth2-proxy 实例，或不同 Cookie Name |
 
+上表覆盖的是应用侧症状。如果登出方向相反——用户点了退出、IdP 会话也结束了，但另一个应用仍是登录状态——那属于登出传播问题：Keycloak 只会通知配置了 backchannel logout URL 的客户端，且 oauth2-proxy 的 `/oauth2/sign_out` 本身不会结束 IdP 会话。这类问题的判定与配置见 [IAM 单点登出排错]({{< relref "keycloak-single-logout" >}})。
+
 ### 诊断命令速查
 
 ```bash
