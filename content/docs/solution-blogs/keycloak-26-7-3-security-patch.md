@@ -89,7 +89,7 @@ flowchart TD
 
 前两条是配置限制被绕过——如果你的架构依赖「只有特定 tenant/域的外部令牌才能换成本地令牌」做信任边界，需要重新验证。第三条更隐蔽：token 换过一手之后变成普通 bearer token，DPoP 的「持有密钥才能使用」保证在链路中段消失。如果你的服务间调用链上有 token exchange，且你认为全链路都是 sender-constrained，这就是一个语义缺口。
 
-DPoP 的绑定机制与验证方式见 [OAuth 2.0 DPoP 深度解析]({{< relref "docs/protocols/oauth2-dpop.md" >}})。
+DPoP 的绑定机制与验证方式见 [OAuth 2.0 DPoP 深度解析]({{< relref "docs/protocols/oauth2-dpop.md" >}})。两个版本对 sender-constrained 令牌的处理并不一致（26.6 一律拒绝、26.7 起允许同客户端自换、Legacy V1 直接剥离绑定），逐版本的实际行为与验证方式见 [Keycloak Token Exchange 实战]({{< relref "docs/solution-blogs/keycloak-token-exchange.md" >}})。
 
 ## 4. 管理 API 的性能回归（26.7.1 起引入）
 

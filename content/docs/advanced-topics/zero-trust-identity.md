@@ -121,6 +121,8 @@ graph TD
 
 权限模型的选择直接影响零信任的落地效果，RBAC、ABAC、ReBAC 各有适用场景，详见 [IAM 授权模型对比]({{< relref "authorization-models" >}})。
 
+「应用间也做认证」还需要补一步：让 token 逐跳收窄。一个 `aud` 覆盖全网的 access token 在微隔离下等于没有隔离——任何一跳拿到它就能访问所有下游。更贴近最小权限的做法是在每跳用 token exchange 换取一个只含当前目标受众、只带必要 scope 的新令牌（RFC 8693），并注意 access token 换手后没有撤销链、必须靠短 TTL 收敛（Keycloak 的落地细节与限制见 [Keycloak Token Exchange 实战]({{< relref "../solution-blogs/keycloak-token-exchange" >}})）。
+
 ### 支柱三：持续验证
 
 - 不是"登录一次，永远信任"

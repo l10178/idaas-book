@@ -196,10 +196,11 @@ graph TD
 | 授权码 + PKCE | Web/SPA/移动 App | ✅ 用户授权 | 前端拿 code → 后端换 token | **唯一推荐** |
 | 客户端凭证 | 微服务间、后台任务 | ❌ 无用户 | client_id + secret 直接换 | ✅ 保留 |
 | 设备授权 | TV/IoT/CLI | ✅ 用户异地验证 | 设备轮询 + 用户异地确认 | ✅ 保留 |
+| 令牌交换（Token Exchange） | 网关/服务间代表用户下调受众与 scope | ❌ 无用户交互 | 用已有 token 换新 token（RFC 8693） | ✅ 保留（RFC 8693） |
 | 隐式模式 | （历史）纯前端 SPA | ✅ 用户授权 | token 直接在 URL 返回 | ❌ 已移除 |
 | ROPC 密码模式 | （历史）遗留系统 | ✅ 用户给密码 | 用用户密码换 token | ❌ 已移除 |
 
-> **决策原则**：新项目一律使用**授权码 + PKCE**。如果有特殊设备场景，用**设备授权模式**。服务间调用用**客户端凭证**。如果在维护使用隐式/ROPC 的旧系统，尽快迁移。
+> **决策原则**：新项目一律使用**授权码 + PKCE**。如果有特殊设备场景，用**设备授权模式**。服务间调用用**客户端凭证**；服务间调用需要**保持用户身份**并换受众时用**令牌交换**（Keycloak 的 Standard Token Exchange V2 配置与 Legacy V1 差异见 [Keycloak Token Exchange 实战]({{< relref "docs/solution-blogs/keycloak-token-exchange.md" >}})）。如果在维护使用隐式/ROPC 的旧系统，尽快迁移。
 
 ## 5.4 Token 详解
 
