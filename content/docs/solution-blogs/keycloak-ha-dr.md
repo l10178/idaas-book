@@ -70,7 +70,7 @@ Keycloak 使用 JGroups 做节点间通信和发现。Kubernetes 环境下推荐
 
 ### Kubernetes 环境（DNS_PING）
 
-使用 Operator 部署时，只需在 CR 中指定 `hostname` 使 Pod 有稳定的 DNS 名。JGroups 默认使用 `dns.DNS_PING` 通过 Headless Service 发现对端。
+使用 Operator 部署时，只需在 CR 中指定 `hostname` 使 Pod 有稳定的 DNS 名。JGroups 默认使用 `dns.DNS_PING` 通过 Headless Service 发现对端。CR 里 `spec.hostname` 的完整字段（`admin` / `strict` / `backchannelDynamic`）与校验约束见 [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}})。
 
 ```yaml
 # 使用 Operator CR 的多节点配置要点

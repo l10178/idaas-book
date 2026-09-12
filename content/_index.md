@@ -30,6 +30,7 @@ seo:
 | OIDC 和 OAuth 2.0 的区别是什么？ID Token 里有什么？ | [OpenID Connect]({{< relref "docs/protocols/openid-connect.md" >}}) — 认证层协议完整拆解 |
 | SAML 还在用吗？和 OIDC 怎么选？ | [SAML 2.0]({{< relref "docs/protocols/saml2.md" >}}) + [方案对比]({{< relref "docs/implementation/other-idaas-solutions.md" >}}) |
 | Keycloak 怎么在生产环境部署？Operator 还是 Helm？ | [Keycloak 架构]({{< relref "docs/keycloak/_index.md" >}}) + [K8s 生产部署]({{< relref "docs/implementation/kubernetes-production.md" >}}) |
+| 升级 Keycloak 26 后启动失败、issuer 变成内网地址、邮件链接不对？ | [Hostname v2 配置与 v1 选项迁移]({{< relref "docs/solution-blogs/keycloak-hostname-v2-config.md" >}}) — 选项映射 + 校验错误对照 |
 | RBAC 够用吗？什么时候需要 ABAC 或 ReBAC？ | [授权模型深度对比]({{< relref "docs/advanced-topics/authorization-models.md" >}}) |
 | 多租户 SaaS 怎么设计账号体系？ | [集成模式]({{< relref "docs/implementation/integration-patterns.md" >}}) + [身份生命周期]({{< relref "docs/fundamentals/identity-lifecycle.md" >}}) |
 | 零信任到底是什么？怎么落地？ | [零信任与身份驱动安全]({{< relref "docs/advanced-topics/zero-trust-identity.md" >}}) |

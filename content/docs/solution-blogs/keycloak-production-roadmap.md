@@ -166,6 +166,8 @@ server {
 | 重定向循环 | 反向代理做了 HTTP → HTTPS 但不传 `X-Forwarded-Proto` | 确保反向代理传了该 Header，且 Keycloak 配了匹配的 `--proxy-headers` |
 
 > 📖 详细排错：[Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}})
+>
+> 📖 hostname 选项本身怎么配、升级 26 后旧参数怎么替换：[Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}})
 
 ---
 
