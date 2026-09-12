@@ -326,7 +326,7 @@ oauth2-proxy --config=/etc/oauth2-proxy.cfg --config-test && echo "config OK"
 | 方案 | 定位 | 适合 | 不适合 |
 |------|------|------|--------|
 | **oauth2-proxy** | 轻量 OAuth2 反向代理 | 内部工具统一登录，Ingress 层拦截，快速集成 | 需要细粒度 RBAC/策略引擎的场景 |
-| [Pomerium](https://www.pomerium.com/) | 企业级零信任接入代理 | 需要细粒度策略、设备信任、多 IDP 联合 | 小团队快速上手（配置复杂度高） |
+| [Pomerium](https://www.pomerium.com/) | 代理式身份网关（自带数据面，v0.21 起不支持 forward auth） | 需要路由级细粒度策略、上游验签 JWT、TCP 接入 | 小团队快速上手（配置复杂度高） |
 | Traefik ForwardAuth | 内置中间件 | 已用 Traefik 的 K8s 集群 | 需要单独部署一个 ForwardAuth 后端（可以是 oauth2-proxy） |
 | Nginx `auth_request` | 内置模块 | 已用 Nginx Ingress 的 K8s 集群 | 需要单独部署一个 auth 后端（可以是 oauth2-proxy） |
 | Nginx `ngx_http_auth_jwt_module` | JWT 本地校验 | API 网关，高性能 JWT 验证 | 需要 OAuth2 回调流程的场景（模块只管校验，不管登录） |
