@@ -226,6 +226,8 @@ env:
 
 **Keycloak 24 及更早版本**的配置语义不同。维护旧集群时按对应版本文档操作；不要把旧配置和新配置混在同一个 Deployment 里。
 
+> hostname v2 的完整选项映射（v1 → v2）、四种部署拓扑的最小配置、启动校验错误文本与 issuer / 邮件链接排错，见 [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}})。
+
 ### 验证
 
 ```bash

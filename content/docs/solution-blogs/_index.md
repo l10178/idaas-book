@@ -54,3 +54,4 @@ menu:
 | [Keycloak Organizations 多租户实践：B2B 身份隔离与成员生命周期]({{< relref "keycloak-organizations-multitenancy" >}}) | Organizations 启用、managed/unmanaged 成员、邀请与 Admin REST API、organization claim 映射、组织组、存量 Realm 认证流迁移、排错表 |
 | [Keycloak Token Exchange 实战：Standard V2 配置与 V1 迁移]({{< relref "keycloak-token-exchange" >}}) | Standard V2 vs Legacy V1、客户端开关、audience 只能收窄、Requested audience not available、DPoP/mTLS 令牌换手限制、撤销链、`downscope-assertion-grant-enforcer`、FGAP 迁移 |
 | [Pomerium Core 代理认证实战：Keycloak + JWT 验签保护内部应用]({{< relref "pomerium-core-keycloak-proxy-auth" >}}) | 开源版代理认证、`/oauth2/callback`、`claim/groups` 替代 `groups`、`X-Pomerium-Jwt-Assertion` 验签、JWKS、aud/exp 校验、排错与回滚 |
+| [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}}) | hostname v1 移除清单、v1→v2 选项映射、backchannel 行为反转、四种拓扑最小配置、Operator CR 字段、启动校验错误文本、issuer/邮件链接排错与回滚 |

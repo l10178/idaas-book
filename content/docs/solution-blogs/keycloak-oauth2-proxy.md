@@ -120,7 +120,7 @@ curl --fail-with-body -sS "$ISSUER/.well-known/openid-configuration" \
   | jq -e --arg issuer "$ISSUER" '.issuer == $issuer'
 ```
 
-如果命令失败，先修正 Keycloak 的外部 hostname、反向代理 headers 或 `--oidc-issuer-url`；Discovery 没有对齐时，继续改 mapper 只是在给错误堆更多日志。
+如果命令失败，先修正 Keycloak 的外部 hostname、反向代理 headers 或 `--oidc-issuer-url`；Discovery 没有对齐时，继续改 mapper 只是在给错误堆更多日志。hostname 侧的具体配置与常见误配（`hostname-admin` 必须是完整 URL、`hostname-backchannel-dynamic` 的前置条件等）见 [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}})。
 
 > **安全边界**：RFC 7636 的 PKCE 保护的是授权码兑换过程，不会替代 `iss`、`aud`、签名和过期时间校验。oauth2-proxy 的 `/oauth2/auth` 只适合做入口认证判定；后端若接收并使用 Bearer Token，仍需独立完成资源服务器校验。
 
