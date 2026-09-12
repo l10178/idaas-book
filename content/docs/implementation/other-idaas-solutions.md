@@ -189,17 +189,19 @@ Janssen 是 Linux Foundation 旗下的开源数字身份基础设施项目，202
 
 **核心优势**：
 - 基于 Envoy 的高性能反向代理，原生支持零信任架构
-- 声明式策略语言（PPL），路由级细粒度访问控制
-- 原生多 IDP 支持，不同路由可使用不同 IDP
-- 内置审计日志和会话管理
-- 支持 JWT 断言注入，后端可验证请求来源
+- 声明式策略语言（PPL），路由级细粒度访问控制（开源版可用判据：`claim/*`、`domain`、`email`、`user`、`source_ip`、`device`、`http_method`、`http_path` 等）
+- 代理式认证完整闭环：认证、授权、会话都在同一个数据面内完成
+- 支持签名 JWT 断言注入（`X-Pomerium-Jwt-Assertion` + JWKS），后端可验签确认请求确实来自代理
+- 同时覆盖 HTTP 路由与 TCP/SSH 类非 HTTP 服务
 
 **不足**：
 - 配置复杂度高于 oauth2-proxy，小团队快速上手有门槛
-- 企业特性（设备信任、高级报告）需企业版
+- 开源版交互式登录只有一套 `idp_provider`（多 IdP 需 IdP 联邦或企业版 Console）
+- `groups`、`record` 判据与目录同步、外部数据源属企业版；开源版需改用 `claim/*`
+- **v0.21 起移除 forward auth**：不能作为 Nginx `auth_request` / Traefik ForwardAuth 的外挂认证服务，必须由 Pomerium 自己承担数据面
 - 社区规模中等，中文资源有限
 
-> 📖 详见：[Pomerium 深度介绍 — 企业级零信任身份感知代理]({{< relref "docs/implementation/pomerium-deep-dive" >}})
+> 📖 详见：[Pomerium 深度介绍 — 开源版身份感知代理与代理认证实践]({{< relref "docs/implementation/pomerium-deep-dive" >}})
 
 ### SuperTokens
 
