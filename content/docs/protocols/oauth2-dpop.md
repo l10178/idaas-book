@@ -221,7 +221,7 @@ curl -s -X POST https://keycloak.example.com/realms/<REALM>/protocol/openid-conn
 3. **时钟偏差**：`iat` 允许 ±5 秒的时钟偏差。如果客户端和服务端时钟偏差过大，DPoP Proof 会被拒绝。
 4. **DPoP + PKCE 组合**：SPA 场景中 DPoP 和 PKCE 互补——PKCE 保护授权码交换阶段，DPoP 保护 Token 使用阶段。两者应同时启用。
 5. **与 OAuth 2.1 的关系**：OAuth 2.1 草稿中 DPoP 是推荐但非强制的（与 PKCE 不同，PKCE 在 OAuth 2.1 中是强制的）。
-6. **Token exchange 会改变 sender-constraint 语义**：Keycloak 26.7.3 修复的缺陷 #50963 指出，V1 token-exchange 会**剥离**绑定在 access token 上的 DPoP 约束。链路中一旦出现 token exchange，换手后的令牌可能已不再是 sender-constrained——不要默认「入口用了 DPoP」等于全链路都受 DPoP 保护。这一条的背景与其他 26.7.3 修复条目见 [Keycloak 26.7.3 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-3-security-patch.md" >}})。
+6. **Token exchange 会改变 sender-constraint 语义**：Keycloak 26.7.3 修复的缺陷 #50963 指出，V1 token-exchange 会**剥离**绑定在 access token 上的 DPoP 约束。链路中一旦出现 token exchange，换手后的令牌可能已不再是 sender-constrained——不要默认「入口用了 DPoP」等于全链路都受 DPoP 保护。Standard Token Exchange V2 的规则在两个版本间变化过（26.6 拒绝所有 sender-constrained 令牌，26.7 起允许客户端交换自己签发的令牌），逐版本行为见 [Keycloak Token Exchange 实战]({{< relref "../solution-blogs/keycloak-token-exchange" >}})，这一条的背景与其他 26.7.3 修复条目见 [Keycloak 26.7.3 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-3-security-patch.md" >}})。
 
 ## FAQ
 
