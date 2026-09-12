@@ -337,9 +337,9 @@ logout_token=<JWT>
 
 这在用户从 OP 直接登出时尤其重要，确保所有应用都能及时清除用户的会话。
 
-### Session Management（旧版）
+### Session Management
 
-OIDC Session Management 规范（draft-ietf-oauth-session-management，长期处于草案状态、未成为正式 RFC）定义了基于 iframe 的会话状态检测，但由于浏览器的第三方 Cookie 限制（Safari ITP、Firefox ETP），这种方法已基本不可用。建议使用 Back-Channel Logout 和短 Session 作为替代方案。
+OIDC Session Management 1.0 已于 2022 年 9 月随 RP-Initiated / Front-Channel / Back-Channel Logout 一同成为 OpenID Foundation 的 Final 规范（不是长期草案）。它定义基于 OP iframe 的会话状态检测，由浏览器主动发现「OP 会话已结束」并触发本地登出；但由于第三方 Cookie 限制（Safari ITP、Firefox ETP），这种前端检测在生产环境中的可靠性已明显下降。新部署应把 RP-Initiated Logout 作为基础，并用 Back-Channel Logout 覆盖需要即时登出的服务端应用与网关。四种机制的边界、客户端的互斥开关与登出令牌校验清单见 [IAM 单点登出排错]({{< relref "../solution-blogs/keycloak-single-logout" >}})。
 
 ## 6.8 安全考量
 

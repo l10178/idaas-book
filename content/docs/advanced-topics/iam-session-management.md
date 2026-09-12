@@ -113,9 +113,9 @@ OIDC 定义了三种登出机制：
 | **Backchannel Logout** | IDP 通过后端直连通知所有已登录的应用销毁 Session | 敏感应用，需要应用支持 Backchannel Logout URI |
 | **Frontchannel Logout** | IDP 通过 iframe 在前端通知应用登出（已基本被 Backchannel 替代） | 遗留场景，受第三方 Cookie 限制影响 |
 
-在生产中，合理的策略是：**RP-Initiated Logout 作为基础 + Backchannel Logout 覆盖敏感应用**。Keycloak 在 Admin Console 的 Client 设置中可配置 Backchannel Logout URL。
+在生产中，合理的策略是：**RP-Initiated Logout 作为基础 + Backchannel Logout 覆盖敏感应用**。Keycloak 在 Admin Console 的 Client 设置中可配置 Backchannel Logout URL，但该字段与 Front-Channel Logout 是同一客户端上的互斥开关，配了 URL 却没关开关时不会有任何登出请求发出。
 
-实际排查中，登出不完整是常见问题。症状是：用户在应用 A 登出，但应用 B 的 Session 还在，刷新页面后仍然登录状态。根因通常是 Backchannel Logout 未配置或应用 B 的登出端点不可达。
+实际排查中，登出不完整是常见问题。症状是：用户在应用 A 登出，但应用 B 的 Session 还在，刷新页面后仍然登录状态。根因通常是 Backchannel Logout 未配置或应用 B 的登出端点不可达。这类问题的源码级判定、Logout Token 字段要求与 oauth2-proxy 端的跳转配置见 [IAM 单点登出排错]({{< relref "../solution-blogs/keycloak-single-logout" >}})。
 
 ## 会话超时与吊销策略
 

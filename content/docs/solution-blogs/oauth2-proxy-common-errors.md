@@ -652,6 +652,8 @@ oauth2-proxy 官方配置文档建议在启用 `--cookie-secure` 时考虑使用
 
 **根因**：多个应用共用同一个 oauth2-proxy 实例和同一个 Cookie Domain。调用 `/oauth2/sign_out` 时，清除了所有子域共享的 Cookie。
 
+如果现象是反过来的——某个应用仍处于登录状态，问题不在 Cookie 共享：`/oauth2/sign_out` 只清 oauth2-proxy 自己的 Cookie，IdP 会话没有被结束，而没被通知到的客户端也不会自行登出。分层原因与最小配置见 [IAM 单点登出排错]({{< relref "keycloak-single-logout" >}})。
+
 这可能是**符合预期的**（统一登出是 SSO 的标准行为），也可能是**不想要的**（不同应用应该独立管理 session）。
 
 ### 方案
