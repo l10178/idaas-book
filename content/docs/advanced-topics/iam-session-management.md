@@ -121,16 +121,18 @@ OIDC 定义了三种登出机制：
 
 ### Keycloak 的会话超时配置
 
-Keycloak 提供两层超时控制（在 Realm Settings → Tokens 中配置）：
+Keycloak 的会话超时分散在两个 Tab：**Realm Settings → Sessions** 管用户会话（SSO Session Idle / Max）与客户端会话（Client Session Idle / Max），**Realm Settings → Tokens** 管 Access Token 生命周期与 Refresh Token 轮换开关。把两者混在一个 Tab 里记忆，很容易改了 Client Session 却以为改的是整个 Realm 的登录有效期。
 
-| 配置项 | 默认值 | 建议 |
-|--------|--------|------|
-| **SSO Session Idle** | 由 Realm 配置决定 | 按应用风险和用户操作模式设定 |
-| **SSO Session Max** | 由 Realm 配置决定 | 高风险管理面应明显短于普通办公应用 |
-| **Access Token Lifespan** | 由 Realm/客户端配置决定 | 在可接受的刷新开销下尽量缩短 |
-| **Refresh Token Max** | 由 Realm/客户端及会话策略共同决定 | 与会话最大时长、轮换和撤销策略一起验证 |
+| 配置项 | 位置 | 建议 |
+|--------|------|------|
+| **SSO Session Idle** | Sessions | 按应用风险和用户操作模式设定 |
+| **SSO Session Max** | Sessions | 高风险管理面应明显短于普通办公应用 |
+| **Client Session Idle / Max** | Sessions | 留空即继承 SSO 值；只收紧、不放大 |
+| **Access Token Lifespan** | Tokens | 在可接受的刷新开销下尽量缩短 |
 
 `SSO Session Idle` 是用户无操作后的空闲超时，`SSO Session Max` 是绝对超时——无论用户是否活跃，到达时间后必须重新认证。
+
+客户端会话是用户会话的子会话，它的到期时刻还要与用户会话到期时刻取最小值，因此**把 Client Session Max 调得比 SSO Session Max 更大不会延长 Refresh Token 的有效期**；26.5 起这种越界配置会在保存时被直接拒绝。各字段的取值优先级、校验报错文本与 `kcadm` 配置示例见 [IAM 会话超时排错：Keycloak SSO Session 与 Client Session 约束]({{< relref "../solution-blogs/keycloak-session-timeouts" >}})。
 
 ### 会话吊销场景
 

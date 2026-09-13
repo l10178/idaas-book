@@ -179,7 +179,7 @@ args:
 
 > **常见误区**：看到多副本就立刻加 Redis。这里有一个容易把排错方向带偏的细节：**默认 Cookie Session Store 并不要求回调落到同一个 Pod**。只要多个副本使用相同的 `--cookie-secret`，各副本都能解密由其他副本签发的会话 Cookie；把“多副本”直接等同于“必须上 Redis”会平白增加一个运行依赖。当前 oauth2-proxy 文档将 `cookie` 列为默认 Session Store，`redis` 是另一种可选后端。
 
-只有在以下情况才优先考虑 Redis：Cookie 体积超过浏览器或代理限制、需要服务端集中撤销会话，或希望不把 OAuth Token 放进 Cookie。迁移时先保留相同的外部回调地址和 Cookie 参数，在灰度副本上启用 Redis，并为 Redis 配置 TLS、认证、超时和监控；不要把 `--redis-insecure-skip-tls-verify=true` 当成生产修复。最小配置形态如下（连接字符串和密码放 Secret，不要写入 Git）：
+只有在以下情况才优先考虑 Redis：Cookie 体积超过浏览器或代理限制、需要服务端集中撤销会话，或希望不把 OAuth Token 放进 Cookie。迁移时先保留相同的外部回调地址和 Cookie 参数，在灰度副本上启用 Redis，并为 Redis 配置 TLS、认证、超时和监控；不要把 `--redis-insecure-skip-tls-verify=true` 当成生产修复。另外，Redis 里存的是会话数据，不是会话的「永久续期券」：能刷新多久最终由 Keycloak 侧的会话上限决定，网关 Cookie 有效期设得比 IdP 会话长只会换来一次失败的刷新，相关字段与校验见 [IAM 会话超时排错]({{< relref "keycloak-session-timeouts" >}})。最小配置形态如下（连接字符串和密码放 Secret，不要写入 Git）：
 
 ```yaml
 args:

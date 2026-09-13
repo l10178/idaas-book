@@ -56,3 +56,4 @@ menu:
 | [Pomerium Core 代理认证实战：Keycloak + JWT 验签保护内部应用]({{< relref "pomerium-core-keycloak-proxy-auth" >}}) | 开源版代理认证、`/oauth2/callback`、`claim/groups` 替代 `groups`、`X-Pomerium-Jwt-Assertion` 验签、JWKS、aud/exp 校验、排错与回滚 |
 | [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}}) | hostname v1 移除清单、v1→v2 选项映射、backchannel 行为反转、四种拓扑最小配置、Operator CR 字段、启动校验错误文本、issuer/邮件链接排错与回滚 |
 | [IAM 单点登出排错：Keycloak 登出不彻底的原因与修复]({{< relref "keycloak-single-logout" >}}) | RP-Initiated Logout、Back-Channel / Front-Channel 互斥开关、Logout Token 字段与 `nonce` 禁令、`post.logout.redirect.uris` 语义、oauth2-proxy `sign_out` 白名单跳转、400 报错与确认页卡住、管理员吊销会话 |
+| [IAM 会话超时排错：Keycloak SSO Session 与 Client Session 约束]({{< relref "keycloak-session-timeouts" >}}) | SSO Session Idle/Max vs Client Session 取值优先级、Refresh Token 被 `min()` 夹住、26.5 超时校验报错文本、Remember Me 超时、离线会话上限、`kcadm` 配置与 Admin REST 验证 |
