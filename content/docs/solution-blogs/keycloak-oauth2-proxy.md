@@ -540,6 +540,7 @@ curl -v -H "Cookie: _oauth2_proxy=<复制值>" \
 5. **TLS 与代理信任**：外部访问必须使用 HTTPS；如果 TLS 在 Ingress 终结，需正确传递并限制 `X-Forwarded-*`，避免客户端可以直接向 oauth2-proxy 注入代理头。`--reverse-proxy=true` 只表示启用反向代理模式，不等于来源已经可信；同时配置 `--trusted-proxy-ip`，并在网络策略或 Service 暴露层阻止绕过 Ingress 直接访问 oauth2-proxy。Keycloak 也必须配置与公开地址一致的 hostname/proxy 模式。
 6. **监控**：按所用版本确认 `/metrics` 是否启用，并监控认证成功率、回调失败、上游 OIDC 错误、延迟和 401/403 比例；不要只看 Pod 是否存活。
 7. **后端再次验证 Token**：`X-Auth-Request-*` 是认证代理传递的请求头，后端必须只信任来自 Ingress 的请求。若后端使用 `Authorization` 或 `X-Auth-Request-Access-Token` 做 API 授权，仍要独立校验签名、`iss`、`aud`、过期时间和权限，不能把“已通过 `/oauth2/auth`”当成 API 授权结果。
+8. **不要给这个客户端开启 Require PAR**：oauth2-proxy 到 v7.15.4 仍未实现 PAR（RFC 9126），它始终走前端通道的授权请求。一旦在 Keycloak 侧把该客户端的 *Pushed Authorization Request Required* 打开，所有经它保护的应用会立刻无法登录，表现为用户被弹回应用并带 `error=invalid_request&error_description=Pushed Authorization Request is only allowed.`。安全评审要求启用 PAR 时，要么改用支持 PAR 的应用侧客户端，要么在变更记录里明确该网关客户端暂不覆盖，参见 [Keycloak PAR 实战]({{< relref "keycloak-par-pushed-authorization-requests" >}})。
 
 ## IAM 常见问题（FAQ）
 
