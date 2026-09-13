@@ -1,6 +1,6 @@
 ---
 title: "第23章：IAM 监控与可观测性最佳实践 — Metrics、日志、Trace 三位一体 | IDaaS Book"
-description: "IAM 监控与可观测性完整指南：身份系统关键指标定义、Prometheus 采集、审计日志规范、分布式追踪集成、告警策略与可观测性架构设计"
+description: "IAM 监控与可观测性完整指南：Keycloak 等身份系统的关键指标定义、Prometheus 采集、审计日志规范、分布式追踪集成、告警策略与可观测性架构设计"
 date: 2026-07-12T00:00:00+08:00
 draft: false
 weight: 54
@@ -83,6 +83,8 @@ graph TB
 | `iam_token_issue_total` | Token 签发量（按 grant_type 分组） | — | client_credentials 量异常暴增 |
 
 **实战建议**：`client_credentials` 的 Token 签发量是最容易被忽视的指标。一个忘记缓存 Token 的微服务可能以每秒几十次的频率请求 Token Endpoint，它的 RPS 甚至可能超过所有用户的登录请求之和。这个问题的修复不在 IAM 端（限流只是兜底），而应该在客户端加 Token 缓存和过期前提前刷新。
+
+另外，`iam_auth_active_sessions` 的一次突变不一定指向攻击或故障：Realm 的 SSO Session Max / Client Session Max 被调整后，到期时刻会按新配置重新计算，对在线会话立即生效，指标会跟着台阶式变化。看到会话数断层时，先核对最近的超时配置变更（见 [IAM 会话超时排错：Keycloak SSO Session 与 Client Session 约束]({{< relref "docs/solution-blogs/keycloak-session-timeouts.md" >}})），再去查安全事件。
 
 ### 23.3.2 后端依赖指标
 

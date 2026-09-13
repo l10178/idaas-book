@@ -188,7 +188,7 @@ RP-Initiated Logout 结束的是 IdP 的 SSO 会话；已签发的 access token 
 
 ### 管理员如何强制某个用户下线？
 
-Admin Console 的 “Sign out all active sessions”（admin REST：`POST /admin/realms/{realm}/users/{id}/logout`），它会逐会话触发 back-channel 登出并设置 not-before。前提是目标客户端配置了 backchannel logout URL，否则应用侧只能等 Token 过期。
+Admin Console 的 “Sign out all active sessions”（admin REST：`POST /admin/realms/{realm}/users/{id}/logout`），它会逐会话触发 back-channel 登出并设置 not-before。前提是目标客户端配置了 backchannel logout URL，否则应用侧只能等 Token 过期——而「过期」的确切时限由 SSO Session Max、Client Session Max 与 Access Token Lifespan 共同决定，见 [IAM 会话超时排错]({{< relref "keycloak-session-timeouts" >}})。
 
 ## 关键来源
 

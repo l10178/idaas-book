@@ -536,7 +536,7 @@ curl -v -H "Cookie: _oauth2_proxy=<复制值>" \
 1. **Cookie Secret 轮换**：cookie-secret 用于加密 Cookie，泄露后攻击者可伪造认证 Cookie。定期轮换需同步更新部署（旧 secret 签发的 Cookie 会失效，用户需重新登录）。
 2. **副本数**：至少 2 副本，配合 PodDisruptionBudget 保证高可用。
 3. **资源限制**：不要把未经压测的内存或 CPU 数字当成默认值。先用实际登录峰值、回调延迟和 OIDC 上游请求量建立基线，再设置 requests/limits；认证服务通常在发布或 Cookie 失效时出现突发流量。
-4. **Session Store 要按模式选择**：默认加密 Cookie 模式不要求多个副本共享服务端会话；只有需要 Redis 集中保存 Session、Cookie 过大，或希望服务端统一撤销时，才配置 `--session-store-type=redis` 和对应连接参数。引入 Redis 同时引入连接、超时、故障降级和凭据轮换问题，不能为了“多副本”机械添加。
+4. **Session Store 要按模式选择**：默认加密 Cookie 模式不要求多个副本共享服务端会话；只有需要 Redis 集中保存 Session、Cookie 过大，或希望服务端统一撤销时，才配置 `--session-store-type=redis` 和对应连接参数。引入 Redis 同时引入连接、超时、故障降级和凭据轮换问题，不能为了“多副本”机械添加。无论用哪种 Store，`--cookie-expire` / `--cookie-refresh` 都不应该比 Keycloak 的 SSO Session Max 更长，否则用户会遇到「Cookie 还在、刷新却被拒」的循环，参见 [IAM 会话超时排错]({{< relref "keycloak-session-timeouts" >}})。
 5. **TLS 与代理信任**：外部访问必须使用 HTTPS；如果 TLS 在 Ingress 终结，需正确传递并限制 `X-Forwarded-*`，避免客户端可以直接向 oauth2-proxy 注入代理头。`--reverse-proxy=true` 只表示启用反向代理模式，不等于来源已经可信；同时配置 `--trusted-proxy-ip`，并在网络策略或 Service 暴露层阻止绕过 Ingress 直接访问 oauth2-proxy。Keycloak 也必须配置与公开地址一致的 hostname/proxy 模式。
 6. **监控**：按所用版本确认 `/metrics` 是否启用，并监控认证成功率、回调失败、上游 OIDC 错误、延迟和 401/403 比例；不要只看 Pod 是否存活。
 7. **后端再次验证 Token**：`X-Auth-Request-*` 是认证代理传递的请求头，后端必须只信任来自 Ingress 的请求。若后端使用 `Authorization` 或 `X-Auth-Request-Access-Token` 做 API 授权，仍要独立校验签名、`iss`、`aud`、过期时间和权限，不能把“已通过 `/oauth2/auth`”当成 API 授权结果。
