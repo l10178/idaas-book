@@ -97,6 +97,8 @@ BFF 模式是 SPA 和移动应用的推荐模式：
 
 SPA 不能安全存储 Token（localStorage 易受 XSS 攻击，浏览器无法保护）。BFF 将 Token 存储在服务端，使用 HttpOnly、Secure、SameSite Cookie 与前端通信。
 
+> 这一模式的规范性要求见 RFC 10017（BCP 212）§6.1：BFF 必须以机密客户端身份运行、Cookie 必须带 `Secure`/`HttpOnly`、必须实现 CSRF 防护。落地时的最小配置、并发刷新导致的 `invalid_grant` 排错与回滚见 [IAM BFF 模式与 SPA Token 安全]({{< relref "../solution-blogs/iam-bff-spa-token-architecture" >}})。
+
 ### BFF 的实现
 
 ```typescript

@@ -156,7 +156,7 @@ Keycloak 的 Admin Console → Sessions 中可以看到当前所有活跃 Sessio
 
 3. **不要只比较一个“默认值”**。Refresh Token 的实际可用窗口受 Realm/客户端配置、SSO Session Max、轮换和撤销策略共同影响；上线前应使用真实配置验证：会话到期后刷新是否被拒绝、旧 Refresh Token 重用是否触发预期的撤销。
 
-4. **SPA 不要直接拿 Refresh Token**。浏览器的本地存储（localStorage/sessionStorage）对 XSS 不安全。SPA 场景应该用 BFF 模式：后端持有 Refresh Token 在 HttpOnly Cookie 中，前端只通过 `/token` 端点间接刷新。
+4. **SPA 不要直接拿 Refresh Token**。浏览器的本地存储（localStorage/sessionStorage）对 XSS 不安全。SPA 场景应该用 BFF 模式：Token 只存在后端会话里，浏览器只拿 HttpOnly Session Cookie，刷新动作全部由后端发起。注意是**后端**调 Token Endpoint，不是前端调一个刷新接口——后者只是把 Token 换了个地方存，攻击面没变。BFF 与网关模式的边界、并发刷新的排错见 [IAM BFF 模式与 SPA Token 安全]({{< relref "../solution-blogs/iam-bff-spa-token-architecture" >}})。
 
 ## IAM 会话管理 FAQ
 

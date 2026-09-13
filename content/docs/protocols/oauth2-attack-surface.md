@@ -324,7 +324,7 @@ DPoP 的核心价值：Token 本身不泄露私钥，攻击者即使拿到 Token
 1. **仅通过 HTTPS 传输**：禁止 HTTP 明文传输 Token
 2. **禁止 URL 传参**：不在 `?access_token=...` 中传递 Token（OAuth 2.1 已禁止）
 3. **后端优先**：Token 存储在后端 Session 中，前端只持有 Session Cookie（HttpOnly, Secure, SameSite=Lax）
-4. **BFF 模式对 SPA**：SPA 不直接持有 Refresh Token，通过 Backend-for-Frontend 代理 Token 刷新
+4. **BFF 模式对 SPA**：SPA 不直接持有 Refresh Token，由 Backend-for-Frontend 以机密客户端身份代理 Token 刷新（架构选择与并发刷新排错见 [IAM BFF 模式与 SPA Token 安全]({{< relref "../solution-blogs/iam-bff-spa-token-architecture" >}})）
 
 ---
 
@@ -418,7 +418,7 @@ Redirect URI 校验不严格。很多实现用了「前缀匹配」或「子串�
 - [OAuth 2.0 深度解读]({{< relref "oauth2-deep-dive.md" >}})：OAuth 2.0 授权框架的完整剖析
 - [OAuth 2.0 授权码流程与 PKCE]({{< relref "oauth2-authorization-code-pkce.md" >}})：授权码流程详解和 PKCE 密码学原理
 - [Keycloak 重定向循环与 401 排错指南]({{< relref "../solution-blogs/keycloak-redirect-loop-troubleshooting.md" >}})：Redirect URI 配置错误是 OAuth 重定向循环最常见的根因
-- [OAuth 2.0 for Browser-Based Apps](https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps)：IETF 浏览器应用安全最佳实践
+- [OAuth 2.0 for Browser-Based Applications（RFC 10017 / BCP 212，2026-08 发布）](https://www.rfc-editor.org/rfc/rfc10017)：浏览器端应用的三种架构模式与 MUST 级 Cookie/CSRF 要求，落地配置见 [IAM BFF 模式与 SPA Token 安全]({{< relref "../solution-blogs/iam-bff-spa-token-architecture" >}})。
 - [OAuth 2.0 Security BCP (RFC 9700)](https://www.rfc-editor.org/rfc/rfc9700)：已发布的 OAuth 2.0 安全最佳当前实践
 - [DPoP (RFC 9449)](https://datatracker.ietf.org/doc/html/rfc9449)：Token 持有证明机制
 - [OAuth 2.0 Mix-Up Mitigation (RFC 9207)](https://datatracker.ietf.org/doc/html/rfc9207)：Mix-Up Attack 防护规范
