@@ -155,6 +155,7 @@ sequenceDiagram
 - 授权服务器必须严格校验 redirect_uri 与注册值完全匹配（不允许通配符、不允许部分匹配）
 - 客户端使用 PKCE——即使攻击者截获 code，没有 code_verifier 也无法换 token
 - 使用 `state` 参数防止 CSRF
+- 需要连参数一起保护时，用 PAR（RFC 9126）把授权请求放到后通道提交，前端通道只留 `request_uri`；Keycloak 侧的两种强制方式与报错区别见 [Keycloak PAR 实战]({{< relref "docs/solution-blogs/keycloak-par-pushed-authorization-requests.md" >}})
 
 ### 2. CSRF 与 State 参数
 

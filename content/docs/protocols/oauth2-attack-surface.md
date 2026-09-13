@@ -71,6 +71,8 @@ sequenceDiagram
 
 3. **安全 BCP 的强化**：RFC 9700 要求客户端不要使用 Implicit Grant，并要求严格校验重定向 URI；这不是等待 OAuth 2.1 发布才开始做的事项
 
+4. **让参数根本不进前端通道**：精确匹配是在授权端点做的校验，攻击者仍可以在浏览器里改写本次请求的其他参数。把整份授权请求先用后通道推到授权服务器、浏览器只带一个 `request_uri` 引用（PAR，RFC 9126），可以同时对 redirect_uri 与其余参数做一次提前校验。Keycloak 上的落地方式、报错差异与不支持的客户端清单见 [Keycloak PAR 实战]({{< relref "docs/solution-blogs/keycloak-par-pushed-authorization-requests.md" >}})。
+
 ### 实际攻击案例参考
 
 2020 年前后，多个 OAuth 实现被发现 redirect_uri 校验绕过漏洞：
