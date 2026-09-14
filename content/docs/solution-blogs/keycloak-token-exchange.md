@@ -1,8 +1,8 @@
 ---
 title: "Keycloak Token Exchange 实战：Standard V2 配置与 V1 迁移 | IDaaS Book"
-description: "Keycloak 26.2+ Standard Token Exchange V2 落地：客户端开关、audience 只能收窄、subject_token 受众校验、DPoP/mTLS 令牌换手限制、refresh token 开关与 Legacy V1 权限模型迁移"
+description: "Keycloak 26.2+ Standard Token Exchange V2 落地：客户端开关、audience 只能收窄、subject_token 受众校验、400/403 报错原文对照、DPoP/mTLS 令牌换手限制、refresh token 开关与 Legacy V1 权限模型迁移"
 date: 2026-09-12T00:00:00+08:00
-lastmod: 2026-09-12T00:00:00+08:00
+lastmod: 2026-09-14T00:00:00+08:00
 draft: false
 weight: 77
 menu:
@@ -165,6 +165,7 @@ curl -sS -X POST ... | jq -r '.access_token' \
    - 26.6：Standard Token Exchange **一律拒绝**所有 sender-constrained 令牌（RFC 7800，含 DPoP 绑定与 X.509/mTLS 绑定）作为 `subject_token`，返回 `invalid_request`。
    - 26.7：放宽为**允许客户端交换自己签发的 sender-constrained 令牌**（用于改 audience、up/down scoping），并仍然要求客户端提供有效的 possession proof（DPoP proof 或匹配的客户端证书）；换成**另一个客户端**的令牌依旧被拒。
    - Legacy V1 则是另一种行为：换手后签发的 token **不带任何绑定**，DPoP 约束在链路中段消失。这条与 [OAuth 2.0 DPoP 深度解析]({{< relref "../protocols/oauth2-dpop" >}}) 里记录的 26.7.3 缺陷条目是同一个语义缺口。**不要把「入口用了 DPoP」当成「全链路 sender-constrained」。**
+   - **官方文档三处口径并不一致，按源码行为理解**：26.7.0 升级指南写的是「同客户端自换时 DPoP 绑定与 X.509/mTLS 绑定**都**被接受」，而 26.7.x 的 Server Administration Guide 至今保留一条注记，说 X.509 certificate-bound token（`cnf` 含 `x5t#S256`）**不能**作为 Standard Token Exchange 的 `subject_token`。按 `StandardTokenExchangeProvider.validateSenderConstrainedToken()` 的实际分支：非签发方发起 → 一律 400；签发方自换且带 `cnf` → 先校验 mTLS 证书持有证明、再校验 DPoP proof，任一不满足即 400。也就是说 mTLS 自换在代码路径上是通的，Server Admin 那条注记更像是 26.6「全拒」时期的遗留表述。**实务结论：不要依赖任何一处表述，用自己签发的 mTLS 令牌和跨客户端令牌各测一次，记录本版本的真实行为。**
 4. **撤销没有链**：把 `access-token1` 换成 `access-token2` 之后，撤销 `access-token1` **不会**撤销 `access-token2`（官方明确说不做 access token 的撤销链）。换手签发的 access token 只能靠短 TTL 自然过期。refresh token 才有链：撤销 `access-token1` 会连带撤销换手得到的 `refresh-token2`，并移除对应 client session，后续整条换手链一起失效。
 5. **V2 默认允许放大**。默认情况下换手可以请求 `subject_token` 里根本没有的 scope 和 audience。要强制「只降不升」，给客户端加 `downscope-assertion-grant-enforcer` 策略执行器——它会要求请求的 scope 不超过 subject token 已有的 scope，只允许降权（这个执行器在标准 token exchange 和 JWT Authorization Grant 上都适用）。
 6. **要 refresh token 必须单独开开关**：Admin Console → 该 OIDC 客户端 → **Advanced** 标签 → **OpenID Connect Compatibility Modes** → `Allow refresh token in Standard Token Exchange` 从默认的 `No` 改成 `Same session`。`Same session` 的含义是只有能复用 subject token 同一 user session 时才发放；subject token 来自 transient session 或 offline session 时会被拒。同理，**不能**请求 offline token（`scope=offline_access`）或从离线会话里换手。
@@ -203,16 +204,28 @@ curl -sS -X POST ... | jq -r '.access_token' \
 
 ## 常见错误表
 
-| 症状 | 根因 | 处理 |
-|------|------|------|
-| `403` `access_denied`，描述为 `Client not allowed to exchange` | 按 V1 文档配了 Permissions/GFAP，但 V1 特性没启用；或 V1 下权限资源与策略方向绑错（该文档已知有误，见 keycloak#35902） | 内部换手切 V2 并删掉 FGAP 依赖；确实需要 V1 时显式启用 `token-exchange:v1` + FGAP:v1，并按实测而非文档截图配权限 |
-| `invalid_request`：`Requested audience not available: <client>` | `audience` 只做过滤，不能新增受众；目标客户端没进入 requester client 的受众解析结果 | 给 requester client 挂上包含目标客户端 client role 的 client scope（自建 scope 或内置 `roles`），再用 Evaluate 验证；单次只请求一个 audience |
-| `invalid_request`：换手 sender-constrained 令牌被拒 | 26.6 一律拒绝；26.7 起只允许同客户端自换 | 确认是否自己签发的令牌；跨客户端场景改为先在链路首跳完成换手，或让下游直接接受原令牌 |
-| `subject_token` 校验失败（受众不匹配） | `subject_token` 的 `aud` 不含 requester client | 修 client scope / audience mapper，让 requester client 进入初始 token 的 `aud` |
-| 换手成功但下游仍 401/403 | 下游把 `azp` 或 `scope` 当成原客户端的值，或只验签名不验 `aud` | 下游按 `azp`（已变为 requester client）、`aud`、`scope` 重新授权 |
-| 响应里没有 refresh token | 客户端未开启 `Allow refresh token in Standard Token Exchange` | 在 Advanced → OpenID Connect Compatibility Modes 改成 `Same session`；或改为只换 access token |
-| public client 换手被拒 | V2 不支持 public client 发起 | 加 BFF/后端 confidential client，或用 refresh token grant 降权 |
-| 换手后 DPoP 校验失败 | 换手签发的令牌与绑定关系不匹配（V1 会剥离绑定） | 按第 3 条安全边界逐版本确认行为，不要在 V1 链路上假设 sender-constrained 成立 |
+左列按**报错原文**检索最快——这些字符串来自 Keycloak 源码的异常抛出点（`StandardTokenExchangeProvider` / `AbstractTokenExchangeProvider` / `V1TokenExchangeProvider`），不是文档里的意译，所以能直接和日志、`grep` 对上。
+
+| 报错原文 / HTTP / error | 触发条件 | 处理 |
+|------------------------|---------|------|
+| `403` `access_denied`：`Client is not within the token audience` | 请求方客户端不在 `subject_token` 的 `aud` 里。**这是 V2 最常见的 403，也是 V1 文档残留的经典误判点** | 让请求方进入初始 token 的 `aud`（client scope / client role 映射 / audience mapper），用 Evaluate 验证；唯一例外是客户端换自己签发的 token |
+| `403` `access_denied`：`Client not allowed to exchange` | **V1 专属**：FGAP v1 的 `token-exchange` 权限未配、或资源与策略方向绑错（该文档已知有误，见 keycloak#35902） | 内部换手切 V2 并删掉 FGAP 依赖；确实需要 V1 时显式启用 `token-exchange:v1` + FGAP:v1，按实测而非文档截图配权限 |
+| `400` `invalid_request`：`Invalid token` | `subject_token` 本身验签 / issuer / 有效期校验失败——**注意这条与受众无关**，别一看到「令牌不匹配」就去改 client scope | 确认 token 由本 realm 签发、未过期、签名可验 |
+| `400` `invalid_request`：`Invalid subject token type` | `subject_token_type` 不是 `urn:ietf:params:oauth:token-type:access_token`（V2 只接受 access token） | 改传 access token；需要换 JWT 断言的场景走 JWT Authorization Grant |
+| `400` `invalid_request`：`Requested audience not available: <client>` | `audience` 只做过滤，不能新增受众；目标客户端没进入请求方客户端的受众解析结果 | 给请求方客户端挂上包含目标客户端 client role 的 client scope（自建 scope 或内置 `roles`），用 Evaluate 验证；单次只请求一个 audience |
+| `400` `invalid_client`：`Public client is not allowed to exchange token` | 请求方是 public client——V2 明确拒绝，V1 时代「public 自换自降权」的用法已被关闭 | 加一层 BFF / confidential 客户端，或用 refresh token grant 的 `scope` 参数降权 |
+| `400` `invalid_client`：`Client disabled` | `audience` 指向的客户端已被禁用 | 启用目标客户端，或从 `audience` 中移除 |
+| `400` `invalid_request`：`Sender-constrained token exchange rejected as the token was not issued for the requesting client` | 用 DPoP/mTLS 绑定令牌发起换手，但请求方不是签发方 | 跨客户端换手不要用绑定令牌；需要保留绑定时在跨跳处重新获取令牌 |
+| `400` `invalid_request`：`DPoP proof is missing` | subject token 带 `cnf.jkt`，换手请求没带 `DPoP` 请求头，或 proof 公钥指纹与 `cnf` 不一致 | 补上 DPoP proof，指纹必须与绑定一致 |
+| `400` `invalid_scope`：`Missing consents for Token Exchange in client <clientId>` | 请求方客户端开了 `Consent required`，而用户没有同意全部被请求的 scope | 让用户完成授权；或重新评估服务端客户端是否真的需要强制 consent |
+| `400` `invalid_scope`：`Invalid scopes: <scope>` | `scope` 里含请求方客户端未授权的 optional client scope | 把该 scope 加成请求方客户端的 optional scope，或从请求中去掉 |
+| `400` `invalid_request`：`Scope offline_access not allowed for token exchange` | 请求 refresh token 时带上了 `offline_access`——换手不支持离线会话 | 去掉 `offline_access`；离线场景用独立的离线令牌方案 |
+| `400` `invalid_request`：`Refresh token not valid as requested_token_type because creating a new session is needed` | subject token 来自 transient session 或 offline session，无法复用同一 user session | 改用普通在线会话的 token，或只换 access token |
+| `400` `invalid_request`：`requested_token_type unsupported` | 请求了 refresh token，但 `Allow refresh token in Standard Token Exchange` 仍是默认的 `No`，或客户端本身不允许 refresh token | Advanced → OpenID Connect Compatibility Modes 改成 `Same session`，并确认客户端未关闭 refresh token |
+| 换手成功但下游仍 401/403 | 下游沿用原客户端的 `azp` / `scope` 判断，或只验签名不验 `aud` | 下游按 `azp`（已变为请求方客户端）、`aud`、`scope` 重新授权 |
+| 换手后 DPoP / mTLS 校验失败 | V1 会剥离绑定；V2 不跨客户端继承绑定 | 按安全边界第 3 条逐版本确认行为，不要假设 sender-constrained 全链路成立 |
+
+排错顺序建议：先看 HTTP 状态码定位阶段（**403 = 授权/受众问题，400 = 请求参数或令牌本身问题**），再用报错原文比对上表，最后才去动 client scope。反过来的顺序会让一次配置改动同时变更多个变量，回滚时说不清是哪一处生效。
 
 ## 回滚
 
@@ -246,6 +259,7 @@ client credentials 是"没有用户、以客户端自己身份"调用；token ex
 - Keycloak 官方文档：Configuring and using token exchange（Standard token exchange、参数与响应、scopes and audiences、Additional details、Comparison of standard and legacy token exchange、Token exchange delegation）
 - Keycloak 升级指南：Migrating to 26.2.0 `Supported standard token exchange`；Migrating to 26.6.0 `Sender-constrained tokens are now rejected in Standard Token Exchange`、`Deprecation of legacy Token Exchange`；Migrating to 26.7.0 `Token Exchange with Sender-constrained tokens allowed for scope changes`、`Experimental token-exchange-external-internal:v2 feature removed`
 - Keycloak 官方博客：Standard Token Exchange is now officially supported in Keycloak 26.2
+- Keycloak 源码（错误文本与校验分支的第二手验证）：`services/src/main/java/org/keycloak/protocol/oidc/tokenexchange/StandardTokenExchangeProvider.java`、`AbstractTokenExchangeProvider.java`、`V1TokenExchangeProvider.java`
 - Keycloak Server Administration Guide：Downscoping 与 Client Policies（`downscope-assertion-grant-enforcer`）
 - keycloak/keycloak discussion #40870（`Requested audience not available` 的实际成因与 client scope 修法）、issues #35902 / #25788 / #16965（V1 impersonation 权限文档与实际行为不一致）
 - RFC 8693 OAuth 2.0 Token Exchange；RFC 7800 Proof-of-Possession Key Semantics
