@@ -362,6 +362,9 @@ spec:
 ```
 
 这两个 Ingress 可以共享同一个 host；关键区别是业务 Ingress 有 `auth-url`，回调 Ingress 没有。若集群启用了 `server-snippet` 或其他全局认证策略，还要确认它没有覆盖这个例外路径。
+
+同理，如果入口已经换成 Gateway API 的 Envoy Gateway，可以用 `SecurityPolicy` 的原生 OIDC 去掉 oauth2-proxy 这一跳——但 `redirectURL` 与 `logoutPath` 必须落在被保护 HTTPRoute 的 host + path 前缀内，配置与排错见 [Envoy Gateway 原生 OIDC + Keycloak 落地与排错]({{< relref "envoy-gateway-oidc-keycloak" >}})。
+
 ## Traefik ForwardAuth 配置
 
 如果用 Traefik 替代 Nginx Ingress，使用 `ForwardAuth` 中间件。完整配置、排错和对比见专用指南：

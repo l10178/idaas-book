@@ -12,6 +12,13 @@ menu:
 
 与前面章节的理论和架构介绍不同，这里的文章结构统一为：场景描述 → 适用/不适用 → 最小配置 → 验证 → 常见错误表 → 回滚方式。
 
+**按场景直达：**
+
+- 入口网关选型：[Envoy Gateway 原生 OIDC]({{< relref "envoy-gateway-oidc-keycloak" >}})（Gateway API）、[Keycloak + oauth2-proxy]({{< relref "keycloak-oauth2-proxy" >}})（Nginx Ingress auth-url）、[Traefik ForwardAuth]({{< relref "traefik-forwardauth-keycloak" >}})
+- 报错定位：[oauth2-proxy 常见错误]({{< relref "oauth2-proxy-common-errors" >}})、[Keycloak 重定向循环与 401]({{< relref "keycloak-redirect-loop-troubleshooting" >}})、[单点登出不彻底]({{< relref "keycloak-single-logout" >}})
+- 安全与合规加固：[PAR 授权请求]({{< relref "keycloak-par-pushed-authorization-requests" >}})、[审计日志与等保]({{< relref "keycloak-audit-logging-compliance" >}})、[最小权限落地]({{< relref "iam-least-privilege-guide" >}})
+- 生产运维：[高可用与灾难恢复]({{< relref "keycloak-ha-dr" >}})、[Prometheus 监控]({{< relref "keycloak-prometheus-metrics" >}})、[运维巡检清单]({{< relref "keycloak-operations-checklist" >}})
+
 **已覆盖主题：**
 
 | 主题 | 关键词 |
@@ -54,6 +61,7 @@ menu:
 | [Keycloak Organizations 多租户实践：B2B 身份隔离与成员生命周期]({{< relref "keycloak-organizations-multitenancy" >}}) | Organizations 启用、managed/unmanaged 成员、邀请与 Admin REST API、organization claim 映射、组织组、存量 Realm 认证流迁移、排错表 |
 | [Keycloak Token Exchange 实战：Standard V2 配置与 V1 迁移]({{< relref "keycloak-token-exchange" >}}) | Standard V2 vs Legacy V1、客户端开关、audience 只能收窄、Requested audience not available、DPoP/mTLS 令牌换手限制、撤销链、`downscope-assertion-grant-enforcer`、FGAP 迁移 |
 | [Pomerium Core 代理认证实战：Keycloak + JWT 验签保护内部应用]({{< relref "pomerium-core-keycloak-proxy-auth" >}}) | 开源版代理认证、`/oauth2/callback`、`claim/groups` 替代 `groups`、`X-Pomerium-Jwt-Assertion` 验签、JWKS、aud/exp 校验、排错与回滚 |
+| [Envoy Gateway 原生 OIDC + Keycloak 落地与排错]({{< relref "envoy-gateway-oidc-keycloak" >}}) | Gateway API、`SecurityPolicy.oidc`、redirectURL 与路由匹配约束、并发授权流导致 `pkce_verification_failed`、cookieDomain、AES-GCM 会话升级与强制重登 |
 | [IAM BFF 模式与 SPA Token 安全：架构选择与并发刷新排错]({{< relref "iam-bff-spa-token-architecture" >}}) | RFC 10017 三种浏览器端架构（BFF / Token-Mediating Backend / 浏览器 OAuth 客户端）、Session Cookie 与 CSRF 硬性要求、Keycloak 刷新轮换的 `reuse_id` 语义、并发刷新 `invalid_grant` 排错、单飞刷新实现与回滚 |
 | [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}}) | hostname v1 移除清单、v1→v2 选项映射、backchannel 行为反转、四种拓扑最小配置、Operator CR 字段、启动校验错误文本、issuer/邮件链接排错与回滚 |
 | [IAM 单点登出排错：Keycloak 登出不彻底的原因与修复]({{< relref "keycloak-single-logout" >}}) | RP-Initiated Logout、Back-Channel / Front-Channel 互斥开关、Logout Token 字段与 `nonce` 禁令、`post.logout.redirect.uris` 语义、oauth2-proxy `sign_out` 白名单跳转、400 报错与确认页卡住、管理员吊销会话 |
