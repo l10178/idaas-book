@@ -258,6 +258,7 @@ code_challenge_method = "S256"
 | "state 参数是可有可无的" | state 是防止 CSRF 的唯一机制——没有 state，攻击者可以让受害者绑定攻击者的账号 |
 | "OAuth 是认证协议" | OAuth 2.0 是**授权**协议，不负责认证。认证是 OIDC（基于 OAuth 2.0 构建）的职责 |
 | "响应类型是 code 就一定安全" | 不加 PKCE 的授权码流程仍然存在授权码拦截风险 |
+| "PKCE 校验失败一定是 provider 的问题" | 同一浏览器并发发起多条授权流时，后发的流会覆盖先发的 code verifier cookie，在 provider 侧表现为 `pkce_verification_failed`。网关/代理场景下常见诱因是把静态资源也纳入受保护路由，参见 [Envoy Gateway 原生 OIDC + Keycloak 落地与排错]({{< relref "../solution-blogs/envoy-gateway-oidc-keycloak.md" >}}) |
 
 ## 下一步
 

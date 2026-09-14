@@ -75,6 +75,31 @@ services:
       - "4180:4180"
 ```
 
+### Gateway API + Envoy Gateway 原生 OIDC
+
+入口控制器是 Envoy Gateway 时，网关数据面（Envoy）自带 OAuth2 filter，可以直接在 `SecurityPolicy` 里声明 OIDC，不再需要额外部署 oauth2-proxy：
+
+```yaml
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: myapp-oidc
+spec:
+  targetRefs:
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+      name: myapp
+  oidc:
+    provider:
+      issuer: "https://idp.example.com/realms/myrealm"
+    clientID: "my-app"
+    clientSecret:
+      name: "myapp-oidc-secret"   # Secret 的密钥名必须是 client-secret
+    redirectURL: "https://app.example.com/myapp/oauth2/callback"
+```
+
+取舍与上面的网关模式一致：后端零改动、授权粒度粗。区别是少了独立组件和一跳，代价是要求 confidential client（`clientSecret` 是必填字段），且 `redirectURL` / `logoutPath` 必须落在被保护 HTTPRoute 的 host + path 前缀内。完整模板、字段默认值与升级注意事项见 [Envoy Gateway 原生 OIDC + Keycloak 落地与排错]({{< relref "docs/solution-blogs/envoy-gateway-oidc-keycloak" >}})。
+
 ## 18.3 BFF 模式（Backend For Frontend）
 
 BFF 模式是 SPA 和移动应用的推荐模式：

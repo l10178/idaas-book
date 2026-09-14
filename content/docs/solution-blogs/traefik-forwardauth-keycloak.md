@@ -26,6 +26,7 @@ toc: true
 | 需要给多个内部工具统一加 OIDC 登录（Grafana、Kibana、Argo CD） | SPA 直连 Keycloak（不需要代理层） |
 | 需要链式中间件（限流 + 认证 + 头改写） | 需要细粒度路径级授权（用 Pomerium 或 API 网关） |
 | 已有 Traefik EntryPoint 做 TLS 终结 | 移动端 Native App（用系统浏览器 + PKCE） |
+| — | 入口已迁移到 Gateway API + Envoy Gateway（用 `SecurityPolicy` 的原生 OIDC，不需要 oauth2-proxy，参见 [Envoy Gateway 原生 OIDC 落地与排错]({{< relref "envoy-gateway-oidc-keycloak" >}})） |
 
 ## 架构
 
@@ -513,6 +514,8 @@ kcadm.sh get clients/<client-id> -r myrealm > client-backup.json
 | 适用场景 | Traefik 用户、需要链式中间件 | Nginx Ingress 用户、简单场景 |
 
 **选型建议**：如果你已经在用 Traefik 做 Ingress Controller，用 ForwardAuth 方案更简洁，中间件可复用且维护成本更低。详见 [oauth2-proxy 深度介绍 — 选型对比]({{< relref "../implementation/oauth2-proxy-deep-dive#选型对比" >}})。
+
+如果集群入口走的是 Gateway API（Envoy Gateway），则不必再引入 oauth2-proxy：`SecurityPolicy` 的 `oidc` 由 Envoy 的 OAuth2 filter 直接完成授权码流程，会话 cookie 与 token 刷新都由网关维护。代价是它要求 confidential client，且授权判定只到 claims/CEL 级别。两种方案的边界、字段默认值与升级陷阱见 [Envoy Gateway 原生 OIDC + Keycloak 落地与排错]({{< relref "envoy-gateway-oidc-keycloak" >}})。
 
 ## 延伸阅读
 
