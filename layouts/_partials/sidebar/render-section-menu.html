@@ -1,0 +1,91 @@
+{{- /*
+侧栏菜单渲染 —— 覆盖主题 @thulite/doks-core/layouts/_partials/sidebar/render-section-menu.html
+
+只改「显示标签」这一件事：原主题直接用 Page.LinkTitle，而本仓的 title 是给 SEO 用的长句
+（111/122 页带 " | IDaaS Book" 后缀，平均 47 字符），整条进侧栏就又长又啰嗦。
+标签规则（优先级从高到低）：
+  1. menu name（在 menus/*.toml 里显式指定短名时）
+  2. 页面 linkTitle（作者显式指定 → 与 title 不同 → 原样使用，不裁剪）
+  3. 自动精简 title：删掉 " | IDaaS Book" 后缀，在第一个 " — " / "——" / " - " 处截断
+
+判定「是否显式指定 linkTitle」用 LinkTitle != Title，而不是读 Params——本仓实测
+.hugo 会把 linkTitle 暴露到 .Params，用 Params 判断会导致永远跳过精简。
+标签被精简过时节点带 title 属性保留完整标题（悬停可见），信息不丢。
+active 状态、aria-current、details 展开/折叠（params.sidebar.collapsed）等原逻辑保持不变。
+*/ -}}
+
+{{- /* Configure. */}}
+{{- $skipHome := true }}
+
+{{- /* Get parameters. */}}
+{{- $currentPage := .currentPage }}
+{{- $nodes := .nodes }}
+
+{{- /* Render. */}}
+<nav class="section-nav docs-links">
+  <ul class="list-unstyled">
+    {{- range $nodes }}
+      {{- if and .Page.IsHome $skipHome }}
+        {{- continue }}
+      {{- end }}
+      {{- template "walk" (dict "node" . "currentPage" $currentPage) }}
+    {{- end }}
+  </ul>
+</nav>
+
+{{- /* Recursively render list items. */}}
+{{- define "walk" }}
+  {{- $currentPage := .currentPage }}
+  {{- $node := .node }}
+
+  {{- /* 侧栏标签：menu name > linkTitle（显式）> 自动精简的 title */}}
+  {{- $linkContent := $node.Page.LinkTitle }}
+  {{- $menuName := $node.Name }}
+  {{- $explicitLinkTitle := ne $node.Page.LinkTitle $node.Page.Title }}
+  {{- if and $menuName (ne $menuName $node.Page.LinkTitle) }}
+    {{- $linkContent = $menuName }}
+  {{- else }}
+    {{- if not $explicitLinkTitle }}
+      {{- $linkContent = replaceRE `\s*\|\s*IDaaS Book\s*$` "" $linkContent }}
+      {{- $linkContent = replaceRE `\s+[—–-]{1,2}\s+.*$` "" $linkContent }}
+      {{- $linkContent = replaceRE `—+.*$` "" $linkContent }}
+      {{- $linkContent = trim $linkContent " " }}
+      {{- if eq $linkContent "" }}
+        {{- $linkContent = $node.Page.LinkTitle }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- $ariaCurrent := "" }}
+  {{- $liClass := "" }}
+
+  {{- if in $currentPage.Ancestors $node.Page }}
+    {{- $ariaCurrent = "true" }}
+  {{- end }}
+
+  {{- if $currentPage.Eq $node.Page }}
+    {{- $ariaCurrent = "page" }}
+    {{- $liClass = "active" }}
+  {{- end }}
+
+  {{- /* 标签被精简过时，用 title 属性保留完整标题 */}}
+  {{- $tip := "" }}
+  {{- if and (ne $linkContent $node.Page.Title) $node.Page.Title }}
+    {{- $tip = printf ` title="%s"` $node.Page.Title }}
+  {{- end }}
+
+  <li {{- with $liClass }} class="{{ . }}" {{ end -}}>
+    {{- with $node.Page.Pages }}
+    <details{{- with $ariaCurrent }} open{{- else}}{{- if ne $node.Page.Params.sidebar.collapsed true }} open{{- end}}{{- end}}>
+      <summary{{ $tip | safeHTMLAttr }}>{{ $linkContent }}</summary>
+      <ul class="list-unstyled list-nested">
+        {{- range . }}
+          {{- template "walk" (dict "node" . "currentPage" $currentPage) }}
+        {{- end }}
+      </ul>
+    </details>
+    {{- else }}
+      <a {{- with $ariaCurrent }} aria-current="{{ . }}" {{- end }} href="{{- $node.Page.RelPermalink }}"{{ $tip | safeHTMLAttr }}>{{ $linkContent }}</a>
+    {{- end }}
+  </li>
+{{- end }}

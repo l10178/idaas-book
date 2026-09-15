@@ -140,6 +140,21 @@ npm run build        # 生产构建 → public/
 
 PR 请遵循现有 frontmatter 规范（`title`、`description`、`weight`、`menu`、`toc`），保持章节编号与排版风格一致。
 
+### 左侧导航（侧栏）约定
+
+- **标签自动精简**：`title` 末尾的 ` | IDaaS Book` 后缀、以及第一个 ` — ` / `——` / ` - ` 之后的副标题不会进入侧栏，完整标题保留在节点的 `title` 属性里（悬停可见）。因此 `title` 可以继续按 SEO 习惯写长句，不必为了导航刻意收敛。
+- **完全自定义侧栏文字**：在 front matter 加 `linkTitle: "短名字"`，侧栏原样使用、不再自动精简。
+- **让章节默认折叠**：内容较多的章节页（如 `solution-blogs/_index.md`）加
+
+  ```yaml
+  sidebar:
+    collapsed: true
+  ```
+
+  当前所在章节会自动展开，不受影响。
+
+实现方式是 `layouts/_partials/sidebar/render-section-menu.html` 覆盖主题同名 partial；升级 `@thulite/doks-core` 后需核对主题是否改了该文件。
+
 ## ⭐ 为什么 Star 这个仓库
 
 如果你正在做身份相关工作——或者知道自己将来会做——Star 这个仓库意味着：

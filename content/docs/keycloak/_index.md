@@ -13,7 +13,7 @@ menu:
 weight: 60
 toc: true
 sidebar:
-  collapsed: false
+  collapsed: true
 ---
 
 ## 本章导读

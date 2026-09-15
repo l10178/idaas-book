@@ -6,6 +6,8 @@ menu:
   docs:
     parent: "protocols"
     identifier: "protocols-index"
+sidebar:
+  collapsed: true
 ---
 
 本部分是 IDaaS 的"语言基础"。OAuth 2.0、OpenID Connect、SAML 2.0、LDAP 和 SCIM 是身份世界的通用语言，[JWT（JSON Web Token）]({{< relref "jwt-deep-dive" >}}) 则是贯穿这些协议的核心令牌格式。DPoP（RFC 9449）为 OAuth Token 引入了 sender-constrained 安全机制。每个协议都有对应的安全分析：OAuth 攻击面（redirect_uri 劫持、CSRF、PKCE、Mix-Up、Token 泄露）和 SAML 攻击面（XSW、断言重放、XXE、元数据伪造）分别配有 Mermaid 攻击流程图和防护方案。理解这些协议不仅是看懂技术文档的前提，更是设计安全、可互操作的 IDaaS 系统的基石。
