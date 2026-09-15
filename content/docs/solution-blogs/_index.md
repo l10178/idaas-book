@@ -6,6 +6,8 @@ menu:
   docs:
     parent: "solution-blogs"
     identifier: "solution-blogs-index"
+sidebar:
+  collapsed: true
 ---
 
 这部分是「带着问题来，拿着方案走」的实战指南。每篇文章聚焦一个具体的集成场景：出问题怎么办、最小配置怎么写、怎么验证配对了、配错了什么症状、怎么回滚。
