@@ -1,15 +1,22 @@
 ---
-title: "IAM 网关 Keycloak 重定向循环与 401 排错 | IDaaS Book"
+title: "IAM 网关 Keycloak 重定向循环与 401 排错"
 description: "IAM 网关中 Keycloak 登录循环与 401 的诊断流程，覆盖 Cookie、反向代理 Header、OIDC 回调、TLS 终结和 SameSite 排查。"
+summary: "登录成功后又被弹回登录页，或者明明已登录却一直 401 —— 按反向代理 Header、Cookie、OIDC 回调 URI、TLS 终结层次、Token 校验五道关卡顺序定位，附症状速查表与诊断命令。"
 date: 2026-07-08T00:00:00+08:00
 lastmod: 2026-08-12T22:01:48+08:00
 draft: false
-weight: 2
-menu:
-  docs:
-    parent: "solution-blogs"
-    identifier: "keycloak-redirect-loop"
-toc: true
+weight: 30
+images: []
+categories: ["Keycloak", "oauth2-proxy"]
+tags: ["keycloak", "redirect-loop", "401", "cookie", "oidc", "troubleshooting"]
+contributors: []
+pinned: false
+homepage: false
+seo:
+  title: "Keycloak 重定向循环与 401 排错：IAM 网关五道关卡定位法"
+  description: "IAM 网关中 Keycloak 登录循环与 401 的诊断流程，覆盖 Cookie、反向代理 Header、OIDC 回调、TLS 终结和 SameSite 排查。"
+  canonical: ""
+  noindex: false
 ---
 
 ## 场景
@@ -24,7 +31,7 @@ toc: true
 |------|--------|
 | Keycloak + 任意反向代理（Nginx/Traefik/HAProxy/ALB） | Keycloak 本身无法启动（那是部署问题） |
 | oauth2-proxy / Traefik ForwardAuth / Nginx auth-url 模式 | 用户凭据错误（先确认用户名密码正确） |
-| OIDC 标准客户端（非 Keycloak Adapter） | Keycloak Adapter 老项目（Adapters 已弃用，参考 [迁移指南]({{< relref "keycloak-adapter-migration" >}}) 迁移到标准 OIDC 库再排查） |
+| OIDC 标准客户端（非 Keycloak Adapter） | Keycloak Adapter 老项目（Adapters 已弃用，参考 [迁移指南]({{< relref "docs/solution-blogs/keycloak-adapter-migration" >}}) 迁移到标准 OIDC 库再排查） |
 | SAML 单点登录重定向问题 | 纯 LDAP/Kerberos 认证（不涉及 HTTP 重定向） |
 
 ## 排查路线图
@@ -226,7 +233,7 @@ env:
 
 **Keycloak 24 及更早版本**的配置语义不同。维护旧集群时按对应版本文档操作；不要把旧配置和新配置混在同一个 Deployment 里。
 
-> hostname v2 的完整选项映射（v1 → v2）、四种部署拓扑的最小配置、启动校验错误文本与 issuer / 邮件链接排错，见 [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}})。
+> hostname v2 的完整选项映射（v1 → v2）、四种部署拓扑的最小配置、启动校验错误文本与 issuer / 邮件链接排错，见 [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "docs/solution-blogs/keycloak-hostname-v2-config" >}})。
 
 ### 验证
 
@@ -363,7 +370,7 @@ kubectl rollout undo deployment/oauth2-proxy -n auth
 
 ## 延伸阅读
 
-- [Keycloak + oauth2-proxy 集成实战指南]({{< relref "keycloak-oauth2-proxy" >}})：完整配置 + audience mapper + Nginx Ingress auth-url 示例
+- [Keycloak + oauth2-proxy 集成实战指南]({{< relref "docs/solution-blogs/keycloak-oauth2-proxy" >}})：完整配置 + audience mapper + Nginx Ingress auth-url 示例
 - [OAuth 2.0 深度解读 — 授权码流程与 PKCE]({{< relref "docs/protocols/oauth2-authorization-code-pkce" >}})：理解 redirect_uri 在授权码流程中的角色
 - [OAuth 2.0 攻击面图解]({{< relref "docs/protocols/oauth2-attack-surface" >}})：redirect_uri 劫持与 CSRF 防护
 - [Keycloak 官方文档 — Configuring the hostname](https://www.keycloak.org/server/hostname)

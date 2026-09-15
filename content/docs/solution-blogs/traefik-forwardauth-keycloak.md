@@ -429,7 +429,7 @@ curl -sS -o /dev/null -w "%{http_code}" https://grafana.example.com/oauth2/callb
 | 错误现象 | 根本原因 | Traefik 场景特定排查 |
 |----------|----------|---------------------|
 | `expected audience "oauth2-proxy" got ["account"]` | Keycloak 未配置 Audience Mapper | 与反向代理无关，纯 Keycloak 配置问题。在 Client → Client scopes → 添加 Audience mapper，勾选 "Add to ID token" |
-| 登录后无限重定向 (`ERR_TOO_MANY_REDIRECTS`) | Cookie Domain/SameSite 不匹配，或 TLS 终结配置不一致 | 检查 `--cookie-domain` 是否正确、`--cookie-samesite=lax`、`--cookie-secure=true`。同时确认 Traefik EntryPoint 的 TLS 配置正确，`X-Forwarded-Proto` 被正确设置为 `https`。详见 [Keycloak 重定向循环排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}}) |
+| 登录后无限重定向 (`ERR_TOO_MANY_REDIRECTS`) | Cookie Domain/SameSite 不匹配，或 TLS 终结配置不一致 | 检查 `--cookie-domain` 是否正确、`--cookie-samesite=lax`、`--cookie-secure=true`。同时确认 Traefik EntryPoint 的 TLS 配置正确，`X-Forwarded-Proto` 被正确设置为 `https`。详见 [Keycloak 重定向循环排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) |
 | `csrf cookie not found` | Cookie 被浏览器拦截（跨域或 SameSite 过严） | 确认所有应用部署在同一主域名（`.example.com`）。如果是不同域名，需要各自独立的 oauth2-proxy 实例 |
 | Traefik 返回 500 Internal Server Error | ForwardAuth 中间件无法连接到 oauth2-proxy | 检查 Middleware 中的 `address` 是否正确；`kubectl get svc -n auth oauth2-proxy` 确认 Service 存在且 ClusterIP 可达 |
 | Traefik 返回 503 Service Unavailable | oauth2-proxy Service 或后端应用 Service 不可达 | `kubectl get endpoints -n auth oauth2-proxy` 确认有 Ready 的 Pod IP |
@@ -520,7 +520,7 @@ kcadm.sh get clients/<client-id> -r myrealm > client-backup.json
 ## 延伸阅读
 
 - [Keycloak + oauth2-proxy 集成实战指南]({{< relref "keycloak-oauth2-proxy" >}})：Nginx Ingress auth-url 模式的完整方案
-- [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}})：Cookie、TLS 终结、SameSite 问题的系统化排查
+- [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})：Cookie、TLS 终结、SameSite 问题的系统化排查
 - [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive" >}})：架构原理、Provider 选型、安全加固
 - [第 18 章：IDaaS 集成模式与实践]({{< relref "../implementation/integration-patterns" >}})：网关模式与其他集成模式的对比
 - [Traefik ForwardAuth 官方文档](https://doc.traefik.io/traefik/middlewares/http/forwardauth/)

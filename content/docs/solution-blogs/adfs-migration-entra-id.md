@@ -35,7 +35,7 @@ flowchart TB
   L1 -.->|先稳定线一，再切应用| L2
 ```
 
-线一改的是"谁来验证密码"，线二改的是"谁签发应用认得的令牌"。线一没稳定就切线二，应用拿到了 Entra 签的令牌，但用户仍被域联邦送回 AD FS，表现出来是登录来回跳转——症状和 Keycloak 侧的重定向循环是同一类，排查思路参考 [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}})。
+线一改的是"谁来验证密码"，线二改的是"谁签发应用认得的令牌"。线一没稳定就切线二，应用拿到了 Entra 签的令牌，但用户仍被域联邦送回 AD FS，表现出来是登录来回跳转——症状和 Keycloak 侧的重定向循环是同一类，排查思路参考 [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})。
 
 ### 哪些应用不该迁到 Entra
 

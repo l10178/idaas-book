@@ -113,7 +113,7 @@ Realm Settings → **Tokens** → *Lifetime of the Request URI for Pushed Author
 
 - 60 秒只覆盖「PAR 请求成功 → 浏览器落到授权端点」这一小段，正常跳转绰绰有余；它不限制用户在登录页停留多久，也不限制授权码流程整体时长。
 - 如果你的拓扑里授权端点和应用之间还有一层 IdP 中转、或者客户端把 `request_uri` 存下来等异步动作，60 秒会很紧，需要把这个值调大——但它是 realm 级的，调大等于放宽所有客户端的重放窗口，别为了一个例外放宽全局。
-- 这个值和 SSO Session / Client Session 超时完全无关，不要和 [IAM 会话超时排错]({{< relref "keycloak-session-timeouts" >}}) 里的那套参数混在一起调。
+- 这个值和 SSO Session / Client Session 超时完全无关，不要和 [IAM 会话超时排错]({{< relref "blog/keycloak-session-timeouts" >}}) 里的那套参数混在一起调。
 
 ## 最小可运行验证
 
@@ -231,7 +231,7 @@ PAR 需要客户端库改造，而「在 Keycloak 侧打开开关」是零成本
 
 ### Q3：oauth2-proxy 支持 PAR 吗？
 
-到 v7.15.4（2026-08-20）为止不支持，仓库内没有 PAR 相关实现。所以给 oauth2-proxy 使用的 Keycloak 客户端不要打开 Require PAR，否则所有经它保护的应用会立刻无法登录；典型排错见 [oauth2-proxy 常见错误排错]({{< relref "oauth2-proxy-common-errors" >}}) 与 [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}})。
+到 v7.15.4（2026-08-20）为止不支持，仓库内没有 PAR 相关实现。所以给 oauth2-proxy 使用的 Keycloak 客户端不要打开 Require PAR，否则所有经它保护的应用会立刻无法登录；典型排错见 [oauth2-proxy 常见错误排错]({{< relref "blog/oauth2-proxy-common-errors" >}}) 与 [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}})。
 
 ### Q4：60 秒的 request_uri 有效期能不能按客户端单独调整？
 
@@ -239,7 +239,7 @@ PAR 需要客户端库改造，而「在 Keycloak 侧打开开关」是零成本
 
 ### Q5：PAR 会影响登出或 back-channel logout 吗？
 
-不影响。`request_uri` 只作用于授权请求的传递方式，登录后建立的会话、登出时的 RP-Initiated / Back-Channel 流程都不经过 PAR 条目。若登出行为变了，先按 [IAM 单点登出排错]({{< relref "keycloak-single-logout" >}}) 的方向查，不要怀疑 PAR。
+不影响。`request_uri` 只作用于授权请求的传递方式，登录后建立的会话、登出时的 RP-Initiated / Back-Channel 流程都不经过 PAR 条目。若登出行为变了，先按 [IAM 单点登出排错]({{< relref "blog/keycloak-single-logout" >}}) 的方向查，不要怀疑 PAR。
 
 ## 相关章节
 

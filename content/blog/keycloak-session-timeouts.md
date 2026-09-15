@@ -1,15 +1,22 @@
 ---
-title: "IAM 会话超时排错：Keycloak SSO/Client Session 约束 | IDaaS Book"
+title: "IAM 会话超时排错：Keycloak SSO/Client Session 约束"
 description: "IAM 会话超时排错实战：Keycloak SSO Session Idle/Max 与 Client Session 的取值优先级、Refresh Token 实际有效期为什么被 SSO Session Max 夹住、26.5 起的超时校验报错、最小配置与验证命令。"
+summary: "Refresh Token 设了 30 天却一小时就失效？SSO Session Idle/Max 与 Client Session 的取值优先级（0 表示继承、min() 表示夹住）、改动何时生效，附最小配置与验证命令。"
 date: 2026-09-13T00:00:00+08:00
 lastmod: 2026-09-13T22:00:00+08:00
 draft: false
-weight: 79
-menu:
-  docs:
-    parent: "solution-blogs"
-    identifier: "keycloak-session-timeouts"
-toc: true
+weight: 33
+images: []
+categories: ["Keycloak"]
+tags: ["keycloak", "session-timeout", "sso-session", "refresh-token", "troubleshooting"]
+contributors: []
+pinned: false
+homepage: false
+seo:
+  title: "Keycloak 会话超时排错：SSO Session 与 Client Session 取值优先级"
+  description: "IAM 会话超时排错实战：Keycloak SSO Session Idle/Max 与 Client Session 的取值优先级、Refresh Token 实际有效期为什么被 SSO Session Max 夹住、26.5 起的超时校验报错、最小配置与验证命令。"
+  canonical: ""
+  noindex: false
 ---
 
 ## 场景
@@ -20,7 +27,7 @@ toc: true
 2. 为了让移动端的 Refresh Token 活得更久，把某个客户端 Advanced 里的 **Client Session Max** 调到比 **SSO Session Max** 还大——不生效；升级到 26.5 之后保存直接报错。
 3. 客户端每次刷新都能拿到新的 `refresh_expires_in`，但某一次刷新突然返回 400 `invalid_token`，而用户在 IdP 的 SSO 会话其实还活着。
 
-本文只讲一件事：**这些超时字段之间谁覆盖谁、谁夹住谁，以及改动的生效时机**。参数语义以 Keycloak 26.7.x 官方 *Server Administration Guide* 的 Sessions / Tokens 说明为准，行为以源码与官方测试用例为证；三层会话（用户会话 / 客户端会话 / Token）的概念与吊销机制不在本文重复，见 [IAM 会话管理与 Token 生命周期]({{< relref "../advanced-topics/iam-session-management" >}})。
+本文只讲一件事：**这些超时字段之间谁覆盖谁、谁夹住谁，以及改动的生效时机**。参数语义以 Keycloak 26.7.x 官方 *Server Administration Guide* 的 Sessions / Tokens 说明为准，行为以源码与官方测试用例为证；三层会话（用户会话 / 客户端会话 / Token）的概念与吊销机制不在本文重复，见 [IAM 会话管理与 Token 生命周期]({{< relref "docs/advanced-topics/iam-session-management" >}})。
 
 适用：Keycloak 26.x（本文基线 26.7.x），尤其是刚从 26.0 之前升上来、或准备升到 26.5+ 的部署。
 
@@ -192,7 +199,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 #    DELETE /admin/realms/{realm}/sessions/{session-id}  —— 单个会话
 ```
 
-另外，26.5 起 Account Console 的 **Device Activity** 会把离线会话和普通会话一起列出，用户自己就能签出，运维排查时可以直接让用户截图核对，比翻数据库快。Token 吊销后的行为边界（Access Token 在 `exp` 前仍可用）见 [IAM 单点登出排错]({{< relref "keycloak-single-logout" >}})。
+另外，26.5 起 Account Console 的 **Device Activity** 会把离线会话和普通会话一起列出，用户自己就能签出，运维排查时可以直接让用户截图核对，比翻数据库快。Token 吊销后的行为边界（Access Token 在 `exp` 前仍可用）见 [IAM 单点登出排错]({{< relref "blog/keycloak-single-logout" >}})。
 
 ## 回滚
 

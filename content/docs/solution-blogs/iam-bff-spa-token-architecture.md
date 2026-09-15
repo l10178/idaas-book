@@ -237,7 +237,7 @@ wait; jq -r '.error, .error_description' /tmp/r1.json /tmp/r2.json
 
 - Keycloak 事件日志里 `REFRESH_TOKEN_ERROR` 的频次；BFF 侧应统计「每个活跃会话每分钟的刷新次数」，正常值应当接近 1，而不是随并发请求数线性增长。
 - 确认 Keycloak 版本包含 CVE-2026-1035 的修复（26.4.11 / 26.5.6 / 26.6.0 及以上）。容器镜像 tag 往往滞后于 `main`，直接看镜像 tag 或用 `kc.sh --version` 核对。
-- Refresh Token 的有效期由客户端会话到期时刻决定——**刷新不会把它延长到 SSO Session Max 之外**，这正好满足 RFC 10017 §6.3.2.3「轮换不得延长新 Token 生命周期」的要求。会话这一层的取值优先级与生效时机，见 [IAM 会话超时排错]({{< relref "keycloak-session-timeouts" >}})。
+- Refresh Token 的有效期由客户端会话到期时刻决定——**刷新不会把它延长到 SSO Session Max 之外**，这正好满足 RFC 10017 §6.3.2.3「轮换不得延长新 Token 生命周期」的要求。会话这一层的取值优先级与生效时机，见 [IAM 会话超时排错]({{< relref "blog/keycloak-session-timeouts" >}})。
 
 ## 常见错误
 
@@ -248,7 +248,7 @@ wait; jq -r '.error, .error_description' /tmp/r1.json /tmp/r2.json
 | `invalid_grant` / `Session doesn't have required client` | 集群内不同客户端并发刷新同一 SSO 会话（#50721） | 升级补丁版；把刷新收敛到单一持有者；重试只会放大问题 |
 | BFF 日志 500，`Unable to acquire serialization lock for token refresh` | 同一链的刷新锁在退避窗口内抢不到，通常是刷新风暴 | 关掉「每个请求自行刷新」的逻辑，改成单飞或主动刷新 |
 | 用户切标签页就掉登录 | 会话 Cookie 被设成会话级 + `SameSite=Strict` 下跨站跳转不携带 | 明确会话 Cookie 的持久化策略；跨站入口用 top-level 跳转而不是 XHR |
-| 后端 401，但浏览器侧认证「看起来正常」 | 网关模式不是 BFF，Access Token 没有传到后端（或传的是 ID Token） | 参见 [oauth2-proxy 常见错误]({{< relref "oauth2-proxy-common-errors" >}}) 中的 `--pass-access-token` / `auth-response-headers` 组合 |
+| 后端 401，但浏览器侧认证「看起来正常」 | 网关模式不是 BFF，Access Token 没有传到后端（或传的是 ID Token） | 参见 [oauth2-proxy 常见错误]({{< relref "blog/oauth2-proxy-common-errors" >}}) 中的 `--pass-access-token` / `auth-response-headers` 组合 |
 
 ## 回滚
 

@@ -27,7 +27,7 @@ Keycloak 各个 Realm 默认的登录设置里，`Require SSL` 为 `external req
 
 1. 配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。
 
-   生产环境可以在反向代理 / Ingress 上终结 TLS，但必须让 Keycloak 解析代理实际写入的头。Keycloak 26+ 使用 `KC_PROXY_HEADERS=xforwarded`（或 `forwarded`），而不是照搬旧版 `proxy=edge`；同时固定公网地址，避免它根据内部请求推断回调地址。详见 [Keycloak 26+ 代理头排错]({{< relref "../../solution-blogs/keycloak-redirect-loop-troubleshooting" >}}) 和[安全增强功能]({{< relref "../security-features/_index.md" >}})。
+   生产环境可以在反向代理 / Ingress 上终结 TLS，但必须让 Keycloak 解析代理实际写入的头。Keycloak 26+ 使用 `KC_PROXY_HEADERS=xforwarded`（或 `forwarded`），而不是照搬旧版 `proxy=edge`；同时固定公网地址，避免它根据内部请求推断回调地址。详见 [Keycloak 26+ 代理头排错]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) 和[安全增强功能]({{< relref "../security-features/_index.md" >}})。
 
    例如 TLS 在 Ingress 终结、Keycloak Pod 内使用 HTTP，且 Ingress 覆盖写入 `X-Forwarded-*`：
 

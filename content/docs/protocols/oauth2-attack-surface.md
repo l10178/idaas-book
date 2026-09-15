@@ -419,7 +419,7 @@ Redirect URI 校验不严格。很多实现用了「前缀匹配」或「子串�
 
 - [OAuth 2.0 深度解读]({{< relref "oauth2-deep-dive.md" >}})：OAuth 2.0 授权框架的完整剖析
 - [OAuth 2.0 授权码流程与 PKCE]({{< relref "oauth2-authorization-code-pkce.md" >}})：授权码流程详解和 PKCE 密码学原理
-- [Keycloak 重定向循环与 401 排错指南]({{< relref "../solution-blogs/keycloak-redirect-loop-troubleshooting.md" >}})：Redirect URI 配置错误是 OAuth 重定向循环最常见的根因
+- [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting.md" >}})：Redirect URI 配置错误是 OAuth 重定向循环最常见的根因
 - [OAuth 2.0 for Browser-Based Applications（RFC 10017 / BCP 212，2026-08 发布）](https://www.rfc-editor.org/rfc/rfc10017)：浏览器端应用的三种架构模式与 MUST 级 Cookie/CSRF 要求，落地配置见 [IAM BFF 模式与 SPA Token 安全]({{< relref "../solution-blogs/iam-bff-spa-token-architecture" >}})。
 - [OAuth 2.0 Security BCP (RFC 9700)](https://www.rfc-editor.org/rfc/rfc9700)：已发布的 OAuth 2.0 安全最佳当前实践
 - [DPoP (RFC 9449)](https://datatracker.ietf.org/doc/html/rfc9449)：Token 持有证明机制

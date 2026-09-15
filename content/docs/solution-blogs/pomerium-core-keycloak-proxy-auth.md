@@ -224,7 +224,7 @@ kubectl -n pomerium rollout restart deploy/pomerium   # 或 systemctl restart po
 ## 相关阅读
 
 - [Pomerium 深度介绍 — 开源版身份感知代理与代理认证实践]({{< relref "../implementation/pomerium-deep-dive.md" >}})
-- [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive.md" >}}) 与 [oauth2-proxy 常见错误排错]({{< relref "oauth2-proxy-common-errors" >}})
+- [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive.md" >}}) 与 [oauth2-proxy 常见错误排错]({{< relref "blog/oauth2-proxy-common-errors" >}})
 - [Traefik ForwardAuth + Keycloak + oauth2-proxy]({{< relref "traefik-forwardauth-keycloak" >}})
 - [零信任 IAM：JWT 与 Introspection 的边界]({{< relref "../advanced-topics/zero-trust-identity" >}})
 - [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}})

@@ -135,7 +135,7 @@ Cookie 关键配置项：
 | `--cookie-domain` | Cookie 作用域 | 跨子域共享 Cookie 时设置，如 `.example.com` |
 | `--cookie-expire=24h` | Cookie 有效期 | 内部工具设 8-24h；敏感系统设 1-4h |
 
-默认 `cookie` Session Store 并不要求单副本或会话亲和性：多副本只要共享相同的 `--cookie-secret` 即可解密会话。切换到 `redis` 后，Cookie 通常只携带服务端 Session ID，但 Redis 的 TLS、凭据、容量、故障切换和恢复演练就成为 IAM 网关的生产前置条件。选择 Redis 的理由应是 Cookie 体积、服务端撤销或集中会话管理，而不是“副本多了就必须上 Redis”。详见 [IAM 网关 oauth2-proxy 常见错误排错]({{< relref "../solution-blogs/oauth2-proxy-common-errors" >}})。
+默认 `cookie` Session Store 并不要求单副本或会话亲和性：多副本只要共享相同的 `--cookie-secret` 即可解密会话。切换到 `redis` 后，Cookie 通常只携带服务端 Session ID，但 Redis 的 TLS、凭据、容量、故障切换和恢复演练就成为 IAM 网关的生产前置条件。选择 Redis 的理由应是 Cookie 体积、服务端撤销或集中会话管理，而不是“副本多了就必须上 Redis”。详见 [IAM 网关 oauth2-proxy 常见错误排错]({{< relref "blog/oauth2-proxy-common-errors" >}})。
 
 ### Upstream
 
@@ -382,7 +382,7 @@ oauth2-proxy --config=/etc/oauth2-proxy.cfg --config-test && echo "config OK"
 - Keycloak OIDC Provider 配置：<https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/>
 - 本站解决方案博客：[Keycloak + oauth2-proxy 集成指南]({{< relref "docs/solution-blogs/keycloak-oauth2-proxy" >}})
 - 本站 Traefik 方案：[Traefik ForwardAuth + Keycloak + oauth2-proxy]({{< relref "docs/solution-blogs/traefik-forwardauth-keycloak" >}})
-- 本站排错指南：[Keycloak 重定向循环与 401 排错]({{< relref "docs/solution-blogs/keycloak-redirect-loop-troubleshooting" >}})
-- 本站排错速查：[IAM 网关 oauth2-proxy 常见错误排错]({{< relref "docs/solution-blogs/oauth2-proxy-common-errors" >}})
+- 本站排错指南：[Keycloak 重定向循环与 401 排错]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})
+- 本站排错速查：[IAM 网关 oauth2-proxy 常见错误排错]({{< relref "blog/oauth2-proxy-common-errors" >}})
 - 本站 Keycloak 架构：[Keycloak 架构深度解析]({{< relref "docs/implementation/keycloak-architecture.md" >}})
 - 本站 K8s 生产部署：[Keycloak Kubernetes 生产环境部署]({{< relref "docs/implementation/kubernetes-production.md" >}})

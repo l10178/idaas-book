@@ -366,7 +366,7 @@ oauth2-proxy 不支持 Token Introspection——它只做 OIDC 认证（登录�
 
 那么 Introspection 是在 oauth2-proxy 之后的 API 网关层使用——后端 API 收到的请求里带有 `X-Auth-Request-User` / `X-Auth-Request-Email` 等 Header，不需要再到 Keycloak 验证。但如果你的 API 还接受直接过来的 Bearer Token（不经过 oauth2-proxy），那就需要 Introspection。
 
-- [IAM 网关 oauth2-proxy 常见错误排错]({{< relref "oauth2-proxy-common-errors" >}})：当认证链路出现 CSRF Cookie、audience、Session Store 或 401 问题时，先按错误阶段定位，再决定是否引入 Redis。
+- [IAM 网关 oauth2-proxy 常见错误排错]({{< relref "blog/oauth2-proxy-common-errors" >}})：当认证链路出现 CSRF Cookie、audience、Session Store 或 401 问题时，先按错误阶段定位，再决定是否引入 Redis。
 
 ## 小结
 
