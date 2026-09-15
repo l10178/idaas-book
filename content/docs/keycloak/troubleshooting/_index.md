@@ -11,15 +11,15 @@ menu:
 toc: true
 ---
 
-本节收录 Keycloak 生产环境高频问题与排查方案。每个子页是一个独立案例，含现象、根因、解决方案。建议先看本页的「快速索引」按症状定位。
+本节收录 Keycloak 生产环境高频问题与排查方案。案例文章已移入 [Blog](/blog/)，本页保留**症状索引**与通用排查思路：先按症状在「快速索引」里定位，再进对应文章。
 
 ## 快速索引
 
 | 症状 | 关键词 | 解决方案 |
 |------|--------|----------|
-| 登录后报 `HTTPS required` / `Invalid parameter: redirect_uri` | HTTPS、反向代理、proxy | [HTTPS / 反向代理问题]({{< relref "docs/keycloak/troubleshooting/https-required.md" >}}) |
-| 启动卡在 Liquibase / 数据库初始化失败 | Liquibase、MySQL Group Replication、锁 | [Liquibase 与 MySQL 组复制]({{< relref "docs/keycloak/troubleshooting/liquibase-mysql-group-replication.md" >}}) |
-| K8s 环境导入导出 Realm 迁移失败 | 导入导出、Helm、Operator | [K8s 导入导出迁移]({{< relref "docs/keycloak/troubleshooting/export-import-on-k8s.md" >}}) |
+| 登录后报 `HTTPS required` / `Invalid parameter: redirect_uri` | HTTPS、反向代理、proxy | [HTTPS / 反向代理问题]({{< relref "blog/keycloak-https-required.md" >}}) |
+| 启动卡在 Liquibase / 数据库初始化失败 | Liquibase、MySQL Group Replication、锁 | [Liquibase 与 MySQL 组复制]({{< relref "blog/keycloak-liquibase-mysql-group-replication.md" >}}) |
+| K8s 环境导入导出 Realm 迁移失败 | 导入导出、Helm、Operator | [K8s 导入导出迁移]({{< relref "blog/keycloak-export-import-on-k8s.md" >}}) |
 | 登录后无限重定向 / 401 Unauthorized | ERR_TOO_MANY_REDIRECTS、Cookie、SameSite | [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) |
 
 ## 通用排查思路
@@ -37,4 +37,4 @@ toc: true
 - **Client redirect_uri 不匹配**：精确匹配，避免通配；回调路径区分大小写与尾部斜杠。
 - **缓存不一致**：集群 `loginFailures`/`users` 缓存栈配置不当，导致暴力检测或用户更新跨节点不生效。
 
-更多案例见上方子页。新问题欢迎提交 [Issue](https://github.com/l10178/idaas-book/issues) 补充。
+更多案例见上方索引。新问题欢迎提交 [Issue](https://github.com/l10178/idaas-book/issues) 补充。

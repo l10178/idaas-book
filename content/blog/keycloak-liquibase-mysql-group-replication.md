@@ -1,14 +1,22 @@
 ---
-title: "Keycloak Liquibase 与 MySQL 组复制冲突排查与解决 | IDaaS Book"
+title: "Keycloak Liquibase 与 MySQL 组复制冲突排查与解决"
 description: "Keycloak 在 MySQL Group Replication 下 Liquibase 数据库迁移失败的排查与解决方案：锁表与迁移串行化"
+summary: "Keycloak 接 MySQL Group Replication 时数据库迁移起不来，两个高频断点：Liquibase 自建的 DATABASECHANGELOG 没有主键被 GR 拒绝；节点切换的只读窗口让迁移锁写不进去。给出预建表 SQL、重试参数与 GR 超时配置。"
 date: 2024-04-01T00:00:00+08:00
+lastmod: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 2
-menu:
-  docs:
-    parent: "keycloak-troubleshooting"
-    identifier: "keycloak-ts-liquibase"
-toc: true
+weight: 41
+images: []
+categories: ["Keycloak", "MySQL"]
+tags: ["keycloak", "liquibase", "mysql", "group-replication", "database-migration", "troubleshooting"]
+contributors: []
+pinned: false
+homepage: false
+seo:
+  title: "Keycloak Liquibase 与 MySQL Group Replication 冲突排查"
+  description: "Keycloak 在 MySQL Group Replication 下 Liquibase 数据库迁移失败的排查与解决方案：锁表与迁移串行化"
+  canonical: ""
+  noindex: false
 ---
 
 ## 问题描述

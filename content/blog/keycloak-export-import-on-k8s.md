@@ -1,14 +1,22 @@
 ---
-title: "Keycloak Kubernetes 导入导出与数据迁移实战 | IDaaS Book"
+title: "Keycloak Kubernetes 导入导出与数据迁移实战"
 description: "Keycloak 在 Kubernetes 环境下 Realm 导入导出与迁移：Helm/Operator 配置、volume 挂载与命令行导入的踩坑与方案"
+summary: "在 Kubernetes 上把 Realm 完整导出备份、再迁移到新集群：`kc.sh export/import` 的正确用法（含 master Realm 不参与导出的坑）、`Script upload is disabled` 报错的处理，以及为什么控制台导出不能当作备份。"
 date: 2024-04-01T00:00:00+08:00
+lastmod: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 3
-menu:
-  docs:
-    parent: "keycloak-troubleshooting"
-    identifier: "keycloak-ts-export"
-toc: true
+weight: 42
+images: []
+categories: ["Keycloak", "Kubernetes"]
+tags: ["keycloak", "kubernetes", "realm-export", "realm-import", "migration", "troubleshooting"]
+contributors: []
+pinned: false
+homepage: false
+seo:
+  title: "Keycloak on Kubernetes：Realm 导入导出与数据迁移实战"
+  description: "Keycloak 在 Kubernetes 环境下 Realm 导入导出与迁移：Helm/Operator 配置、volume 挂载与命令行导入的踩坑与方案"
+  canonical: ""
+  noindex: false
 ---
 
 > 本文以 **Keycloak Quarkus 发行版（17+）** 为准。Keycloak 17 起官方已移除 WildFly 发行版，旧版用 `standalone.sh -Dkeycloak.migration.action=export` 的导出方式不再适用，统一改用 `kc.sh export` / `kc.sh import`。

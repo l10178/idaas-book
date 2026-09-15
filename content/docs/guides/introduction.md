@@ -47,7 +47,7 @@ toc: true
 | 后端工程师 | 第5章（OAuth）→ 第6章（OIDC）→ 第14章（Keycloak） | 第18章（集成模式） |
 | 架构师 | 第1-2章（基础）→ 第17章（方案对比）→ 第19章（K8s部署） | 第20-24章（高级主题） |
 | 安全工程师 | 第11章（MFA）→ 第13章（审计合规）→ 第21章（安全实践） | 第24章（零信任） |
-| 运维/SRE | 第19章（K8s部署）→ 第22章（性能扩展）→ [Keycloak 排错]({{< relref "../keycloak/troubleshooting/export-import-on-k8s.md" >}}) | 第18章（集成模式） |
+| 运维/SRE | 第19章（K8s部署）→ 第22章（性能扩展）→ [Keycloak 排错]({{< relref "blog/keycloak-export-import-on-k8s.md" >}}) | 第18章（集成模式） |
 
 ### 阅读建议
 
