@@ -20,7 +20,7 @@ toc: true
 | 登录后报 `HTTPS required` / `Invalid parameter: redirect_uri` | HTTPS、反向代理、proxy | [HTTPS / 反向代理问题]({{< relref "docs/keycloak/troubleshooting/https-required.md" >}}) |
 | 启动卡在 Liquibase / 数据库初始化失败 | Liquibase、MySQL Group Replication、锁 | [Liquibase 与 MySQL 组复制]({{< relref "docs/keycloak/troubleshooting/liquibase-mysql-group-replication.md" >}}) |
 | K8s 环境导入导出 Realm 迁移失败 | 导入导出、Helm、Operator | [K8s 导入导出迁移]({{< relref "docs/keycloak/troubleshooting/export-import-on-k8s.md" >}}) |
-| 登录后无限重定向 / 401 Unauthorized | ERR_TOO_MANY_REDIRECTS、Cookie、SameSite | [Keycloak 重定向循环与 401 排错指南]({{< relref "docs/solution-blogs/keycloak-redirect-loop-troubleshooting" >}}) |
+| 登录后无限重定向 / 401 Unauthorized | ERR_TOO_MANY_REDIRECTS、Cookie、SameSite | [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) |
 
 ## 通用排查思路
 
@@ -31,7 +31,7 @@ toc: true
 
 ## 常见根因分类
 
-- **反向代理头缺失或未清洗**：`X-Forwarded-Proto`/`Host` 未透传，或代理追加了客户端伪造值，导致 Keycloak 生成 `http://` 回调、错误域名或错误审计来源。现代 Keycloak 按版本配置 `KC_PROXY_HEADERS`，并限制可信代理；具体检查见 [Keycloak 重定向循环与 401 排错指南]({{< relref "../../solution-blogs/keycloak-redirect-loop-troubleshooting" >}})。
+- **反向代理头缺失或未清洗**：`X-Forwarded-Proto`/`Host` 未透传，或代理追加了客户端伪造值，导致 Keycloak 生成 `http://` 回调、错误域名或错误审计来源。现代 Keycloak 按版本配置 `KC_PROXY_HEADERS`，并限制可信代理；具体检查见 [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})。
 - **数据库迁移锁**：Liquibase 在多节点同时启动或 MySQL Group Replication 下加锁失败。需串行启动或调整锁表配置。
 - **Realm 导入格式/路径**：Helm/Operator 导入期望 `keycloakConfig` 或 volume 挂载路径，与命令行 `--import` 行为不同。
 - **Client redirect_uri 不匹配**：精确匹配，避免通配；回调路径区分大小写与尾部斜杠。

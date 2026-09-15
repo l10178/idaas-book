@@ -115,7 +115,7 @@ OIDC 定义了三种登出机制：
 
 在生产中，合理的策略是：**RP-Initiated Logout 作为基础 + Backchannel Logout 覆盖敏感应用**。Keycloak 在 Admin Console 的 Client 设置中可配置 Backchannel Logout URL，但该字段与 Front-Channel Logout 是同一客户端上的互斥开关，配了 URL 却没关开关时不会有任何登出请求发出。
 
-实际排查中，登出不完整是常见问题。症状是：用户在应用 A 登出，但应用 B 的 Session 还在，刷新页面后仍然登录状态。根因通常是 Backchannel Logout 未配置或应用 B 的登出端点不可达。这类问题的源码级判定、Logout Token 字段要求与 oauth2-proxy 端的跳转配置见 [IAM 单点登出排错]({{< relref "../solution-blogs/keycloak-single-logout" >}})。
+实际排查中，登出不完整是常见问题。症状是：用户在应用 A 登出，但应用 B 的 Session 还在，刷新页面后仍然登录状态。根因通常是 Backchannel Logout 未配置或应用 B 的登出端点不可达。这类问题的源码级判定、Logout Token 字段要求与 oauth2-proxy 端的跳转配置见 [IAM 单点登出排错]({{< relref "blog/keycloak-single-logout" >}})。
 
 ## 会话超时与吊销策略
 
@@ -132,7 +132,7 @@ Keycloak 的会话超时分散在两个 Tab：**Realm Settings → Sessions** �
 
 `SSO Session Idle` 是用户无操作后的空闲超时，`SSO Session Max` 是绝对超时——无论用户是否活跃，到达时间后必须重新认证。
 
-客户端会话是用户会话的子会话，它的到期时刻还要与用户会话到期时刻取最小值，因此**把 Client Session Max 调得比 SSO Session Max 更大不会延长 Refresh Token 的有效期**；26.5 起这种越界配置会在保存时被直接拒绝。各字段的取值优先级、校验报错文本与 `kcadm` 配置示例见 [IAM 会话超时排错：Keycloak SSO Session 与 Client Session 约束]({{< relref "../solution-blogs/keycloak-session-timeouts" >}})。
+客户端会话是用户会话的子会话，它的到期时刻还要与用户会话到期时刻取最小值，因此**把 Client Session Max 调得比 SSO Session Max 更大不会延长 Refresh Token 的有效期**；26.5 起这种越界配置会在保存时被直接拒绝。各字段的取值优先级、校验报错文本与 `kcadm` 配置示例见 [IAM 会话超时排错：Keycloak SSO Session 与 Client Session 约束]({{< relref "blog/keycloak-session-timeouts" >}})。
 
 ### 会话吊销场景
 

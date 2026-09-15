@@ -366,4 +366,4 @@ curl -s https://kc.example.com/realms/myrealm/.well-known/openid-configuration |
 - [Authlib (Python)](https://docs.authlib.org/en/latest/client/frameworks.html) — Python Flask/Django 的 OAuth/OIDC 客户端库
 - [Keycloak 入门指南]({{< relref "docs/keycloak/getting-started.md" >}}) — 如果还没开始用 Keycloak，从这里起步
 - [OAuth 2.0 授权码与 PKCE 流程]({{< relref "docs/protocols/oauth2-authorization-code-pkce.md" >}}) — 理解迁移后的底层安全机制
-- [域名重定向循环排错]({{< relref "docs/solution-blogs/keycloak-redirect-loop-troubleshooting.md" >}}) — 迁移后如果遇到重定向问题，这里找答案
+- [域名重定向循环排错]({{< relref "blog/keycloak-redirect-loop-troubleshooting.md" >}}) — 迁移后如果遇到重定向问题，这里找答案

@@ -240,7 +240,7 @@ kubectl -n keycloak rollout status statefulset/keycloak   # 确认回滚后 Pod 
 
 ## 相关阅读
 
-- [IAM 网关 Keycloak 重定向循环与 401 排错]({{< relref "keycloak-redirect-loop-troubleshooting" >}})：hostname 配对之后的 Cookie / CSRF / TLS 层次问题
+- [IAM 网关 Keycloak 重定向循环与 401 排错]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})：hostname 配对之后的 Cookie / CSRF / TLS 层次问题
 - [Keycloak 生产环境完整部署路线图]({{< relref "keycloak-production-roadmap" >}})：反向代理与 TLS 在整体部署顺序中的位置
 - [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}})：issuer 与 audience 对齐的客户端侧配置
 - [Keycloak 高可用集群部署与灾难恢复]({{< relref "keycloak-ha-dr" >}})：Operator CR 与多节点场景

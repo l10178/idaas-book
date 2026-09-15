@@ -306,7 +306,7 @@ kcadm.sh update realms/myrealm -s 'browserFlow=browser'
 
 ## 延伸阅读
 
-- [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}})：条件流配错可能导致重定向循环
+- [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})：条件流配错可能导致重定向循环
 - [MFA 多因素认证体系]({{< relref "docs/core-capabilities/multi-factor-authentication" >}})：OTP、TOTP、WebAuthn/FIDO2 完整对比
 - [IAM 会话管理与 Token 生命周期]({{< relref "docs/advanced-topics/iam-session-management" >}})：LoA 与会话状态的配合
 - [IAM 条件访问与自适应认证策略设计]({{< relref "docs/advanced-topics/iam-conditional-access" >}})：条件访问的策略模型与设计方法论

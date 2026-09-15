@@ -1,15 +1,22 @@
 ---
-title: "IAM 单点登出排错：Keycloak 登出不彻底的原因与修复 | IDaaS Book"
+title: "IAM 单点登出排错：Keycloak 登出不彻底的原因与修复"
 description: "IAM 单点登出排错实战：Keycloak RP-Initiated Logout 与 Back-Channel Logout 令牌配置、front/back channel 互斥开关、oauth2-proxy sign_out 只清自身 Cookie、400 报错与确认页卡住的根因。"
+summary: "点了退出，另一个应用还是登录状态？RP-Initiated Logout 与 Back-Channel Logout 覆盖范围不同、front/back channel 互斥开关极易配错——说清 400 报错与确认页卡住的根因、最小配置与回滚方式。"
 date: 2026-09-12T00:00:00+08:00
 lastmod: 2026-09-12T23:00:00+08:00
 draft: false
-weight: 78
-menu:
-  docs:
-    parent: "solution-blogs"
-    identifier: "keycloak-single-logout"
-toc: true
+weight: 32
+images: []
+categories: ["Keycloak"]
+tags: ["keycloak", "single-logout", "back-channel-logout", "rp-initiated-logout", "troubleshooting"]
+contributors: []
+pinned: false
+homepage: false
+seo:
+  title: "Keycloak 单点登出排错：登出不彻底的原因、最小配置与回滚"
+  description: "IAM 单点登出排错实战：Keycloak RP-Initiated Logout 与 Back-Channel Logout 令牌配置、front/back channel 互斥开关、oauth2-proxy sign_out 只清自身 Cookie、400 报错与确认页卡住的根因。"
+  canonical: ""
+  noindex: false
 ---
 
 ## 场景
@@ -22,9 +29,9 @@ toc: true
 
 **适用**：Keycloak 26.x 的 OIDC 客户端，浏览器应用或 oauth2-proxy 之类的认证网关；想弄清 RP-Initiated Logout 与 Back-Channel / Front-Channel Logout 各自负责哪一层会话。
 
-**不适用**：SAML 客户端（SAML Single Logout 用 Redirect/POST binding，参数语义与 OIDC 完全不同，见 [SAML 2.0 协议详解]({{< relref "../protocols/saml2" >}})）；仍在用 `Admin URL` 回调格式的旧 Keycloak Java adapter——Keycloak 文档明确这种回调格式不是 OIDC 标准，只被 legacy adapter 或 Elytron WildFly OIDC adapter 支持。
+**不适用**：SAML 客户端（SAML Single Logout 用 Redirect/POST binding，参数语义与 OIDC 完全不同，见 [SAML 2.0 协议详解]({{< relref "docs/protocols/saml2" >}})）；仍在用 `Admin URL` 回调格式的旧 Keycloak Java adapter——Keycloak 文档明确这种回调格式不是 OIDC 标准，只被 legacy adapter 或 Elytron WildFly OIDC adapter 支持。
 
-会话分层、Token 刷新与吊销的整体模型见 [IAM 会话管理]({{< relref "../advanced-topics/iam-session-management" >}})；本文只解决「为什么这个客户端没被通知」和「怎么验证通知到了」。
+会话分层、Token 刷新与吊销的整体模型见 [IAM 会话管理]({{< relref "docs/advanced-topics/iam-session-management" >}})；本文只解决「为什么这个客户端没被通知」和「怎么验证通知到了」。
 
 ## 四种登出机制覆盖的范围不同
 
@@ -188,7 +195,7 @@ RP-Initiated Logout 结束的是 IdP 的 SSO 会话；已签发的 access token 
 
 ### 管理员如何强制某个用户下线？
 
-Admin Console 的 “Sign out all active sessions”（admin REST：`POST /admin/realms/{realm}/users/{id}/logout`），它会逐会话触发 back-channel 登出并设置 not-before。前提是目标客户端配置了 backchannel logout URL，否则应用侧只能等 Token 过期——而「过期」的确切时限由 SSO Session Max、Client Session Max 与 Access Token Lifespan 共同决定，见 [IAM 会话超时排错]({{< relref "keycloak-session-timeouts" >}})。
+Admin Console 的 “Sign out all active sessions”（admin REST：`POST /admin/realms/{realm}/users/{id}/logout`），它会逐会话触发 back-channel 登出并设置 not-before。前提是目标客户端配置了 backchannel logout URL，否则应用侧只能等 Token 过期——而「过期」的确切时限由 SSO Session Max、Client Session Max 与 Access Token Lifespan 共同决定，见 [IAM 会话超时排错]({{< relref "blog/keycloak-session-timeouts" >}})。
 
 ## 关键来源
 

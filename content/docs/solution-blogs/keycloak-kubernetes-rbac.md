@@ -263,4 +263,4 @@ kubectl config use-context <oidc-context>
 - [Dex + Keycloak 联合身份：Kubernetes 集群 OIDC 认证]({{< relref "dex-keycloak-federation" >}})：需要 Dex 代理层的方案
 - [Keycloak Kubernetes 生产部署]({{< relref "../implementation/kubernetes-production" >}})：Operator、Helm 和高可用部署
 - [Keycloak 细粒度权限与授权策略实战]({{< relref "keycloak-fine-grained-authz" >}})：Groups vs Roles 的深入分析
-- [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}})：如果 OIDC 回调阶段出问题
+- [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})：如果 OIDC 回调阶段出问题

@@ -479,12 +479,12 @@ curl -sS -o /dev/null -w '%{http_code}\n' \
 
 ## 常见错误排错表
 
-> **完整版速查**：这里列出了最常见错误。12 个高频错误的完整诊断命令、根因分析和修复步骤见 **[IAM 网关 oauth2-proxy 常见错误排错]({{< relref "oauth2-proxy-common-errors" >}})**。
+> **完整版速查**：这里列出了最常见错误。12 个高频错误的完整诊断命令、根因分析和修复步骤见 **[IAM 网关 oauth2-proxy 常见错误排错]({{< relref "blog/oauth2-proxy-common-errors" >}})**。
 
 | 错误现象 | 根本原因 | 解决方案 |
 |----------|----------|----------|
 | `expected audience "oauth2-proxy" got ["account"]` | ID Token 没有包含 oauth2-proxy audience，或 mapper 未绑定到实际登录客户端 | 确认 mapper 的 Included Client Audience 是 `oauth2-proxy`，勾选 "Add to ID token"；重新登录并检查新 Token，旧 Cookie 不会自动变正确 |
-| 登录后无限重定向循环 | Cookie Domain 不匹配 / SameSite 过严 | 检查 `--cookie-domain` 是否正确，`--cookie-samesite` 是否为 `lax`。详细排查见 [Keycloak 重定向循环与 401 排错指南]({{< relref "keycloak-redirect-loop-troubleshooting" >}}) |
+| 登录后无限重定向循环 | Cookie Domain 不匹配 / SameSite 过严 | 检查 `--cookie-domain` 是否正确，`--cookie-samesite` 是否为 `lax`。详细排查见 [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) |
 | `csrf cookie not found` | Cookie 被浏览器拦截（SameSite/跨域） | 部署在相同主域名下；`--cookie-samesite=lax`；确保 HTTPS |
 | 登录后返回 403 | `--email-domain` 过滤掉了用户 | 临时设置 `--email-domain=*` 验证，确认后再精确配置 |
 | `invalid_token` / `token contains an invalid number of segments` | ID Token 格式异常或 JWT 校验失败 | 检查 `--oidc-issuer-url` 是否正确，Keycloak Realm 名是否对 |
@@ -492,7 +492,7 @@ curl -sS -o /dev/null -w '%{http_code}\n' \
 | Cookie 在子域名不生效 | 未设置覆盖子域的 `Domain` 属性，或实际主域名不一致 | `--cookie-domain=example.com`（或按部署规范写 `.example.com`）让浏览器按 Domain 属性匹配主域名及子域；不要把前导点当成隔离开关 |
 | 登出后其他应用也退出 | Cookie Domain 跨应用共享 | 不同应用用不同的 oauth2-proxy 实例，或不同 Cookie Name |
 
-上表覆盖的是应用侧症状。如果登出方向相反——用户点了退出、IdP 会话也结束了，但另一个应用仍是登录状态——那属于登出传播问题：Keycloak 只会通知配置了 backchannel logout URL 的客户端，且 oauth2-proxy 的 `/oauth2/sign_out` 本身不会结束 IdP 会话。这类问题的判定与配置见 [IAM 单点登出排错]({{< relref "keycloak-single-logout" >}})。
+上表覆盖的是应用侧症状。如果登出方向相反——用户点了退出、IdP 会话也结束了，但另一个应用仍是登录状态——那属于登出传播问题：Keycloak 只会通知配置了 backchannel logout URL 的客户端，且 oauth2-proxy 的 `/oauth2/sign_out` 本身不会结束 IdP 会话。这类问题的判定与配置见 [IAM 单点登出排错]({{< relref "blog/keycloak-single-logout" >}})。
 
 ### 诊断命令速查
 
@@ -539,7 +539,7 @@ curl -v -H "Cookie: _oauth2_proxy=<复制值>" \
 1. **Cookie Secret 轮换**：cookie-secret 用于加密 Cookie，泄露后攻击者可伪造认证 Cookie。定期轮换需同步更新部署（旧 secret 签发的 Cookie 会失效，用户需重新登录）。
 2. **副本数**：至少 2 副本，配合 PodDisruptionBudget 保证高可用。
 3. **资源限制**：不要把未经压测的内存或 CPU 数字当成默认值。先用实际登录峰值、回调延迟和 OIDC 上游请求量建立基线，再设置 requests/limits；认证服务通常在发布或 Cookie 失效时出现突发流量。
-4. **Session Store 要按模式选择**：默认加密 Cookie 模式不要求多个副本共享服务端会话；只有需要 Redis 集中保存 Session、Cookie 过大，或希望服务端统一撤销时，才配置 `--session-store-type=redis` 和对应连接参数。引入 Redis 同时引入连接、超时、故障降级和凭据轮换问题，不能为了“多副本”机械添加。无论用哪种 Store，`--cookie-expire` / `--cookie-refresh` 都不应该比 Keycloak 的 SSO Session Max 更长，否则用户会遇到「Cookie 还在、刷新却被拒」的循环，参见 [IAM 会话超时排错]({{< relref "keycloak-session-timeouts" >}})。
+4. **Session Store 要按模式选择**：默认加密 Cookie 模式不要求多个副本共享服务端会话；只有需要 Redis 集中保存 Session、Cookie 过大，或希望服务端统一撤销时，才配置 `--session-store-type=redis` 和对应连接参数。引入 Redis 同时引入连接、超时、故障降级和凭据轮换问题，不能为了“多副本”机械添加。无论用哪种 Store，`--cookie-expire` / `--cookie-refresh` 都不应该比 Keycloak 的 SSO Session Max 更长，否则用户会遇到「Cookie 还在、刷新却被拒」的循环，参见 [IAM 会话超时排错]({{< relref "blog/keycloak-session-timeouts" >}})。
 5. **TLS 与代理信任**：外部访问必须使用 HTTPS；如果 TLS 在 Ingress 终结，需正确传递并限制 `X-Forwarded-*`，避免客户端可以直接向 oauth2-proxy 注入代理头。`--reverse-proxy=true` 只表示启用反向代理模式，不等于来源已经可信；同时配置 `--trusted-proxy-ip`，并在网络策略或 Service 暴露层阻止绕过 Ingress 直接访问 oauth2-proxy。Keycloak 也必须配置与公开地址一致的 hostname/proxy 模式。
 6. **监控**：按所用版本确认 `/metrics` 是否启用，并监控认证成功率、回调失败、上游 OIDC 错误、延迟和 401/403 比例；不要只看 Pod 是否存活。
 7. **后端再次验证 Token**：`X-Auth-Request-*` 是认证代理传递的请求头，后端必须只信任来自 Ingress 的请求。若后端使用 `Authorization` 或 `X-Auth-Request-Access-Token` 做 API 授权，仍要独立校验签名、`iss`、`aud`、过期时间和权限，不能把“已通过 `/oauth2/auth`”当成 API 授权结果。
