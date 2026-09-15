@@ -1,14 +1,22 @@
 ---
-title: "Keycloak HTTPS Required 错误与反向代理排错指南 | IDaaS Book"
+title: "Keycloak HTTPS Required 错误与反向代理排错指南"
 description: "Keycloak 报 HTTPS required 或 Invalid redirect_uri 的排查：核对 KC_PROXY_HEADERS、KC_HOSTNAME 与反向代理 X-Forwarded-* 头。"
+summary: "HTTP 访问 Keycloak 直接报 `HTTPS required`，或者回跳时报 `Invalid parameter: redirect_uri`——多数不是证书问题，而是 Realm 的 Require SSL 与反向代理头没对齐。给出 KC_PROXY_HEADERS / KC_HOSTNAME 最小配置、kcadm 改法，以及为什么不建议直接改库。"
 date: 2024-04-01T00:00:00+08:00
+lastmod: 2024-04-01T00:00:00+08:00
 draft: false
-weight: 1
-menu:
-  docs:
-    parent: "keycloak-troubleshooting"
-    identifier: "keycloak-ts-https"
-toc: true
+weight: 40
+images: []
+categories: ["Keycloak"]
+tags: ["keycloak", "https", "reverse-proxy", "proxy-headers", "redirect-uri", "troubleshooting"]
+contributors: []
+pinned: false
+homepage: false
+seo:
+  title: "Keycloak HTTPS Required 与 redirect_uri 报错排错（反向代理）"
+  description: "Keycloak 报 HTTPS required 或 Invalid redirect_uri 的排查：核对 KC_PROXY_HEADERS、KC_HOSTNAME 与反向代理 X-Forwarded-* 头。"
+  canonical: ""
+  noindex: false
 ---
 
 ## 问题描述
@@ -27,7 +35,7 @@ Keycloak 各个 Realm 默认的登录设置里，`Require SSL` 为 `external req
 
 1. 配置 https 并使用 https 登录，毫无疑问，这是正确的解决方案。
 
-   生产环境可以在反向代理 / Ingress 上终结 TLS，但必须让 Keycloak 解析代理实际写入的头。Keycloak 26+ 使用 `KC_PROXY_HEADERS=xforwarded`（或 `forwarded`），而不是照搬旧版 `proxy=edge`；同时固定公网地址，避免它根据内部请求推断回调地址。详见 [Keycloak 26+ 代理头排错]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) 和[安全增强功能]({{< relref "../security-features/_index.md" >}})。
+   生产环境可以在反向代理 / Ingress 上终结 TLS，但必须让 Keycloak 解析代理实际写入的头。Keycloak 26+ 使用 `KC_PROXY_HEADERS=xforwarded`（或 `forwarded`），而不是照搬旧版 `proxy=edge`；同时固定公网地址，避免它根据内部请求推断回调地址。详见 [Keycloak 26+ 代理头排错]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) 和[安全增强功能]({{< relref "docs/keycloak/security-features/_index.md" >}})。
 
    例如 TLS 在 Ingress 终结、Keycloak Pod 内使用 HTTP，且 Ingress 覆盖写入 `X-Forwarded-*`：
 
