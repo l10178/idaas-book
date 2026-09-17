@@ -222,6 +222,7 @@ curl -s -X POST https://keycloak.example.com/realms/<REALM>/protocol/openid-conn
 4. **DPoP + PKCE 组合**：SPA 场景中 DPoP 和 PKCE 互补——PKCE 保护授权码交换阶段，DPoP 保护 Token 使用阶段。两者应同时启用。
 5. **与 OAuth 2.1 的关系**：OAuth 2.1 草稿中 DPoP 是推荐但非强制的（与 PKCE 不同，PKCE 在 OAuth 2.1 中是强制的）。
 6. **Token exchange 会改变 sender-constraint 语义**：Keycloak 26.7.3 修复的缺陷 #50963 指出，V1 token-exchange 会**剥离**绑定在 access token 上的 DPoP 约束。链路中一旦出现 token exchange，换手后的令牌可能已不再是 sender-constrained——不要默认「入口用了 DPoP」等于全链路都受 DPoP 保护。Standard Token Exchange V2 的规则在两个版本间变化过（26.6 拒绝所有 sender-constrained 令牌，26.7 起允许客户端交换自己签发的令牌），逐版本行为见 [Keycloak Token Exchange 实战]({{< relref "../solution-blogs/keycloak-token-exchange" >}})，这一条的背景与其他 26.7.3 修复条目见 [Keycloak 26.7.3 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-3-security-patch.md" >}})。
+7. **重放门禁本身也是实现的一部分**：Keycloak 对 DPoP Proof 的重放去重落在单次性对象存储上。启用 `stateless` 特性且数据库为 MySQL/MariaDB 时，26.7.0–26.7.3 的 `putIfAbsent` 返回值语义会让「已用过的 Proof 被判为首次使用」（`CVE-2026-90997`，26.7.4 修复）。协议层要求「防重放」不代表实现层一定做到了——评估 sender-constrained 方案时，要把去重存储的可靠性一起纳入验证，机制与自查方法见 [Keycloak 26.7.4 安全补丁解读]({{< relref "../solution-blogs/keycloak-26-7-4-security-patch" >}})。
 
 ## FAQ
 

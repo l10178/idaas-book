@@ -34,18 +34,28 @@ toc: true
 
 ## 19.2 使用 Keycloak Operator
 
-> 版本提示：Keycloak 官方 GitHub Release 当前可见的 26.7 补丁版本为 `26.7.3`（2026-08-31 发布，官方列为 20 项安全修复、6 项弱点修复和 19 项缺陷修复，集中在 FGAP v2 管理面授权与 OIDC 令牌语义）。安装 Operator 时应把 `keycloak-k8s-resources`、CRD 和 Keycloak 镜像固定到同一版本；不要把下面的版本号当作永久答案，部署前仍需复核 [keycloak.org/downloads](https://www.keycloak.org/downloads)、[Keycloak Releases](https://github.com/keycloak/keycloak/releases) 与 [Operator 安装文档](https://www.keycloak.org/operator/installation)。补丁版本之间的修复差异见 [Keycloak 26.7.3 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-3-security-patch.md" >}})。
+> 版本提示：Keycloak 官方 GitHub Release 当前可见的 26.7 补丁版本为 `26.7.4`（2026-09-16 发布，官方列为 6 项安全修复、1 项增强和 9 项缺陷修复；其中 `CVE-2026-90997` 会让 `stateless` 模式下的单次性凭据重放防护失效，另含 FGAP v2 impersonation 越权、broker 用户名碰撞与 SAML Redirect 的 native 内存泄漏）。安装 Operator 时应把 `keycloak-k8s-resources`、CRD 和 Keycloak 镜像固定到同一版本；不要把下面的版本号当作永久答案，部署前仍需复核 [keycloak.org/downloads](https://www.keycloak.org/downloads)、[Keycloak Releases](https://github.com/keycloak/keycloak/releases) 与 [Operator 安装文档](https://www.keycloak.org/operator/installation)。补丁版本之间的修复差异见 [Keycloak 26.7.4 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-4-security-patch.md" >}}) 与 [Keycloak 26.7.3 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-3-security-patch.md" >}})。
 
 ### 安装 Operator
 
 ```bash
-# 安装 Operator（示例使用 26.7.3；生产环境先确认版本与 Operator/CRD 兼容）
-VERSION=26.7.3
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloaks.k8s.keycloak.org-v1.yml
-kubectl apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml
+# 安装 Operator（示例使用 26.7.4；生产环境先确认版本与 Operator/CRD 兼容）
+VERSION=26.7.4
 kubectl create namespace keycloak
-kubectl -n keycloak apply -f https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/keycloak-operator.yml
-# 官方推荐在 Kubernetes 环境优先通过 Operator Lifecycle Manager（OLM）安装；裸 Kubernetes 也可按上面的 kubectl 方式安装。
+# 官方推荐方式（kustomize）：一次装齐 CRD 与 Operator
+kubectl apply -k "github.com/keycloak/keycloak-k8s-resources/kubernetes?ref=${VERSION}"
+# 官方在 Kubernetes 环境优先推荐 Operator Lifecycle Manager（OLM）安装，并把升级审批设为 Manual；
+# 裸 Kubernetes 可用上面的 kustomize 方式，或按下一段的逐文件方式安装。
+```
+
+注意文件名：这个仓库里 Operator 的部署文件是 `kubernetes.yml`，**不是** `keycloak-operator.yml`——按后者拼接 raw URL 会得到 404。另外 26.7.0 起该目录新增了 `keycloakoidcclients`、`keycloaksamlclients` 两个 CRD 和 `kustomization.yml`（26.6.x 只有 `keycloaks` 与 `keycloakrealmimports`），所以旧的两行 `kubectl apply -f` 装不全。不便使用 `apply -k` 时，按 `kustomization.yml` 的清单逐个 apply：
+
+```bash
+for f in keycloakoidcclients.k8s.keycloak.org-v1.yml keycloakrealmimports.k8s.keycloak.org-v1.yml \
+         keycloaks.k8s.keycloak.org-v1.yml keycloaksamlclients.k8s.keycloak.org-v1.yml kubernetes.yml; do
+  kubectl -n keycloak apply -f \
+    "https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/${VERSION}/kubernetes/${f}"
+done
 ```
 
 安装后至少确认 CRD、Operator Pod 和版本：
@@ -68,7 +78,7 @@ metadata:
     app: keycloak
 spec:
   instances: 3
-  image: quay.io/keycloak/keycloak:26.7.3   # 示例版本；上线前复核当前稳定版
+  image: quay.io/keycloak/keycloak:26.7.4   # 示例版本；上线前复核当前稳定版
   hostname:
     hostname: auth.example.com
   http:

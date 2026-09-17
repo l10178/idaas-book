@@ -12,14 +12,16 @@ menu:
 toc: true
 ---
 
-> **补丁版本更新（2026-09-11）**：本文记录的是 26.7.0 的功能变化。**26.7.3（2026-08-31）是当前 26.7 系列最新的补丁版本**：官方列出 20 项安全修复、6 项弱点修复和 19 项缺陷修复，其中 10 项标注 `admin/fine-grained-permissions`，主战场是 FGAP v2 管理面授权与 OIDC 令牌语义。分组解读、升级优先级判断与验证清单见 [Keycloak 26.7.3 安全补丁解读]({{< relref "keycloak-26-7-3-security-patch" >}})。
+> **补丁版本更新（2026-09-17）**：本文记录的是 26.7.0 的功能变化。**26.7.4（2026-09-16）是当前 26.7 系列最新的补丁版本**：修复 6 项 CVE，其中 `CVE-2026-90997` 会让 stateless 模式下的单次性凭据重放防护失效（仅限 MySQL/MariaDB 数据库），另有 FGAP v2 impersonation 越权、broker 用户名/邮箱碰撞与 SAML Redirect DEFLATE 的 native 内存泄漏。逐条解读与升级判断见 [Keycloak 26.7.4 安全补丁解读]({{< relref "keycloak-26-7-4-security-patch" >}})。
+>
+> 26.7.3（2026-08-31）的修复量级同样值得单独说明：官方列出 20 项安全修复、6 项弱点修复和 19 项缺陷修复，其中 10 项标注 `admin/fine-grained-permissions`，主战场是 FGAP v2 管理面授权与 OIDC 令牌语义。分组解读、升级优先级判断与验证清单见 [Keycloak 26.7.3 安全补丁解读]({{< relref "keycloak-26-7-3-security-patch" >}})。
 >
 > 26.7.1（2026-08-05）和 26.7.2（2026-08-19）同样是安全修复版本，不新增架构能力，但包含多项**必须升级**的 CVE 修复：
 >
 > - **26.7.2 关键 CVE**：CVE-2026-59888/59889（jackson-databind 升级到 2.21.5）、CVE-2026-17048（Admin REST API 泄露 Vault 中已轮换的 Client Secret）、CVE-2026-15571（可预测的 account-linking hash 导致通过恶意 OIDC Client 接管账户）、CVE-2026-18963（未认证的 reset-credentials 流程绕过导致账户接管）、CVE-2026-15945（FGAP v2 组层级搜索泄露隐藏的父组）、CVE-2026-14613（FGAP v2 Role Groups 端点权限绕过）。其中 reset-credentials 流程绕过和 account-linking hash 可预测性是**可直接利用的账户接管漏洞**，生产环境必须尽快升级。
 > - **26.7.1 关键 CVE**：JWE request object 签名算法校验绕过（CVE-2026-9793）、manage-clients 硬编码 Role Mapper 注入导致提权（CVE-2026-4629）、FGAP v2 多个权限绕过、SAML IdP-Initiated broker login 绕过 link-only 限制（CVE-2026-16442）、SAML broker metadata 导入关闭响应签名验证（CVE-2026-16443）、LDAP entry-dn 搜索绕过配置的 users DN 边界（CVE-2026-16071）、DCR 默认策略允许通过 User Property Mapper 伪造角色（CVE-2026-16102）。
 >
-> 生产环境应先阅读 [26.7.3 发布说明](https://github.com/keycloak/keycloak/releases/tag/26.7.3) 和 [升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)，再安排备份、预发回归和滚动升级；不要把功能页中的 `26.7.0` 示例直接复制到新部署。
+> 生产环境应先阅读 [26.7.4 发布说明](https://github.com/keycloak/keycloak/releases/tag/26.7.4) 和 [升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)，再安排备份、预发回归和滚动升级；不要把功能页中的 `26.7.0` 示例直接复制到新部署。
 
 ## 场景描述
 
@@ -140,6 +142,10 @@ Keycloak 在多数据中心/多集群部署时，传统方案需要外部 Infini
 ```
 
 这意味着运维复杂度大幅降低——不再需要维护一个单独的高可用 Infinispan 集群及对应的监控和备份。该特性目前是 Preview，建议先非关键环境验证。
+
+**对应的特性开关叫 `stateless`**（Preview），需要显式启用。它的实质是把易失数据从 Infinispan 搬进数据库：认证会话、action token（邮箱验证链接、密码重置令牌、OAuth 授权码等单次性对象）以及登录失败计数。官方给出的代价是每次认证交互增加约 8–10 ms 延迟，数据库 CPU 与 IOPS 大约翻倍；跨集群部署则要求数据库同步复制且站点间往返延迟低于 10 ms。
+
+这一改动把单次性对象的写路径从缓存搬到数据库，也带来了新的失败模式：**26.7.0–26.7.3 在 MySQL/MariaDB 上重放防护失效**（`CVE-2026-90997`，26.7.4 修复），因为数据库驱动对「匹配到但未改动」的行也报告受影响行。逐条机制与自查方法见 [Keycloak 26.7.4 安全补丁解读]({{< relref "keycloak-26-7-4-security-patch" >}})。
 
 ## AuthZEN Authorization API（Experimental）
 
@@ -268,7 +274,7 @@ curl -fsS https://auth.example.com/health/ready
 ## 延伸阅读
 
 - [Keycloak Downloads（当前服务器稳定版）](https://www.keycloak.org/downloads)
-- [Keycloak 26.7.3 Release Notes（当前最新补丁版本）](https://github.com/keycloak/keycloak/releases/tag/26.7.3)
+- [Keycloak 26.7.4 Release Notes（当前最新补丁版本）](https://github.com/keycloak/keycloak/releases/tag/26.7.4)
 - [Keycloak 26.7.0 Release Notes](https://github.com/keycloak/keycloak/releases/tag/26.7.0)
 - [Keycloak 26.7.0 升级说明](https://www.keycloak.org/docs/latest/upgrading/index.html)
 - [Keycloak Server Features](https://www.keycloak.org/server/features)
