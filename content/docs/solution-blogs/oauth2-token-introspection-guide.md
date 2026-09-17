@@ -123,6 +123,8 @@ Clients → Create
 
 保存后在 Credentials 标签页获取 `Client Secret`。
 
+**版本注意（Keycloak 26.6.2 起）**：Introspection 端点会校验执行 introspection 的客户端是否出现在被校验 token 的 `aud` 中，不在则返回 `{"active": false}` 而不是报错。也就是说上面这个 introspection 客户端本身必须成为一个 audience——给签发 token 的客户端加 Audience 协议映射器（`Included Client Audience` 填该 introspection 客户端的 ID），或者在升到 26.6.2 之前就规划好。临时兼容开关（服务端 `allow-token-introspection-without-audience-check`、客户端级 *Advanced → OpenID Connect Compatibility Modes → Allow token introspection without audience check*）都已被标记弃用并会在未来版本移除，只适合升级窗口内短期使用。同一版本还改变了轻量级 access token 的行为：UserInfo 默认拒绝它，而它的 `aud` 可能只出现在 introspection 响应里，不在 token 本身——「本地解不出 `aud`、introspection 却正常」在轻量级 token 上是预期现象。
+
 ### 2. 检查 Introspection 端点
 
 ```
@@ -130,6 +132,8 @@ https://<keycloak-host>/realms/<realm>/protocol/openid-connect/token/introspect
 ```
 
 ### 3. 测试调用
+
+下面的 `grant_type=password`（ROPC）是 OAuth 2.1 明确废弃的用法，只适合本地一次性取一个 token 做验证；生产环境请用授权码流程，或直接取服务账号 token（`grant_type=client_credentials`）。
 
 ```bash
 # 1. 先获取一个用户的 Access Token（用于被 Introspection 查询的 Token）
@@ -340,7 +344,7 @@ def verify_token_hybrid(token: str, is_sensitive_operation: bool = False):
 
 | 症状 | 原因 | 解决方案 |
 |------|------|---------|
-| Introspection 返回 `active: false` 但 Token 未过期 | 用户被禁用/登出、Client 被禁用、Refresh Token 已被轮换后旧的 Access Token 仍有效但 Introspection 判断为无效 | 正常行为——检查 Keycloak 中用户状态和 Client 状态 |
+| Introspection 返回 `active: false` 但 Token 未过期 | 用户被禁用/登出、Client 被禁用、Refresh Token 已被轮换后旧的 Access Token 仍有效但 Introspection 判断为无效；**或 Keycloak ≥ 26.6.2 校验 `aud` 时执行 introspection 的客户端不在 token 的 `aud` 中** | 先解 token 看 `aud` 是否包含 introspection 客户端；不含则补 Audience 映射器（兼容开关仅临时） |
 | `401 Unauthorized` 调用 Introspection | Client 凭据错误或 Client 没有 Service Account | 确认 Client 类型为 `confidential`，Service Accounts Enabled = ON |
 | Introspection 返回 `active: true` 但没有 `username` | Token 是 Client Credentials Grant 签发的（机器到机器，没有用户上下文） | 检查 `sub` 为 service account 的 ID，`username` 不存在是正常的 |
 | Nginx `auth_request` 子请求超时 | 验证服务响应慢或 Keycloak 不可达 | 设置合理的 proxy timeout（3-5 秒），增加 Introspection 缓存层 |
@@ -418,4 +422,5 @@ plugins:
 > - [JWT 深入解读]({{< relref "docs/protocols/jwt-deep-dive.md" >}})：JWT 本地验证的完整逻辑
 > - [IAM 会话管理与 Token 生命周期]({{< relref "docs/advanced-topics/iam-session-management.md" >}})：Token 刷新、吊销与会话联动
 > - [Keycloak 生产巡检与运维清单]({{< relref "keycloak-operations-checklist" >}})：日常监控 Introspection 端点的健康状态
+> - [Spring Boot 3 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})：Spring Security 侧用 introspection 代替本地验签的配置，以及 26.6.2 的 audience 变化
 > - RFC 7662 (OAuth 2.0 Token Introspection)
