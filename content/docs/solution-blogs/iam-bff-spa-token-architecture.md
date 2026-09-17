@@ -133,7 +133,8 @@ Cookie 用 `__Host-bff=...; Secure; HttpOnly; SameSite=Strict; Path=/`（注意 
 - Realm 开启 **Revoke Refresh Token** 后，签发 Refresh Token 时会在 Token 中写入一个 `reuse_id` claim（`TokenManager`）；刷新时 `reuse_id` 原样复制到新 Token。也就是说，**一次授权码流程产生的整条刷新链共享同一个 `reuse_id`**，多标签页各自走授权码流程则分属不同链，互不干扰。
 - 刷新时 Keycloak 会为该 `(userSessionId, reuse_id)` 申请一把临时排他锁：`session.singleUseObjects().putIfAbsent("refreshLock:" + sessionId + ":" + reuseIdKey, 60)`，并在 12 秒窗口内退避重试。所以**同一条刷新链的并发刷新是被串行化的**，不会有两个请求同时消耗同一个 Token。
 - 被串行化就意味着有一个请求会「输」：`TokenManager#validateTokenReuse` 发现该链上已经登记了更新的 Refresh Token，就抛出 `invalid_grant` / `Stale token`；如果同一 Token 的使用次数超过 `refreshTokenMaxReuse`（默认 `0`，即严格单次），则抛出 `invalid_grant` / `Maximum allowed refresh token reuse exceeded`。
-- 注意一个容易误判的细节：`Refresh Token Max Reuse` 是 **Realm 级**配置，客户端属性覆盖（`revoke.refresh.token`、`refresh.token.max.reuse`）来自 PR #51798，已合入 `main` 并带 26.8 的 release note，**截至当前稳定版 26.7.3 尚未可用**。也就是说，在 26.7.3 上你无法只对某个客户端放宽轮换策略。
+- 注意一个容易误判的细节：`Refresh Token Max Reuse` 是 **Realm 级**配置，客户端属性覆盖（`revoke.refresh.token`、`refresh.token.max.reuse`）来自 PR #51798，已合入 `main` 并带 26.8 的 release note，**截至当前稳定版 26.7.4 尚未可用**。也就是说，在 26.7.4 上你无法只对某个客户端放宽轮换策略。
+- 上面这把 `refreshLock` 用的是同一个单次性对象存储的 `putIfAbsent`。如果你启用了 `stateless` 特性且数据库是 MySQL/MariaDB，该 API 的返回值语义在 26.7.0–26.7.3 上不可靠（26.7.4 已修，见 [Keycloak 26.7.4 安全补丁解读]({{< relref "keycloak-26-7-4-security-patch" >}})）——排查「并发刷新没有被串行化」这类现象时，把它纳入怀疑范围，不要只怀疑应用侧的锁实现。
 
 ```mermaid
 flowchart TD
