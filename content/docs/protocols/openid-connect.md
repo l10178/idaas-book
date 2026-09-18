@@ -1,5 +1,5 @@
 ---
-title: "第6章：OpenID Connect — ID Token、UserInfo 端点与认证流程 | IDaaS Book"
+title: "第6章：OpenID Connect — ID Token、UserInfo 与 IAM 认证流程 | IDaaS Book"
 description: "企业 IAM OpenID Connect 身份认证协议完整解读：ID Token 结构与验证、UserInfo 端点、OAuth 2.0 与 OIDC 区别、会话管理与 SAML 2.0 对比"
 date: 2024-02-02T00:00:00+08:00
 draft: false
@@ -96,6 +96,8 @@ Header.Payload.Signature
 **iss（Issuer）**：必须与 OIDC 发现文档中的 issuer 完全匹配，包括协议（https）和尾部斜杠的有无。
 
 **aud（Audience）**：必须是接收此 Token 的客户端 ID。验证 ID Token 时，必须检查 aud 包含自己的 client_id。
+
+这条规则只覆盖 ID Token。**Access Token 的 `aud` 没有同样的保证**：OIDC Core 规定 ID Token 的 `aud` 就是接收它的 client_id，而 Keycloak 不会自动把签发 access token 的客户端写进 `aud`——默认 `roles` scope 里的 Audience Resolve 只在 token 带有该客户端的客户端角色时才追加对应值，官方文档也明确写了 access token 可能不包含签发它的客户端。所以「同一个 Client 既做浏览器登录又当资源服务器」的写法，登录正常但资源服务器一旦开启 `aud` 校验就会全量 `401 The aud claim is not valid`。正确顺序是先给 access token 补 Audience 映射器（或用 Evaluate 页确认 `aud` 已有值），再在被保护服务上开启校验，完整步骤与回滚见 [Spring Boot 3 资源服务器接入 Keycloak]({{< relref "docs/solution-blogs/keycloak-spring-boot-3-resource-server.md" >}})。
 
 **nonce**：从授权请求中传入，在 ID Token 中原样返回，用于防止 ID Token **重放攻击**（将 ID Token 绑定到本次授权请求）。注意：防 **CSRF** 的是 `state` 参数，不是 `nonce`，二者职责不同，不可混用。
 

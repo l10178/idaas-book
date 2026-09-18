@@ -310,6 +310,8 @@ oauth2-proxy 会验证 ID Token 中的 `aud` 字段。如果 Keycloak 客户端�
 
 详见 [oauth2-proxy 集成指南]({{< relref "docs/solution-blogs/keycloak-oauth2-proxy.md" >}}) 和 [OAuth 2.0 攻击面分析]({{< relref "docs/protocols/oauth2-attack-surface.md" >}})。
 
+上面这条是**网关侧**的路径（oauth2-proxy 校验 ID Token）。如果后端服务自己解析 Bearer Token，规则不一样：Spring Security 的资源服务器默认只校验签名、`exp`/`nbf`/`iss`，**不校验 `aud`**；而一旦配置了 `audiences`，就必须先确认 access token 的 `aud` 里真的有这个值——Keycloak 不会自动把签发 access token 的客户端写进 `aud`，顺序搞反就是全量 `401 The aud claim is not valid`。两种形态的 mapper 配置和排错见 [Spring Boot 3 资源服务器接入 Keycloak]({{< relref "docs/solution-blogs/keycloak-spring-boot-3-resource-server.md" >}})。
+
 ### Q5：HS256 和 RS256 怎么选？
 
 **生产环境永远选 RS256（或 ES256）**。HS256 是对称算法，签发和验证用同一个 secret——这个 secret 泄露后攻击者可以伪造任意 Token。RS256 是非对称算法，私钥只存在于 IDP，所有 API 用公钥验证，私钥泄露的风险面小得多。
