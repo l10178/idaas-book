@@ -71,15 +71,18 @@ graph LR
 
 ### SCIM 在 Keycloak 中的定位
 
-SCIM 不是 Keycloak 的通用内置用户供应接口。Keycloak 的官方文档主要覆盖 User Storage Federation、Identity Brokering 和管理 API；要让 Keycloak 作为 SCIM Server，通常需要经过版本验证的社区扩展，或在 Keycloak 外部部署 SCIM 网关。不要因为产品宣传或旧文章中的“支持 SCIM”就假设某个 Keycloak 镜像已经提供 `/scim/v2`。
+这条边界取决于版本，选型时先把版本号钉死：
+
+- **Keycloak 26.7.x**：26.7.0 起原生提供 SCIM API（preview），端点位于 `/realms/{realm}/scim/v2`，需要服务器特性 `scim-api` 与 realm 开关同时打开。开启方式、权限模型、audience 校验和能力限制（`bulk`、`etag`、排序、改密均不支持）见 [Keycloak 原生 SCIM API 实战]({{< relref "keycloak-scim-api" >}})。
+- **Keycloak 26.6 及更早**：没有文档化的 SCIM Server 能力（`SCIM_API` 在 26.6.0 的 `Profile.java` 中只是 `Type.EXPERIMENTAL`）。这些版本要让 Keycloak 作为 SCIM Server，只能使用经过版本验证的社区扩展，或在 Keycloak 外部部署 SCIM 网关。不要因为产品宣传或旧文章中的“支持 SCIM”就假设某个 Keycloak 镜像已经提供 `/scim/v2`。
 
 这条边界会直接影响选型：
 
-- **HR/Entra ID → Keycloak**：先确认接收端是否真的实现 SCIM 2.0 的资源、认证和 PATCH 语义；否则应使用受支持的连接器或中间服务，不要把 SCIM 请求直接发到 Admin REST API。
-- **Keycloak → SaaS 应用**：先确认谁负责 SCIM Client、重试、幂等和审计。Keycloak 的登录联邦能力不能自动等价为下游用户供应能力。
-- **只需要 Keycloak 管理用户**：使用官方支持的管理接口和用户存储方案，并把它们与 SCIM Server 的兼容性单独验收。
+- **HR/Entra ID → Keycloak**：先确认接收端真的实现 SCIM 2.0 的资源、认证和 PATCH 语义；走原生 API 时还要按上面那篇核对 `ServiceProviderConfig` 的实际能力。不要把 SCIM 请求直接发到 Admin REST API——两者权限模型相同，但 Admin API 不是 SCIM 实现。
+- **Keycloak → SaaS 应用**：先确认谁负责 SCIM Client、重试、幂等和审计。Keycloak 的登录联邦能力不能自动等价为下游用户供应能力，26.7 的原生实现也只覆盖入站方向。
+- **只需要 Keycloak 管理用户**：26.7+ 可直接用原生 SCIM；更早版本使用官方支持的管理接口和用户存储方案，并把它们与 SCIM Server 的兼容性单独验收。
 
-选择扩展时至少锁定三项：扩展支持的 Keycloak 版本、发布物的校验来源，以及它对 `ServiceProviderConfig`、`Users`、`Groups`、PATCH 和 Bearer Token 认证的实际测试结果。本文不固定某个社区插件版本，避免把未经持续验证的插件当成 Keycloak 官方能力。
+如果决定走社区扩展，至少锁定三项：扩展支持的 Keycloak 版本、发布物的校验来源，以及它对 `ServiceProviderConfig`、`Users`、`Groups`、PATCH 和 Bearer Token 认证的实际测试结果。本文不固定某个社区插件版本，避免把未经持续验证的插件当成 Keycloak 官方能力。
 
 ### 验证 SCIM 端点
 
@@ -190,8 +193,8 @@ curl -X POST \\
 **问题 1：Test Connection 失败，报 `CredentialValidationUnavailable`**
 
 这通常是 SCIM 端点返回非 200 的响应。检查：
-- Keycloak SCIM 插件是否正确加载
-- `SCIM_AUTHENTICATION_MODE` 是否与 Token 类型匹配
+- 接收端是 Keycloak 26.7+ 原生 API 时：realm 的 SCIM API 开关是否打开（未打开为 404），以及服务的 `scim-api` 特性是否启用
+- 认证配置：`SCIM_AUTHENTICATION_MODE` 这类变量属于特定社区扩展，只在部署该扩展时才有意义；走原生 API 时对应的是服务账号客户端凭据与 audience mapper，缺 audience 会返回 401 `Invalid token audience`
 - Azure AD 的 Tenant URL 是否精确到 `/scim/v2` 且不含尾部空格
 
 **问题 2：用户同步成功，但属性不全**
@@ -259,7 +262,7 @@ SCIM 和 LDAP 解决的是 IAM 中不同层面的问题。LDAP 是**目录查询
 
 ### Keycloak SCIM 和 Azure AD SCIM 哪个更成熟？
 
-Azure AD（Entra ID）的 SCIM Provisioning 功能可作为 SCIM Client 向支持 SCIM 的应用推送用户，但实际同步行为仍受租户配置、映射和调度影响。Keycloak 是否能作为 SCIM Server，取决于所部署的、经过版本验证的扩展或外部 SCIM 网关；不能把 Identity Brokering 或 Admin REST API 当成 SCIM 实现。组合方案应先分别验证 SCIM Server、SCIM Client、属性映射和离职回收。
+两者方向不同：Azure AD（Entra ID）是成熟的 **SCIM Client**，向支持 SCIM 的应用推送用户和组，实际同步行为受租户配置、映射和调度影响；Keycloak 在 26.7.0 起原生提供 **SCIM Server**（preview），26.6 及更早版本则取决于经过版本验证的扩展或外部 SCIM 网关。不能把 Identity Brokering 或 Admin REST API 当成 SCIM 实现。组合方案应先分别验证 SCIM Server、SCIM Client、属性映射和离职回收。
 
 ### 怎么保证 SCIM 同步不出错导致用户数据混乱？
 
