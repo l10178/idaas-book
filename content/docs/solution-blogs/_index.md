@@ -17,6 +17,7 @@ sidebar:
 **按场景直达：**
 
 - 入口网关选型：[Envoy Gateway 原生 OIDC]({{< relref "envoy-gateway-oidc-keycloak" >}})（Gateway API）、[Keycloak + oauth2-proxy]({{< relref "keycloak-oauth2-proxy" >}})（Nginx Ingress auth-url）、[Traefik ForwardAuth]({{< relref "traefik-forwardauth-keycloak" >}})
+- 应用与后端接入：[Spring Boot 3 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})（IAM 角色映射与 audience 校验）、[Keycloak Adapter 弃用迁移]({{< relref "keycloak-adapter-migration" >}})（服务端 Web 应用）
 - 报错定位（已移入 Blog）：[oauth2-proxy 常见错误](/blog/oauth2-proxy-common-errors/)、[Keycloak 重定向循环与 401](/blog/keycloak-redirect-loop-troubleshooting/)、[单点登出不彻底](/blog/keycloak-single-logout/)、[会话超时](/blog/keycloak-session-timeouts/)
 - 安全与合规加固：[PAR 授权请求]({{< relref "keycloak-par-pushed-authorization-requests" >}})、[审计日志与等保]({{< relref "keycloak-audit-logging-compliance" >}})、[最小权限落地]({{< relref "iam-least-privilege-guide" >}})
 - 生产运维：[高可用与灾难恢复]({{< relref "keycloak-ha-dr" >}})、[Prometheus 监控]({{< relref "keycloak-prometheus-metrics" >}})、[运维巡检清单]({{< relref "keycloak-operations-checklist" >}})

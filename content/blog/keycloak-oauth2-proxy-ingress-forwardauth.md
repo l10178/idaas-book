@@ -77,6 +77,8 @@ curl -fsS https://sso.example.test/realms/internal/.well-known/openid-configurat
 然后补两个 mapper：
 
 1. **Audience mapper**：把 `Included Client Audience` 设置为 `oauth2-proxy`。oauth2-proxy 的 OIDC 登录回调主要校验 ID Token 的 `aud`；如果只在 access token 上增加 audience，回调仍可能报 `expected audience` / `invalid aud`，日志里常见只看到 `account`。除非后端确实需要该 claim，否则不要为了代理登录把 audience 无条件加到 access token。
+
+   注意这一条只解决网关登录。如果后端还会自己解析这个 access token（而不是只信任 `X-Auth-Request-*` Header），它的 `aud` 需求是另一件事：Spring Security 资源服务器默认不校验 `aud`，开启校验后就需要 access token 里真有对应值，配置与排错见 [Spring Boot 3 资源服务器接入 Keycloak]({{< relref "docs/solution-blogs/keycloak-spring-boot-3-resource-server.md" >}})。
 2. **Group Membership mapper**：把组写入 `groups` claim。若只按 realm role 控制，也可以用 oauth2-proxy 的 Keycloak OIDC provider role 选项，但 groups 更容易给 Ingress/后端统一消费。
 
 生产环境建议单独建 Client，不要复用业务系统 Client。Client Secret 按密钥管理系统下发，轮换时先让 oauth2-proxy 支持新 Secret，再撤旧 Secret；别在发布窗口玩盲盒。

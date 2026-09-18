@@ -127,6 +127,8 @@ public class SecurityConfig {
 2. **`keycloak.json` → `application.yml`**：所有 Keycloak 连接参数从外部 JSON 文件迁移到 Spring Security 标准 YAML 配置。
 3. **Logout**：从 `KeycloakLogoutHandler` 迁移到 `OidcClientInitiatedLogoutSuccessHandler`。
 
+**注意区分两种迁移目标**：上面这套是 OAuth2 **Client**（服务端 Web 应用，浏览器重定向登录、Session 会话）。如果被迁移的是一个只提供 API、由前端或其它服务携带 Bearer token 调用（或自己用 `client_credentials` 调别人）的服务，目标形态是 OAuth2 **Resource Server**，配置入口、角色提取方式和 `aud` 校验都不同，见 [Spring Boot 3 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})。Adapter 的 `use-resource-role-mappings` 开关在两种形态下的对应做法都在那篇里。
+
 ### Node.js / Express
 
 **旧方案**：
