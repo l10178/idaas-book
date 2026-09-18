@@ -443,7 +443,7 @@ SCIM 规范没有规定，但生产环境应该做。理想方案是 IDaaS 在�
 
 SCIM 2.0 是企业 IAM 体系中"用户配置"的标准语言。它将 IAM 身份管理从"手工操作"和"定制脚本"升级为标准化、自动化的 API 调用。对于 IAM/IDaaS 平台选型，SCIM 支持的质量——尤其对标标准用户 Schema、过滤语法、PATCH 操作——是评估的重要维度。把 SCIM 真正用好，关键在于理解它不是孤立的协议，而是 IAM 身份生命周期自动化流水线上的关键一环。
 
-**实践进展**：Keycloak 26.7.0（2026-07）引入了 SCIM API Preview 功能，支持完整的用户/组 CRUD、PATCH、过滤和 Enterprise User 扩展。这是开源 IAM 领域 SCIM 落地的重要一步。详见 [Keycloak 26.7 新特性解读]({{< relref "docs/solution-blogs/keycloak-26-7-whats-new" >}})。
+**实践进展**：Keycloak 26.7.0（2026-07）引入了 SCIM API Preview 功能，支持完整的用户/组 CRUD、PATCH、过滤和 Enterprise User 扩展。这是开源 IAM 领域 SCIM 落地的重要一步。详见 [Keycloak 26.7 新特性解读]({{< relref "docs/solution-blogs/keycloak-26-7-whats-new" >}})；开启方式、权限模型与能力限制（`bulk`、`etag`、排序、改密不支持）见 [Keycloak 原生 SCIM API 实战]({{< relref "docs/solution-blogs/keycloak-scim-api.md" >}})。
 
 配合 [IAM 基础概念]({{< relref "docs/fundamentals/iam-fundamentals.md" >}}) 中的身份生命周期模型和 [IAM 架构设计指南]({{< relref "docs/advanced-topics/iam-architecture-design.md" >}}) 中的用户同步架构，可以构建完整的 IAM 用户自动化管理链路。
 
