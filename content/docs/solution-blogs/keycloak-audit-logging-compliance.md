@@ -115,6 +115,8 @@ UPDATE_PASSWORD, UPDATE_PASSWORD_ERROR
 - 列表中应出现 `LOGIN` 和 `LOGIN_ERROR` 事件
 - 点击事件详情，确认能看到 IP、客户端、User Agent
 
+这一步只验证「有没有记」，不验证「记的 IP 是不是真的」。Keycloak 在反向代理后若未设置 `--proxy-headers`，或设置了却未限定 `--proxy-trusted-addresses`，这里看到的 IP 可能是入口代理地址，甚至是客户端伪造的值；换句话说，审计数据的可用性取决于代理信任边界，见 [IAM：Keycloak 反向代理真实客户端 IP 与代理信任边界]({{< relref "keycloak-proxy-client-ip-trust" >}})。
+
 ### 2. 检查管理员事件
 
 Admin Console → Events → Admin Events：
