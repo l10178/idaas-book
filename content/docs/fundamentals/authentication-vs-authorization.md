@@ -169,6 +169,8 @@ Rule: 允许访问 IF
   主体 is a manager of 文档.owner
 ```
 
+把 ReBAC 接到已有身份系统上时，真正的工作量不在授权模型本身，而在「身份标识怎么统一」和「关系数据怎么同步」——例如主体必须是稳定的 `sub` 而非可变用户名，否则关系数据会随账号改名失效。以 Keycloak 为身份源、OpenFGA 为授权引擎的具体做法见 [Keycloak + OpenFGA：IAM 细粒度授权 ReBAC 落地]({{< relref "docs/solution-blogs/keycloak-openfga-rebac" >}})。
+
 ## 3.4 认证与授权的关系
 
 ### 认证是授权的前提，但不等同于授权

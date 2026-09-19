@@ -194,7 +194,7 @@ Charlie 能看 document:123 吗？
 
 ### 开源实现
 
-- **OpenFGA**（原 Auth0 FGA）：ReBAC 开源实现，CNCF Sandbox 项目（截至本稿）
+- **OpenFGA**（原 Auth0 FGA）：ReBAC 开源实现，2025 年 10 月从 CNCF Sandbox 晋级为 [Incubating 项目](https://www.cncf.io/blog/2025/11/11/openfga-becomes-a-cncf-incubating-project/)；与 Keycloak 搭配的认证配置、元组同步边界见 [Keycloak + OpenFGA：IAM 细粒度授权 ReBAC 落地]({{< relref "docs/solution-blogs/keycloak-openfga-rebac" >}})
 - **SpiceDB**（authzed）：受 Zanzibar 启发的权限数据库
 - **Ory Keto**：Ory 生态的权限服务，详见 [Ory 深度解析]({{< relref "docs/implementation/ory-deep-dive" >}})
 

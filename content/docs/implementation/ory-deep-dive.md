@@ -191,6 +191,8 @@ owner → can_write → document  // owner 关系意味着写权限
 // Keto 通过关系图推导：user1 → owner → document:123 → can_write ✓
 ```
 
+这个关系模型与 OpenFGA 一致：两者都源自 Zanzibar 的元组（object, relation, subject）结构，差别在生态与部署形态——Keto 属于 Ory 全家桶，OpenFGA 是 CNCF Incubating 项目且与 Keycloak 的组合有公开可验证的 OIDC 接法，见 [Keycloak + OpenFGA：IAM 细粒度授权 ReBAC 落地]({{< relref "../solution-blogs/keycloak-openfga-rebac" >}})。
+
 **核心概念**：
 - **Object**：被访问的资源（如 document:123、project:abc）
 - **Relation**：对象之间的关系（owner、editor、viewer、parent）
