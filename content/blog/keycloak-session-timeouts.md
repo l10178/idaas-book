@@ -206,7 +206,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 1. 改之前先记录原值：`kcadm.sh get realms/<realm> > realm-before.json`，或者用 Realm 的 partial export 留档。
 2. 这些参数是配置项而非 Schema 变更，改回原值即可恢复，不需要重启节点，也没有数据迁移。但注意上面讲的生效时机：**调小过的时间段已经让部分在线会话失效**，回滚配置不能复活它们，用户需要重新登录一次。
 3. 如果因为 26.5 校验而无法保存，优先把越界的客户端属性清空（回到继承 Realm），而不是先把 Realm 的 SSO Session 值放大——后者等于把整个 Realm 的信任窗口一次性放宽。
-4. 排查期间若临时禁用了持久化用户会话（`--features-disabled=persistent-user-sessions`），务必恢复：禁用该特性在开发分支的升级说明中已被标记为弃用（`changes-26_8_0.adoc`，截至 26.7.3 尚未发布，正式结论以发布后的 release notes 为准）。
+4. 排查期间若临时禁用了持久化用户会话（`--features-disabled=persistent-user-sessions`），务必恢复：禁用该特性在开发分支的升级说明中已被标记为弃用（`changes-26_8_0.adoc`，截至当前稳定版 26.7.4 仍未随正式版本发布，正式结论以发布后的 release notes 为准）。
 
 ## 常见问题（IAM 会话超时）
 

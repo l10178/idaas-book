@@ -108,6 +108,17 @@ X-Auth-Request-Redirect: https://idp.example.com/realms/corp/protocol/openid-con
 
 如果登出由服务端触发、不需要浏览器参与，可用 `--backend-logout-url`（同样支持 `{id_token}`）在清理本地会话时直接请求登出端点。
 
+### 内建 OIDC 客户端的应用：以 Grafana 为例
+
+Grafana、Jenkins、Harbor 这类应用不需要反向代理，它们自己就是 OIDC 客户端，登出方式各不相同。Grafana 检测到登录方式为 OAuth 时会**自动在登出请求里带上 `id_token_hint`**，你只需要配 `signout_redirect_url` 指向 Keycloak 的登出端点并编码回跳地址：
+
+```ini
+[auth.generic_oauth]
+signout_redirect_url = https://idp.example.com/realms/corp/protocol/openid-connect/logout?post_logout_redirect_uri=https%3A%2F%2Fgrafana.example.com%2Flogin
+```
+
+回跳地址里同样不能出现 `state`、`code` 等保留参数（与上面第 5 条同一套 forbidden params 检查）。完整的 Grafana 接入配置、角色映射与排错顺序见 [Grafana 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/grafana-keycloak-oidc-sso.md" >}})。
+
 ## 为什么 Keycloak 会返回 400 或停在确认页
 
 下面是 Keycloak `LogoutEndpoint` 的实际判定，症状可以直接对照：

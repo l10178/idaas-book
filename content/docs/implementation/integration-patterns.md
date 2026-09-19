@@ -242,6 +242,8 @@ public class SecurityConfig {
 - **Node.js**：`openid-client`
 - **Rust**：`openidconnect-rs`
 
+另有一类应用自带 OIDC 客户端（Grafana、Jenkins、Harbor、Argo CD 等），配置点是「应用自己的配置项 + Keycloak 侧 client 与 claim」，而不是写代码。这类接入的难点通常不在认证流程，而在**角色/组 claim 到应用内角色的映射**——Keycloak 输出的 `realm_access.roles`、`groups` 是嵌套或分组结构，应用的映射表达式各有一套语法。以 Grafana 为例的完整配置与映射对照见 [Grafana 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/grafana-keycloak-oidc-sso" >}})。
+
 ## 18.6 协议选择指南
 
 | 应用类型 | 推荐协议 | 原因 |
