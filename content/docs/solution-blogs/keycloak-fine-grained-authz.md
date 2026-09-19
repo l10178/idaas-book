@@ -350,10 +350,12 @@ public List<Order> listOrders(Authentication auth) {
 | 按用户属性/部门做数据隔离 | Groups + Group-Based Policy + 应用过滤 |
 | 需要动态可配置的权限规则 | Authorization Services + JavaScript Policy |
 | 第三方应用访问 API 时做 Scope 限制 | OAuth 2.0 Scopes（Client → Client Scopes） |
+| 资源由业务动态创建、权限取决于「人与资源的关系」（文档共享、项目协作、多级继承） | 把关系授权外置给 OpenFGA，Keycloak 只做认证，见 [Keycloak + OpenFGA]({{< relref "keycloak-openfga-rebac" >}}) |
 
 ## 与其他章节的关联
 
 - [RBAC、ABAC、ReBAC 授权模型对比]({{< relref "../advanced-topics/authorization-models" >}}) — 全局视角的授权模型选型
+- [Keycloak + OpenFGA：IAM 细粒度授权 ReBAC 落地]({{< relref "keycloak-openfga-rebac" >}}) — 当资源数量与关系复杂度超出 Authorization Services 的适用范围时，把关系授权外置的做法
 - [Keycloak 架构详解]({{< relref "../implementation/keycloak-architecture" >}}) — Keycloak 内部 Realm/Role/Group 的组织模型
 - [OAuth 2.0 协议深入]({{< relref "../protocols/oauth2-deep-dive" >}}) — OAuth Scopes 与 Authorization Server 的工作原理
 - [Keycloak + oauth2-proxy 集成]({{< relref "keycloak-oauth2-proxy" >}}) — 网关层认证后，应用层授权的配合方式

@@ -20,6 +20,7 @@ sidebar:
 - 应用与后端接入：[Spring Boot 3 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})（IAM 角色映射与 audience 校验）、[Keycloak Adapter 弃用迁移]({{< relref "keycloak-adapter-migration" >}})（服务端 Web 应用）
 - 报错定位（已移入 Blog）：[oauth2-proxy 常见错误](/blog/oauth2-proxy-common-errors/)、[Keycloak 重定向循环与 401](/blog/keycloak-redirect-loop-troubleshooting/)、[单点登出不彻底](/blog/keycloak-single-logout/)、[会话超时](/blog/keycloak-session-timeouts/)
 - 安全与合规加固：[PAR 授权请求]({{< relref "keycloak-par-pushed-authorization-requests" >}})、[审计日志与等保]({{< relref "keycloak-audit-logging-compliance" >}})、[最小权限落地]({{< relref "iam-least-privilege-guide" >}})、[反向代理真实客户端 IP 与信任边界]({{< relref "keycloak-proxy-client-ip-trust" >}})
+- 授权模型落地：[Keycloak 细粒度权限与授权策略]({{< relref "keycloak-fine-grained-authz" >}})、[Keycloak + OpenFGA 的 ReBAC 集成]({{< relref "keycloak-openfga-rebac" >}})
 - 生产运维：[高可用与灾难恢复]({{< relref "keycloak-ha-dr" >}})、[Prometheus 监控]({{< relref "keycloak-prometheus-metrics" >}})、[运维巡检清单]({{< relref "keycloak-operations-checklist" >}})
 
 **已覆盖主题：**
@@ -70,3 +71,4 @@ sidebar:
 | [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}}) | hostname v1 移除清单、v1→v2 选项映射、backchannel 行为反转、四种拓扑最小配置、Operator CR 字段、启动校验错误文本、issuer/邮件链接排错与回滚 |
 | [Keycloak PAR 实战：IAM 授权请求参数不再走浏览器 URL]({{< relref "keycloak-par-pushed-authorization-requests" >}}) | RFC 9126、`require.pushed.authorization.requests` vs fapi-2 `secure-par-content`、`request_uri` 60 秒有效期与消费时机、`Pushed Authorization Request is only allowed.` 排错、oauth2-proxy / Dex / kube-apiserver 支持现状、回滚 |
 | [Keycloak 反向代理真实客户端 IP 与代理信任边界]({{< relref "keycloak-proxy-client-ip-trust" >}}) | `proxy-headers` / `proxy-trusted-addresses` 默认行为、passthrough 与 PROXY protocol 互斥、`$proxy_add_x_forwarded_for` 追加语义、ingress-nginx `use-forwarded-headers` 语义、请求头清洗清单、伪造头验证与回滚顺序 |
+| [Keycloak + OpenFGA：IAM 细粒度授权 ReBAC 落地]({{< relref "keycloak-openfga-rebac" >}}) | Audience mapper 字段与默认值、`authn.oidc.*` 必填项、仅 RS256 的源码级约束、`sub` vs `preferred_username` 作为权限主体、Write API 非幂等、CVE-2026-55689 排查与回滚 |
