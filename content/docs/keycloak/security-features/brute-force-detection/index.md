@@ -1,6 +1,6 @@
 ---
-title: "Keycloak 暴力破解检测 — 账户锁定策略与安全防护配置 | IDaaS Book"
-description: "Keycloak Brute Force Detection 暴力破解检测：登录连续失败 N 次自动锁定账户、指数退避、清理会话及管理员手动解锁"
+title: "Keycloak 暴力破解检测与 IAM 账户锁定策略 | IDaaS Book"
+description: "Keycloak 暴力破解检测（Brute Force Detection）配置：IAM 登录失败锁定阈值、指数退避、会话清理、管理员解锁，以及事件来源 IP 被代理吞掉时排错为什么会失效"
 date: 2020-12-04T23:54:37+08:00
 draft: false
 weight: 2
@@ -47,6 +47,18 @@ Brute Force Detection 暴力检测，防止密码暴力破解，登录失败 N �
 
 1. 失败次数统计仅与登录账号相关，与会话无关，关闭重启浏览器，次数不会重置。
 2. 用户锁定后，给出的错误提示还是默认的用户名密码错误，就是不想让攻击者知道用户暂时被禁用了。
+3. 锁定是按**账号**维度的，不按来源 IP 统计：同一个 IP 换着账号试密码，不会触发锁定。Keycloak 本身没有 IP 维度锁定，需要靠 WAF / 网关限速补。缺的这块反而让「失败事件里的 IP」变得更重要——它是你唯一的事后追溯依据。
+
+## 前提：事件里的来源 IP 必须是真实的
+
+上面「定期检查 `EVENT_LOG` 表中的 `LOGIN_ERROR` 事件」这类做法，成立的前提是事件记录的 `ipAddress` 确实是攻击者地址。Keycloak 在反向代理后如果没配好，这个字段会变成入口代理的地址，于是：
+
+- SIEM 里所有失败登录来自同一个 IP，基于 IP 的封禁和关联分析全部失效；
+- 攻击者换账号试探时，日志里看不出「同一来源」这个线索；
+- 反过来更糟：伪造 `X-Forwarded-For` 能让记录指向任意地址，把有限的溯源能力也变成误导。
+
+原因是 Keycloak 默认不解析转发头，且一旦设置了 `proxy-headers` 而没限定 `proxy-trusted-addresses`，默认会信任所有来源的转发头。配置与验证方法（含伪造头自测）见 [Keycloak 反向代理真实客户端 IP 与代理信任边界]({{< relref "../../solution-blogs/keycloak-proxy-client-ip-trust" >}})。
+
 ## 工作原理
 
 Keycloak 在 Realm 级别维护一个登录失败计数器。当用户在配置的时间窗口内连续登录失败达到阈值时，账户被临时锁定。

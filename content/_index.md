@@ -31,6 +31,7 @@ seo:
 | SAML 还在用吗？和 OIDC 怎么选？ | [SAML 2.0]({{< relref "docs/protocols/saml2.md" >}}) + [方案对比]({{< relref "docs/implementation/other-idaas-solutions.md" >}}) |
 | Keycloak 怎么在生产环境部署？Operator 还是 Helm？ | [Keycloak 架构]({{< relref "docs/keycloak/_index.md" >}}) + [K8s 生产部署]({{< relref "docs/implementation/kubernetes-production.md" >}}) |
 | 升级 Keycloak 26 后启动失败、issuer 变成内网地址、邮件链接不对？ | [Hostname v2 配置与 v1 选项迁移]({{< relref "docs/solution-blogs/keycloak-hostname-v2-config.md" >}}) — 选项映射 + 校验错误对照 |
+| 反向代理后面的 Keycloak 记不到真实客户端 IP，审计日志里全是代理地址？ | [反向代理真实客户端 IP 与信任边界]({{< relref "docs/solution-blogs/keycloak-proxy-client-ip-trust.md" >}}) — `proxy-headers` / `proxy-trusted-addresses`、PROXY protocol 与伪造头自测 |
 | 点了退出，另一个应用还是登录状态？ | [IAM 单点登出排错]({{< relref "blog/keycloak-single-logout.md" >}}) — RP-Initiated / Back-Channel 分工、互斥开关与验证清单 |
 | 安全评审要求授权参数（`redirect_uri`、`scope`）不许出现在浏览器 URL 和网关日志里？ | [Keycloak PAR 实战]({{< relref "docs/solution-blogs/keycloak-par-pushed-authorization-requests.md" >}}) — 两种强制方式的错误码区别、客户端支持现状与回滚 |
 | RBAC 够用吗？什么时候需要 ABAC 或 ReBAC？ | [授权模型深度对比]({{< relref "docs/advanced-topics/authorization-models.md" >}}) |

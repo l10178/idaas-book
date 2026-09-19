@@ -371,6 +371,8 @@ IAM 是高可用要求最高的基础设施之一——如果 IAM 挂了，所�
 - **负载均衡**：前面挂 LB（Nginx/HAProxy/云 LB），只把就绪节点加入后端。不要把 `ip_hash` 当成高可用方案；它会降低故障切换和扩容效果。是否启用会话亲和性，应以所用 IAM 产品的缓存模型和压测结果为准。对 Keycloak 而言，官方反向代理文档把基于 Cookie 的 session affinity 列为代理能力之一，但这不是“有亲和性就不需要集群”的替代品；启用前仍应验证节点故障、登录流程迁移和扩容后的缓存行为。
 - **健康检查**：监控 `/health/ready`，只把就绪节点加入后端；同时为数据库连接、缓存命中率和认证错误率设置告警。
 
+- **网络层信任边界**：中转层的实现细节（`proxy-headers` 取值、`proxy-trusted-addresses` 白名单、PROXY protocol 与 passthrough 的互斥关系）以及验证方法，见 [IAM：Keycloak 反向代理真实客户端 IP 与代理信任边界]({{< relref "keycloak-proxy-client-ip-trust" >}})。
+
 ### 2. 会话与令牌：先区分产品模型，再选组件
 
 “把会话放 Redis”不是通用的 Keycloak 高可用答案。以当前 Keycloak Server Guide 为准，生产集群使用分布式 Infinispan 缓存；`start-dev` 使用本地缓存只适合开发和测试，不能拿来证明多节点登录流程可用。应按当前版本的缓存配置、数据库连接池和跨节点通信要求部署，而不是自行再加一层 Redis。
