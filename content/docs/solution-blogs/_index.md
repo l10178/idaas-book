@@ -27,6 +27,7 @@ sidebar:
 | 主题 | 关键词 |
 |------|--------|
 | [Keycloak 社交登录配置：Google / GitHub / Apple / Microsoft]({{< relref "keycloak-social-identity-providers" >}}) | Google OAuth, GitHub OAuth, Apple Sign In, Microsoft Entra ID, JIT Provisioning, 属性映射, 回调 URI 排错 |
+| [Grafana 接入 Keycloak OIDC：IAM 单点登录与角色映射]({{< relref "grafana-keycloak-oidc-sso" >}}) | Grafana SSO, generic_oauth, role_attribute_path, JMESPath, realm_access.roles vs groups claim, allowed_groups, role_attribute_strict, validate_id_token, Team Sync 限制 |
 | [Keycloak 26.7.4 安全补丁解读与 IAM 升级判断]({{< relref "keycloak-26-7-4-security-patch" >}}) | 26.7.4, CVE-2026-90997, stateless 模式重放防护, MySQL/MariaDB 行列语义, private_key_jwt, DPoP proof, TOTP, FGAP v2 impersonation, broker 用户名碰撞, SAML DEFLATE 内存泄漏 |
 | [Keycloak 26.7.3 安全补丁解读与 IAM 升级清单]({{< relref "keycloak-26-7-3-security-patch" >}}) | 26.7.3, CVE, FGAP v2 管理面越权, 授权码重定向, not-before 吊销, token exchange, DPoP, 升级优先级与回滚 |
 | [Keycloak 26.7 新特性深度解读]({{< relref "keycloak-26-7-whats-new" >}}) | SCIM API, 多集群 HA, AuthZEN, OpenID SSF, SAML Step-up, Identity Brokering API V2 |

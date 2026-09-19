@@ -276,7 +276,7 @@ keycloak.policy-enforcer-config.paths[0].methods[0].scopes=view
 
 ## 方案三：使用 Groups 做部门级数据隔离
 
-当授权不只是「能不能访问 API」而是「能看到哪些数据」时，Groups 更合适。
+当授权不只是「能不能访问 API」而是「能看到哪些数据」时，Groups 更合适。组还有第二种常见用途：**驱动下游应用内部角色**——应用拿 `groups` claim 自己算角色，而不是每个应用都在 Keycloak 里单独建一套角色。以 Grafana 为例，组到 Admin/Editor/Viewer 的映射配置与踩坑见 [Grafana 接入 Keycloak OIDC]({{< relref "grafana-keycloak-oidc-sso" >}})。
 
 ### 场景
 
