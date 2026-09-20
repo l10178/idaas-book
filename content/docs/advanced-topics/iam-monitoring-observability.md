@@ -155,6 +155,8 @@ IAM 不是独立运行的系统——它依赖 LDAP/AD、数据库、外部 IDP 
 | 告警 | Alertmanager + Grafana | PagerDuty, Opsgenie | 根据值班体系选择 |
 | 审计专用 | Wazuh (SIEM) | Splunk Enterprise Security | 合规+等保场景 |
 
+追踪这一类在 IAM 场景里不能照抄普通微服务的做法：Keycloak 的 tracing 开关是 build time 选项、默认采样率是 100%、JDBC span 默认开启，接错地方的结果不是「少看几张图」而是存储账单失控。落地方式、成本控制和排错见 [Keycloak OpenTelemetry 追踪接入与 IAM 采样成本控制]({{< relref "docs/solution-blogs/keycloak-opentelemetry-tracing.md" >}})。
+
 ### 23.5.2 最小可运行方案
 
 如果团队只有 2-3 人维护 IAM，不需要一开始就部署全链路追踪。最小可运行的可观测性方案分三步走：

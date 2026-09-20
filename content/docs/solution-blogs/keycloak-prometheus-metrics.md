@@ -362,7 +362,7 @@ A：不能。Keycloak metrics 端点 `/metrics` 是全局的，不区分 Realm�
 A：在正常负载下影响可忽略（< 1% CPU）。但在极大规模集群（100+ 万用户）中，事件类指标（`keycloak_event_listener_events_total`）如果开启了高频率事件采集，会有轻微开销。建议单独评估 `event-metrics-enabled` 的必要性。
 
 **Q：能和 OpenTelemetry 对接吗？**
-A：Keycloak 22+ 原生支持 OpenTelemetry Tracing（通过 `opentelemetry` feature），但 Metrics 现阶段仍以 Micrometer-Prometheus 为主。如果需要 OTLP 格式的 metrics，可以通过 Prometheus → OpenTelemetry Collector 桥接。
+A：Tracing 可以，Metrics 目前仍是两条独立链路。Tracing 在 **Keycloak 26.0** 引入（当时是 preview，需要显式 `--features=opentelemetry`），现行 26.7.x 文档中该 feature 已默认启用——注意 `tracing-enabled` 和 `tracing-sampler-type` 属于 **build time 选项**，在生产容器里改运行时环境变量不会生效，细节与排错见 [Keycloak OpenTelemetry 追踪接入与 IAM 采样成本控制]({{< relref "keycloak-opentelemetry-tracing" >}})。Metrics 侧用 Micrometer 暴露 `/metrics` 由 Prometheus 拉取；如果需要 OTLP 推送，26.7.4 已提供 `telemetry-metrics-enabled` / `telemetry-metrics-endpoint` 一族选项（build time 开关，默认关闭），或者继续用 Prometheus → OpenTelemetry Collector 桥接。
 
 **Q：在哪里查看历史最佳实践的 dashboard 配置？**
 A：Grafana 官方 Dashboard 库（grafana.com/grafana/dashboards）搜索 "Keycloak Micrometer" 或 "Keycloak 21997"。社区推荐的 21997 覆盖了核心可观测面板。
