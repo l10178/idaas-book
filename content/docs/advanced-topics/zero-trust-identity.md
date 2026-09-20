@@ -322,7 +322,7 @@ Keycloak 在零信任 IAM 架构中承担三个核心角色：
 2. **策略信息点（PIP）**：通过 Token Introspection Endpoint、UserInfo Endpoint 向 PEP/策略引擎提供用户属性、角色、组信息
 3. **会话与 Token 管控**：通过 Admin API 实现 Token 吊销、Session 失效、强制重新认证——支撑持续验证机制
 
-Keycloak 不做 PEP（策略执行点），这一层通常由网关/代理（如 oauth2-proxy、Pomerium、Nginx auth_request、Traefik ForwardAuth）或 Service Mesh（Istio AuthorizationPolicy）承担。
+Keycloak 不做 PEP（策略执行点），这一层通常由网关/代理（如 oauth2-proxy、Pomerium、Nginx auth_request、Traefik ForwardAuth）或 Service Mesh（Istio AuthorizationPolicy）承担。网格这条路径的可落地配置、四个默认行为陷阱（不拒绝无 token 请求、`iss` 精确匹配、istiod 拉取 JWKS 的 20 分钟刷新窗口、`audiences` 缺失即不校验）和回滚顺序见 [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "docs/solution-blogs/istio-keycloak-jwt-authz" >}})。
 
 **Q4: 零信任 IAM 和等保 2.0 的关系是什么？**
 

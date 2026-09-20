@@ -261,6 +261,8 @@ https://<keycloak-host>/realms/<realm>/protocol/openid-connect/certs
 
 JWT 库（如 `jwks-rsa`、`java-jwt`）会自动从这个端点获取公钥，按 `kid` 匹配。
 
+下面速查表里的 JWK 缓存 TTL 是**应用侧**的建议区间（5-15 分钟）。如果公钥由代理或服务网格代你拉取，这个窗口就不在你手里：Istio 默认由 istiod 获取 JWKS 并以 inline 形式下发，正常刷新周期是 20 分钟，拉取失败则进入 fail-closed 状态并指数退避重试。密钥轮换和启动顺序受此影响，机制与时间常量见 [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "docs/solution-blogs/istio-keycloak-jwt-authz" >}})。
+
 ## JWT 最佳实践速查
 
 | 实践 | 说明 |

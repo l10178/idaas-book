@@ -264,3 +264,4 @@ kubectl config use-context <oidc-context>
 - [Keycloak Kubernetes 生产部署]({{< relref "../implementation/kubernetes-production" >}})：Operator、Helm 和高可用部署
 - [Keycloak 细粒度权限与授权策略实战]({{< relref "keycloak-fine-grained-authz" >}})：Groups vs Roles 的深入分析
 - [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}})：如果 OIDC 回调阶段出问题
+- [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "istio-keycloak-jwt-authz" >}})：把 JWT 校验从 kube-apiserver 换到 Envoy sidecar 时的策略写法与默认行为差异

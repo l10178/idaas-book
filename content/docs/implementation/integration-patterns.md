@@ -175,7 +175,7 @@ app.get('/callback', async (req, res) => {
 ```
 
 ```yaml
-apiVersion: security.istio.io/v1beta1
+apiVersion: security.istio.io/v1
 kind: RequestAuthentication
 metadata:
   name: jwt-auth
@@ -188,7 +188,7 @@ spec:
     jwksUri: https://idp.example.com/realms/myrealm/protocol/openid-connect/certs
     forwardOriginalToken: true
 ---
-apiVersion: security.istio.io/v1beta1
+apiVersion: security.istio.io/v1
 kind: AuthorizationPolicy
 metadata:
   name: require-jwt
@@ -205,6 +205,8 @@ spec:
     - operation:
         methods: ["GET", "POST"]
 ```
+
+> 这段只是模式示意。`RequestAuthentication` 单独存在时不拒绝没有 token 的请求，`issuer` 必须与 Keycloak 实际签发的 `iss` 逐字符一致，`audiences` 不配就不校验 `aud`——三个坑的完整解释、验证命令和回滚顺序见 [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "docs/solution-blogs/istio-keycloak-jwt-authz" >}})。安全类 API 自 Istio 1.22 起为 `security.istio.io/v1`，仍在使用 `v1beta1` 的清单建议一并迁移。
 
 ## 18.5 SDK 模式
 

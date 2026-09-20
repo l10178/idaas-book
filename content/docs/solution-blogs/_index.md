@@ -17,6 +17,7 @@ sidebar:
 **按场景直达：**
 
 - 入口网关选型：[Envoy Gateway 原生 OIDC]({{< relref "envoy-gateway-oidc-keycloak" >}})（Gateway API）、[Keycloak + oauth2-proxy]({{< relref "keycloak-oauth2-proxy" >}})（Nginx Ingress auth-url）、[Traefik ForwardAuth]({{< relref "traefik-forwardauth-keycloak" >}})
+- 网格内（东西向）零信任接入：[Istio + Keycloak JWT 认证与 IAM 授权]({{< relref "istio-keycloak-jwt-authz" >}})（RequestAuthentication + AuthorizationPolicy，含 istiod 拉取 JWKS 的刷新窗口与 `audiences` 校验边界）
 - 应用与后端接入：[Spring Boot 3 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})（IAM 角色映射与 audience 校验）、[Keycloak Adapter 弃用迁移]({{< relref "keycloak-adapter-migration" >}})（服务端 Web 应用）
 - 报错定位（已移入 Blog）：[oauth2-proxy 常见错误](/blog/oauth2-proxy-common-errors/)、[Keycloak 重定向循环与 401](/blog/keycloak-redirect-loop-troubleshooting/)、[单点登出不彻底](/blog/keycloak-single-logout/)、[会话超时](/blog/keycloak-session-timeouts/)
 - 安全与合规加固：[PAR 授权请求]({{< relref "keycloak-par-pushed-authorization-requests" >}})、[审计日志与等保]({{< relref "keycloak-audit-logging-compliance" >}})、[最小权限落地]({{< relref "iam-least-privilege-guide" >}})、[反向代理真实客户端 IP 与信任边界]({{< relref "keycloak-proxy-client-ip-trust" >}})
@@ -27,6 +28,7 @@ sidebar:
 
 | 主题 | 关键词 |
 |------|--------|
+| [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "istio-keycloak-jwt-authz" >}}) | RequestAuthentication, AuthorizationPolicy, requestPrincipals, `iss` 精确匹配, jwksUri 与 istiod 拉取模式（`PILOT_JWT_ENABLE_REMOTE_JWKS`）, 20 分钟刷新窗口与 fail-closed, audiences 缺失即不校验, `iss`/`aud`/`kid` 三类 401 的区分, outputClaimToHeaders, forwardOriginalToken, ambient waypoint 的 targetRefs |
 | [Keycloak 社交登录配置：Google / GitHub / Apple / Microsoft]({{< relref "keycloak-social-identity-providers" >}}) | Google OAuth, GitHub OAuth, Apple Sign In, Microsoft Entra ID, JIT Provisioning, 属性映射, 回调 URI 排错 |
 | [Grafana 接入 Keycloak OIDC：IAM 单点登录与角色映射]({{< relref "grafana-keycloak-oidc-sso" >}}) | Grafana SSO, generic_oauth, role_attribute_path, JMESPath, realm_access.roles vs groups claim, allowed_groups, role_attribute_strict, validate_id_token, Team Sync 限制 |
 | [Keycloak 26.7.4 安全补丁解读与 IAM 升级判断]({{< relref "keycloak-26-7-4-security-patch" >}}) | 26.7.4, CVE-2026-90997, stateless 模式重放防护, MySQL/MariaDB 行列语义, private_key_jwt, DPoP proof, TOTP, FGAP v2 impersonation, broker 用户名碰撞, SAML DEFLATE 内存泄漏 |
