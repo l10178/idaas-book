@@ -110,7 +110,7 @@ oauth2-proxy 的 Keycloak OIDC Provider 会校验 ID Token 的 `aud`（audience�
 | `client_id` | `oauth2-proxy` | oauth2-proxy 作为 OIDC Client 向 Keycloak 请求授权码时使用 |
 | `aud` | `oauth2-proxy` | 接收并验证 ID Token 的应用；应由 Keycloak 的 Audience mapper 写入 |
 
-这三个值经常碰巧相同或相近，但职责不同。尤其不要把应用后端 API 的 audience 直接当成 oauth2-proxy 的 audience：前者是后端验证 Access Token 的目标，后者是代理验证登录会话所需的目标。需要后端使用 Access Token 时，后端仍应按自己的 issuer、audience 和 scope 独立验证，不能因为请求经过 oauth2-proxy 就信任任意 `X-Auth-Request-*` 头。
+这三个值经常碰巧相同或相近，但职责不同。尤其不要把应用后端 API 的 audience 直接当成 oauth2-proxy 的 audience：前者是后端验证 Access Token 的目标，后者是代理验证登录会话所需的目标。需要后端使用 Access Token 时，后端仍应按自己的 issuer、audience 和 scope 独立验证，不能因为请求经过 oauth2-proxy 就信任任意 `X-Auth-Request-*` 头。同一个"`aud` 里只有 `account`"的根因在服务网格里表现为另一类错误——Istio 侧不配 `audiences` 就完全不校验，配了又要求 Keycloak 有对应的 Audience mapper，见 [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "istio-keycloak-jwt-authz" >}})。
 
 用下面的命令先确认 Discovery 和 issuer，而不是猜 `/auth/realms` 路径：
 
