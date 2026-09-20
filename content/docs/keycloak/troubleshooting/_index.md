@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 常见问题排查"
-description: "Keycloak 生产常见问题与排查：HTTPS/反向代理要求、Liquibase 与 MySQL 组复制冲突、Kubernetes 导入导出迁移、缓存与集群排查"
+description: "Keycloak 生产常见问题与 IAM 排错速查：HTTPS/反向代理要求、Liquibase 与 MySQL 组复制冲突、Kubernetes 导入导出迁移、CORS 与 Web Origins、缓存与集群排查"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 16
@@ -21,6 +21,7 @@ toc: true
 | 启动卡在 Liquibase / 数据库初始化失败 | Liquibase、MySQL Group Replication、锁 | [Liquibase 与 MySQL 组复制]({{< relref "blog/keycloak-liquibase-mysql-group-replication.md" >}}) |
 | K8s 环境导入导出 Realm 迁移失败 | 导入导出、Helm、Operator | [K8s 导入导出迁移]({{< relref "blog/keycloak-export-import-on-k8s.md" >}}) |
 | 登录后无限重定向 / 401 Unauthorized | ERR_TOO_MANY_REDIRECTS、Cookie、SameSite | [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) |
+| 浏览器报 CORS 错误 / 服务端 403 `Invalid origin` | Web Origins、Origin 头、26.6.3 行为变更 | [IAM 前端跨域排错：Keycloak Web Origins 与 CORS 边界]({{< relref "blog/keycloak-cors-web-origins" >}}) |
 
 ## 通用排查思路
 
