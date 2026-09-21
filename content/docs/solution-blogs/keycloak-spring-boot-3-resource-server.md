@@ -122,6 +122,8 @@ Clients → <签发 token 的 client> → Client scopes → <专属 scope>
 
 配完用 **Clients → `<client>` → Client scopes → Evaluate → Generated access token** 直接看 `aud`，不要靠猜。若采用 Audience Resolve 路线，Evaluate 里还需要把对应 scope 放进 *Scope* 字段才会出现客户端角色与 `aud`。
 
+上面两条都是**服务端决定** audience。客户端侧还有一条独立路径：OAuth 2.0 的 `resource` 参数（RFC 8707）允许调用方声明自己要访问哪个资源，由授权服务器据此收窄 `aud`。Keycloak 在 26.7.4 默认忽略这个参数（官方 MCP 文档仍标 *Not supported*），只有实验特性 `resource-indicators` 打开后才会处理它，且实现语义是「从已有 `aud` 里过滤出对应值」而不是「按参数追加」。如果你的资源服务器要接 MCP 客户端或其它会主动带 `resource` 的调用方，见 [Keycloak 作为 MCP 授权服务器]({{< relref "keycloak-mcp-authorization-server" >}})——那里的失败模式（`invalid_target` 与 `aud` 静默缺失）正是这两条路径混用造成的。
+
 ### SecurityConfig：角色映射
 
 默认转换器只认 `scope`，不认 Keycloak 的嵌套角色结构。Keycloak 把 realm 角色放在 `realm_access.roles`、客户端角色放在 `resource_access.<client_id>.roles`，两份都是嵌套 JSON，默认转换器遍历不到，结果就是「认证成功、权限为零、全站 403 且日志干净」。
