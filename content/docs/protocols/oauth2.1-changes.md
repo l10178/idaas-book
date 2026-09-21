@@ -173,6 +173,12 @@ grant_type=authorization_code&code=xxx&...
 | response_type | code, token, id_token 等 | **仅 code** | 移除 token/id_token 响应类型 |
 | 公共客户端 secret | 不可用 | **不推荐使用** | 改用 PKCE，不再依赖 client_secret |
 
+## 与 OAuth 2.1 相关但独立的规范：RFC 8707 资源指示器
+
+上面七条变化都不涉及「客户端要求一个特定受众」的问题，而这一点在生产里越来越常见。RFC 8707（Resource Indicators for OAuth 2.0，2020-02）定义了 `resource` 参数：客户端在授权请求和 token 请求里声明自己要访问的资源，授权服务器据此把 access token 的 `aud` 收窄到该资源，避免同一个 realm 里为 A 服务签发的 token 被拿去打 B 服务。
+
+它不属于 OAuth 2.1 草案，但 MCP 授权规范（2025-06-18 起）把它列为 MUST，所以 IAM 团队在 2026 年会频繁遇到「客户端已经带了 `resource`，授权服务器却不按它设置 `aud`」的兼容问题。Keycloak 的现状是：26.7.4 官方文档仍标 RFC 8707 为 *Not supported*，另有一个实验特性 `resource-indicators`（26.6.0 起可用，`Profile.Feature` 类型为 `EXPERIMENTAL`），其源码语义是**过滤**已有 `aud` 而非追加。落地细节、校验规则实测与回滚顺序见 [Keycloak 作为 MCP 授权服务器：IAM audience 绑定与 resource indicators 落地]({{< relref "keycloak-mcp-authorization-server" >}})。
+
 ## 对 IAM 系统和运维意味着什么
 
 OAuth 2.1 不只是协议升级——它是企业 IAM 安全基线的重新定义。如果你的 IAM 系统（Keycloak、CAS、Dex 等）还在按 OAuth 2.0 的默认配置运行，以下几个变更直接影响到认证链路的安全性。更多 IAM 协议选型的整体考量可参阅 [IAM 认证协议选型指南]({{< relref "docs/advanced-topics/iam-protocol-selection-guide.md" >}})。
