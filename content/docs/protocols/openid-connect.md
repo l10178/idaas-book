@@ -311,6 +311,8 @@ GET https://idp.example.com/.well-known/openid-configuration
 - 知道支持哪些算法和模式
 - 获取 JWKS（JSON Web Key Set）用于验证 Token 签名
 
+`token_endpoint_auth_methods_supported` 只列出认证方式的**名称**，不说明实现侧的约束。Keycloak 对 `private_key_jwt` 断言的 `aud`、`jti`、`iat` 和签名算法有额外要求，且这些要求不在 Discovery 文档里——[Keycloak 客户端认证与 IAM 凭据轮换]({{< relref "docs/solution-blogs/keycloak-client-authentication-credentials" >}}) 列出了完整的校验链与对应错误文案。
+
 ## 6.7 会话管理
 
 ### RP-Initiated Logout

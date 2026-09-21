@@ -169,6 +169,7 @@ kc.realm("myrealm").users().create(user);
 ## 权限模型与最佳实践
 
 - **最小权限**：为自动化客户端单独建 Client，授予 `realm-management` 中需要的角色，避免使用 `admin` 账号。
+- **凭据类型**：服务账号客户端默认用 `client_secret`。如果它需要读客户端自身配置或 secret，注意查看 secret 需要 `manage-clients`，只有 `view-clients` 时接口返回的是掩码占位符；把 `client_secret` 换成 `private_key_jwt` 可以彻底去掉这项读取需求。[Keycloak 客户端认证与 IAM 凭据轮换]({{< relref "docs/solution-blogs/keycloak-client-authentication-credentials" >}}) 给出了断言字段与轮换窗口的做法。
 - **跨 Realm 管理**：管理 `master` Realm 的 token 可操作任意 Realm；也可在每个 Realm 内建 `realm-admin` 角色组实现委托管理。
 - **幂等创建**：用户名/邮箱唯一约束，创建前先 `?username=xxx` 查询，避免 409。
 - **批量操作**：Admin API 无原生批量端点，循环调用即可。大批量导入建议编写一次性脚本走 Admin REST API；`kc.sh import` 接收的是**整份 Realm JSON**（含 users 段），不能用来导入独立的 `users.json`。
