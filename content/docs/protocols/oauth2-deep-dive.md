@@ -262,6 +262,8 @@ token=xxx
 }
 ```
 
+上面这个 `Authorization` 头就是客户端认证（client authentication）的一个实例：接入方需要向授权服务器证明「我是我声称的那个客户端」。Keycloak 里这个环节有四种可配的凭据形态，各自的算法、时效与轮换约束不同，选型与排错见 [Keycloak 客户端认证与 IAM 凭据轮换]({{< relref "docs/solution-blogs/keycloak-client-authentication-credentials" >}})。
+
 ## 5.5 Scope 与 Consent
 
 ### Scope 设计
