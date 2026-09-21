@@ -102,7 +102,7 @@ Keycloak 内置基于 **TOTP** 的 OTP 实现，与 Google Authenticator / FreeO
 ### 头与跨域
 
 - [ ] 配置 CSP / X-Frame-Options（防止登录页被 iframe 嵌套钓鱼）。
-- [ ] CORS 白名单精确到域名，避免通配 `*`。
+- [ ] CORS 白名单精确到域名，避免通配 `*`（Keycloak 的 `*` 会回显请求来源，等于允许全部；26.6.3 起不匹配的 `Origin` 在 OIDC 端点直接返回 403，检查方法与升级回归清单见 [IAM 前端跨域排错：Keycloak Web Origins 与 CORS 边界]({{< relref "blog/keycloak-cors-web-origins" >}})）。
 
 ### 凭证与密钥
 

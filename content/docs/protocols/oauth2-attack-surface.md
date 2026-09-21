@@ -372,7 +372,7 @@ graph TD
 - [ ] **Refresh Token Rotation**：每次刷新返回新 RT，检测 RT 重放并吊销相关 Token
 - [ ] **DPoP 或 mTLS**：高安全场景启用 sender-constraining Token
 - [ ] **HTTPS 强制**：所有 Token 传输通过 HTTPS，HSTS 头配置
-- [ ] **CORS 严格配置**：不开放 `Access-Control-Allow-Origin: *` 的资源返回 Token
+- [ ] **CORS 严格配置**：不开放 `Access-Control-Allow-Origin: *` 的资源返回 Token。Keycloak 侧的匹配语义（`*` 回显来源、`+` 的展开条件、预检不校验来源）与 26.6.3 起「不匹配 `Origin` 直接 403」的行为变更见 [IAM 前端跨域排错：Keycloak Web Origins 与 CORS 边界]({{< relref "blog/keycloak-cors-web-origins" >}})
 - [ ] **Token 不进入日志**：日志中间件脱敏 `Authorization` 头
 - [ ] **SPA 使用 BFF**：单页应用不直接持有 Refresh Token，通过 BFF 代理
 

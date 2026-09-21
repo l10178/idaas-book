@@ -72,7 +72,7 @@ sequenceDiagram
 | Client ID | `oauth2-proxy` | 客户端标识 |
 | Client type | `confidential` | 机密客户端（有密钥） |
 | Valid Redirect URIs | `https://<你的域名>/oauth2/callback` | oauth2-proxy 回调地址 |
-| Web Origins | 留空 | oauth2-proxy 是服务端 OIDC 客户端，回调和 Token 交换不需要浏览器 CORS；只有确实存在浏览器跨源调用时才添加精确来源 |
+| Web Origins | 留空 | oauth2-proxy 是服务端 OIDC 客户端，回调和 Token 交换不需要浏览器 CORS；只有确实存在浏览器跨源调用时才添加精确来源（预检不校验来源，26.6.3 起不匹配的 `Origin` 直接 403，见 [IAM 前端跨域排错：Keycloak Web Origins 与 CORS 边界]({{< relref "blog/keycloak-cors-web-origins" >}})） |
 | Client Authentication | `On` | 启用客户端认证 |
 | Standard Flow | `Enabled` | 标准授权码流程（oauth2-proxy 默认使用） |
 
