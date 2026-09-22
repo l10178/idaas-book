@@ -137,6 +137,8 @@ ls -lh /backup/keycloak/$(date +%Y%m%d)*
 - Realm JSON 导出可正常导入
 - 用户密码哈希迁移后仍可登录
 
+用 `keycloak-config-cli` 做配置即代码的部署，还要额外核对一次「Git 声明是否真的被应用」：读取 realm attributes 中 `de.adorsys.keycloak.config.*` 前缀的 state 与 checksum 条目，与最近一次流水线运行的 checksum 对齐。这一步能发现「流水线静默跳过」的情况——checksum 一致时工具不对 realm 做任何写入，但 CI 依然是绿的，从流水线状态上完全看不出配置没生效。判定机制与排错见 [IAM 配置即代码：keycloak-config-cli 声明式 Realm 管理与误删防护]({{< relref "keycloak-config-cli-realm-as-code" >}})。
+
 ### 9. 用户会话异常审计
 
 ```promql
