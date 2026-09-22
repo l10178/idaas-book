@@ -15,7 +15,7 @@ toc: true
 
 ## SPI 扩展机制
 
-**SPI（Service Provider Interface）** 是 Keycloak 的核心扩展点。几乎所有核心模块（用户存储、认证、事件、主题、协议映射、身份提供商）都通过 SPI 暴露接口，开发者实现接口并打成 JAR 放入 `providers/` 即可热插拔。
+**SPI（Service Provider Interface）** 是 Keycloak 的核心扩展点。几乎所有核心模块（用户存储、认证、事件、主题、协议映射、身份提供商）都通过 SPI 暴露接口，开发者实现接口并打成 JAR 放入 `providers/` 即可被服务器加载（WildFly 发行版时代可直接热插拔；Quarkus 发行版在 `--optimized` 启动时要求这些 JAR 在 `kc.sh build` 之前就位，构建细节见 [自定义 SPI 扩展的生产交付]({{< relref "../solution-blogs/keycloak-spi-extension-deployment" >}})）。
 
 ### 主要 SPI 一览
 
@@ -71,7 +71,7 @@ public class KafkaEventListenerFactory
 }
 ```
 
-注册 SPI（`META-INF/services/org.keycloak.events.EventListenerProviderFactory` 写入工厂类全名），打包进 `providers/`，重启后在 Realm → Events → Event Listeners 启用。
+注册 SPI（`META-INF/services/org.keycloak.events.EventListenerProviderFactory` 写入工厂类全名），打包进 `providers/`，重启后在 Realm → Events → Event Listeners 启用。容器化部署时 JAR 要放进镜像并参与 `kc.sh build`，`providers/` 目录下的 JAR 优先于内置库且与服务器共享同一个 classloader，因此只允许引入受控来源的扩展依赖，详见 [Keycloak 自定义 SPI 扩展的生产交付]({{< relref "../solution-blogs/keycloak-spi-extension-deployment" >}})。
 
 > SPI 升级成本较高：Keycloak 大版本间接口可能变更。建议锁定 LTS 版本，升级前回归测试，并在 SPI 内做防御性编码。
 

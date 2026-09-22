@@ -69,7 +69,7 @@ kubectl -n keycloak logs deploy/keycloak-operator --tail=50
 ### 部署 Keycloak
 
 ```yaml
-apiVersion: k8s.keycloak.org/v2alpha1
+apiVersion: k8s.keycloak.org/v2beta1
 kind: Keycloak
 metadata:
   name: production-keycloak
@@ -117,6 +117,10 @@ spec:
 ```
 
 > 拓扑说明：上面采用「Ingress/LB 终结 TLS → 明文转发到 Keycloak」的常见部署，故 `httpEnabled: true` + `proxy.headers: xforwarded`；若改为「Keycloak 自身终结 TLS」，则 `httpEnabled: false` + `http.tlsSecret` 指定证书，通常不再需要 `proxy.headers`（除非前面还有一层 LB 转发头）。两种拓扑二选一，不要混用。Keycloak 官方反向代理文档还强调：只代理 8443（或启用 HTTP 后的 8080）业务端口，不要把 9000 management 端口暴露给外部调用者，健康检查和 metrics 应在集群内采集。
+
+> API 版本提示：Keycloak Operator 的 CRD 以 `v2beta1` 为存储版本，`v2alpha1` 在 CRD 里带 `deprecationWarning: Please migrate to v2beta1`，新部署直接用 `v2beta1`；从旧清单迁移时逐字段比对 CRD 默认值变化再切换。CRD 与 Operator 安装包使用同一版本号（`keycloak-k8s-resources/${VERSION}`）。
+
+> 如果 `spec.image` 指向的是自建镜像（例如内含自定义 SPI 扩展），Operator 会假定该镜像已经执行过构建（`spec.startOptimized` 字段描述即「assume custom images have already been augmented」）。扩展 JAR 的构建、打包与回滚流程见 [Keycloak 自定义 SPI 扩展的生产交付]({{< relref "docs/solution-blogs/keycloak-spi-extension-deployment.md" >}})。
 
 ### 数据库配置
 
