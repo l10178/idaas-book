@@ -250,7 +250,7 @@ public class AuditEventListener implements EventListenerProvider {
 }
 ```
 
-> 自定义 SPI 需要打包成 JAR 放入 `providers/` 目录并通过 `kc.sh build` 注册。Keycloak 26.x 的 SPI 开发流程与 24/25 兼容，详细参考 [Keycloak SPI 文档](https://www.keycloak.org/docs/latest/server_development/)。
+> 自定义 SPI 需要打包成 JAR 放入 `providers/` 目录并通过 `kc.sh build` 注册。Keycloak 26.x 的 SPI 开发流程与 24/25 兼容，详细参考 [Keycloak SPI 文档](https://www.keycloak.org/docs/latest/server_development/)；容器化交付（两阶段镜像、Operator 的 `spec.image`、SPI 选项的双连字符格式、验证命令与回滚顺序）见 [Keycloak 自定义 SPI 扩展的生产交付]({{< relref "keycloak-spi-extension-deployment" >}})。
 
 ## 生产检查清单
 
