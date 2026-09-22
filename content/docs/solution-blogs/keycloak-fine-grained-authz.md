@@ -334,6 +334,8 @@ public List<Order> listOrders(Authentication auth) {
 
 对用 FGAP v2 做委派管理的部署，升级不等于换镜像：用一个只被授予部分权限的管理员账号，把实际授予它的操作重新走一遍（建用户、改组、改 client、查 role 用户列表），确认管理界面上的「有效权限预览」与真实判定一致。分组解读与验证清单见 [Keycloak 26.7.3 安全补丁解读]({{< relref "keycloak-26-7-3-security-patch" >}})。
 
+还有一条会直接影响自动化流水线的边界：Keycloak 在 FGAP V2 下**有意屏蔽** `admin-permissions` 客户端的 Authorization Services API 端点，外部调用得到的是 HTTP 400 `unknown_error`（见 keycloak/keycloak#43977）。这意味着用 `keycloak-config-cli` 这类声明式工具时，该客户端的授权模型不在可管理范围内——不要试图绕过，也不要把它写进配置文件后指望 apply 生效。工具侧的这条限制记录在 [IAM 配置即代码：keycloak-config-cli 声明式 Realm 管理与误删防护]({{< relref "keycloak-config-cli-realm-as-code" >}})。
+
 ## 回滚方式
 
 - **角色分配回滚**：Users → Role Mapping → 移除错误角色重新分配

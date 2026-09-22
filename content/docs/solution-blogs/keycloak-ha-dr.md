@@ -181,6 +181,9 @@ Keycloak 需要备份的三类数据：
 | 数据库 | PostgreSQL/MySQL | `pg_dump` / `mysqldump` | 每日全量 + 持续 WAL 归档 |
 | Realm 导出 | Keycloak 管理控制台 | `kc.sh export` 或 Operator RealmImport | 每次重大配置变更后 |
 | 自定义主题/SPI | 挂载的 Volume/ConfigMap | 纳入配置管理（Git/Helm） | 变更时触发 |
+| Realm 配置声明（config as code） | Git 仓库 + Keycloak realm attributes | `keycloak-config-cli` 通过 Admin API 收敛，运行状态写回 realm attributes | 每次配置提交后 |
+
+配置即代码工具与备份是互补关系，不能互相替代：`keycloak-config-cli` 只保证「Git 里声明的配置被应用过」，它不保存用户、会话、密钥，也不检测 Keycloak 侧的手工漂移。灾难恢复时仍然需要上面那份 `kc.sh export` 的 Realm JSON。两者的分工与误删防护见 [IAM 配置即代码：keycloak-config-cli 声明式 Realm 管理与误删防护]({{< relref "keycloak-config-cli-realm-as-code" >}})。
 
 ### 数据库备份（含验证）
 

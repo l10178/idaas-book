@@ -207,6 +207,8 @@ spi-connections-ldap-read-timeout-millis=5000
 
 > 回滚演练建议：先在预发/测试 Realm 中配置 LDAP，全流程验证通过后再在生产 Realm 实施。不要在生产 Realm 上用域管理员账号做首测。
 
+还要区分一条容易被忽略的差异：上面第 2、3 条描述的是**手工**删除联邦时的情况（已导入的本地用户保留）。用 `keycloak-config-cli` 这类声明式工具管理 realm 配置时，被接管的 user federation 默认走「删除并重建」路径，其文档明确写明：该联邦下的用户会一并删除，连带 offline token 等关联数据。把联邦交给这类工具前，先确认对应类型的删除行为已关闭。判定机制与防护配置见 [IAM 配置即代码：keycloak-config-cli 声明式 Realm 管理与误删防护]({{< relref "keycloak-config-cli-realm-as-code" >}})。
+
 ## 与 Keycloak 本地用户对比
 
 | 维度 | LDAP/AD 联邦 | Keycloak 本地用户 |
