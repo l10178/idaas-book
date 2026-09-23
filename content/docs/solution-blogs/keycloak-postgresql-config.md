@@ -101,9 +101,10 @@ services:
       KC_DB_POOL_MIN_SIZE: 5
       KC_DB_POOL_MAX_SIZE: 15
       KC_HOSTNAME: idaas.example.com
-      KC_PROXY: edge
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_PROXY_HEADERS: xforwarded
+      # 仅在首次启动、master realm 尚不存在时创建管理员
+      KC_BOOTSTRAP_ADMIN_USERNAME: tmpadm
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
     command: start --optimized
     depends_on:
       postgres:
@@ -158,11 +159,13 @@ spec:
               value: "5"
             - name: KC_DB_POOL_MAX_SIZE
               value: "20"
-            - name: KC_PROXY
-              value: "edge"
+            - name: KC_PROXY_HEADERS
+              value: "xforwarded"
             - name: KC_HOSTNAME
               value: "idaas.example.com"
 ```
+
+两份示例都用 26.x 的选项写法：`proxy` 选项在 26.0.0 已被删除，用 `KC_PROXY_HEADERS=xforwarded` 取代（TLS passthrough 拓扑则**不设**代理头）；`KEYCLOAK_ADMIN` / `KEYCLOAK_ADMIN_PASSWORD` 自 26.0.0 起弃用，改为 `KC_BOOTSTRAP_ADMIN_USERNAME` / `KC_BOOTSTRAP_ADMIN_PASSWORD`。注意 `KC_BOOTSTRAP_ADMIN_*` 只在**首次启动、master realm 尚不存在**时生效，不会重置已有管理员的密码——已有集群的管理员访问恢复走 `kc.sh bootstrap-admin` 命令，见 [Keycloak 管理员账号进不去：bootstrap-admin 恢复与 26.x 变量变更]({{< relref "blog/keycloak-admin-account-recovery" >}})。
 
 ### PostgreSQL 侧的准备
 
