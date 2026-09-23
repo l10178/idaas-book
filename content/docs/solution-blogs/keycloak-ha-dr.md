@@ -246,6 +246,8 @@ curl -s -X POST https://sso.example.com/realms/myrealm/protocol/openid-connect/t
   -d 'client_id=test&grant_type=password&username=test&password=test' | jq '.access_token'
 ```
 
+恢复后如果打不开管理控制台，通常不是数据库恢复失败，而是恢复点里没有可用的管理员凭据（例如备份取自密码轮换之前，或强化认证凭据在恢复后不匹配）。这种情形的恢复路径是停节点后执行 `kc.sh bootstrap-admin`，而不是重新恢复数据库，具体见 [Keycloak 管理员账号进不去：bootstrap-admin 恢复与 26.x 变量变更]({{< relref "blog/keycloak-admin-account-recovery" >}})。
+
 ## 常见错误与排错
 
 | 症状 | 根因 | 排错命令 |

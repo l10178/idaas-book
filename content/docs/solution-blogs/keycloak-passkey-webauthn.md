@@ -262,11 +262,13 @@ Firefox 108+ 支持 WebAuthn 认证，但 Conditional UI（自动弹出 Passkey 
 **修复**：确保反向代理设置了正确的 `X-Forwarded-Host` 和 `X-Forwarded-Proto`，并且 Keycloak 配置为信任代理：
 
 ```bash
-# Keycloak 启动参数
-KC_PROXY=edge
+# Keycloak 启动参数（26.x：proxy 选项已删除，改用 proxy-headers）
+KC_PROXY_HEADERS=xforwarded
 KC_HOSTNAME=auth.example.com
 KC_HTTP_ENABLED=false
 ```
+
+> 代理头只解决「外部地址与协议」的解析；`origin` 校验仍要求 RP ID 与浏览器地址一致。真实客户端 IP、`X-Forwarded-*` 的信任边界与 `proxy-headers` 取值差异见 [Keycloak 反向代理真实客户端 IP 与代理信任边界]({{< relref "keycloak-proxy-client-ip-trust" >}})。
 
 ## 回滚方式
 
