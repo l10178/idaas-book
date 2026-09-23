@@ -205,6 +205,8 @@ Google 的零信任实现（BeyondCorp，2014–2017 系列论文）：
 [工作负载（Pod）]
 ```
 
+这张图里「mTLS 自动加密」与「基于身份的授权策略」成立的前提是：网格里的身份由谁签发、对端凭什么相信它。Istio 默认的身份来自 istiod 自带的 CA，绑定的属性是 namespace 与 ServiceAccount——官方在 SPIRE 集成文档中也是把这一点作为对比前提。当身份需要跨集群、跨云甚至跨组织成立时，通常会把签发权换成 SPIFFE/SPIRE：信任根变成一份可发布的 trust bundle，对端不需要回连你的集群即可离线校验。这部分属于 IAM 里的工作负载身份（非人类身份），落地细节、selector 匹配的静默失败以及与人类 IAM 的分工见 [SPIFFE/SPIRE 工作负载身份 IAM 落地]({{< relref \"docs/solution-blogs/spiffe-spire-workload-identity.md\" >}})。
+
 ## 24.5 IAM 与零信任的交汇
 
 IDaaS / IAM 是零信任架构中的核心"身份系统"。以下是 IAM 各能力在零信任各环节中的映射：

@@ -37,7 +37,7 @@ tags:
 | Signed JWT with Client Secret | `client-secret-jwt` | 用 secret 做 HMAC 签名断言（= `client_secret_jwt`） | 只接受**对称**算法，否则 `Algorithm is not symmetric` |
 | X.509 Certificate | `client-x509` | TLS 客户端证书 | 校验 Subject DN 与根 CA Subject DN |
 
-再加一种由 IdP 代签断言的 Signed JWT（SPIFFE JWT SVID、Kubernetes service account 这类跨信任域凭据），它的 `iss` 不等于 `sub`，处理逻辑独立，本文不展开。
+再加一种由 IdP 代签断言的 Signed JWT（SPIFFE JWT SVID、Kubernetes service account 这类跨信任域凭据），它的 `iss` 不等于 `sub`，处理逻辑独立，本文不展开——这类凭据属于工作负载身份，签发、轮换与校验方式见 [SPIFFE/SPIRE 工作负载身份 IAM 落地]({{< relref "spiffe-spire-workload-identity" >}})。顺带说明一个常见误用：JWT-SVID 不能直接当 client assertion 用，它的 `sub` 是签发方标识的 SPIFFE ID，不是提出请求的客户端自己。
 
 两条最常踩的硬约束，都来自实现而非文档：
 
