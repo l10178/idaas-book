@@ -139,7 +139,7 @@ print(json.dumps(json.loads(base64.urlsafe_b64decode(part)), ensure_ascii=False,
 PY
 ```
 
-排错顺序建议固定为：`Discovery/iss` → 签名和 `exp` → `aud` → `email/groups` claim → Cookie 与 Ingress。这样能把“身份令牌问题”和“浏览器会话问题”分开，避免看到 401 就统一归咎于 Cookie。
+排错顺序建议固定为：`Discovery/iss` → 签名和 `exp` → `aud` → `email/groups` claim → Cookie 与 Ingress。这样能把“身份令牌问题”和“浏览器会话问题”分开，避免看到 401 就统一归咎于 Cookie。如果用户组数量大，还要多问一句：Cookie 是否已经被拆成了 `_oauth2_proxy_0`、`_1` 分片——那说明会话体积已经越线，处理方式见 [IAM Token 体积治理：Keycloak claims 裁剪与 oauth2-proxy Cookie 膨胀]({{< relref "blog/keycloak-token-size-oauth2-proxy-cookies" >}})。
 
 ## oauth2-proxy 端配置
 
