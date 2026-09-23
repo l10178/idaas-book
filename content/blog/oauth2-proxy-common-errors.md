@@ -415,11 +415,14 @@ oauth2-proxy[1] <timestamp> <request> 403 missing state parameter
 
 ## 6. cookie too large
 
-**日志输出**：
+**日志输出**（v7.x，源码 `pkg/sessions/cookie/session_store.go` 中的会话 Cookie 超限分支）：
 
 ```
-cookie value too long (4096 bytes max)
+WARNING: Multiple cookies are required for this session as it exceeds the 4kb cookie limit.
+Please use server side session storage (eg. Redis) instead.
 ```
+
+更早的版本在写入阶段就可能直接失败，报错文本随版本和 Cookie 类型不同，不要按固定字符串去 grep；判断依据应以实际响应头为准（见下方诊断）。
 
 **根因**：Cookie Store 会把会话数据放入加密 Cookie；如果 Token 中包含大量 claims（如组列表、角色列表），Cookie 可能超过浏览器或代理的单 Cookie 大小限制。具体内容取决于 Provider、Session Store 和配置，不应假定三种 Token 都一定完整地存进 Cookie。
 
@@ -456,6 +459,10 @@ args:
 args:
 - --scope=openid   # 只要 openid，不加 email profile（如果不需要的话）
 ```
+
+裁剪 claims 的收益上限由用户权限模型决定，不是配置能决定的：组越多、层级越深，能省的字节越多。Keycloak 侧有一个更彻底的结构级选项——lightweight access token，它把 `email`、`realm_access.roles` 这类 claim 从 access token 中移除，改由 introspection 端点返回；`oidc-group-membership-mapper` 的 `Full group path`（`full.path`）默认会写入 `/top/level1/level2` 完整路径，往往是体积的最大来源。哪些 claims 不可移除、两种启用方式的取舍、以及怎么量出 token 与 Cookie 的实际字节数，见 [IAM Token 体积治理：Keycloak claims 裁剪与 oauth2-proxy Cookie 膨胀]({{< relref "blog/keycloak-token-size-oauth2-proxy-cookies" >}})。
+
+另外注意 oauth2-proxy 自身对这个上限的处理：会话 Cookie 超过内部常量 4000 字节时不会报错，而是**静默拆分成 `_oauth2_proxy_0`、`_1` 等多个 Cookie**。所以判断「Cookie 到底多大」要以实际响应头为准，不能只看日志里有没有报错。
 
 ### auth_request 模式下的一个隐藏问题：Set-Cookie 被截断
 

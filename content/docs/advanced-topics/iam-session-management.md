@@ -66,6 +66,7 @@ Access Token 是访问资源的"通行证"——资源服务器用它来判断"�
 - **有效期**：由 IAM/Realm 配置决定；越短通常越能缩小泄露窗口，但会增加刷新频率
 - **验证方式**：资源服务器用 IDP 公钥验证签名（RS256/ES256），不依赖 IDP 在线
 - **关键声明**：`sub`（用户）、`iss`（签发者）、`aud`（接收方）、`exp`（过期时间）、`scope`（权限范围）、`iat`（签发时间）
+- **体积边界**：claim 越多，每个带该 Token 的请求就越大。把角色树、组路径、用户属性全塞进 Access Token 会在认证网关处撞上 HTTP 头与 Cookie 的硬上限——Keycloak 的 lightweight access token 与 `oidc-group-membership-mapper` 的 `full.path` 是这一层的两个主要旋钮，见 [IAM Token 体积治理]({{< relref "blog/keycloak-token-size-oauth2-proxy-cookies" >}})
 
 在生产环境中，一个常见的坑是资源服务器没有正确验证 `aud`（audience）。这会导致本来发给应用 A 的 Token 被应用 B 接受——OAuth 2.0 的 audience 约束就是为了防止这种跨应用 Token 复用。在 Keycloak 中，如果没有为 client 配置 audience mapper，Token 的 `aud` 可能默认是 `account`，导致接收方报 `expected audience` 错误。
 

@@ -137,6 +137,8 @@ Cookie 关键配置项：
 
 默认 `cookie` Session Store 并不要求单副本或会话亲和性：多副本只要共享相同的 `--cookie-secret` 即可解密会话。切换到 `redis` 后，Cookie 通常只携带服务端 Session ID，但 Redis 的 TLS、凭据、容量、故障切换和恢复演练就成为 IAM 网关的生产前置条件。选择 Redis 的理由应是 Cookie 体积、服务端撤销或集中会话管理，而不是“副本多了就必须上 Redis”。详见 [IAM 网关 oauth2-proxy 常见错误排错]({{< relref "blog/oauth2-proxy-common-errors" >}})。
 
+会话 Cookie 的体积上限由 oauth2-proxy 自己决定：内部常量是 4000 字节（浏览器普遍上限 4096，留了余量），超过后不会报错，而是拆分成 `_oauth2_proxy_0`、`_1` 分片。claims 裁剪、轻量 access token 与 Redis 票据格式的取舍见 [IAM Token 体积治理]({{< relref "blog/keycloak-token-size-oauth2-proxy-cookies" >}})。
+
 ### Upstream
 
 oauth2-proxy 本身不处理业务流量，它有两个端口：

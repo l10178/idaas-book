@@ -18,6 +18,8 @@ toc: true
 
 网关或 BFF 拿到用户 access token 后要调用下游服务，但 token 的 `aud` 只包含网关自己，下游按 audience 校验直接拒绝；或者下游只需要读权限，而手上的 token 权限过大。重新走一次授权码流程不合理——用户已经登录了。这时用 RFC 8693 定义的 token exchange：拿**已有 token** 换一个**换手后重新限定受众和 scope** 的 token。
 
+第三个常见用法是反向的：客户端拿到的是被精简过的 lightweight access token，某个下游 API 却需要完整的角色 claims，于是把它换成常规 access token。这条路径有一个容易漏掉的硬前提——签发 lightweight token 的客户端上，audience mapper 必须打开 **Add to lightweight access token**，否则目标客户端不在 `aud` 里，交换会失败。机制与裁剪取舍见 [IAM Token 体积治理：Keycloak claims 裁剪与 oauth2-proxy Cookie 膨胀]({{< relref "blog/keycloak-token-size-oauth2-proxy-cookies" >}})。
+
 Keycloak 的 token endpoint 同时实现两套机制，请求都是同一个端点：
 
 ```
