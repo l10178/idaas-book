@@ -250,6 +250,8 @@ kubectl -n istio-system logs deploy/istiod | \
 
 不重复，职责不同：入口那层解决"人怎么登录、会话怎么保持"（浏览器重定向、cookie、登出），网格这层解决"每一次服务调用带的是什么身份"（无状态校验，不维护会话）。只做入口校验时，任何能访问 Service 的调用方都能绕过入口直连后端；只做网格校验时，浏览器用户没有地方完成交互式登录。两层都上时注意区分 token 受众：入口用前端 client 的 token，网格内部用服务自己的 token，`aud` 要能对上。
 
+另外，网格的 mTLS 身份与这里的 JWT 校验是并行的两条线：前者默认由 istiod 签发、绑定 namespace 与 ServiceAccount，管"链路对端是不是那个服务"；后者管"这次调用带的是谁的身份、能不能做这件事"。需要让服务身份跨集群、跨云成立时，签发权通常换成 SPIFFE/SPIRE，见 [SPIFFE/SPIRE 工作负载身份 IAM 落地]({{< relref "spiffe-spire-workload-identity" >}})。
+
 ### IAM 的 RequestAuthentication 写一份就够了吗？
 
 策略按工作负载生效：命名空间内的策略命中同命名空间的工作负载；放在 istio-system（root namespace）且不带 `selector` 的策略对所有命名空间生效。生产上不建议第一次就推"全局默认校验 + 少数例外"，先在一个命名空间验证 `iss`/`aud`/header 的实际行为，确认后再按命名空间铺开。
