@@ -96,6 +96,8 @@ kubectl get ingress -n app internal-app -o yaml \
 
 依据：[oauth2-proxy Header Options](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/#header-options) 和 [ingress-nginx 外部认证示例](https://kubernetes.github.io/ingress-nginx/examples/auth/oauth-external-auth/)。
 
+这套注解来自 ingress-nginx，而该控制器已于 2026 年 3 月退役、仓库归档、不再有安全补丁；同时 `auth-url` / `auth-signin` / `auth-response-headers` 都不在 `ingress2gateway` 的转换范围内，换入口控制器时必须手工重建这三处。替代路线（Traefik 注解兼容 provider、Gateway API + `extAuth`、网关原生 OIDC）各自的头注入字段、未认证跳转缺口与验证方法见 [IAM 入口迁移：ingress-nginx 退役后的认证网关落地]({{< relref "../solution-blogs/ingress-nginx-retirement-iam-migration" >}})。
+
 ## 核心概念
 
 ### Provider

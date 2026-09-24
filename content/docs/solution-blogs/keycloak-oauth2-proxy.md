@@ -337,6 +337,8 @@ spec:
 >
 > **不要用 `auth-snippet` 试图放行 `/oauth2/callback`。** `auth-url` 是当前 Ingress 对请求执行的外部认证检查；回调入口应单独创建一个不带 `auth-url` 的 Ingress，指向 oauth2-proxy Service。否则回调请求可能再次进入认证检查，形成登录循环。下面的业务 Ingress 只负责保护应用，`/oauth2/*` 由独立 Ingress 暴露。
 
+这一组注解是 ingress-nginx 专有的扩展能力：该控制器已于 2026 年 3 月退役、仓库归档并且不再有安全补丁，而 `auth-url`、`auth-signin`、`auth-response-headers` 都不在 `ingress2gateway` 的转换范围内。换入口控制器时这三处（认证子请求、响应头复制、401 跳转）必须手工重建，差异点、验证命令与回滚顺序见 [IAM 入口迁移：ingress-nginx 退役后的认证网关落地]({{< relref "ingress-nginx-retirement-iam-migration" >}})。
+
 ```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress

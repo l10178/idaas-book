@@ -517,6 +517,8 @@ kcadm.sh get clients/<client-id> -r myrealm > client-backup.json
 
 如果集群入口走的是 Gateway API（Envoy Gateway），则不必再引入 oauth2-proxy：`SecurityPolicy` 的 `oidc` 由 Envoy 的 OAuth2 filter 直接完成授权码流程，会话 cookie 与 token 刷新都由网关维护。代价是它要求 confidential client，且授权判定只到 claims/CEL 级别。两种方案的边界、字段默认值与升级陷阱见 [Envoy Gateway 原生 OIDC + Keycloak 落地与排错]({{< relref "envoy-gateway-oidc-keycloak" >}})。
 
+无论最终选哪条路，只要入口控制器要换，认证层都得单独重建一次：`auth-url`、`auth-signin`、`auth-response-headers` 是 ingress-nginx 的注解扩展，不在 `ingress2gateway` 的转换范围内，而 ingress-nginx 已在 2026 年 3 月退役、仓库归档且不再有安全补丁。从注解模式切到 ForwardAuth（或反向迁移）时的三处语义差异、验证命令与回滚顺序见 [IAM 入口迁移：ingress-nginx 退役后的认证网关落地]({{< relref "ingress-nginx-retirement-iam-migration" >}})。
+
 ## 延伸阅读
 
 - [Keycloak + oauth2-proxy 集成实战指南]({{< relref "keycloak-oauth2-proxy" >}})：Nginx Ingress auth-url 模式的完整方案
