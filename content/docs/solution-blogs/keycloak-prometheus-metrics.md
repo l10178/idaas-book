@@ -33,7 +33,12 @@ toc: true
 ### 方式一：CLI 启动参数
 
 ```bash
+# 非优化启动：Keycloak 在启动阶段自动构建，选项即时生效（代价是启动变慢）
 kc.sh start --metrics-enabled=true
+
+# 优化启动：必须在构建阶段固化，运行期再传不同的值会导致启动失败
+kc.sh build --metrics-enabled=true
+kc.sh start --optimized
 ```
 
 ### 方式二：环境变量
@@ -64,6 +69,8 @@ helm install keycloak bitnami/keycloak --set metrics.enabled=true
 ```
 
 > `metrics-enabled` 是构建时（build-time）选项，必须在首次启动时或通过 `kc.sh build` 阶段指定。如果你通过 Operator 或 conf 文件修改了此选项但没重建，需要先 `kc.sh build` 或重启 Pod 使其生效。
+
+> 用 `start --optimized` 启动时这条规则会变成硬约束：运行期传入的 `metrics-enabled`、`features`、`db` 等构建期选项只要与镜像内持久化值不同，Keycloak 26.x 会直接报 `The following build time options have values that differ from what is persisted` 并退出，`/metrics` 自然也不会出现。构建期/运行期选项的分界、正确的镜像构建写法与回滚见 [Keycloak --optimized 启动失败：构建期选项与运行期选项的边界]({{< relref "blog/keycloak-optimized-build-options" >}})。
 
 ### 确认 Metrics 端点可用
 
