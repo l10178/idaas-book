@@ -228,7 +228,7 @@ Keycloak 的分布式缓存由 Infinispan 驱动，三种缓存类型：
 
 ### 最小监控部署
 
-1. 在 Keycloak 中启用 metrics 端点：`kc.sh start --metrics-enabled=true`
+1. 在 Keycloak 中启用 metrics 端点：`metrics-enabled` 是构建期选项，自建镜像在构建阶段执行 `kc.sh build --metrics-enabled=true`，运行期只保留 `start --optimized`；用官方通用镜像时则直接 `kc.sh start --metrics-enabled=true`（启动阶段自动构建）。判定依据与报错处理见 [Keycloak --optimized 启动失败：构建期选项与运行期选项的边界]({{< relref "blog/keycloak-optimized-build-options" >}})
 2. 配置 Prometheus ServiceMonitor 抓取 `/metrics`
 3. 导入 Grafana Dashboard（[21997](https://grafana.com/grafana/dashboards/21997-keycloak-metrics/)）
 

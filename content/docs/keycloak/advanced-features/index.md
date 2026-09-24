@@ -142,7 +142,7 @@ Keycloak 既能作为**用户主存储**，也能作为**身份代理（Identity
 | 身份源 | 集成方式 |
 |--------|----------|
 | LDAP / Active Directory | User Federation（内置） |
-| Kerberos / SPNEGO | User Federation（内置） |
+| Kerberos / SPNEGO | User Federation（内置，浏览器免登的完整配置与排错见 [Kerberos/SPNEGO 对接 AD 域]({{< relref "blog/keycloak-kerberos-spnego-ad-sso" >}})） |
 | 外部 OIDC / SAML IdP | Identity Provider（内置） |
 | GitHub / Google / 微信 | Social Identity Provider（内置 / 社区扩展） |
 

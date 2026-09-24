@@ -122,6 +122,8 @@ spec:
 
 > 如果 `spec.image` 指向的是自建镜像（例如内含自定义 SPI 扩展），Operator 会假定该镜像已经执行过构建（`spec.startOptimized` 字段描述即「assume custom images have already been augmented」）。扩展 JAR 的构建、打包与回滚流程见 [Keycloak 自定义 SPI 扩展的生产交付]({{< relref "docs/solution-blogs/keycloak-spi-extension-deployment.md" >}})。
 
+> 由此推论：`metrics-enabled`、`health-enabled`、`features` 这类构建期选项应该固化在自建镜像里，而不是只写进 `additionalOptions`。Operator 以优化模式启动实例，构建期选项与镜像持久化值不一致时实例会反复重启并报 `build time options have values that differ from what is persisted`（[keycloak#38249](https://github.com/keycloak/keycloak/issues/38249)）；`additionalOptions` 留给 `log-level`、`db-pool-*` 等运行期选项。完整判定与回滚见 [Keycloak --optimized 启动失败：构建期选项与运行期选项的边界]({{< relref "blog/keycloak-optimized-build-options" >}})。
+
 ### 数据库配置
 
 生产环境必须使用外部数据库：

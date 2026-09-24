@@ -147,6 +147,8 @@ spec:
 - 启动时传的 build 选项**值等于** build 阶段用的值 → 该选项被静默忽略（已固化在镜像里）；
 - 值**不同** → **直接报错**，必须先重新 build 才能生效。
 
+这条规则对所有构建期选项一视同仁，不只是 tracing 的三个开关：`db`、`features`、`metrics-enabled`、`health-enabled` 以及部分 `spi-*` 键都在其中，而且版本之间行为有差异（≤ 25.x 不报错、26.0 起硬失败、26.2 早期版本会误伤 `quarkus.properties`）。完整清单、判定方法和回滚顺序见 [Keycloak --optimized 启动失败：构建期选项与运行期选项的边界]({{< relref "blog/keycloak-optimized-build-options" >}})。
+
 ```mermaid
 flowchart TD
     A[Containerfile: kc.sh build] -->|固化| B[build time: tracing-enabled / jdbc-enabled / sampler-type]

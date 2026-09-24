@@ -64,3 +64,7 @@ Windows Server 不同版本略有差异，但是基本要做的就是下面几�
 安装完成后，可通过“Active Directory 用户和计算机”管理用户。此功能可通过控制面板或菜单搜索到。
 
 打开后即可在 Users 下右键创建组和用户，请根据需要提前划分分组，增加用户。
+
+## 下一步
+
+AD 能跑起来之后的接入路线通常分两层：先用 LDAP/LDAPS 让 IAM 读取用户与组（[Keycloak LDAP / Active Directory 用户联邦]({{< relref "docs/solution-blogs/keycloak-ldap-ad-federation" >}})），再决定是否需要域内浏览器免密——后者要额外为 Keycloak 配置 SPN、keytab 与 `krb5.conf`，且 keytab 必须与 AD 服务账号当前密钥一致（[Keycloak Kerberos/SPNEGO 对接 AD 域：IAM 内网免登配置与排错]({{< relref "blog/keycloak-kerberos-spnego-ad-sso" >}})）。

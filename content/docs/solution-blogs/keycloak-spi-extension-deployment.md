@@ -45,7 +45,7 @@ toc: true
 | 路径 | 命令 | provider 发现时机 | 代价 |
 |------|------|------------------|------|
 | 未优化启动 | `start`（不带 `--optimized`） | 启动时/运行时发现 `providers/` 下的 JAR | 每次启动更慢；启动期行为依赖文件系统状态，不可复现 |
-| 优化启动 | 镜像构建期 `kc.sh build`，运行期 `start --optimized` | 构建期固化进 provider 注册表 | 镜像与 JAR 必须一起构建；构建期选项与运行期不一致会直接启动失败 |
+| 优化启动 | 镜像构建期 `kc.sh build`，运行期 `start --optimized` | 构建期固化进 provider 注册表 | 镜像与 JAR 必须一起构建；构建期选项与运行期不一致会直接启动失败（分类与版本差异见 [Keycloak --optimized 启动失败：构建期选项与运行期选项的边界]({{< relref "blog/keycloak-optimized-build-options" >}})） |
 
 **生产走第二条。** 第一条只在开发容器里图省事，把它带到生产会出现「人肉改了容器里的 JAR，重启后行为变了，但没人知道哪个版本生效」——这正是不可变基础设施要避免的状态。
 

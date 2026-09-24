@@ -105,7 +105,7 @@ services:
       # 仅在首次启动、master realm 尚不存在时创建管理员
       KC_BOOTSTRAP_ADMIN_USERNAME: tmpadm
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KC_BOOTSTRAP_ADMIN_PASSWORD}
-    command: start --optimized
+    command: start
     depends_on:
       postgres:
         condition: service_healthy
@@ -115,6 +115,8 @@ services:
 volumes:
   pgdata:
 ```
+
+这里用 `start` 而不是 `start --optimized`：`KC_DB` 属于构建期（build-time）选项，而官方通用镜像没有针对 PostgreSQL 做过构建。带上 `--optimized` 后，运行期传入的数据库厂商会与镜像内持久化的值冲突，Keycloak 26.x 会报 `The following build time options have values that differ from what is persisted` 并拒绝启动。只有自建镜像里已执行过 `kc.sh build`（构建阶段固化了 `KC_DB=postgres`）时才应该加 `--optimized`——机制、正确的镜像写法与回滚见 [Keycloak --optimized 启动失败：构建期选项与运行期选项的边界]({{< relref "blog/keycloak-optimized-build-options" >}})。
 
 ### Kubernetes 示例（Deployment 片段）
 
@@ -139,7 +141,7 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:26.7.4
-          args: ["start", "--optimized"]
+          args: ["start"]
           env:
             - name: KC_DB
               value: "postgres"
@@ -165,7 +167,7 @@ spec:
               value: "idaas.example.com"
 ```
 
-两份示例都用 26.x 的选项写法：`proxy` 选项在 26.0.0 已被删除，用 `KC_PROXY_HEADERS=xforwarded` 取代（TLS passthrough 拓扑则**不设**代理头）；`KEYCLOAK_ADMIN` / `KEYCLOAK_ADMIN_PASSWORD` 自 26.0.0 起弃用，改为 `KC_BOOTSTRAP_ADMIN_USERNAME` / `KC_BOOTSTRAP_ADMIN_PASSWORD`。注意 `KC_BOOTSTRAP_ADMIN_*` 只在**首次启动、master realm 尚不存在**时生效，不会重置已有管理员的密码——已有集群的管理员访问恢复走 `kc.sh bootstrap-admin` 命令，见 [Keycloak 管理员账号进不去：bootstrap-admin 恢复与 26.x 变量变更]({{< relref "blog/keycloak-admin-account-recovery" >}})。
+两份示例都用 26.x 的选项写法：`proxy` 选项在 26.0.0 已被删除，用 `KC_PROXY_HEADERS=xforwarded` 取代（TLS passthrough 拓扑则**不设**代理头）；`KEYCLOAK_ADMIN` / `KEYCLOAK_ADMIN_PASSWORD` 自 26.0.0 起弃用，改为 `KC_BOOTSTRAP_ADMIN_USERNAME` / `KC_BOOTSTRAP_ADMIN_PASSWORD`。Kubernetes 示例的 `args` 同样用 `start`，等构建期选项固化进自建镜像后再统一改为 `start --optimized`。注意 `KC_BOOTSTRAP_ADMIN_*` 只在**首次启动、master realm 尚不存在**时生效，不会重置已有管理员的密码——已有集群的管理员访问恢复走 `kc.sh bootstrap-admin` 命令，见 [Keycloak 管理员账号进不去：bootstrap-admin 恢复与 26.x 变量变更]({{< relref "blog/keycloak-admin-account-recovery" >}})。
 
 ### PostgreSQL 侧的准备
 

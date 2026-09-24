@@ -259,7 +259,7 @@ LDAP 在 IAM 中的角色是**身份源（Identity Source）**——IAM 通过 L
 | **实时查询** | LDAP | 每次登录时查询 AD 验证密码 |
 | **密码策略同步** | 无直接协议 | AD 密码策略通过域策略控制，IAM 端通常只验证结果 |
 
-在 IAM 实践中，大多数场景用 LDAP/LDAPS 就够了——Keycloak、Dex、CAS 等主流 IAM 平台都通过 LDAP User Federation 对接 AD，配置简单且运维可控。Kerberos 仅在有 SPNEGO/Windows 集成认证（WIA）需求的场景才需要。
+在 IAM 实践中，大多数场景用 LDAP/LDAPS 就够了——Keycloak、Dex、CAS 等主流 IAM 平台都通过 LDAP User Federation 对接 AD，配置简单且运维可控。Kerberos 仅在有 SPNEGO/Windows 集成认证（WIA）需求的场景才需要。真要做域内浏览器免登时，两件事经常被混为一谈：LDAP 联邦负责把用户和属性查出来，SPN 与 keytab 负责让 Keycloak 能验证票据，两者独立配置、独立排错——三段配置、用户映射规则与错误对照见 [Keycloak Kerberos/SPNEGO 对接 AD 域：IAM 内网免登配置与排错]({{< relref "blog/keycloak-kerberos-spnego-ad-sso" >}})。
 
 ### Q3：IAM 场景下，LDAP 搜索性能怎么优化？
 

@@ -224,4 +224,6 @@ spi-connections-ldap-read-timeout-millis=5000
 
 ## 小结
 
+如果目标不止「用域账号登录」，还包括「内网浏览器免密进入应用」，那在同一个 LDAP 联邦上还要开启 `Allow Kerberos authentication`，并另行准备 SPN、keytab、`krb5.conf` 与浏览器集成认证白名单。这段经常被当成 LDAP 配置的一部分，实际是独立的票据验证链路，排错入口也完全不同（日志里是 `SPNEGO login failed` 或 `Received kerberos token, but there is no user storage provider…`）：三段配置、用户映射规则与错误对照见 [Keycloak Kerberos/SPNEGO 对接 AD 域：IAM 内网免登配置与排错]({{< relref "blog/keycloak-kerberos-spnego-ad-sso" >}})。
+
 Keycloak 的 LDAP User Federation 允许企业保留现有的目录服务作为权威身份源，同时享受现代协议（OIDC/SAML）和 Keycloak 生态的红利。配置的核心在于:正确的 Vendor 选择 → 准确的连接参数 → 最小权限服务账号 → 合理的同步策略 → 组和属性映射——五步走完，测试登录，再加监控和告警，就可以平稳运行。遇到问题优先从 ldapsearch 诊断，90% 的配置问题都可以在 Keycloak 和 LDAP 之间的「握手环节」定位。
