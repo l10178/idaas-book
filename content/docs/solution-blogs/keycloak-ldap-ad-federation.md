@@ -222,6 +222,8 @@ spi-connections-ldap-read-timeout-millis=5000
 
 对于大多数企业场景，正确姿势是：**LDAP/AD 管用户 → Keycloak 消费用户 + 提供协议层（OIDC/SAML）**。如果需要从 Keycloak 侧回写属性到 LDAP（极少数场景），将 Edit Mode 设为 `WRITABLE` 并在 mapper 中开启双向同步，但要非常谨慎——这类配置是问题的温床。
 
+这张对比表也回答了 IAM 迁移项目里最常见的一次误判：只要密码真源已经在 AD/LDAP 里，就**不要**再做密码迁移，联邦透传即可；反过来，如果密码真源仍在自研系统的应用表里（bcrypt、SSHA512 之类的哈希存在业务库中），联邦绑不过去，只能在"导入已有哈希"和"强制重置"之间选。两条路的判断依据、导入格式与回滚边界见 [IAM 用户迁移：遗留密码哈希如何迁进 Keycloak]({{< relref "keycloak-password-hash-migration" >}})。
+
 ## 小结
 
 如果目标不止「用域账号登录」，还包括「内网浏览器免密进入应用」，那在同一个 LDAP 联邦上还要开启 `Allow Kerberos authentication`，并另行准备 SPN、keytab、`krb5.conf` 与浏览器集成认证白名单。这段经常被当成 LDAP 配置的一部分，实际是独立的票据验证链路，排错入口也完全不同（日志里是 `SPNEGO login failed` 或 `Received kerberos token, but there is no user storage provider…`）：三段配置、用户映射规则与错误对照见 [Keycloak Kerberos/SPNEGO 对接 AD 域：IAM 内网免登配置与排错]({{< relref "blog/keycloak-kerberos-spnego-ad-sso" >}})。

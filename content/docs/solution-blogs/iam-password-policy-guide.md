@@ -16,14 +16,14 @@ toc: true
 你的企业正在做等保 2.0 三级测评，审计员问你三个问题：
 
 1. "密码策略是否符合 NIST 最新指南？"——你发现 Keycloak 里只配了 `length(8)`
-2. "密码哈希用的什么算法？"——你不确定，因为 Keycloak 默认用 PBKDF2，而安全团队要求 Argon2id
+2. "密码哈希用的什么算法？"——你不确定，因为不知道该以哪个版本、哪个环境的默认值为准，而安全团队要求 Argon2id
 3. "用户改密码时能不能拦截已泄露的密码？"——你查了一圈发现 Keycloak 有 `passwordBlacklist` 但不知道怎么用
 
 这三个问题代表了 IAM 密码安全最常见的三个盲区：策略过弱、哈希过时、泄露检测缺失。本指南不重复密码学理论，只解决"Keycloak 里怎么配、配错了什么症状、怎么验证生效"。
 
 **适用**：Keycloak 26.x 生产环境，需要满足等保 2.0 三级或企业内部安全审计的 IAM 管理员。
 
-**不适用**：Keycloak 版本低于 20.x（Argon2 支持不完整）；使用外部 LDAP/AD 管理密码的场景（密码策略在 LDAP 侧生效，Keycloak 只做验证代理）。
+**不适用**：Keycloak 版本低于 26.x（Argon2 尚未成为默认算法，需先确认 provider 是否可用）；使用外部 LDAP/AD 管理密码的场景（密码策略在 LDAP 侧生效，Keycloak 只做验证代理）。
 
 ## 两份标准的交叉对照
 
@@ -50,8 +50,8 @@ NIST SP 800-63B（2020 修订版）和等保 2.0（GB/T 22239-2019）在密码�
 
 | 策略 | 推荐值 | 说明 |
 |------|--------|------|
-| `hashAlgorithm` | `argon2` | 见下节详细说明 |
-| `hashingIterations` | `27`（Argon2 的内存/迭代参数，非 PBKDF2 的迭代次数） | Argon2 模式下的 `iterations` 参数 |
+| `hashAlgorithm` | `argon2` | 26.x 非 FIPS 环境的默认值；显式写死会同时关闭"登录时自动重哈希"的升级路径，见下节 |
+| `hashIterations` | 留空 | 只对 PBKDF2 生效；Argon2 的强度参数在 provider 配置里，策略里填 ≤100 的值会覆盖它，超过 100 会被忽略并回退 provider 默认值 |
 | `length` | `12` | NIST 最低 8，但企业建议 12+ |
 | `upperCase` | `1` | 等保要求 |
 | `lowerCase` | `1` | 等保要求 |
@@ -64,59 +64,42 @@ NIST SP 800-63B（2020 修订版）和等保 2.0（GB/T 22239-2019）在密码�
 | `forceExpiredPassword` | `90`（仅管理员角色） | 普通用户不设；管理员 Realm 单独配 |
 | `regexPattern` | 按需 | 如禁止连续重复字符 `.*(.)\\1{2,}.*` |
 
-### 步骤 2：切换 Argon2id 哈希算法
+### 步骤 2：确认哈希算法是否已经是 Argon2id
 
-Keycloak 默认使用 PBKDF2-SHA256，生产环境建议切换到 Argon2id。
+Keycloak 26 起，**非 FIPS 环境的默认密码哈希算法已经是 Argon2**（type 默认为 `id`，即 Argon2id）；FIPS 环境因 Argon2 不符合 FIPS 140-2，默认仍是 PBKDF2。所以"从 PBKDF2 切到 Argon2id"这一步在 26.x 上通常不需要手动做，需要做的是确认它真的生效。
 
-**配置方式**（`keycloak.conf` 或环境变量）：
+**不要再配置 `--features=argon2`**。Argon2 在早期版本中是 preview 特性，26.x 已内置为默认 provider，特性列表中不再有该项，继续配置它不会产生任何效果。
 
-```properties
-# keycloak.conf
-kc_features=argon2
+验证方式不看配置项，看落库结果——新建或重置一个测试用户的密码，然后查凭据算法：
+
+```sql
+SELECT credential_data
+FROM credential
+WHERE type = 'password' AND user_id = '<测试用户ID>';
 ```
 
-或环境变量：
+非 FIPS 的 26.x 上，`algorithm` 应为 `argon2`；如果仍是 `pbkdf2-sha256`，说明当前环境是 FIPS 或策略里显式固定了算法。
 
-```bash
-KC_FEATURES=argon2
-```
+**Argon2 参数调优**（provider 级配置，不在密码策略里）：
 
-> **注意**：Argon2 在 Keycloak 中是 SPI 提供者，需要确保 `providers/` 目录下有对应 JAR（Keycloak 26.x 已内置）。开启后，新创建和修改密码的用户会自动用 Argon2id 哈希。**已有 PBKDF2 哈希的密码不会被自动迁移**——用户下次修改密码时才会切换到 Argon2id，旧 PBKDF2 密码仍可验证。
+| 参数 | 默认值 | 说明 |
+|------|--------|------|
+| `type` | `id` | Argon2id，抗侧信道与抗 GPU 的折中模式 |
+| `version` | `1.3` | 可选 `1.0` |
+| `memory` | `7168` KiB（7 MB） | 每次哈希占用的内存 |
+| `iterations` | `5` | time cost |
+| `parallelism` | `1` | 并行度 |
+| `hashLength` | `32` | 输出长度（字节） |
 
-**Kubernetes 部署示例**：
+按 `spi-password-hashing--argon2--<property>` 的形式配置，例如 `--spi-password-hashing--argon2--memory=19456`；默认值以 Keycloak《All provider configuration》和 `Argon2PasswordHashProviderFactory` 为准。调整前先算内存底线：**memory × 并发哈希数**就是进程的内存下限；官方默认还会把并行哈希数限制为 JVM 可见的 CPU 核数，避免容器内 CPU 限流拖累其他请求。
 
-```yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: keycloak
-spec:
-  template:
-    spec:
-      containers:
-        - name: keycloak
-          image: quay.io/keycloak/keycloak:26.1
-          env:
-            - name: KC_FEATURES
-              value: "argon2"
-            - name: KC_DB
-              value: postgres
-          args:
-            - "start"
-            - "--features=argon2"
-```
+> **Keycloak 的 Argon2 默认内存（7 MiB）低于 OWASP 对 Argon2id 的基线建议**（不低于 19 MiB、迭代 2、并行度 1）。是否上调要结合登录并发与内存预算决定，并在预发环境实测登录延迟——把 memory 从 7 MiB 提到 19 MiB，单次哈希的内存占用约为原来的 2.7 倍。
+>
+> **密码策略里的 `hashIterations` 不是 Argon2 的调参入口。** Argon2 provider 只在策略值 ≤100 时把它当作 time cost 使用，超过 100 会打一条 `Iterations for Argon should be less than 100, using default` 警告并回退到 provider 默认值；而它的 `policyCheck()` 比对的是 **provider 配置的**迭代数（默认 5）。把策略设成与 provider 不一致的值（例如策略填 8），存进去的凭据相对 provider 配置永远不达标，于是**每次成功登录都会再重哈希一次**：安全强度没提高，CPU 白烧。策略里留空，要调强度就改 `--spi-password-hashing--argon2--iterations`。
 
-**Argon2 参数调优**：
+**存量密码会在下次登录时自动重哈希**：密码校验通过后，Keycloak 会用当前算法和策略参数重新计算并覆盖原凭据，用的就是这次登录提交的明文。所以切算法不需要"全员改密"，但升级会集中在用户首次登录时发生，带来 CPU 开销和数据库读放大，需要按活跃分布压测首登窗口。前提是 realm 密码策略**没有**把 `hashAlgorithm` / `hashIterations` 显式固定成旧值——那样匹配上的存量凭据不会再被重哈希。
 
-Argon2id 的安全强度取决于三个参数：
-
-| 参数 | 含义 | 推荐值 | 调整方向 |
-|------|------|--------|---------|
-| `memory` | 内存使用（KB） | 65536（64MB） | 越大抗 GPU 越好，但登录延迟增加 |
-| `iterations` | 迭代次数 | 3 | 越大越安全，但 CPU 开销线性增长 |
-| `parallelism` | 并行线程数 | 4 | 应 ≤ 容器可用 CPU 核数 |
-
-在 Keycloak 管理控制台中，**Password Policy → hashAlgorithm → argon2**，然后设置 `hashingIterations` 为上述参数的组合值。Keycloak 内部使用 `iterations` 参数控制 Argon2 的 time cost。
+导入遗留系统的密码哈希、监控重哈希进度、以及删除 provider 导致用户锁死的边界，见 [IAM 用户迁移：遗留密码哈希如何迁进 Keycloak]({{< relref "keycloak-password-hash-migration" >}})。
 
 ### 步骤 3：配置泄露密码黑名单
 
@@ -229,8 +212,9 @@ curl -s -X PUT "http://localhost:8080/admin/realms/myrealm/users/$USER_ID/reset-
 # 预期返回 400
 
 # 3. 验证 Argon2 哈希已启用
-# 创建新用户并设置密码后，查看数据库中 USER_CREDENTIAL 表的 ALGORITHM 字段
-# 应为 "argon2" 而非 "pbkdf2-sha256"
+# 创建新用户并设置密码后，查 credential 表的 credential_data 列：
+# SELECT credential_data FROM credential WHERE type = 'password' AND user_id = '<用户ID>';
+# 其中的 algorithm 应为 "argon2" 而非 "pbkdf2-sha256"
 
 # 4. 尝试设置黑名单中的密码，应被拒绝
 curl -s -X PUT "http://localhost:8080/admin/realms/myrealm/users/$USER_ID/reset-password" \
@@ -249,8 +233,8 @@ curl -s -X PUT "http://localhost:8080/admin/realms/myrealm/users/$USER_ID/reset-
 | 症状 | 可能原因 | 解决方案 |
 |------|---------|---------|
 | 设置密码报 `invalid password` 但策略已满足 | `passwordBlacklist` 文件路径不对或文件名不匹配 | 确认文件在 Keycloak 数据目录，且策略值与文件名一致 |
-| Argon2 启用后新用户创建报错 | `--features=argon2` 未生效或 Keycloak 版本 < 20 | 确认 `kc_features=argon2` 已设置；检查 Keycloak 版本 |
-| 已有用户密码仍用 PBKDF2 | Argon2 只对新密码生效，旧密码不自动迁移 | 给用户添加 `Update Password` Required Action，强制下次登录改密 |
+| 设置密码后 `credential_data.algorithm` 不是 `argon2` | 运行在 FIPS 环境（Argon2 不符合 FIPS 140-2），或策略里显式固定了 `hashAlgorithm` / `hashIterations` | 确认是否 FIPS 环境；检查 realm 密码策略是否显式写了算法与迭代数 |
+| 存量用户密码仍是旧算法 | 该用户尚未用密码登录过；或策略固定了旧参数，`policyCheck` 一直匹配，不再触发重哈希 | 用 `credential_data.algorithm` 的分组统计看进度；用户登录一次即自动升级，不需要额外加 Required Action |
 | `forceExpiredPassword(90)` 导致用户频繁被要求改密码 | 所有用户同时触发 | 分批添加 Required Action，或先用脚本查询哪些用户密码超过 90 天 |
 | LDAP 用户的密码策略不生效 | LDAP 联邦用户的密码在 LDAP 侧管理 | 在 LDAP/AD 侧配置密码策略；Keycloak 密码策略对联邦用户不生效 |
 | `regexPattern` 策略导致所有密码被拒绝 | 正则表达式写反或匹配逻辑错误 | 先用简单正则测试，如 `.{8,}` 表示至少 8 字符 |
@@ -277,13 +261,13 @@ for UID in $USERS; do
 done
 ```
 
-3. **Argon2 回滚**：如果 Argon2 导致问题，移除 `--features=argon2` 并重启。已有 Argon2 哈希的密码仍可验证（Keycloak 根据 `ALGORITHM` 字段自动选择验证器），新密码会回退到 PBKDF2
+3. **Argon2 回滚边界**：Argon2 是 26.x 内置的默认 provider，没有 `--features=argon2` 可移除；要停用只能在密码策略里显式固定 `hashAlgorithm(pbkdf2-sha512)`。此时已有 Argon2 哈希的密码仍可验证（Keycloak 按凭据里的 `algorithm` 选择验证器），但**如果运行环境切到 FIPS，Argon2 provider 不可用，这批用户会直接登录失败**。回滚前先确认没有 FIPS 切换计划，并核对 `credential_data.algorithm` 的实际分布
 
 ## 生产检查清单
 
 ```text
 □ 密码策略已配置：length(12) + 复杂度 + notUsername + notEmail + passwordHistory(5)
-□ 哈希算法已切换到 Argon2id（或至少 PBKDF2-SHA256 with 600k+ iterations）
+□ 哈希算法已确认：非 FIPS 环境为 Argon2id，FIPS 环境为 PBKDF2-SHA256（600k+ iterations），并以 credential_data.algorithm 的实际落库结果为准
 □ 泄露密码黑名单已部署并验证生效
 □ 管理员密码策略比普通用户更严格（独立 Realm 或额外检查）
 □ forceExpiredPassword 仅用于管理员角色
@@ -299,13 +283,11 @@ done
 
 对普通用户遵循 NIST SP 800-63B：不强制定期更换，仅在怀疑泄露时要求更改。对管理员和高权限角色设置 90 天更换周期（满足等保 2.0 三级审计期望）。技术上用独立 Realm 或分批添加 `Update Password` Required Action 实现。关键原则：**定期更换不如泄露检测重要**——优先部署 `passwordBlacklist`。
 
-### Q2：Keycloak 默认的 PBKDF2 不够安全吗？
+### Q2：Keycloak 默认的哈希算法够安全吗？
 
-PBKDF2-SHA256 with 600k+ iterations 仍然符合 NIST SP 800-63B 的最低要求。但 Argon2id 在以下场景明显更优：
-- GPU/ASIC 暴力破解（Argon2 的内存硬特性使 GPU 攻击成本高 100 倍以上）
-- 密码数据库泄露后的离线攻击窗口
+PBKDF2-SHA256 with 600k+ iterations 仍能满足 NIST SP 800-63B 的要求，OWASP 也把 PBKDF2（HMAC-SHA-256、work factor ≥ 600,000）列为需要 FIPS-140 合规时的推荐算法。Argon2id 的优势在密码库泄露后的离线破解成本：它是内存硬算法，攻击者无法靠便宜的 GPU/ASIC 线性放大猜解速度。
 
-新项目建议直接用 Argon2id。已有项目可以在下次用户改密时自然迁移。
+26.x 默认就是 Argon2id（非 FIPS 环境），所以"要不要切"通常不是问题。真正需要关注的是两件事：**Keycloak 的默认内存参数（7 MiB）低于 OWASP 对 Argon2id 的基线（≥19 MiB）**；以及存量凭据会在用户下次密码登录时自动重哈希，负载集中在首登窗口。算法迁移的完整操作与回滚边界见 [IAM 用户迁移：遗留密码哈希如何迁进 Keycloak]({{< relref "keycloak-password-hash-migration" >}})。
 
 ### Q3：密码黑名单文件要多大？
 
@@ -317,7 +299,7 @@ NIST 建议至少包含前 10,000 个最常见密码。可以从 [Have I Been Pw
 
 ### Q5：密码策略对 API 验证和数据库直接修改都生效吗？
 
-密码策略只在 Keycloak 的认证流程中生效。直接在数据库中修改 `USER_CREDENTIAL` 表不会触发策略校验。API 通过 Admin REST API 重置密码会触发校验。如果通过 `kcadm.sh` CLI 工具设置密码，也会触发策略校验。
+密码策略只在 Keycloak 的认证流程中生效；直接用 SQL 改 `credential` 表的 `credential_data` 不会触发任何校验。API 通过 Admin REST API 重置密码会触发校验。如果通过 `kcadm.sh` CLI 工具设置密码，也会触发策略校验。唯一被设计为绕过策略的是 Admin API 导入**预哈希**凭据（`secretData` + `credentialData`，且不填 `value`），原因见 [IAM 用户迁移：遗留密码哈希如何迁进 Keycloak]({{< relref "keycloak-password-hash-migration" >}})。
 
 ## 延伸阅读
 

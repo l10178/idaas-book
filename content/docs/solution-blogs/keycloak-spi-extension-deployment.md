@@ -297,7 +297,7 @@ curl -s -H "Authorization: Bearer $TOKEN" \
 
 **服务端层（官方步骤）**：卸载 provider 是「从 `providers` 目录删除 JAR 并重新执行 `build`」（官方原文）。在不可变基础设施里等价于：把 `spec.image` 指回上一个镜像 tag，让 Operator 完成滚动更新。
 
-**Realm 层（先做）**：先把 realm 上的引用摘干净——事件配置里的 `eventsListeners`、认证流里的相关 execution、以及依赖该 provider 的 Required Action。引用还在、provider 已消失时，登录链路会在运行时找不到实现而失败，且失败发生在认证过程中，排查窗口很短。
+**Realm 层（先做）**：先把 realm 上的引用摘干净——事件配置里的 `eventsListeners`、认证流里的相关 execution、以及依赖该 provider 的 Required Action。引用还在、provider 已消失时，登录链路会在运行时找不到实现而失败，且失败发生在认证过程中，排查窗口很短。如果下线的正好是 password-hashing SPI（接收遗留哈希的自定义实现），还有一条更隐蔽的边界：realm 密码策略里 `hashAlgorithm` 只要还写着该 provider id，登录路径不会回退到默认 provider，**整个 realm 的密码登录都会失败**，而改密功能看起来仍然正常。配置顺序与退出条件见 [IAM 用户迁移：遗留密码哈希如何迁进 Keycloak]({{< relref "keycloak-password-hash-migration" >}})。
 
 ```bash
 # 1) 摘除 realm 引用并确认
