@@ -221,6 +221,12 @@ kubectl -n keycloak rollout status statefulset/production-keycloak
 - [ ] UMA 部署：授权判定与配置一致；声明式管理的客户端属性无异常漂移。
 - [ ] 常规回归：OIDC 登录、刷新、登出；反向代理后的 issuer 与回调地址未变化。
 
+## 未随本版发布的同类跟踪项：CVE-2026-18569
+
+同一批上报里还有一条**不属于 26.7.x 补丁范围**的 CVE 需要单独跟踪：**CVE-2026-18569**（身份代理方向的登出令牌验签）。当 OIDC 身份代理的 `Validate Signatures` 关闭时，`/realms/{realm}/protocol/openid-connect/logout/backchannel-logout` 会接受 `alg=none` 的伪造登出令牌，可强制登出 brokered 用户并撤销其离线会话（[GHSA-pcf4-9g97-7cpf](https://github.com/advisories/GHSA-pcf4-9g97-7cpf)，2026-08-04）。
+
+状态（2026-09-25 核对）：issue [#51381](https://github.com/keycloak/keycloak/issues/51381) 与修复 PR [#52171](https://github.com/keycloak/keycloak/pull/52171) 均为 open，`main` 上仍是不含修复的代码，修复登记在 `changes-26_8_0.adoc`。含义很直接：**升级到 26.7.4 不会消除它**，而 26.8 起登出令牌改为无条件验签，届时没有公钥材料的部署会出现上游登出无法传播——所以补密钥这件事要排在升级之前，而不是升级之后。受影响配置的盘点、加固与回滚见 [Keycloak 身份代理登出验签：CVE-2026-18569 与 26.8 升级准备]({{< relref "blog/keycloak-broker-logout-token-validation" >}})。
+
 ## 常见误区
 
 **Q1：我不用 MySQL/MariaDB，这一版可以跳过吗？**
