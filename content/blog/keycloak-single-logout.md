@@ -33,6 +33,8 @@ seo:
 
 会话分层、Token 刷新与吊销的整体模型见 [IAM 会话管理]({{< relref "docs/advanced-topics/iam-session-management" >}})；本文只解决「为什么这个客户端没被通知」和「怎么验证通知到了」。
 
+方向相反的那条链路不在本文范围：Keycloak 作为身份代理（IdP brokering）接收**上游 IdP** 发来的登出令牌时，走的是 `TokenManager.validateLogoutTokenAgainstIdpProvider()` → `OIDCIdentityProvider.validateToken()` 这条路径，且从 26.8 起登出令牌**无条件验签**（CVE-2026-18569 的修复）。验签配置的边界、盘点命令与升级准备见 [Keycloak 身份代理登出验签]({{< relref "blog/keycloak-broker-logout-token-validation" >}})。
+
 ## 四种登出机制覆盖的范围不同
 
 | 机制 | 入口/规范 | 由谁发起 | 能覆盖什么 | 覆盖不到什么 |

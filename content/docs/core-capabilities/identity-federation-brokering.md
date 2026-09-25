@@ -191,6 +191,8 @@ Keycloak 内置支持多种 IdP：
 
 创建 IdP 后需要在 Browser Flow 中添加 `Identity Provider Redirector`，用户才能在登录页面看到社交登录按钮。
 
+OIDC 代理还有两个会跨出登录流程的开关：`Validate Signatures` 决定 Keycloak 是否校验上游签发的 ID token / access token；`Issuer` 决定上游发来的 backchannel logout 令牌能否匹配到这个 IdP（匹配后才用 `alias + "." + sub` 或 `alias + "." + sid` 去找该用户在此 IdP 下的会话）。前者的语义在 26.8 变更过一次——**登出令牌从 26.8 起无条件验签**，不再受该开关控制；关着验签又没有公钥材料的部署，升级后会出现上游登出无法传播。受影响配置的盘点、加固与升级准备见 [Keycloak 身份代理登出验签]({{< relref "blog/keycloak-broker-logout-token-validation" >}})。
+
 ### First Login Flow
 
 首次通过外部 IdP 登录时的处理流程：
