@@ -22,6 +22,7 @@ toc: true
 | K8s 环境导入导出 Realm 迁移失败 | 导入导出、Helm、Operator | [K8s 导入导出迁移]({{< relref "blog/keycloak-export-import-on-k8s.md" >}}) |
 | 登录后无限重定向 / 401 Unauthorized | ERR_TOO_MANY_REDIRECTS、Cookie、SameSite | [Keycloak 重定向循环与 401 排错指南]({{< relref "blog/keycloak-redirect-loop-troubleshooting" >}}) |
 | 浏览器报 CORS 错误 / 服务端 403 `Invalid origin` | Web Origins、Origin 头、26.6.3 行为变更 | [IAM 前端跨域排错：Keycloak Web Origins 与 CORS 边界]({{< relref "blog/keycloak-cors-web-origins" >}}) |
+| SAML 应用报 `Client not found.` / `Invalid redirect uri` / 签名校验失败 | SAML Client、EntityID、ACS URL、NameID、签名开关 | [Keycloak 作为 SAML IdP 接入应用]({{< relref "docs/solution-blogs/keycloak-saml-idp-integration" >}}) |
 
 ## 通用排查思路
 
