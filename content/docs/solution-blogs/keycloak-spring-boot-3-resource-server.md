@@ -1,8 +1,8 @@
 ---
-title: "Spring Boot 3 资源服务器接入 Keycloak：IAM 角色映射与 audience 校验 | IDaaS Book"
-description: "Spring Boot 3 / Spring Security 6 作为 Keycloak 资源服务器的落地配置：issuer-uri 与 aud 校验的真实边界、realm_access 与 resource_access 角色映射、Keycloak 26.6.2 起 Introspection 校验 audience 的升级影响，以及 401/403 排错与回滚。"
+title: "Spring Boot 3/4 资源服务器接入 Keycloak：IAM 角色映射与 token 校验 | IDaaS Book"
+description: "Spring Boot 3/4 与 Spring Security 6/7 作为 Keycloak 资源服务器的落地配置：issuer-uri 与 aud 校验的真实边界、realm_access 与 resource_access 角色映射、Security 7 默认校验栈新增的 typ 校验与 Boot 4 starter 改名、Keycloak 26.6.2 起 Introspection 校验 audience 的升级影响，以及 401/403 排错与回滚。"
 date: 2026-09-17T22:30:00+08:00
-lastmod: 2026-09-17T22:30:00+08:00
+lastmod: 2026-09-26T00:00:00+08:00
 draft: false
 weight: 83
 menu:
@@ -11,8 +11,8 @@ menu:
     identifier: "keycloak-spring-boot-3-resource-server"
 toc: true
 seo:
-  title: "Keycloak + Spring Boot 3 资源服务器：IAM 角色映射与 audience 校验"
-  description: "Spring Boot 3 / Spring Security 6 作为 Keycloak IAM 资源服务器的配置与排错：issuer-uri 只校验 iss 不校验 aud、realm_access 与 resource_access 角色映射、401 The aud claim is not valid 与 403 的定位、Keycloak 26.6.2 起 Introspection 校验 audience 的升级影响与回滚。"
+  title: "Keycloak + Spring Boot 3/4 资源服务器：IAM 角色映射与 token 校验"
+  description: "Spring Boot 3/4 与 Spring Security 6/7 作为 Keycloak IAM 资源服务器的配置与排错：issuer-uri 只校验 iss 不校验 aud、realm_access 与 resource_access 角色映射、Boot 4 starter 改名与 Security 7 新增的 typ 校验、401 The aud claim is not valid 与 403 的定位，以及回滚。"
   canonical: ""
   noindex: false
 ---
@@ -27,7 +27,7 @@ seo:
 
 这三件事的共同点是：**校验发生在三个不同的的位置**（Spring Security 的 `JwtDecoder`、Keycloak 的令牌签发逻辑、Keycloak 的 introspection 端点），而官方文档分散在三处。本文把它们放进同一条链路里对齐。
 
-基线：Spring Boot 3.x / Spring Security 6.x + Keycloak 26.7.x。文中涉及的 Keycloak 行为均核对自 26.7 的官方文档与 `keycloak/keycloak` 源码；已迁移到 Spring Security 7 / Spring Boot 4 的项目请以对应版本文档为准（本文不使用 7.x 才有的 API）。
+基线：Spring Boot 3.x / Spring Security 6.x 为主体，Spring Boot 4 / Spring Security 7 的行为差异单列一节（见后文《Spring Boot 4 / Spring Security 7 的差异》）。文中涉及的 Keycloak 行为核对自 26.7 的官方文档与 `keycloak/keycloak` 源码，Spring Security 侧核对自官方参考文档与 `JwtValidators` / `JwtTypeValidator` 源码。
 
 ## 适用与不适用
 
@@ -47,7 +47,9 @@ seo:
 flowchart TD
     A["Authorization: Bearer access_token"] --> B{"JWKS 能取到公钥<br/>且签名验证通过?"}
     B -->|否| E1["401 invalid_token<br/>签名失败 / 拉取 JWKS 失败"]
-    B -->|是| C{"exp / nbf 时间窗口有效?"}
+    B -->|是| B2{"JOSE header 的 typ 在校验器允许集合内?<br/>（Security 6.5+ 默认只接受 JWT 或缺失）"}
+    B2 -->|否| E5["401 invalid_token<br/>Keycloak 开了 at+jwt 开关时命中"]
+    B2 -->|是| C{"exp / nbf 时间窗口有效?"}
     C -->|否| E2["401 Jwt expired at ..."]
     C -->|是| D{"iss 与 issuer-uri 完全一致?"}
     D -->|否| E3["401 Invalid issuer"]
@@ -64,7 +66,7 @@ flowchart TD
 
 三个必须记住的边界：
 
-1. **只配 `issuer-uri` 时 Spring 不校验 `aud`。** 官方文档明确列出默认会做的事：验签、校验 `exp`/`nbf`/`iss`、把 `scope` 映射为 `SCOPE_` 前缀的权限——没有 `aud`。源码层面更直接：`JwtValidators.createDefaultWithIssuer(issuer)` 只组装 `JwtTimestampValidator` + `JwtIssuerValidator`，audience 校验需要额外的 `JwtClaimValidator`。
+1. **只配 `issuer-uri` 时 Spring 不校验 `aud`。** 官方文档明确列出默认会做的事：验签、校验 `exp`/`nbf`/`iss`、把 `scope` 映射为 `SCOPE_` 前缀的权限——没有 `aud`。源码层面：Spring Security 6.2.x 的 `JwtValidators.createDefaultWithIssuer(issuer)` 只组装 `JwtTimestampValidator` + `JwtIssuerValidator`，audience 校验需要额外的 `JwtAudienceValidator` 或 `JwtClaimValidator`。**但这条默认栈在 6.5 之后变长了**：`createDefaultWithValidators` 会在缺省时补入 `JwtTypeValidator.jwt()` 与 `X509CertificateThumbprintValidator`，也就是 JOSE header 的 `typ` 从"不校验"变成"默认校验"，详见 [Spring Boot 4 / Spring Security 7 的差异](#spring-boot-4--spring-security-7-的差异)。
 2. **`jwk-set-uri` 单独使用会让 `iss` 校验一起消失。** Spring Boot 只有在 `issuer-uri` 非空时才添加 `JwtIssuerValidator`（`JwtDecoderConfiguration#getValidator`），所以「为了避开启动时依赖 Keycloak，只写 jwk-set-uri」是拿掉了发卡行校验，不是等价替换。
 3. **`audiences` 属性是「有交集即通过」，不是「全部匹配」。** Boot 的实现是 `hasElementsInCommon(claim, audiences)`，即 `aud` 数组与配置列表存在任一相同值就通过。配了多个值不等于要求 token 同时带上全部值。
 
@@ -80,6 +82,8 @@ flowchart TD
 ```
 
 不要引入 `keycloak-spring-boot-starter` 或任何 Keycloak 专用适配器：资源服务器的能力全部在 Spring Security 里，多一层适配器只会多一份升级负担。
+
+Boot 4 起这个 starter 已改名（`spring-boot-starter-security-oauth2-resource-server`），旧名被标记为弃用，见后文差异一节。
 
 ### application.yml
 
@@ -207,6 +211,64 @@ public class KeycloakAuthoritiesConverter implements Converter<Jwt, Collection<G
 - **`hasRole("iam-admin")` 加的是前缀，不是大写。** `hasRole` 等价于 `hasAuthority("ROLE_" + 参数)`，Keycloak 里的角色名是 `iam-admin`，那么权限就是 `ROLE_iam-admin`。照抄「全部转大写」的写法，会得到 `ROLE_IAM-ADMIN`，与 Keycloak 实际角色永远对不上。
 - **realm 角色与客户端角色不要一起扁平化。** 同一个 realm 里，为别的客户端签发的 token 也会带 `realm_access.roles`。如果本服务的授权只依赖 realm 角色，那就等于把「为一个无关客户端签发的 token」也当成本服务的合法凭据；只有 `aud` 校验到位时这层风险才被关掉。授权边界能收窄就收窄：客户端角色按 `clientId` 取，realm 角色只在确实需要跨客户端统一角色时打开。
 
+## Spring Boot 4 / Spring Security 7 的差异
+
+升级到 Boot 4 后配置骨架不变，但有四处差异会直接表现为构建失败或 401。以下核对自 Spring Boot 4.0 迁移指南、Spring Security 参考文档与 `JwtValidators`/`JwtTypeValidator` 源码。
+
+### 1. starter 改名
+
+| Boot 3 写法（已弃用） | Boot 4 写法 |
+|----------------------|------------|
+| `spring-boot-starter-oauth2-resource-server` | `spring-boot-starter-security-oauth2-resource-server` |
+| `spring-boot-starter-oauth2-client` | `spring-boot-starter-security-oauth2-client` |
+| `spring-boot-starter-web` | `spring-boot-starter-webmvc` |
+
+迁移指南把这些旧 starter 标为弃用、并声明会在后续版本移除；旧名目前仍可解析，所以"依赖没报错"不能证明这步已经做完。Boot 4 的基线也变了：Java 17+、Spring Framework 7、Jakarta EE 11 / Servlet 6.1。
+
+### 2. 旧 DSL 写法编译不过
+
+`.and()` 链式调用、`authorizeRequests()`、`antMatchers()` 在 Spring Security 7 已移除，请求匹配统一到 `requestMatchers(...)`（由 `PathPatternRequestMatcher` 支撑）。这属于好消息：问题暴露在构建期，而不是上线后变成 401。
+
+### 3. 默认校验栈多了 `typ`，会与 Keycloak 的 at+jwt 开关相撞
+
+Spring Security 6.5 起，`JwtValidators.createDefaultWithIssuer(issuer)` 组装的默认栈里包含 `JwtTypeValidator.jwt()`，它**只接受 JOSE header 的 `typ` 为 `JWT` 或缺失**。
+
+Keycloak 26.2 起给每个客户端加了一个开关：Clients → Advanced → Fine grain OpenID Connect configuration → *Use "at+jwt" as access token header type*（默认关闭）。打开后 access token 的 header 变为 `at+jwt` 以符合 RFC 9068——符合规范，但会被上面那条默认栈拒掉，症状是 401 `invalid_token`，且 `error_description` 不会点名 `typ`。
+
+两个容易搞错的地方：
+
+- `typ` 有两个同名值。JOSE header 里的 `typ`（校验对象）和 payload 里的 `typ: "Bearer"`（普通 claim，没有任何组件校验）。用 `jwt.getClaimAsString("typ")` 判断 token 类型是错的。
+- Keycloak 默认签发 `typ: "JWT"`，所以**默认配置下不会命中这个坑**；它只在开了上述开关、或换成按 RFC 9068 严格签发的授权服务器时出现。
+
+确认与修复：
+
+```bash
+# 看 header，不是 payload
+echo "$ACCESS_TOKEN" | cut -d. -f1 | base64 -d 2>/dev/null
+# {"alg":"RS256","typ":"at+jwt","kid":"..."}
+```
+
+```java
+JwtDecoder decoder = NimbusJwtDecoder.withIssuerLocation(issuer).build();
+decoder.setJwtValidator(JwtValidators.createDefaultWithValidators(
+        new JwtTypeValidator("at+jwt")));
+```
+
+`createDefaultWithValidators` 只在列表里找不到同类 validator 时才补默认值，所以这段写法保留了时间戳、`iss` 和 X509 指纹校验，只把 `typ` 的允许集合换成 `at+jwt`。
+
+若打算直接用 `JwtValidators.createAtJwtValidator()`（RFC 9068 校验器），先看它的构建约束：`build()` 要求 `typ`、`exp`、`sub`、`iat`、`jti`、`iss`、`aud`、`client_id` 每一项都有对应 validator，缺一项就断言失败。Keycloak 用 `azp` 表示客户端，不保证出现 `client_id`，这条路径需要把 `client_id` 换成 `azp` 校验——以你所处版本的实际解码结果为准。
+
+### 4. `setJwtValidator` 是替换，不是追加
+
+上面两处自定义 decoder 都用 `createDefaultWithIssuer` / `createDefaultWithValidators` 打底，原因在这里：`setJwtValidator` 会**整体替换**校验栈。写成 `decoder.setJwtValidator(new JwtAudienceValidator(...))` 之后，`iss`、`exp`、`typ` 全都不再校验，而且没有任何日志提醒——这是升级里最容易变成越权的"顺手简化"。
+
+同一个位置还有一层惰性：`issuer-uri` 的发现由 `SupplierJwtDecoder` 延迟到第一个带 JWT 的请求才执行，授权服务器不可用不会拖垮启动；自己声明 `JwtDecoder` `@Bean` 就丢掉了这个特性，官方建议把自定义 decoder 包进 `SupplierJwtDecoder`。
+
+### 升级后要补的两项检查
+
+- **authorities 里会出现 `FACTOR_BEARER`。** Spring Security 7 的认证结果至少包含这个 authority，排错时看到它属于正常现象，别当成配置错误去改代码。
+- **JWKS 缓存默认 5 分钟。** 密钥轮换（`kid` 变化）后，新密钥在最长 5 分钟内可能尚未被实例感知，表现为一小段 401；多实例各自缓存还会让灰度期行为不一致。轮换演练要纳入发布流程，或用 `.cache(CacheManager)` 换成共享缓存。
+
 ## 角色集合是怎么算出来的
 
 Keycloak 官方文档给了明确的交集规则：token 里的角色 = **用户的角色映射** ∩ **客户端可访问的 role scope mappings**。由此有三个反直觉的结果：
@@ -309,6 +371,10 @@ curl -s -u api-orders-introspect:"$KC_INTROSPECTION_SECRET" \
 | 升级后 UserInfo 返回 `401` | 用的是轻量级 access token，26.6.2 起 UserInfo 默认拒绝 | 改用 introspection，或按文档交换为完整 token |
 | 只配 `jwk-set-uri` 时能接受其它 issuer 的 token | `iss` 校验未启用 | 补上 `issuer-uri` |
 | 服务账号 token 没有 `preferred_username` | `client_credentials` 签发，没有用户上下文 | 审计日志按 `azp`/`sub`（`service-account-*`）记录，不要按用户名 |
+| Boot 4 / Security 7 下 `401 invalid_token`，token header 是 `at+jwt` | 默认栈里的 `JwtTypeValidator.jwt()` 只接受 `JWT` 或缺失；Keycloak 客户端开了 at+jwt 开关 | `JwtValidators.createDefaultWithValidators(new JwtTypeValidator("at+jwt"))` |
+| 升级 Boot 4 后配置类编译失败，报找不到 `and()` / `antMatchers()` | Spring Security 7 移除了旧 DSL | 改 lambda 写法，`requestMatchers` 走 PathPattern |
+| 自定义 decoder 后 `iss`、`exp` 校验静默失效 | `setJwtValidator` 替换整个校验栈 | 用 `JwtValidators.createDefaultWithIssuer(issuer)` 包住再追加 validator |
+| 密钥轮换后短暂出现一批 401 | JWKS 缓存默认 5 分钟且各实例独立 | 轮换避开发布窗口；或 `.cache(CacheManager)` 换共享缓存 |
 
 ## 回滚
 
@@ -356,3 +422,10 @@ Adapter 的这个开关控制「取 realm 角色还是取客户端角色」；�
 - Keycloak 升级指南 26.6.2 — *Token introspection now validates audience claim*、*UserInfo endpoint rejects lightweight access tokens*：`allow-token-introspection-without-audience-check` 的服务端与客户端级兼容开关及其弃用状态、轻量级 token 的 `aud` 可能只出现在 introspection 响应中
 - Keycloak 源码 `AudienceProtocolMapper`（`included.client.audience` / `included.custom.audience`）与 Admin UI 文案 `included.custom.audience.tooltip`：两个 audience 字段的互斥优先级与追加语义
 - Keycloak 源码 `OIDCLoginProtocolFactory.CONFIG_ALLOW_TOKEN_INTROSPECTION_WITHOUT_AUDIENCE_CHECK`：兼容开关的配置键名
+- [Spring Boot 4.0 迁移指南](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Migration-Guide)：*Deprecated Starters* 一节给出 `spring-boot-starter-oauth2-resource-server` → `spring-boot-starter-security-oauth2-resource-server` 的改名与移除计划；同页给出 Java 17+ / Spring Framework 7 / Jakarta EE 11 基线
+- Spring Security 源码 `oauth2/oauth2-jose/.../JwtValidators.java`（main 分支）：`createDefaultWithValidators` 在缺省时补入 `JwtTypeValidator.jwt()` 与 `X509CertificateThumbprintValidator`；`createAtJwtValidator().build()` 要求 `typ`/`exp`/`sub`/`iat`/`jti`/`iss`/`aud`/`client_id` 均有 validator
+- [JwtTypeValidator API](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/JwtTypeValidator.html)：`jwt()` 要求 `typ` 为 `JWT` 或缺失，`setAllowEmpty` 默认 `false`
+- [JwtAudienceValidator API](https://docs.spring.io/spring-security/site/docs/current/api/org/springframework/security/oauth2/jwt/JwtAudienceValidator.html)：6.5 起提供，构造参数为单个 audience
+- Spring Security 参考文档 — *OAuth 2.0 Resource Server JWT*：`issuer-uri` 的发现由 `SupplierJwtDecoder` 延迟到首个带 JWT 的请求、JWK Set 默认缓存 5 分钟并可用 `Cache` 替换、认证成功后的 authorities 至少包含 `FACTOR_BEARER`
+- [Keycloak 26.2 Release Notes](https://www.keycloak.org/2025/04/keycloak-2620-released)：*Use "at+jwt" as access token header type* 客户端开关默认关闭
+- [RFC 9068](https://www.rfc-editor.org/rfc/rfc9068.txt)：JWT access token 的 `typ`、`aud`、`client_id` 要求，以及资源服务器必须校验 `typ` 的规定
