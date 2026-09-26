@@ -287,7 +287,9 @@ Nextcloud 用 **Social login / OIDC 插件**：
 
 ## 小结
 
-Keycloak 与开源生态的集成主要分三条路：**原生 OIDC**（Grafana、GitLab、Harbor、Vault、MinIO、Nextcloud 等）、**前置 OAuth2 Proxy**（任意 Web 服务、K8s Ingress），以及 **LDAP/AD 用户联邦**（保留现有目录服务作为权威用户源）。掌握这三条路、五步通用流程与 Protocol Mapper 的 claim 映射，即可把一整套开源软件和目录服务统一纳入 SSO。集成中遇到具体报错，参见 [常见问题排查]({{< relref "docs/keycloak/troubleshooting/_index.md" >}})。关于 LDAP/AD 联邦的完整配置步骤，参见 [Keycloak LDAP / AD 用户联邦实战指南]({{< relref "docs/solution-blogs/keycloak-ldap-ad-federation" >}})。
+Keycloak 与开源生态的集成主要分三条路：**原生 OIDC**（Grafana、GitLab、Harbor、Vault、MinIO、Nextcloud 等）、**前置 OAuth2 Proxy**（任意 Web 服务、K8s Ingress），以及 **LDAP/AD 用户联邦**（保留现有目录服务作为权威用户源）。掌握这三条路、五步通用流程与 Protocol Mapper 的 claim 映射，即可把一整套开源软件和目录服务统一纳入 SSO。还有一类软件必须单独走一条路：**只实现 SAML 2.0、不提供 OIDC 的存量系统**（OA、ERP、采购的 SaaS、SAML 版报表与监控平台）。它在 Keycloak 侧建的是 SAML 客户端，字段与上面五步完全不同——Keycloak 用请求里的 `Issuer` 匹配 Client ID，断言投递地址要在 Valid Redirect URIs 与 Fine Grain 端点之间做回退，NameID 的生成规则与签名开关也另有语义。这条路径的字段对应关系、错误对照表与回滚顺序见 [Keycloak 作为 SAML IdP 接入应用]({{< relref "keycloak-saml-idp-integration" >}})。
+
+集成中遇到具体报错，参见 [常见问题排查]({{< relref "docs/keycloak/troubleshooting/_index.md" >}})。关于 LDAP/AD 联邦的完整配置步骤，参见 [Keycloak LDAP / AD 用户联邦实战指南]({{< relref "docs/solution-blogs/keycloak-ldap-ad-federation" >}})。
 
 [oauth2-proxy]: https://oauth2-proxy.github.io/oauth2-proxy/
 [jenkins-oidc]: https://plugins.jenkins.io/oic-auth/

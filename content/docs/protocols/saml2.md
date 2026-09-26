@@ -314,6 +314,8 @@ IdP 使用自己的私钥对断言进行数字签名，SP 用 IdP 元数据中�
 3. 将 IdP 元数据提供给 SP 提供方
 4. 双方测试 SSO 流程
 
+元数据对齐只说明「双方互相认识」；实际失败大多发生在 IdP 侧的客户端字段上：Keycloak 用 AuthnRequest 的 `Issuer` 反查客户端，断言投递地址有四级回退顺序，NameID 的取值规则与 SP 请求里的 NameIDPolicy 存在优先级关系，签名开关又有两个互相独立的位置。这些字段与 SP 概念的对应关系、错误文案对照表和回滚顺序见 [Keycloak 作为 SAML IdP 接入应用]({{< relref "../solution-blogs/keycloak-saml-idp-integration" >}})。
+
 ## 7.6 常见实现场景
 
 ### 企业 SSO（AD FS + SaaS 应用）
