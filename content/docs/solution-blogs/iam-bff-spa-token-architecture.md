@@ -47,6 +47,7 @@ seo:
 
 - **PKCE 和架构选择是两件事。** RFC 10017 §6.3.2.1 要求公客户端必须实现 PKCE，但 PKCE 防的是授权码被拦截后由别的客户端兑换，**不防页面上的恶意 JavaScript**。BCP 第 5 章把后者的攻击路径写得非常直白：`Persistent Token Theft`（持久化存储被读）与 `Acquisition and Extraction of New Tokens`（攻击者代码用同样的方式再要一组新 Token）。这类攻击下，前端持有 Refresh Token 基本等于长期失守。
 - **浏览器 OAuth 客户端并没有被废弃**，只是它的安全前提是「Token 只放内存、Access Token 短命、不做长期持久登录」。要让用户关掉浏览器再回来还登录着，就得接受 Refresh Token 落到浏览器存储——这正是 BFF 存在的理由。
+- **Next.js / Auth.js 的默认 JWT 会话不在上面这三类里。** 它由服务端完成换码与刷新（像 BFF），但 Token 存在**客户端加密 Cookie** 里、服务端无状态（不像 BFF 的「Token 只在服务端」）。安全前提是 JWE 加密 + `HttpOnly`，代价是拿不到服务端撤销能力，并发刷新也没有跨实例的串行化。这条路线的问题定位见 [Next.js Auth.js 对接 Keycloak 的 IAM 客户端接入](/blog/nextjs-authjs-keycloak-oidc/)。
 - **`oauth2-proxy` 三者都不是。** 它是身份感知反向代理（PEP），职责是「入口认证 + 把身份信息交给上游」，不是 RFC 10017 里的应用架构。它可以在你的部署里充当 BFF 的近似替代（浏览器不持 Token），但边界在于：它不做面向多个资源服务的 Access Token 分发与 audience 隔离。要看这层边界的具体配置，见 [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive" >}}) 与 [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}})。
 
 > 判断方法很简单：**问「谁在调 Token Endpoint」**。是浏览器里的 JavaScript → 第三种模式；是服务端组件 → BFF 或 TMB；根本没人调（只用 Cookie 头做认证）→ 你在用网关模式，不是 BFF。

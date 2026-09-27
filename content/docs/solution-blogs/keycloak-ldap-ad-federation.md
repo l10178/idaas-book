@@ -1,6 +1,6 @@
 ---
-title: "Keycloak LDAP / Active Directory 用户联邦 — 配置、同步与排错 | IDaaS Book"
-description: "Keycloak 对接企业 LDAP 和 Active Directory 的完整实战指南：连接配置、用户搜索与同步策略、属性映射、组导入与排错"
+title: "IAM 目录对接：Keycloak LDAP / Active Directory 用户联邦与同步 | IDaaS Book"
+description: "IAM 目录对接实战：Keycloak 对接企业 LDAP 与 Active Directory 的连接配置、用户搜索与同步策略、属性映射、组导入与常见排错"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false
