@@ -280,4 +280,4 @@ kubectl -n keycloak patch keycloak production-keycloak \
 - [Keycloak Supported Features（`stateless` 为 Preview 特性）](https://www.keycloak.org/server/features)
 - [Keycloak 升级指南](https://www.keycloak.org/docs/latest/upgrading/index.html)
 
-相关章节：[OAuth 2.0 DPoP 深度解析]({{< relref "../protocols/oauth2-dpop" >}})、[Keycloak Token Exchange 实战]({{< relref "../solution-blogs/keycloak-token-exchange" >}})、[Keycloak MFA / 多因子认证]({{< relref "../keycloak/security-features/mfa/index" >}})、[Keycloak 生产巡检与运维清单]({{< relref "keycloak-operations-checklist" >}})。
+相关章节：[Keycloak 升级与零停机滚动更新]({{< relref "keycloak-upgrade-rolling-update" >}})、[OAuth 2.0 DPoP 深度解析]({{< relref "../protocols/oauth2-dpop" >}})、[Keycloak Token Exchange 实战]({{< relref "../solution-blogs/keycloak-token-exchange" >}})、[Keycloak MFA / 多因子认证]({{< relref "../keycloak/security-features/mfa/index" >}})、[Keycloak 生产巡检与运维清单]({{< relref "keycloak-operations-checklist" >}})。
