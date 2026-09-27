@@ -32,7 +32,7 @@ toc: true
 你的团队用 GitHub → 但 Grafana 只支持 OIDC
 ```
 
-Dex 解决的就是这个 **协议翻译** 问题。它不是 IAM 平台（Keycloak 才是），它是 IAM 协议桥梁。
+Dex 解决的就是这个 **协议翻译** 问题。它不是 IAM 平台（Keycloak 才是），它是 IAM 协议桥梁。需要区分的是：Argo CD 自身就能直连 OIDC 提供方，只有当上游是 SAML/LDAP 时才需要 Dex 这一层——两条路线的取舍见 [Argo CD 接入 Keycloak OIDC]({{< relref "keycloak-argocd-oidc-sso" >}}) 的 FAQ Q2。
 
 ## Dex vs 同类工具
 

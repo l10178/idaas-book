@@ -249,4 +249,4 @@ Grafana 侧的 SSO 回滚比 Keycloak 侧轻，但仍要留一条后路：
 - [Grafana v13.2.2 发布](https://github.com/grafana/grafana/releases/tag/v13.2.2)（本文核对时的最新发布版本）
 - [Keycloak Server Administration Guide](https://www.keycloak.org/docs/latest/server_admin/index.html)（client scope、Group Membership mapper、角色 claim 结构）
 
-相关章节：[Keycloak 细粒度权限与授权策略实战]({{< relref "keycloak-fine-grained-authz" >}})、[Spring Boot 3 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})、[OAuth 2.1 变化解读]({{< relref "../protocols/oauth2.1-changes.md" >}})、[Keycloak 单点登出不彻底排查](/blog/keycloak-single-logout/)。
+相关章节：[Keycloak 细粒度权限与授权策略实战]({{< relref "keycloak-fine-grained-authz" >}})、[Argo CD 接入 Keycloak OIDC]({{< relref "keycloak-argocd-oidc-sso" >}})（另一种映射语法：Casbin RBAC 与 `full.path` 取舍）、[Spring Boot 3 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})、[OAuth 2.1 变化解读]({{< relref "../protocols/oauth2.1-changes.md" >}})、[Keycloak 单点登出不彻底排查](/blog/keycloak-single-logout/)。
