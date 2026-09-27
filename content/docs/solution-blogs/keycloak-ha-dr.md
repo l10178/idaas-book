@@ -248,6 +248,8 @@ curl -s -X POST https://sso.example.com/realms/myrealm/protocol/openid-connect/t
 
 恢复后如果打不开管理控制台，通常不是数据库恢复失败，而是恢复点里没有可用的管理员凭据（例如备份取自密码轮换之前，或强化认证凭据在恢复后不匹配）。这种情形的恢复路径是停节点后执行 `kc.sh bootstrap-admin`，而不是重新恢复数据库，具体见 [Keycloak 管理员账号进不去：bootstrap-admin 恢复与 26.x 变量变更]({{< relref "blog/keycloak-admin-account-recovery" >}})。
 
+**同一套流程也是升级回滚的唯一路径**：Keycloak 升级后数据库 schema 只能前滚，退回旧版本要恢复旧安装再按上面的步骤恢复数据库；升级前必须先判定这次能不能滚动、以及哪些变更会强制停机，见 [Keycloak 升级与零停机滚动更新]({{< relref "keycloak-upgrade-rolling-update" >}})。
+
 ## 常见错误与排错
 
 | 症状 | 根因 | 排错命令 |

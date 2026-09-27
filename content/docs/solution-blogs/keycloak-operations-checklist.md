@@ -186,6 +186,20 @@ curl -s "https://keycloak.example.com/admin/realms/{realm}/roles/realm-admin/use
 - 是否有异常的 IP 来源（如境外 IP 操作管理后台）
 - `DELETE` 操作是否有对应的审计记录
 
+### 13. 升级窗口准备（按需触发）
+
+每次准备升级 Keycloak 前过一遍，其中的判定必须用真实二进制跑，不要按印象决定要不要排停机窗口：
+
+- [ ] 在旧版本上生成元数据：`kc.sh update-compatibility metadata --file=/tmp/kc-compat.json`，配置项与生产完全一致（从 Deployment/StatefulSet 的 env 或 Operator CR 导出，不要凭记忆敲）
+- [ ] 在新版本上判定：`kc.sh update-compatibility check --file=/tmp/kc-compat.json`，退出码 `0` 可滚动、`3` / `4` 必须停机
+- [ ] 本次变更是否包含 `--db*`、`--cache*` 或特性开关？包含则一定停机，且不要与版本升级合并成一次变更
+- [ ] Operator 部署：确认 `spec.update.strategy` 不是默认的 `RecreateOnImageChange`（默认策略下 image tag 一变就是重建停机）
+- [ ] 负载均衡遵循 readiness probe；节点关闭日志里有 `Keycloak stopped in ...s`
+- [ ] 数据库备份已生成、并在隔离环境验证过可恢复（这是唯一的回滚手段）
+- [ ] 变更窗口已包含「恢复数据库」的耗时，而不是「回退镜像」的耗时
+
+判定命令、强制停机的变更清单与回滚顺序见 [Keycloak 升级与零停机滚动更新：IAM 升级判定、数据库迁移与回滚]({{< relref "keycloak-upgrade-rolling-update" >}})。
+
 ## 告警规则速查
 
 建议在 Prometheus AlertManager 中配置以下规则：
