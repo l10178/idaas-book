@@ -26,6 +26,7 @@ seo:
 1. 用户在应用 A 点退出，随后访问应用 B，仍然是登录状态。
 2. 用户从应用点退出后被带回 Keycloak，却停在 “You are logged out” 页面，没有跳回 `post_logout_redirect_uri`。
 3. 走 oauth2-proxy 的应用里，访问 `/oauth2/sign_out` 后再打开应用，直接免登又进去了。
+4. Next.js / Auth.js 的应用里点了退出、再点登录，**没输密码就进去了**——`signOut()` 只删自己的会话 Cookie，从不调用 Keycloak 的登出端点，所以 Keycloak 的 SSO Cookie 还在（这条链路的定位与修复见 [Next.js Auth.js 对接 Keycloak 的 IAM 客户端接入](/blog/nextjs-authjs-keycloak-oidc/)）。
 
 **适用**：Keycloak 26.x 的 OIDC 客户端，浏览器应用或 oauth2-proxy 之类的认证网关；想弄清 RP-Initiated Logout 与 Back-Channel / Front-Channel Logout 各自负责哪一层会话。
 

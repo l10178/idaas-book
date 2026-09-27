@@ -20,6 +20,7 @@ sidebar:
 - 入口控制器退役迁移：[IAM 入口迁移：ingress-nginx 退役后的 Keycloak 认证网关落地]({{< relref "ingress-nginx-retirement-iam-migration" >}})（`auth-url` 等认证注解不在 `ingress2gateway` 转换范围内，三条替代路线的差异、验证与回滚）
 - 网格内（东西向）零信任接入：[Istio + Keycloak JWT 认证与 IAM 授权]({{< relref "istio-keycloak-jwt-authz" >}})（RequestAuthentication + AuthorizationPolicy，含 istiod 拉取 JWKS 的刷新窗口与 `audiences` 校验边界）
 - 应用与后端接入：[Spring Boot 3/4 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})（IAM 角色映射、audience 与 Security 7 的 typ 校验）、[Keycloak Adapter 弃用迁移]({{< relref "keycloak-adapter-migration" >}})（服务端 Web 应用）、[客户端认证方式选型与凭据轮换]({{< relref "keycloak-client-authentication-credentials" >}})（服务间调用的 secret / private_key_jwt / mTLS）
+- 前端框架接入（本文档外，见 Blog）：[Next.js + Auth.js 对接 Keycloak 的 IAM 客户端接入](/blog/nextjs-authjs-keycloak-oidc/)（access_token 不自动刷新导致「Session 还在、后端全 401」、并发刷新下同一个 `invalid_grant` 与 BFF 场景含义不同、`signOut()` 不结束 Keycloak SSO 会话）
 - 自带 OIDC 客户端的应用接入：[Grafana 的角色映射]({{< relref "grafana-keycloak-oidc-sso" >}})、[Argo CD 的 groups claim 与 Casbin RBAC]({{< relref "keycloak-argocd-oidc-sso" >}})（confidential/PKCE 路线选择、CLI `--sso` 回调、`policy.default` 边界）
 - AI Agent / MCP 接入：[Keycloak 作为 MCP 授权服务器]({{< relref "keycloak-mcp-authorization-server" >}})（`resource` 参数与 aud 绑定、实验特性 `resource-indicators` 的过滤语义、CIMD 对接 VS Code / Claude Code）
 - 报错定位（已移入 Blog）：[oauth2-proxy 常见错误](/blog/oauth2-proxy-common-errors/)、[Keycloak 重定向循环与 401](/blog/keycloak-redirect-loop-troubleshooting/)、[单点登出不彻底](/blog/keycloak-single-logout/)、[身份代理方向登出令牌不验签](/blog/keycloak-broker-logout-token-validation/)、[会话超时](/blog/keycloak-session-timeouts/)、[管理员账号进不去](/blog/keycloak-admin-account-recovery/)、[CORS 与 Web Origins](/blog/keycloak-cors-web-origins/)、[Token 体积与 Cookie 膨胀](/blog/keycloak-token-size-oauth2-proxy-cookies/)、[`--optimized` 报 build time options 不一致](/blog/keycloak-optimized-build-options/)、[域内免登（Kerberos/SPNEGO）不生效](/blog/keycloak-kerberos-spnego-ad-sso/)
@@ -45,7 +46,7 @@ sidebar:
 | [Keycloak 审计日志配置与 IAM 合规实践]({{< relref "keycloak-audit-logging-compliance" >}}) | 登录审计、管理员事件、Syslog/ELK 导出、等保 2.0 对齐、事件数据库维护 |
 | [Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}}) | OIDC, audience, CSRF, redirect loop, Nginx Ingress, ForwardAuth |
 | [oauth2-proxy 深度介绍]({{< relref "../implementation/oauth2-proxy-deep-dive.md" >}}) | 架构原理、Provider 选型、Cookie/Session、安全加固、与 Pomerium/Traefik/Nginx 对比 |
-| [Keycloak LDAP / AD 用户联邦]({{< relref "keycloak-ldap-ad-federation" >}}) | LDAPS 连接、用户搜索与同步策略、属性映射、组导入、AD 与 OpenLDAP 差异、常见错误排错 |
+| [IAM 目录对接：Keycloak LDAP / AD 用户联邦]({{< relref "keycloak-ldap-ad-federation" >}}) | LDAPS 连接、用户搜索与同步策略、属性映射、组导入、AD 与 OpenLDAP 差异、常见错误排错 |
 | [Keycloak Adapter 弃用迁移指南]({{< relref "keycloak-adapter-migration" >}}) | 从 Keycloak Adapter 迁移到标准 OIDC 库（Spring Security、openid-client、authlib），逐语言迁移路径、角色映射、Token Refresh、常见踩坑与回滚 |
 | [Keycloak Prometheus 监控指标详解]({{< relref "keycloak-prometheus-metrics" >}}) | metrics 端点启用、ServiceMonitor 采集、Grafana Dashboard 21997、关键告警规则与常见排错 |
 | [Keycloak 生产巡检与运维清单]({{< relref "keycloak-operations-checklist" >}}) | 日常健康检查、监控告警阈值、证书管理、IAM 运维应急响应、月度审计与性能基线 |

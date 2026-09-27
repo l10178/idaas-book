@@ -120,6 +120,8 @@ Keycloak 文档在角色章节里给的定位是：Role Scope Mappings 用来限
 
 这是最值得先知道的一个数字：**oauth2-proxy 的内部上限是 4000 字节，不是浏览器的 4096。**
 
+换一个组件，阈值就换一套：Auth.js 在会话 Cookie 超过约 4096 字节时会自行分片（`authjs.session-token.0`、`.1`），把 access_token / refresh_token / id_token 一起放进加密 JWT 的场景要做同样的体积预算，分片本身还会牵连网关层的 Cookie 转发（见 [Next.js Auth.js 对接 Keycloak 的 IAM 客户端接入](/blog/nextjs-authjs-keycloak-oidc/)）。
+
 源码 `pkg/sessions/cookie/session_store.go` 里的常量与注释写得很清楚：Cookie 的 4KB 限制覆盖名称、值和属性，浏览器普遍上限是 4096，所以它给自己留了余量，取 4000：
 
 ```go
