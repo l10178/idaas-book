@@ -231,7 +231,7 @@ graph TB
 
 在 Keycloak Realm Settings → Keys → 选择 RS256/ES256/EdDSA。**生产环境推荐 ES256**（更短的签名，相同的安全强度）。
 
-Keycloak 默认使用 RS256，密钥轮换时会自动在 JWK Set 中保留旧公钥一段时间，使已签发的 Token 在有效期内仍可验证。
+Keycloak 默认使用 RS256。轮换密钥时旧公钥**不会自动**"保留一段时间"——只要旧 provider 仍处于启用状态（`Active=Off` 的被动密钥），它的公钥就继续出现在 JWK Set 里，从而让已签发的 Token 在有效期内仍可验证；一旦禁用或删除该 provider，公钥立刻从 JWK Set 消失。轮换顺序与各验签方的 JWKS 缓存默认值见 [IAM 签名密钥轮换排错]({{< relref "blog/keycloak-key-rotation-kid-jwks-cache" >}})。
 
 ### 2. 自定义 Claims（Client Scope + Mapper）
 
@@ -261,7 +261,7 @@ https://<keycloak-host>/realms/<realm>/protocol/openid-connect/certs
 
 JWT 库（如 `jwks-rsa`、`java-jwt`）会自动从这个端点获取公钥，按 `kid` 匹配。
 
-下面速查表里的 JWK 缓存 TTL 是**应用侧**的建议区间（5-15 分钟）。如果公钥由代理或服务网格代你拉取，这个窗口就不在你手里：Istio 默认由 istiod 获取 JWKS 并以 inline 形式下发，正常刷新周期是 20 分钟，拉取失败则进入 fail-closed 状态并指数退避重试。密钥轮换和启动顺序受此影响，机制与时间常量见 [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "docs/solution-blogs/istio-keycloak-jwt-authz" >}})。
+JWK 缓存 TTL 没有一个放之四海的建议值，先看你这一层是**自己控制缓存还是别人控制**：自己控制（Spring Security 默认 5 分钟、Envoy `remote_jwks.cache_duration` 默认 10 分钟、nginx 的 `auth_jwt_key_cache` 默认不缓存）时，它决定的是"轮换后多久能传播到所有验签方"；由代理或服务网格代你拉取时，这个窗口就不在你手里：Istio 默认由 istiod 获取 JWKS 并以 inline 形式下发，正常刷新周期是 20 分钟，拉取失败则进入 fail-closed 状态并指数退避重试。各组件默认值的来源与轮换窗口的推导见 [IAM 签名密钥轮换排错：Keycloak 的 kid、JWKS 缓存与切换顺序]({{< relref "blog/keycloak-key-rotation-kid-jwks-cache" >}})，Istio 的机制与时间常量见 [Istio + Keycloak JWT 认证与 IAM 授权落地]({{< relref "docs/solution-blogs/istio-keycloak-jwt-authz" >}})。
 
 ## JWT 最佳实践速查
 
@@ -272,7 +272,7 @@ JWT 库（如 `jwks-rsa`、`java-jwt`）会自动从这个端点获取公钥，�
 | 验证所有标准声明 | `iss`/`aud`/`exp`/`nbf`/`iat` 逐个检查 |
 | 白名单算法 | 代码中 hardcode 允许的 `alg` 列表 |
 | 不存敏感数据 | JWT 的 Payload 是 Base64 编码，不是加密，任何人可解码读取 |
-| JWK 缓存 | 缓存 JWK Set，避免每次请求都拉取（缓存 TTL 建议 5-15 分钟） |
+| JWK 缓存 | 缓存 JWK Set，避免每次请求都拉取；TTL 决定轮换的传播延迟（Spring Security 默认 5 分钟、Envoy 默认 10 分钟），按可接受的传播延迟调整，而不是照抄别人的值 |
 | 密钥轮换 | JWK Set 中保留旧公钥，确保已签发 Token 在有效期内可验证 |
 | Token 绑定 | 生产环境考虑 DPoP 或 mTLS 做 Sender-Constrained Token |
 | 日志脱敏 | 记录 JWT 到日志时，去掉 Signature 部分（只保留 Header.Payload） |

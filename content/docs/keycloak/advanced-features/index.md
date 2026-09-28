@@ -169,10 +169,12 @@ Keycloak 原生支持多租户，有两种主流模式：
 
 Realm 使用非对称密钥签名 OIDC Token。生产应建立轮换机制：
 
-- Realm → **Keys** → 配置 `Active` / `Passive` 密钥对，可同时存在多对。
-- 新增一对并设为 `Passive`（用于验证旧 token），稳定后切 `Active`（开始用新密钥签发）。
-- 旧密钥保留一个 token 有效期，再下线，避免签发中的 token 验证失败。
-- 对接方应使用 **JWKS URL**（`/realms/{realm}/protocol/openid-connect/certs`）自动获取公钥，**不要硬编码公钥**。
+- Realm → **Keys** 可同时存在多对密钥，状态由两个开关组合决定：`Active`（是否可用于签名）与 `Enabled`（是否启用）。
+- 当前签名密钥不是"设为 Active 的那一对"，而是**按优先级排序后第一个能提供 active 密钥的 provider**（`Priority` 数值越大越优先）；一对密钥可以是 `Active` 却仍不是当前签名密钥。
+- JWKS（`/realms/{realm}/protocol/openid-connect/certs`）只按"启用且持有公钥"过滤，因此**被动密钥（`Active=Off`、`Enabled=On`）的公钥仍在发布**，可以继续验证存量令牌；而 `Enabled=Off` 会让公钥从 JWKS 消失，正在流通的旧令牌立即验签失败。
+- 对接方应使用 **JWKS URL** 自动获取公钥，**不要硬编码公钥**。
+
+轮换顺序与等待时间的推导（为什么"删旧建新"一定会掉线、每个验签方缓存多久、误禁用后如何一键恢复）见 [IAM 签名密钥轮换排错：Keycloak 的 kid、JWKS 缓存与切换顺序]({{< relref "blog/keycloak-key-rotation-kid-jwks-cache" >}})。
 
 ## 从 WildFly 迁移到 Quarkus 要点
 

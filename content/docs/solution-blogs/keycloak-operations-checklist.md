@@ -111,7 +111,7 @@ Keycloak 涉及多类证书，任一过期都会导致服务不可用：
 echo | openssl s_client -servername idaas.example.com -connect idaas.example.com:443 2>/dev/null | openssl x509 -noout -enddate
 ```
 
-Keycloak 的 Realm 密钥有 `active` 和 `passive` 两种状态。轮换时先将新密钥设为 `passive`，确认所有客户端验证通过后再激活。
+Keycloak 的 Realm 密钥有两组开关：`Active`（是否可用于签名）与 `Enabled`（是否启用）。轮换时应先把新密钥加入并保持 `Active=Off`（被动：公钥已发布、不参与签名），确认验签方都已刷新到新公钥后，再通过**优先级**让它成为签名密钥；旧密钥先留在被动状态，等超过最大令牌寿命与离线令牌刷新周期后再禁用或删除。直接禁用（`Enabled=Off`）会让公钥立刻从 JWKS 消失，正在流通的令牌立即验签失败。轮换顺序与等待时间的推导见 [IAM 签名密钥轮换排错]({{< relref "blog/keycloak-key-rotation-kid-jwks-cache" >}})。
 
 ### 7. 数据库连接池
 
@@ -307,13 +307,14 @@ Keycloak 本身没有一键巡检命令。但可以从以下三个维度组合�
 
 ### Q3：IAM 证书轮换时如何做到不中断服务？
 
-Keycloak 的 Realm 密钥支持多密钥共存：
-1. 创建新密钥，初始状态为 `PASSIVE`（只用于验证，不用于签名）
-2. 等待所有客户端和 IdP 获取到新密钥（通常 24 小时内，取决于缓存）
-3. 将新密钥切换为 `ACTIVE`，旧密钥保持 `PASSIVE`（继续验证已签发的 Token）
-4. 等待旧 Token 全部过期后（取决于 Token 最大有效期），再删除旧密钥
+Keycloak 的 Realm 密钥支持多密钥共存，但"新密钥设为 PASSIVE 等 24 小时"这个说法漏了两个关键点：被动密钥的公钥**是**发布出去的（JWKS 只按"启用且有公钥"过滤），所以新密钥设为被动即可让验签方提前拿到；而新密钥要成为签名密钥由 **provider 优先级**决定，不是把 `Active` 打开就行。完整顺序：
 
-这个流程在 [Keycloak 官方密钥轮换文档](https://www.keycloak.org/docs/latest/server_admin/#rotating-keys) 中有完整描述。
+1. 新建密钥 provider，保持 `Active=Off`（被动：公钥已发布、不参与签名）；
+2. 等待超过**所有验签方的 JWKS 缓存上界**（Spring Security 默认 5 分钟、Envoy 默认 10 分钟、Istio 侧见对应文章，取最大值并留余量）；
+3. 提高它的优先级使其成为签名密钥，旧密钥保持被动；
+4. 等超过 Access Token 寿命、SSO 会话空闲上限与离线令牌刷新周期后，再禁用或删除旧密钥。
+
+第 4 步之前不要禁用旧密钥：`Enabled=Off` 会让公钥立刻从 JWKS 消失。各组件默认值的来源、误禁用后的恢复路径与不可回滚的 not-before 推送见 [IAM 签名密钥轮换排错：Keycloak 的 kid、JWKS 缓存与切换顺序]({{< relref "blog/keycloak-key-rotation-kid-jwks-cache" >}})，官方流程见 [Keycloak 密钥轮换文档](https://www.keycloak.org/docs/latest/server_admin/#rotating-keys)。
 
 ### Q4：如何评估 Keycloak 需要扩容？
 
