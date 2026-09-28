@@ -236,10 +236,10 @@ Harbor 原生支持 OIDC（Configuration → Authentication → OIDC）：
 | OIDC Endpoint | `https://kc.example.com/realms/myrealm` |
 | OIDC Client ID | harbor |
 | OIDC Client Secret | SECRET |
-| OIDC Scope | openid,profile,email,groups |
+| OIDC Scope | openid,profile,email,offline_access |
 | Group Claim Name | groups |
 
-要点：开启 `Verify Certificate`；用 `groups` claim 映射 Harbor 项目成员角色，实现按组授权镜像仓库。
+要点：`groups` 不是 Keycloak 的默认 client scope，写进 OIDC Scope 会被授权端点以 `invalid_scope`（`Invalid scopes: groups`）拒绝——组 claim 是否输出只取决于 mapper，不取决于这个 scope 名。`offline_access` 要留，Harbor 的 CLI secret 依赖 refresh token。用 `groups` claim 映射 Harbor 项目成员角色即可实现按组授权镜像仓库；Harbor 侧的字段语义（`OIDC Admin Group` 的逐字符比较、Group Filter 是非锚定正则、组记录在成员首次登录时才落库）与完整排错路径见 [Harbor 接入 Keycloak OIDC：IAM 单点登录与组权限映射排错]({{< relref "keycloak-harbor-oidc-sso" >}})。
 
 ## MinIO
 

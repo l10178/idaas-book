@@ -248,7 +248,7 @@ public class SecurityConfig {
 - **Node.js**：`openid-client`
 - **Rust**：`openidconnect-rs`
 
-另有一类应用自带 OIDC 客户端（Grafana、Jenkins、Harbor、Argo CD 等），配置点是「应用自己的配置项 + Keycloak 侧 client 与 claim」，而不是写代码。这类接入的难点通常不在认证流程，而在**角色/组 claim 到应用内角色的映射**——Keycloak 输出的 `realm_access.roles`、`groups` 是嵌套或分组结构，应用的映射表达式各有一套语法。以 Grafana 为例的完整配置与映射对照见 [Grafana 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/grafana-keycloak-oidc-sso" >}})；Argo CD 用 Casbin 语法的 RBAC 表达式，组名要求逐字符匹配，配置与排错见 [Argo CD 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/keycloak-argocd-oidc-sso" >}})。
+另有一类应用自带 OIDC 客户端（Grafana、Jenkins、Harbor、Argo CD 等），配置点是「应用自己的配置项 + Keycloak 侧 client 与 claim」，而不是写代码。这类接入的难点通常不在认证流程，而在**角色/组 claim 到应用内角色的映射**——Keycloak 输出的 `realm_access.roles`、`groups` 是嵌套或分组结构，应用的映射表达式各有一套语法。以 Grafana 为例的完整配置与映射对照见 [Grafana 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/grafana-keycloak-oidc-sso" >}})；Argo CD 用 Casbin 语法的 RBAC 表达式，组名要求逐字符匹配，配置与排错见 [Argo CD 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/keycloak-argocd-oidc-sso" >}})；Harbor 只读一个组 claim、组名同样逐字符比较，且组记录在成员首次登录时才落库，见 [Harbor 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/keycloak-harbor-oidc-sso" >}})。
 
 ## 18.6 协议选择指南
 
