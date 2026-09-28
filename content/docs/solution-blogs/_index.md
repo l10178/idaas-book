@@ -16,7 +16,7 @@ sidebar:
 
 **按场景直达：**
 
-- 入口网关选型：[Envoy Gateway 原生 OIDC]({{< relref "envoy-gateway-oidc-keycloak" >}})（Gateway API）、[Keycloak + oauth2-proxy]({{< relref "keycloak-oauth2-proxy" >}})（Nginx Ingress auth-url）、[Traefik ForwardAuth]({{< relref "traefik-forwardauth-keycloak" >}})
+- 入口网关选型：[Envoy Gateway 原生 OIDC]({{< relref "envoy-gateway-oidc-keycloak" >}})（Gateway API）、[APISIX openid-connect]({{< relref "apisix-keycloak-oidc-gateway" >}})（网关插件，含 `authz-keycloak` 授权边界与 Kong 对照）、[Keycloak + oauth2-proxy]({{< relref "keycloak-oauth2-proxy" >}})（Nginx Ingress auth-url）、[Traefik ForwardAuth]({{< relref "traefik-forwardauth-keycloak" >}})
 - 入口控制器退役迁移：[IAM 入口迁移：ingress-nginx 退役后的 Keycloak 认证网关落地]({{< relref "ingress-nginx-retirement-iam-migration" >}})（`auth-url` 等认证注解不在 `ingress2gateway` 转换范围内，三条替代路线的差异、验证与回滚）
 - 网格内（东西向）零信任接入：[Istio + Keycloak JWT 认证与 IAM 授权]({{< relref "istio-keycloak-jwt-authz" >}})（RequestAuthentication + AuthorizationPolicy，含 istiod 拉取 JWKS 的刷新窗口与 `audiences` 校验边界）
 - 应用与后端接入：[Spring Boot 3/4 资源服务器接入 Keycloak]({{< relref "keycloak-spring-boot-3-resource-server" >}})（IAM 角色映射、audience 与 Security 7 的 typ 校验）、[Keycloak Adapter 弃用迁移]({{< relref "keycloak-adapter-migration" >}})（服务端 Web 应用）、[客户端认证方式选型与凭据轮换]({{< relref "keycloak-client-authentication-credentials" >}})（服务间调用的 secret / private_key_jwt / mTLS）
@@ -81,6 +81,7 @@ sidebar:
 | [IAM BFF 模式与 SPA Token 安全：架构选择与并发刷新排错]({{< relref "iam-bff-spa-token-architecture" >}}) | RFC 10017 三种浏览器端架构（BFF / Token-Mediating Backend / 浏览器 OAuth 客户端）、Session Cookie 与 CSRF 硬性要求、Keycloak 刷新轮换的 `reuse_id` 语义、并发刷新 `invalid_grant` 排错、单飞刷新实现与回滚 |
 | [Keycloak Hostname v2 配置与 v1 选项迁移]({{< relref "keycloak-hostname-v2-config" >}}) | hostname v1 移除清单、v1→v2 选项映射、backchannel 行为反转、四种拓扑最小配置、Operator CR 字段、启动校验错误文本、issuer/邮件链接排错与回滚 |
 | [Keycloak PAR 实战：IAM 授权请求参数不再走浏览器 URL]({{< relref "keycloak-par-pushed-authorization-requests" >}}) | RFC 9126、`require.pushed.authorization.requests` vs fapi-2 `secure-par-content`、`request_uri` 60 秒有效期与消费时机、`Pushed Authorization Request is only allowed.` 排错、oauth2-proxy / Dex / kube-apiserver 支持现状、回滚 |
+| [APISIX 接入 Keycloak：IAM 网关认证与授权排错]({{< relref "apisix-keycloak-oidc-gateway" >}}) | `openid-connect` 与 `authz-keycloak` 的职责边界、`redirect_uri` 子路径约束、`X-ID-Token` 是 base64 claims 而非 JWT、`session.secret` 与 `ssl_verify` 的版本差异、`session_contents` 的反向回填、滚动发布掉线、Kong OSS 无官方 OIDC 插件 |
 | [Keycloak 反向代理真实客户端 IP 与代理信任边界]({{< relref "keycloak-proxy-client-ip-trust" >}}) | `proxy-headers` / `proxy-trusted-addresses` 默认行为、passthrough 与 PROXY protocol 互斥、`$proxy_add_x_forwarded_for` 追加语义、ingress-nginx `use-forwarded-headers` 语义、请求头清洗清单、伪造头验证与回滚顺序 |
 | [Keycloak + OpenFGA：IAM 细粒度授权 ReBAC 落地]({{< relref "keycloak-openfga-rebac" >}}) | Audience mapper 字段与默认值、`authn.oidc.*` 必填项、仅 RS256 的源码级约束、`sub` vs `preferred_username` 作为权限主体、Write API 非幂等、CVE-2026-55689 排查与回滚 |
 | [Keycloak OpenTelemetry 追踪接入与 IAM 采样成本控制]({{< relref "keycloak-opentelemetry-tracing" >}}) | `tracing-enabled` / `tracing-jdbc-enabled` / `tracing-sampler-type` 的 build time 源码依据、`--optimized` 下配置值不一致直接启动失败、默认采样率 1.0 与 JDBC span 成本、日志 traceId 与 `sampled` 标志、信号专属 OTLP 端点不补 `/v1/traces`、Operator CR 与回滚 |

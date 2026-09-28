@@ -330,6 +330,7 @@ kubectl delete securitypolicy myapp-oidc
 - [IAM 网关：Keycloak + oauth2-proxy 集成指南]({{< relref "keycloak-oauth2-proxy" >}})：Nginx Ingress auth-url 模式的对照实现
 - [IAM 入口认证：Traefik ForwardAuth + Keycloak]({{< relref "traefik-forwardauth-keycloak" >}})：Traefik 侧的 ForwardAuth 对照实现
 - [Pomerium Core 代理认证实战]({{< relref "pomerium-core-keycloak-proxy-auth" >}})：身份感知代理路线的对照实现
+- [APISIX 接入 Keycloak：IAM 网关认证与授权排错]({{< relref "apisix-keycloak-oidc-gateway" >}})：API 网关插件路线的对照实现，认证（`openid-connect`）与授权（`authz-keycloak`）拆成两个插件、两套 discovery 文档
 - [IAM 集成模式与实践]({{< relref "../implementation/integration-patterns" >}})：网关模式在整体集成模式里的位置
 - [零信任与身份驱动安全]({{< relref "../advanced-topics/zero-trust-identity" >}})：入口认证与后端授权的边界划分
 

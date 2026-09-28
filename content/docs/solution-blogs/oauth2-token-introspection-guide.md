@@ -392,7 +392,7 @@ Introspection 返回的字段由授权服务器控制，默认不含 PII（个�
 
 ### Q3：Kong / APISIX 的 OIDC 插件是不是就做了 Introspection？
 
-Kong 的 `kong-oidc` 插件、APISIX 的 `openid-connect` 插件在认证阶段主要做 OIDC Authorization Code Flow（登录），而不是 Token Introspection。但它们通常也支持 Bearer Token 验证——验证方式就是 Introspection。在 APISIX 中配置：
+先分清两件事：**登录**（Authorization Code Flow，网关当 RP）和 **Token 校验**（Bearer 验签或 introspection）是插件里的两条路径，不是同一个功能。APISIX 的 `openid-connect` 属于前者为主、后者可切换：
 
 ```yaml
 plugins:
@@ -403,7 +403,7 @@ plugins:
     bearer_only: true   # 仅验证 Bearer Token，不触发登录跳转
 ```
 
-`bearer_only: true` 时，APISIX 对每个请求做 Introspection。
+`bearer_only: true` 时，APISIX 对每个请求做 Introspection。更准确的条件是：插件在 `bearer_only`、`introspection_endpoint`、`public_key`、`use_jwks` 任一为真时才走「取 Bearer 并校验」这条路径，而其中只要配了 `use_jwks` 或 `public_key` 就变成 JWKS 本地验签，Introspection 并不发生。Kong 侧的命名容易误导：社区版的 `kong-oidc` 仓库已归档，官方 `openid-connect` 插件属 Kong Gateway Enterprise，Kong OSS 的插件目录里只有 `jwt` / `oauth2` / `session`。两个网关的完整配置、版本差异与排错表见 [APISIX 接入 Keycloak：IAM 网关认证与授权排错]({{< relref "apisix-keycloak-oidc-gateway" >}})。
 
 ### Q4：Introspection 对性能的影响有多大？能撑多少 QPS？
 

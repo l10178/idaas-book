@@ -100,6 +100,10 @@ spec:
 
 取舍与上面的网关模式一致：后端零改动、授权粒度粗。区别是少了独立组件和一跳，代价是要求 confidential client（`clientSecret` 是必填字段），且 `redirectURL` / `logoutPath` 必须落在被保护 HTTPRoute 的 host + path 前缀内。完整模板、字段默认值与升级注意事项见 [Envoy Gateway 原生 OIDC + Keycloak 落地与排错]({{< relref "docs/solution-blogs/envoy-gateway-oidc-keycloak" >}})。
 
+### API 网关插件（APISIX）
+
+入口本来就是 APISIX 时，OIDC 是插件而不是独立组件：`openid-connect` 以 Relying Party 身份完成授权码流程，会话存在浏览器 cookie 里（数据面无状态，滚动升级不掉线），后端读网关注入的 `X-Userinfo`。它和 APISIX 内置的 `authz-keycloak` 是两个插件、两套 discovery 文档：前者负责登录，后者只接受已有 token 做 UMA 权限判定，不会跳登录页。把「认证」和「授权」混在一层是这套组合最常见的失败方式，插件配置、版本差异（`ssl_verify` 默认值、会话密钥轮换）与排错表见 [APISIX 接入 Keycloak：IAM 网关认证与授权排错]({{< relref "docs/solution-blogs/apisix-keycloak-oidc-gateway" >}})。
+
 ## 18.3 BFF 模式（Backend For Frontend）
 
 BFF 模式是 SPA 和移动应用的推荐模式：
