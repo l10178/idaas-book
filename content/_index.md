@@ -30,6 +30,7 @@ seo:
 | OIDC 和 OAuth 2.0 的区别是什么？ID Token 里有什么？ | [OpenID Connect]({{< relref "docs/protocols/openid-connect.md" >}}) — 认证层协议完整拆解 |
 | SAML 还在用吗？和 OIDC 怎么选？ | [SAML 2.0]({{< relref "docs/protocols/saml2.md" >}}) + [方案对比]({{< relref "docs/implementation/other-idaas-solutions.md" >}}) |
 | Keycloak 怎么在生产环境部署？Operator 还是 Helm？ | [Keycloak 架构]({{< relref "docs/keycloak/_index.md" >}}) + [K8s 生产部署]({{< relref "docs/implementation/kubernetes-production.md" >}}) |
+| 单机房整个集群掉线就全站无法登录，怎么做跨机房双活？ | [Keycloak 跨机房多集群高可用]({{< relref "docs/solution-blogs/keycloak-multi-cluster-ha.md" >}}) — multi-cluster v2 / `stateless`、站点探活与 v1 迁移边界 |
 | 升级 Keycloak 26 后启动失败、issuer 变成内网地址、邮件链接不对？ | [Hostname v2 配置与 v1 选项迁移]({{< relref "docs/solution-blogs/keycloak-hostname-v2-config.md" >}}) — 选项映射 + 校验错误对照 |
 | 反向代理后面的 Keycloak 记不到真实客户端 IP，审计日志里全是代理地址？ | [反向代理真实客户端 IP 与信任边界]({{< relref "docs/solution-blogs/keycloak-proxy-client-ip-trust.md" >}}) — `proxy-headers` / `proxy-trusted-addresses`、PROXY protocol 与伪造头自测 |
 | 点了退出，另一个应用还是登录状态？ | [IAM 单点登出排错]({{< relref "blog/keycloak-single-logout.md" >}}) — RP-Initiated / Back-Channel 分工、互斥开关与验证清单 |

@@ -78,6 +78,8 @@ bin/kc.sh update-compatibility check --file=/tmp/kc-compat.json
 | `persistent-user-sessions:v1` | 在线用户会话跨重启与升级持久化 |
 | `stateless:v1` | stateless 模式（认证会话、action token、登录失败数据存数据库，多集群只靠数据库连通） |
 
+> 这两个特性都属于「跨机房多集群」这条线：`multi-site` 是 v1 方案（依赖外部 Infinispan 跨站点复制与围栏自动化），`stateless` 是 Keycloak 26.7 起的 v2 方案（去掉外部 Infinispan，改用同步复制数据库 + outbox 分发缓存失效）。切换它们不只是配置变更，还牵扯站点级停机、数据库容量翻倍和部分易失数据丢失，规划升级前先读 [Keycloak 跨机房多集群高可用与 IAM 双活部署]({{< relref "keycloak-multi-cluster-ha" >}})。
+
 **特性版本变更 → 需要停机（例如从 `login:v1` 切到 `login:v2`）：** `login:v1`、`login:v2`、`passkeys-conditional-ui-authenticator:v1`。
 
 **缓存相关选项变更 → 需要停机：**

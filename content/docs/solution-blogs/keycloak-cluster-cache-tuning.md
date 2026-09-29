@@ -343,6 +343,10 @@ Infinispan 是 Keycloak 项目中长期使用的嵌入式分布式数据网格�
 
 Distributed 缓存的 Session 数据在写入时同步到 owner 节点（无延迟），非 owner 节点按需远程读取（有网络延迟）。如果配置了会话亲和性，绝大多数请求不需要远程读取。
 
+### Q: 跨机房双活还需要外部 Infinispan 吗？
+
+取决于架构版本。multi-cluster v1 需要**每个站点部署一套外部 Infinispan 集群**并配置跨站点复制（`cache-remote-host` 等参数），还要额外的围栏自动化来避免脑裂；Keycloak 26.7 引入的 multi-cluster v2（`stateless` 特性，Preview）把认证会话、action token、登录失败计数搬进数据库，跨集群缓存失效改走数据库 outbox 表，**不再需要外部 Infinispan**，代价是数据库负载约翻倍。两者的完整对比、迁移步骤与回滚边界见 [Keycloak 跨机房多集群高可用与 IAM 双活部署]({{< relref "keycloak-multi-cluster-ha" >}})。
+
 ### Q: owners=2 会加倍内存占用吗？
 
 会。每个 Session Entry 在集群中有 2 个副本，分布在 2 个不同节点。但好处是任一节点宕机时 Session 不丢失。建议在 3 节点以上集群中设置 `owners=2`。

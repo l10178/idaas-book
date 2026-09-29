@@ -126,7 +126,7 @@ type: Opaque
 stringData:
   password: "<smtp-password>"
 ---
-apiVersion: k8s.keycloak.org/v2alpha1
+apiVersion: k8s.keycloak.org/v2beta1
 kind: Keycloak
 metadata:
   name: keycloak
