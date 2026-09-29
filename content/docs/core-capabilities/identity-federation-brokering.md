@@ -187,6 +187,8 @@ Keycloak 内置支持多种 IdP：
 | Twitter/X | 社交登录 |
 | LinkedIn | 社交登录 |
 
+接入 Entra ID（Azure AD）时有两个入口，能力并不等价：内置的 **Microsoft** 走的是 OAuth2 社交路线，用户档案取自 Graph `/me`，默认 scope 只有 `User.read`，因此既没有 ID token 也没有组信息，无法把 Entra 的组映射成 Keycloak 组；要做基于组的授权，需要用 **OpenID Connect v1.0** 直连同一个应用注册。两条路线的边界、Entra 组声明在用户组数超限时的静默失效，以及多租户 `iss` 校验，见 [Keycloak 联邦 Microsoft Entra ID：IAM 组声明与权限映射排错]({{< relref "../solution-blogs/keycloak-entra-id-federation" >}})。
+
 ### 配置要点
 
 创建 IdP 后需要在 Browser Flow 中添加 `Identity Provider Redirector`，用户才能在登录页面看到社交登录按钮。
