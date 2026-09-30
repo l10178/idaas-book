@@ -214,6 +214,10 @@ https://auth.example.com/realms/<realm>/login-actions/reset-credentials?token=<t
 
 验证邮件的 Token 有效期受 Realm Settings → Tokens → **Verify email** 控制。
 
+### 邮件发得出去、但语言不对
+
+SMTP 通了不等于文案正确，这是两条独立链路：语言由 **email 主题的 message bundle** 决定，而每个邮件有 Subject / Body / BodyHtml 三条消息，缺哪条哪条回退英文。典型现象是「标题中文、正文英文」或「登录页中文、邮件英文」。排查方法（含 `emailTestSubject` 免等邮件验证、message bundle 覆盖优先级与回滚）单独写在 [Keycloak 中文界面与邮件本地化排错]({{< relref "keycloak-localization-chinese-ui-email" >}})。
+
 ### 邮件未收到的排查顺序
 
 1. **Test connection 是否通过**（第一步）
