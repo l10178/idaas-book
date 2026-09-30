@@ -63,7 +63,7 @@ Keycloak 26.7.0 于 2026 年 7 月 9 日发布，是 26.x 系列中功能密度�
 26.7.0 不只是“打开几个新特性”。官方升级说明列出了一些会影响既有配置或管理脚本的变化，建议把下面的检查放在滚动升级之前：
 
 1. **Identity Provider alias 不再允许修改**：如果自动化脚本会通过 Admin REST API 改 alias，先改为“新建并迁移引用”的流程。已有 alias 不要在升级窗口里重命名。
-2. **X.509 Client Authentication 需要 Certificate Authority subject DN**：26.7.0 的管理界面要求配置该值；旧配置暂时保持兼容，但下一主版本会在服务端强制校验。使用 TLS 终止代理转发客户端证书时，还要确认 Keycloak 的 truststore 能验证完整证书链，不能只信任一个未验证的请求头。
+2. **X.509 Client Authentication 需要 Certificate Authority subject DN**：26.7.0 的管理界面要求配置该值；旧配置暂时保持兼容，但下一主版本会在服务端强制校验。使用 TLS 终止代理转发客户端证书时，还要确认 Keycloak 的 truststore 能验证完整证书链，不能只信任一个未验证的请求头。用户侧证书登录（Browser flow 认证器、身份来源映射、免密确认页）与代理 lookup provider 的完整落地见 [Keycloak X.509 客户端证书登录]({{< relref "keycloak-x509-client-certificate-auth" >}})。
 3. **`view-system` 管理角色已移除**：升级前搜索用户、服务账号和组的角色映射。需要读取完整服务器信息的账号应位于 `master` realm，并被谨慎授予 `manage-realm`，不要用它替换成更宽的管理员权限。
 4. **Authorization Services 的 URI 模板校验更严格**：重点检查空占位符（如 `/api/{}/x`）、中间通配符（如 `/api/*/x`）和多余右花括号。旧数据可能暂时保留，但下一次更新该资源时会被拒绝。
 5. **`dynamic-scopes` 改名为 `parameterized-scopes`**：启动参数、部署清单和 Helm values 中若仍使用旧名称，应在升级前替换；创建参数化 scope 时还需要声明参数类型。
