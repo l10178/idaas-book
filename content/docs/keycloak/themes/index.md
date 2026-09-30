@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 登录主题定制 — 品牌化登录页与自定义 UI 开发 | IDaaS Book"
-description: "Keycloak 主题定制实战：login/account/admin/email 四类主题、FreeMarker 模板、中文化、CSS/JS 覆盖及 Keycloakify React 方案"
+description: "Keycloak 主题定制实战：login/account/admin/email/welcome 五类主题、FreeMarker 模板、中文化与 message bundle、CSS/JS 覆盖及 Keycloakify React 方案"
 date: 2024-04-01T00:00:00+08:00
 draft: false
 weight: 11
@@ -15,16 +15,17 @@ Keycloak 的界面层由 **Themes（主题）** 驱动，基于 FreeMarker（FTL
 
 ## 主题类型
 
-Keycloak 内置四类主题，可分别独立覆盖：
+Keycloak 内置五类主题，可分别独立覆盖：
 
 | 主题类型 | 作用域 | 对应 URL | 说明 |
 |---------|--------|----------|------|
 | `login` | 登录 / 注册 / OTP / 忘记密码等认证流程页 | `/realms/{realm}/protocol/openid-connect/auth` | 最常定制的一类 |
 | `account` | 用户账户自助中心 | `/realms/{realm}/account` | 用户管理凭证、设备、会话 |
-| `admin` | 管理控制台（Angular SPA） | `/admin` | 仅能微调，不建议深度改 |
-| `email` | 邮件正文模板 | 邮件通知 | 纯文本/HTML 模板 |
+| `admin` | 管理控制台 | `/admin` | 仅能微调，不建议深度改 |
+| `email` | 邮件正文模板 | 邮件通知 | 纯文本/HTML 两类模板，邮件文案另有独立 message bundle |
+| `welcome` | 服务器默认页（首次启动创建管理员） | `/` | 不关联 realm，**不在 Realm 设置的 Themes 页里**，只能用启动参数 `--spi-theme--welcome-theme=<name>` 指定 |
 
-> 自 Keycloak 17（Quarkus）起，Account Console v2 已迁移为基于 React 的 SPA，仅支持通过主题资源做有限覆盖；登录主题仍是 FreeMarker，定制自由度最高。
+> 账户中心与管理控制台都是前端 SPA（官方文档明确指出两者共用 `index.ftl` 渲染），主题层只能做有限的资源覆盖；登录主题仍是 FreeMarker，定制自由度最高。
 
 ## 主题目录结构
 
@@ -120,17 +121,18 @@ body {
 
 ## 消息与国际化（中文化）
 
-Keycloak 的文案来自 **message bundle**。新建 `messages_*.properties` 即可覆盖或补充翻译：
+Keycloak 的文案来自 **message bundle**。新增 `messages_<LOCALE>.properties` 即可覆盖或补充翻译，但**文件名后缀就是 locale 代码**，且必须在 `theme.properties` 的 `locales` 里声明：
 
 ```
 themes/mybrand/login/
+├── theme.properties                 # locales=en,zh-Hans
 └── messages/
     ├── messages.properties          # 默认（英文）
-    └── messages_zh_CN.properties    # 简体中文
+    └── messages_zh_Hans.properties  # 简体中文
 ```
 
 ```properties
-# messages_zh_CN.properties
+# messages_zh_Hans.properties（只写要改的 key，其余继承父主题）
 username=用户名
 password=密码
 doLogIn=登录
@@ -141,14 +143,16 @@ errorInvalidUser=用户名或密码错误
 kcErrorTitle=出错了
 ```
 
-> **技巧**：Keycloak 自带的中文翻译偏机翻、不符合国人习惯。先从官方 base 主题拷贝 `messages_zh_CN.properties` 全量覆盖，再逐条润色，是社区最常用做法（也是本书项目发起的初衷之一）。
+> **先说一个容易踩的坑**：26.x 官方仓库里**没有** `messages_zh_CN.properties`——自建主题基于 `parent=keycloak` 继承时，能命中的官方中文包叫 `messages_zh_Hans.properties`。两者是不同的 locale：同时存在时 `zh_Hans` 的条目优先，所以只写 `zh_CN` 的覆盖看起来「文件放对了却没生效」。
+>
+> **技巧**：Keycloak 自带的中文翻译混着台港惯用词（实测登录包里 `帐号` 出现 10 次、`账号` 0 次）。从官方 base 主题拷 `messages_zh_Hans.properties` 全量覆盖再逐条润色，是社区最常用做法（也是本书项目发起的初衷之一）。文件本体、缺失 key 清单、locale 解析优先级与邮件只翻一半的原因，见 [Keycloak 中文界面与邮件本地化排错]({{< relref "keycloak-localization-chinese-ui-email" >}})。
 
 ### 多语言切换
 
-在 Realm → Themes 中可分别指定 `Internationalization Enabled = ON`，并在主题中渲染语言下拉：
+在 Realm → Themes 中可分别指定 `Internationalization Enabled = ON`，并在主题中渲染语言下拉。base 登录主题 `template.ftl` 的原始判断是**两个条件**，只判断开关会得到一个「i18n 已开但没有语言入口」的页面：
 
 ```html
-<#if realm.internationalizationEnabled>
+<#if realm.internationalizationEnabled && locale.supported?size gt 1>
   <div class="locale">
     <#list locale.supported as l>
       <a href="${l.url}">${l.label}</a>
@@ -156,6 +160,8 @@ kcErrorTitle=出错了
   </div>
 </#if>
 ```
+
+`locale.supported` 只包含在 `theme.properties` 的 `locales=` 里声明过、且该主题类型确实存在对应 `messages_*.properties` 的语言——所以「登录页有下拉、账户中心没有」通常是后者没配。三种主题类型（login / account / email）都要各自声明，官方文档对此有明确要求。
 
 ## 邮件主题定制
 
@@ -170,6 +176,8 @@ kcErrorTitle=出错了
 | `identity-provider-link.ftl` | 身份提供商账号关联 |
 
 可用的变量包括 `${user.username}`、`${realm.displayName}`、`${link}`、`${linkExpiration}` 等。
+
+邮件**正文文案不在 `.ftl` 里**，而在 email 主题的 message bundle：每个邮件有 **Subject / Body（纯文本）/ BodyHtml** 三条消息，HTML 邮件客户端默认渲染的是 BodyHtml。只改了 `.ftl` 或只补了纯文本 Body，用户邮箱里看到的仍是英文——多语言邮件的完整处理见 [Keycloak 中文界面与邮件本地化排错]({{< relref "keycloak-localization-chinese-ui-email" >}})。
 
 ## 现代方案：用 Keycloakify 以 React 编写主题
 
