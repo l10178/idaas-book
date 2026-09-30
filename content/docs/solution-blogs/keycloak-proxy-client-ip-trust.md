@@ -234,7 +234,7 @@ K8s 上改 `KC_PROXY_TRUSTED_ADDRESSES` 后，等 `rollout status` 完成，再�
 | 启动报配置错误 | `proxy-headers` 与 `proxy-protocol-enabled` 同时设置 | 按拓扑二选一 |
 | passthrough 下 IP 是代理地址 | 只做了透传，没有开 PROXY protocol | 代理开启 `send-proxy-v2` 类指令 + Keycloak `--proxy-protocol-enabled=true` |
 | URL 少端口、回调或 issuer 出现 `https://host/` | 26.2 起 `X-Forwarded-Host` 不带端口时，推导结果也不带端口 | 代理显式设置 `X-Forwarded-Port`；或直接固定完整的 `--hostname` |
-| 通过头转发客户端证书的方式在代理后失效 | 26.2 起内置 X509 客户端证书查找会遵循 `proxy-trusted-addresses`；代理不可信时头里的证书不再被处理 | 把代理地址加入白名单；26.7 起该场景还要求 truststore / mTLS 配置正确，HAProxy 侧改用 `--spi-x509cert-lookup--haproxy--ssl-cert-chain`（`ssl-cert-chain-prefix` 已弃用） |
+| 通过头转发客户端证书的方式在代理后失效 | 26.2 起内置 X509 客户端证书查找会遵循 `proxy-trusted-addresses`；代理不可信时头里的证书不再被处理，lookup 会打 `HTTP header "…" is not trusted` 并返回 null，流程按「没有证书」继续 | 把代理地址加入白名单；26.7 起该场景还要求 truststore / mTLS 配置正确，HAProxy 侧改用 `--spi-x509cert-lookup--haproxy--ssl-cert-chain`（`ssl-cert-chain-prefix` 已弃用）；provider 选择、头名、编码与链长见 [Keycloak X.509 客户端证书登录]({{< relref "keycloak-x509-client-certificate-auth" >}}) |
 | 滚动更新期间偶发登录中断 | 健康检查窗口长于 `shutdown-delay` | 把 `--shutdown-delay` 提到覆盖代理检测窗口（官方 passthrough 蓝图用 30s） |
 | 部分 Pod 的 IP 正确、部分不对 | 多副本配置不一致 | 逐副本核对参数，不要只抽查一个实例 |
 

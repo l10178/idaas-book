@@ -293,3 +293,4 @@ Keycloak 接受五个值中的任意一个：realm issuer URL、token endpoint�
 - [ClientSecretRotationExecutorFactory.java](https://github.com/keycloak/keycloak/blob/26.7.4/services/src/main/java/org/keycloak/services/clientpolicy/executor/ClientSecretRotationExecutorFactory.java)——Preview 特性门控与三个参数的默认值
 - [RFC 7523](https://datatracker.ietf.org/doc/html/rfc7523)——JWT 作为客户端认证断言的规范依据；[RFC 9440](https://datatracker.ietf.org/doc/html/rfc9440)——`Client-Cert` / `Client-Cert-Chain` 头
 - [Keycloak 26.7.4 安全补丁解读与 IAM 升级判断]({{< relref "keycloak-26-7-4-security-patch" >}})——stateless 模式下断言重放防护失效的根因
+- [Keycloak X.509 客户端证书登录：IAM mTLS 认证与代理证书链转发排错]({{< relref "keycloak-x509-client-certificate-auth" >}})——用户侧浏览器证书登录的认证器默认值、身份来源映射、免密确认页与代理转发证书链重建，与本文的 `client-x509` 客户端认证互补
