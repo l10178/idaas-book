@@ -170,12 +170,12 @@ Microsoft 支持两种模式：**多租户**（任何 Microsoft 账号）和**�
 
 **第三步：可选——限定租户**
 
-如果需要只允许特定组织的 Microsoft 账号登录，在 Keycloak 的 Microsoft IdP 配置中添加 Mapper：
-```
-Mapper Type: Hardcoded role
-设置特定角色要求
-```
-或通过 Tenant ID 限定：在 provider 的 Authorization URL 中追加 `?tenant=<tenant-id>`（需要自定义 provider URL）。
+需要只允许特定组织的 Microsoft 账号登录时，在 Microsoft IdP 的配置里填 **Tenant ID**（源码 `MicrosoftIdentityProviderFactory` 的 `tenantId` 配置项）：填了就用单租户端点，留空则用 `common` 多租户端点。
+
+注意两件事：
+
+1. `common`、`organizations`、`consumers` 在 `MicrosoftIdentityProvider.isTenantRestricted` 里一律被视为**不限制租户**——留空意味着任何 Entra 租户的账号都能登录，不是「稍后再收紧」。要限制就在 `tenantId` 里写具体租户 ID。
+2. **这个 provider 不能用于基于组的授权。** 它默认 scope 只有 `User.read`（不含 `openid`），用户档案直接取自 Graph `/me`，没有 ID token 可做 claim 映射；而且 `oidc-advanced-group-idp-mapper` 的兼容列表里没有 `microsoft`，Admin 界面不会给出组映射选项。需要把 Entra 的组映射成 Keycloak 组（进而驱动下游 RBAC）时，改用通用 OIDC Provider 接入同一个应用注册，落地细节见 [Keycloak 联邦 Microsoft Entra ID：IAM 组声明与权限映射排错]({{< relref "keycloak-entra-id-federation" >}})。
 
 **Microsoft 特有的坑：**
 

@@ -1,6 +1,6 @@
 ---
-title: "Keycloak Redis 会话缓存：Session 跨节点共享与集群性能优化 | IDaaS Book"
-description: "Keycloak 集群 Redis 外部会话缓存配置指南：解决 Session 丢失、重复登录问题，对比 Infinispan 内嵌模式与 Redis 外部模式的适用场景，含 Kubernetes 部署示例与排错清单"
+title: "Keycloak Redis 会话缓存：IAM 集群 Session 共享与性能优化 | IDaaS Book"
+description: "IAM 集群会话缓存实战：Keycloak 外挂 Redis 共享 Session，解决多节点 Session 丢失与反复重登；对比 Infinispan 内嵌模式与 Redis 外部模式的适用场景，含 Kubernetes 部署示例与排错清单"
 date: 2026-07-12T00:00:00+08:00
 draft: false
 weight: 60
@@ -13,7 +13,7 @@ toc: true
 
 ## 场景
 
-你把 Keycloak 从单节点扩到 3 节点，以为高可用搞定了。第二天用户反馈：同一个浏览器，刷几次页面就要重新登录。检查日志发现 Session 在节点 A 上创建，但下次请求被负载均衡打到节点 B——节点 B 不认识这个 Session，直接 401。
+你把 Keycloak 从单节点扩到 3 节点，以为高可用搞定了。第二天用户反馈：同一个浏览器，刷几次页面就要重新登录。检查日志发现 Session 在节点 A 上创建，但下次请求被负载均衡打到节点 B——节点 B 不认识这个 Session，直接 401。这是 IAM 集群化之后最先暴露的一类故障：**会话状态没有跟着节点一起变分布式**。
 
 Keycloak 默认用 Infinispan 做分布式缓存，节点间通过 JGroups 同步数据。但 Infinispan 在 Kubernetes 环境中有几个常见痛点：Pod 重启后缓存丢失、JGroups 发现偶尔分裂、跨区域延迟让同步变慢。**外挂 Redis 把 Session 数据放到独立缓存层，让每个 Keycloak 节点变成无状态**——Pod 随便重启，Session 还在 Redis 里。
 

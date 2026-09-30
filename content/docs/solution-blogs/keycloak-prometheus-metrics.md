@@ -1,6 +1,6 @@
 ---
-title: "Keycloak Prometheus 监控指标详解 — 启用、采集与告警 | IDaaS Book"
-description: "Keycloak 24+ Prometheus 监控指标配置：metrics 端点启用、Kubernetes ServiceMonitor 采集、Grafana Dashboard 导入与告警规则排错"
+title: "Keycloak Prometheus 监控指标与 IAM 告警配置 | IDaaS Book"
+description: "Keycloak 24+ Prometheus 监控与 IAM 告警：metrics 端点启用、Kubernetes ServiceMonitor 采集、Grafana Dashboard 导入与告警规则排错"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false

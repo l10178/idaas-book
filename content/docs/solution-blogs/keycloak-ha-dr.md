@@ -1,6 +1,6 @@
 ---
-title: "Keycloak 高可用集群部署与灾难恢复实战 | IDaaS Book"
-description: "Keycloak 多节点集群部署、JGroups 发现机制、数据库备份恢复策略、InfiniSpan 缓存一致性与生产环境 HA 故障演练流程"
+title: "Keycloak 高可用集群与 IAM 灾难恢复实战 | IDaaS Book"
+description: "IAM 生产环境中的 Keycloak 高可用：多节点集群部署、JGroups 发现机制、数据库备份恢复策略、InfiniSpan 缓存一致性与故障演练流程"
 date: 2026-07-09T00:00:00+08:00
 lastmod: 2026-07-09T00:00:00+08:00
 draft: false
@@ -60,9 +60,11 @@ graph TB
     KC1_CACHE <-->|JGroups 分布式缓存| KC2_CACHE
 ```
 
-**关键理解**：Keycloak 的 Session 数据存在两个地方——数据库是持久化的（离线 token、持久 session），InfiniSpan 分布式缓存是内存/近缓存（在线 session）。节点挂了，在线 session 从其他节点的 InfiniSpan 缓存中恢复；如果整个集群都挂了，持久化的 session 从数据库恢复。
+**关键理解**：Keycloak 26.x 的会话数据分两类存放。**用户会话与 client 会话默认落库**（`persistent-user-sessions` 特性默认启用），认证会话（`authenticationSessions`）、action token、登录失败计数只存在 Infinispan 分布式缓存里。因此节点故障时在线会话可以从其他缓存副本或数据库恢复；但如果所有节点在同一瞬间丢失，进行中的认证流程、action token 和暴力破解计数会一起丢失，进行中的登录需要重来。
 
 > 关于缓存层的深度调优——`cache-ispn.xml` 参数详解、传输栈选型对比、`owners` 参数调优、Istio 服务网格兼容方案、常见缓存故障排错，参见 [Keycloak 集群缓存深度调优与排错指南]({{< relref "keycloak-cluster-cache-tuning" >}})。
+>
+> 需要容忍「整个 Kubernetes 集群 / 机房掉线」而不只是节点级故障时，单集群不够用，见 [Keycloak 跨机房多集群高可用与 IAM 双活部署]({{< relref "keycloak-multi-cluster-ha" >}})。
 
 ## 节点发现：JGroups 配置
 
@@ -74,7 +76,7 @@ Keycloak 使用 JGroups 做节点间通信和发现。Kubernetes 环境下推荐
 
 ```yaml
 # 使用 Operator CR 的多节点配置要点
-apiVersion: k8s.keycloak.org/v2alpha1
+apiVersion: k8s.keycloak.org/v2beta1
 kind: Keycloak
 metadata:
   name: keycloak
@@ -88,6 +90,8 @@ spec:
     - name: cache-stack
       value: kubernetes  # JGroups 使用 kubernetes stack
 ```
+
+> 当前 Keycloak CR 的 `apiVersion` 是 `k8s.keycloak.org/v2beta1`；`v2alpha1` 自 26.6 起标记为废弃，虽然仍然被服务，但新配置应使用 `v2beta1`（两个版本的 schema 目前没有差异，只需改 apiVersion）。
 
 **验证节点发现**：
 
@@ -119,7 +123,9 @@ JDBC_PING 会自动在数据库中维护节点注册表，节点退出时自动�
 
 ## Session 亲和性与负载均衡
 
-多节点集群中，**必须启用 Session 亲和性（Sticky Session）**。虽然 InfiniSpan 可以在节点间复制 Session，但跨节点每次查找都有开销。
+多节点集群中，**推荐启用 Session 亲和性（Sticky Session）**。Keycloak 官方说明：用户会话在数据库和缓存中都可访问，但生产部署仍应尽量把用户路由到最初创建会话的节点，避免不必要的状态传输，改善 CPU、内存和网络利用率。
+
+> 例外：启用 `stateless` 特性的跨机房方案（multi-cluster v2）不在内存中保存会话数据，官方明确此时配置会话亲和性**不再有性能收益**，可以改为轮询分发。见 [Keycloak 跨机房多集群高可用与 IAM 双活部署]({{< relref "keycloak-multi-cluster-ha" >}})。
 
 ### Nginx 配置
 
@@ -258,8 +264,8 @@ curl -s -X POST https://sso.example.com/realms/myrealm/protocol/openid-connect/t
 | 登录后跳转到另一个节点就掉登录 | Session 亲和性未配置 | 检查 Ingress/LB 是否配置 Sticky Session |
 | InfiniSpan `org.infinispan.remoting.transport.jgroups.SuspectException` | 网络分区或节点间端口不通 | 确认 JGroups 端口（默认 7800）在节点间互通：`nc -zv <peer-ip> 7800` |
 | 恢复数据库后 Realm 不显示 | 缓存未刷新 | 启动时加 `--spi-connections-infinispan-quarkus-cache-remote-max-idle=1` 清理缓存，或重启后等待缓存同步 |
-| 备份恢复后用户登录报 `invalid_grant` | Session/Token 状态不一致 | 恢复的是数据库快照，在线 Session 已丢失是正常的——用户重新登录即可；也可用 `kc.sh export/import` 配合 `--users skip` 保留数据一致性 |
-| 集群节点全部重启后 InfiniSpan 缓存为空 | 分布式缓存在内存，无持久化 | 正常行为——持久化的用户/Client/Realm 从 DB 加载；在线 Session 丢失，用户需重新登录 |
+| 备份恢复后用户登录报 `invalid_grant` | Session/Token 状态不一致 | 恢复的是数据库快照，快照时间点之后的会话与 token 状态丢失是正常的——用户重新登录即可；也可用 `kc.sh export/import` 配合 `--users skip` 保留数据一致性 |
+| 集群节点全部重启后缓存的认证会话为空 | `authenticationSessions` / `actionTokens` / `loginFailures` 只在分布式缓存中，无持久化 | 正常行为：用户会话与 client 会话在数据库中，用户不必重新登录；但进行中的认证流程会中断，需要重新发起登录 |
 | Kubernetes DNS_PING 报 `java.net.UnknownHostException` | Headless Service 未创建或 DNS 未就绪 | 检查 Service: `kubectl get svc keycloak-headless`；确认 Pod 内 `nslookup keycloak-headless` 可解析 |
 
 ## 生产检查清单
@@ -295,7 +301,8 @@ kubectl -n keycloak scale deploy/keycloak --replicas=2
 ### 场景 B：数据库本身完好，只需重建 Keycloak 节点
 
 ```bash
-# Keycloak 节点无状态（Session 在 InfiniSpan 缓存中，数据在 DB），重建节点不影响业务
+# 用户会话与 client 会话在数据库中，认证会话在分布式缓存里；
+# 逐个重建节点不会中断已登录用户，只会影响恰好在该节点上进行中的认证流程
 kubectl -n keycloak rollout restart deploy/keycloak
 ```
 
@@ -307,4 +314,5 @@ kubectl -n keycloak rollout restart deploy/keycloak
 - [Keycloak Prometheus 监控指标详解]({{< relref "keycloak-prometheus-metrics" >}}) — 集群节点监控和告警配置
 - [Keycloak 内部架构 — Realms、Clients、Users、Roles]({{< relref "../implementation/keycloak-architecture" >}}) — 理解集群各组件关系
 - [Keycloak Redis 外部会话缓存]({{< relref "keycloak-redis-session-cache" >}}) — 用 Redis 替代 Infinispan 实现无状态节点
+- [Keycloak 跨机房多集群高可用与 IAM 双活部署]({{< relref "keycloak-multi-cluster-ha" >}}) — 容忍整个集群/机房故障的 multi-cluster v2 方案与 v1 迁移
 - [IDaaS 性能与扩展性]({{< relref "../advanced-topics/performance-and-scaling" >}}) — 缓存策略与容量规划
