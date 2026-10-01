@@ -78,7 +78,7 @@ Keycloak 的 **Group Membership** mapper 有一个 `Full group path` 开关，**
 
 **选哪个？** Argo CD 官方文档让你关掉 Full group path。这里的建议相反：**保留默认的 ON，在 RBAC 里写全路径**。依据就在 Keycloak 源码的字段说明里——关闭后只输出组名，而如果 realm 里存在层级同名组（`/platform/ops` 与 `/legacy/platform/ops` 都叫 `ops`），claim 会退化成无法区分的值。全路径更长，但不会因为重名把不该进 admin 的人放进来。这条取舍在扁平组结构里无所谓，在有多层组织的 realm 里是权限事故。
 
-同一个 `full.path` 开关影响的不止 Argo CD：Harbor 的 `OIDC Admin Group` 与组过滤同样是拿 claim 原值做逐字符比较，配成 `/platform/harbor-admin` 还是 `platform/harbor-admin` 取决于这个开关，见 [Harbor 接入 Keycloak OIDC]({{< relref "keycloak-harbor-oidc-sso" >}})。
+同一个 `full.path` 开关影响的不止 Argo CD：Harbor 的 `OIDC Admin Group` 与组过滤同样是拿 claim 原值做逐字符比较，配成 `/platform/harbor-admin` 还是 `platform/harbor-admin` 取决于这个开关，见 [Harbor 接入 Keycloak OIDC]({{< relref "keycloak-harbor-oidc-sso" >}})；GitLab 的 `required_groups` 也是逐字符比较，且声明式导入 mapper 时漏写 `"full.path": "true"` 会让 claim 静默变成不带斜杠的形式，见 [GitLab 接入 Keycloak OIDC]({{< relref "keycloak-gitlab-oidc-sso" >}})。
 
 另外三点同样常见：
 

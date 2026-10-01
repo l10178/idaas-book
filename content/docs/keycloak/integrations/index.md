@@ -91,7 +91,7 @@ gitlab_rails['omniauth_providers'] = [
       response_type: "code",
       issuer: "https://kc.example.com/realms/myrealm",
       discovery: true,
-      client_auth_method: "basic",
+      client_auth_method: "query",
       uid_field: "preferred_username",
       send_scope_to_token_endpoint: true,
       client_options: {
@@ -109,7 +109,11 @@ gitlab_rails['omniauth_block_auto_created_users'] = false
 要点：
 
 - Keycloak Client 的 `redirect_uri` 精确填 `https://gitlab.example.com/users/auth/openid_connect/callback`。
-- 通过 `groups` claim 映射 GitLab Group/角色，实现按域控制权限。
+- Realm 的签名算法必须是 RS256 一类非对称算法，否则 GitLab 用 JWKS 验签失败（`JSON::JWS::VerificationFailed`）。
+- `uid_field` 决定 GitLab 侧的身份唯一标识，配置里改一次就会产生一批需要人工合并的重复账号。
+- 组映射（`required_groups` / `admin_groups` / `external_groups`）只在 Premium / Ultimate 生效，且只影响登录准入与用户属性，不会把用户加进 GitLab 群组；`groups` claim 的完整路径形式由 Keycloak mapper 的 `full.path` 决定。
+
+字段级取舍、组映射边界、报错对照与回滚顺序见 [GitLab 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/keycloak-gitlab-oidc-sso.md" >}})。
 
 ## Jenkins
 
