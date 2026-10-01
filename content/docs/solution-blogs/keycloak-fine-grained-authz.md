@@ -336,6 +336,18 @@ public List<Order> listOrders(Authentication auth) {
 
 还有一条会直接影响自动化流水线的边界：Keycloak 在 FGAP V2 下**有意屏蔽** `admin-permissions` 客户端的 Authorization Services API 端点，外部调用得到的是 HTTP 400 `unknown_error`（见 keycloak/keycloak#43977）。这意味着用 `keycloak-config-cli` 这类声明式工具时，该客户端的授权模型不在可管理范围内——不要试图绕过，也不要把它写进配置文件后指望 apply 生效。工具侧的这条限制记录在 [IAM 配置即代码：keycloak-config-cli 声明式 Realm 管理与误删防护]({{< relref "keycloak-config-cli-realm-as-code" >}})。
 
+## 26.8.0 起的三条授权语义变化
+
+这三条不改配置项名字，但会改变判定结果或令牌内容，属于「升级后行为不一样了」的类型：
+
+**1. 组策略的裸组名只匹配顶层组（CVE-2026-19608）。** 修复前，token 里一个裸名 `Admins` 会匹配**任意层级**的同名组；修复后只解析为顶层 realm 组。利用面很清楚：某个用户只要属于任意一个叫 `Admins` 的嵌套组，就能满足指向另一个同名组的策略。
+
+判断自己是否受影响，看 Group Membership protocol mapper 的 *Full group path* 选项——默认是开的，token 里是 `/Organization/Admins` 这类完整路径，不受影响；**只有显式关掉它、同时又用组策略指向嵌套组**的部署需要处理。处理方式是打开 *Full group path* 让 token 输出完整路径（沿用本站 [Keycloak + Argo CD OIDC 单点登录]({{< relref "keycloak-argocd-oidc-sso" >}}) 里讨论过的取舍：关掉该选项会让同名层级组退化为歧义）。另外，含斜杠的组名现在优先按顶层组名解析，再考虑路径解释——顶层组名与嵌套组路径重名时，顶层优先。
+
+**2. 资源 URI 匹配改为先归一化。** Authorization Services 在把请求 URI 与配置的 resource URI 比较前，现在会去掉矩阵参数（如 `;jsessionid=...`，含百分号编码形式）、解析点段（`/foo/../admin`）、解码 `%2F`、合并重复斜杠、去掉尾斜杠，并丢弃 query 与 fragment。这堵住了「用变形 URI 绕开受保护资源、落到更宽松的 `/*` 规则」的攻击路径；代价是如果你的 resource 定义本来就在区分这些形式，升级后它们会被视为等价，必须复核。
+
+**3. Full Scope Allowed 被弃用，令牌签发时会告警。** 开启该开关的客户端，其 access token 会带上用户在所有 client 和 realm 上的角色，与本页讨论的「显式 role scope mapping」方向相反。26.8.0 起服务端在每次签发令牌时记 `WARN`（内置管理客户端被抑制），后续版本会移除该开关。存量清点命令、迁移顺序与用 client policy 的 `full-scope-disabled` executor 自动收敛的做法，见 [Keycloak 26.8.0 升级：IAM 破坏性变更排查]({{< relref "keycloak-26-8-upgrade-breaking-changes" >}})。
+
 ## 回滚方式
 
 - **角色分配回滚**：Users → Role Mapping → 移除错误角色重新分配

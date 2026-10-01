@@ -50,6 +50,8 @@ graph TD
 2. 因此 **re-encrypt/edge 拓扑下，验证证书链是代理的活儿**。代理不验，就等于把「任意自签证书都能当合法凭据」这一条留给攻击者。
 3. 只有当代理不验（或信任的 CA 太多导致握手协商失败）时，才打开 *Revalidate Client Certificate*，让它用 Keycloak 自己的信任库重建并校验链。这时信任库不可用会直接抛异常：`Cannot validate client certificate trust: Truststore not available. Please make sure to correctly configure truststore provider in order to be able to revalidate certificate trust`。
 
+> **26.8.0 起这三条从「配置建议」升级为「启动前提」**：*Certificate Authority subject DN* 成为 X.509 **用户**认证器的必填项，且是多值字段（逐个列出可信锚 CA）；同时 *Revalidate Client Certificate* 被标记弃用，未来总是重新校验证书链——「不验证 + 交给代理」的拓扑不再有默认兜底。官方在同一处提醒：TLS 终止代理 + 证书头转发的部署必须保证 Keycloak 的信任库能验证完整证书链。升级检查项见 [Keycloak 26.8.0 升级：IAM 破坏性变更排查]({{< relref "keycloak-26-8-upgrade-breaking-changes" >}})。
+
 ## 拓扑选择
 
 | 拓扑 | 证书到达方式 | 谁校验 PKIX | 需要 lookup SPI | 判断 |
