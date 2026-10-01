@@ -49,7 +49,7 @@ Keycloak 的数据库连接由 Quarkus 内置的连接池（Agroal）管理。�
 
 ## Keycloak 26.x 数据库配置方式
 
-Keycloak 26.x（当前最新补丁版本 26.7.4，2026-09-16 发布）使用 Quarkus 配置体系，不再用旧的 `-Dkeycloak.connectionsJpa.*` 方式。所有数据库配置通过环境变量或 `conf/keycloak.conf` 文件设置。
+Keycloak 26.x（当前稳定版 26.8.0，2026-10-01 发布；本文行为核对基线为 26.7.4）使用 Quarkus 配置体系，不再用旧的 `-Dkeycloak.connectionsJpa.*` 方式。所有数据库配置通过环境变量或 `conf/keycloak.conf` 文件设置。
 
 ### 最小生产配置
 

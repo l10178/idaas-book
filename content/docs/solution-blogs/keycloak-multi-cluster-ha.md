@@ -28,6 +28,10 @@ seo:
 
 **先说结论**：Keycloak 26.7 引入的 multi-cluster v2（`stateless` 特性）可以把外部 Infinispan 集群、跨站点复制、fencing 自动化和 Infinispan 专属监控全部拆掉，代价是数据库负载约翻倍。但它是 **Preview**，官方文档明确写着不在生产环境完全支持，适合在预发环境先跑通。
 
+> **26.8.0 起这条结论要重估（2026-10-01）**：26.8.0 把 `stateless` 从 preview 转为**正式支持**（`Profile.java` 中类型为 `DISABLED_BY_DEFAULT`——已支持，但默认不启用，仍要显式 `--features=stateless`），同时把多集群 v1 的 `multi-site` 标记为弃用并计划移除，`clusterless` 也将在未来移除。也就是说「特性状态」不再是拦在生产门外的理由，真正需要论证的变成两件事：数据库能不能承受翻倍的负载，以及跨站点 commit 延迟是否稳定低于 10 ms。
+>
+> 同版本还把两个集群参数提升为一等 CLI 选项：`--cache-embedded-cluster-name`（环境变量 `KC_CACHE_EMBEDDED_CLUSTER_NAME`）和 `--cache-embedded-node-name`（`KC_CACHE_EMBEDDED_NODE_NAME`），取代原来的低层 SPI 属性；使用 Operator 时节点名会自动取 Pod 名，不再每次启动随机生成，指标与日志才可跨重启对齐。此外 `jdbc-ping` 会周期检查同一数据库上是否存在**不同 cluster name** 的其他 Keycloak 部署，检测到且未启用 `stateless` 时报错并把节点标记为 unhealthy——蓝绿升级若存在「两套集群短时间并存」的窗口，这段告警是预期行为。完整清单见 [Keycloak 26.8.0 升级：IAM 破坏性变更排查]({{< relref "keycloak-26-8-upgrade-breaking-changes" >}})。
+
 ## 适用与不适用
 
 | 适用 | 不适用 |
@@ -203,7 +207,7 @@ bin/kc.sh start \
 
 | 参数 | 为什么必须配 |
 |------|-------------|
-| `cache-embedded-cluster-name` | 跨集群缓存失效靠数据库 outbox 表分发，每个集群必须有唯一名字。启用 `stateless` 后该选项是**必填**项（内部属性 `kc.spi-cache-embedded--default--cluster-name`），且不能保持默认值 `ISPN` |
+| `cache-embedded-cluster-name` | 跨集群缓存失效靠数据库 outbox 表分发，每个集群必须有唯一名字。启用 `stateless` 后该选项是**必填**项，且不能保持默认值 `ISPN`（26.8.0 起是一等 CLI 选项 / `KC_CACHE_EMBEDDED_CLUSTER_NAME`，取代旧的 SPI 属性 `kc.spi-cache-embedded--default--cluster-name`） |
 | `db-tls-mode=verify-server` + `truststore-paths` | 数据库连接要校验服务端证书；纯测试环境可设 `disabled` 并省略 truststore |
 | `proxy-protocol-enabled=true` | 让 Keycloak 从 PROXY protocol 头读取真实客户端 IP；此时 LB 要配 `send-proxy-v2`。**TLS 透传场景下不能同时设置 `proxy-headers`，两者互斥** |
 | `shutdown-delay=30` | 给 LB 留出「探活失败 → 摘节点」的时间，取值应 ≥ 探活间隔 × 失败阈值 |

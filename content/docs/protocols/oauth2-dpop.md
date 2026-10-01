@@ -144,7 +144,7 @@ DPoP 和 mTLS 都实现了 sender-constrained token，但适用场景不同：
 | SPA/移动端适用性 | ✅ 好（JS 可生成密钥对） | ❌ 差（需要证书管理） |
 | API 网关/反向代理兼容性 | ⚠️ 代理必须透传 DPoP Header | ✅ TLS 在网关终止时需特殊处理 |
 | 防重放机制 | nonce（应用层） | TLS 层面（传输层） |
-| Keycloak 支持 | Keycloak 26 预览版支持所有 grant type | Keycloak 支持 X.509 客户端认证 |
+| Keycloak 支持 | 26.4.0 起正式支持，覆盖所有接受 bearer token 的端点（含 Admin REST API、Account API） | 支持 X.509 客户端认证（`client-x509`） |
 | 适用场景 | SPA、移动 App、微服务间调用 | 内部微服务间、server-to-server |
 
 **选型建议：**
@@ -152,34 +152,42 @@ DPoP 和 mTLS 都实现了 sender-constrained token，但适用场景不同：
 - 内部微服务间（已有 mTLS 基础设施）→ mTLS
 - 两者可以共存——但不必同时用，选一种即可实现 sender-constraining
 
-## Keycloak 26 DPoP 配置
+## Keycloak DPoP 配置
 
-Keycloak 26 将 DPoP 作为预览特性，支持所有 grant type（之前仅支持 authorization_code）。
-
-### 启用 DPoP
-
-在 Keycloak Realm 级别启用：
-
-```bash
-# 通过 Admin CLI 启用 DPoP preview feature
-kcadm.sh update realms/<REALM> -s 'attributes.dpopPreview=true'
-```
-
-或在 Realm Settings → General → 勾选 "DPoP Preview"。
+DPoP 自 **26.4.0 起转为正式支持**（不再是预览特性）：`common/src/main/java/org/keycloak/common/Profile.java` 中 `DPOP` 在 `26.3.0` 是 `Type.PREVIEW`，从 `26.4.0` 起变为 `Type.DEFAULT`，`26.8.0` 仍是 `DEFAULT`。这意味着**不需要任何特性开关**——早期版本用 `--features=dpop` 才可用的写法已经过时；升级后也不要再指望 `--features=preview` 会替你打开它。
 
 ### 客户端配置
 
-客户端的 DPoP 绑定类型通过 client metadata 控制：
+控制台路径是客户端 **Settings → Capability config → Require DPoP bound tokens**。它对应客户端属性 `dpop.bound.access.tokens`（源码常量 `OIDCConfigAttributes.DPOP_BOUND_ACCESS_TOKENS`），在动态客户端注册里叫 `dpop_bound_access_tokens`——这两个名字在排查时要能对上。
 
 ```bash
-# 创建或更新 Client，指定 DPoP 绑定策略
+# 强制该客户端必须使用 DPoP-bound token
 kcadm.sh update clients/<CLIENT_ID> \
   -s 'attributes."dpop.bound.access.tokens"=true'
 ```
 
-两种绑定模式：
-- **仅 DPoP**：Token 只能用 DPoP Proof 使用
-- **DPoP + Bearer 混合**：Token 既可以当 DPoP Token 用，也可以当 Bearer Token 用（向后兼容）
+开关语义是二值的，不是「两种绑定模式」：
+
+- **开启**：此客户端的每个 token 请求都必须携带有效的 DPoP Proof，否则请求失败。
+- **关闭**：客户端**可以**携带 DPoP Proof——带了就绑定，不带就签发普通 Bearer token。
+
+**限制**：DPoP 不支持在**前端通道签发令牌**的流程（implicit、hybrid）。客户端一旦开启 *Require DPoP bound tokens*，使用这两类 response_type 的授权请求会被直接拒绝。
+
+### 刷新令牌的绑定范围
+
+| 客户端类型 | access token | refresh token | 原因 |
+|---|---|---|---|
+| Public（SPA、原生 App） | 绑定 | 绑定 | 无法安全保存密钥，refresh 请求同样需要同一私钥签名的 Proof |
+| Confidential | 绑定 | 不绑定 | 已用 client secret / private_key_jwt 认证，refresh 靠客户端凭据保护 |
+
+### 客户端策略中的 DPoP executor
+
+需要按条件（client scope、client role、grant type）批量约束时，用 client policy 而不是逐客户端开关：
+
+- `holder-of-key-enforcer`：绑定 FAPI 1 Advanced / FAPI 2 / OAuth 2.1 confidential 全局 profile，负责「必须使用 holder-of-key token」。
+- `dpop-bind-enforcer`：绑定 `oauth-2-1-for-public-client`、`fapi-2-dpop-*` 全局 profile，可自动配置，并支持两个更细的选项——**只绑定 refresh token**（access token 仍为 Bearer，兼容不支持 DPoP 的旧资源服务器）、**要求授权请求携带 `dpop_jkt`**（把整条授权码流程提前绑定到密钥）。
+
+两者在 `26.8.0` 的 `keycloak-default-client-profiles.json` 中同时存在，不要混用同一个 profile。
 
 ### 验证 DPoP 是否生效
 
@@ -249,7 +257,7 @@ DPoP 将 OAuth 2.0 的安全性从"持有 Token 即有权"提升到"持有 Token
 部署 DPoP 的关键决策点：
 - SPA / 移动 App → 用 DPoP（生成密钥对即可，无证书管理负担）
 - 内部微服务 → 可用 mTLS（如果已有证书基础设施）
-- 需要同时兼容 Bearer 和 DPoP → 使用混合绑定模式
+- 需要兼容还不支持 DPoP 的旧资源服务器 → 一条路是客户端不开启 *Require DPoP bound tokens*（此时携带 Proof 即绑定、不携带仍签发 Bearer），另一条路是用 `dpop-bind-enforcer` 只绑定 refresh token、access token 保持 Bearer
 
 ## 延伸阅读
 

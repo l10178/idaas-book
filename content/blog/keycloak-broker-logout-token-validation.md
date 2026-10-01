@@ -1,9 +1,9 @@
 ---
-title: "Keycloak 身份代理登出验签：CVE-2026-18569 与 26.8 升级准备"
-description: "Keycloak 作为 IAM 身份代理时，上游 OIDC IdP 的 backchannel logout 令牌会跟着 Validate Signatures 开关一起被跳过验签（CVE-2026-18569）：26.7.4 及更早版本接受 alg=none 的伪造登出令牌，可强制登出 brokered 用户并撤销其离线会话。本文给出令牌校验链路与源码依据、受影响配置的盘点命令、现在可用的加固方式、验证步骤，以及 26.8 起强制验签后必须提前准备的密钥与回滚顺序。"
-summary: "把 OIDC IdP 的「Validate Signatures」关掉，会连带放过身份代理方向的登出令牌：26.7.4 及更早接受 alg=none 的伪造登出令牌（CVE-2026-18569）。修复 PR #52171 尚未合入，登记在 26.8.0 升级说明里——升级前必须补上公钥或 JWKS，否则上游登出传播会在升级后失效。"
+title: "Keycloak 身份代理登出验签：CVE-2026-18569 与 26.8 现状核对"
+description: "Keycloak 作为 IAM 身份代理时，上游 OIDC IdP 的 backchannel logout 令牌会跟着 Validate Signatures 开关一起被跳过验签（CVE-2026-18569）：26.8.0 及更早版本接受 alg=none 的伪造登出令牌，可强制登出 brokered 用户并撤销其离线会话。本文给出令牌校验链路与源码依据、受影响配置的盘点命令、当前唯一可用的加固方式、验证步骤，以及修复未合入时为什么不能指望升级解决。"
+summary: "把 OIDC IdP 的「Validate Signatures」关掉，会连带放过身份代理方向的登出令牌：26.8.0 及更早接受 alg=none 的伪造登出令牌（CVE-2026-18569）。修复 PR #52171 截至 2026-10-01 仍未合入，26.8.0 已发布但不包含该修复——升级不能替代加固，仍须补上公钥或 JWKS。"
 date: 2026-09-25T21:00:00+08:00
-lastmod: 2026-09-25T21:00:00+08:00
+lastmod: 2026-10-01T21:30:00+08:00
 draft: false
 weight: 38
 images: []
@@ -13,8 +13,8 @@ contributors: []
 pinned: false
 homepage: false
 seo:
-  title: "IAM 身份代理登出验签：CVE-2026-18569 与 Keycloak 26.8 升级准备"
-  description: "Keycloak 代理 OIDC IdP 时，Validate Signatures 关闭会连带跳过 backchannel logout 令牌验签（CVE-2026-18569）：受影响配置盘点、加固配置、验证步骤与 26.8 强制验签的升级准备。"
+  title: "IAM 身份代理登出验签：CVE-2026-18569 与 Keycloak 26.8 现状核对"
+  description: "Keycloak 代理 OIDC IdP 时，Validate Signatures 关闭会连带跳过 backchannel logout 令牌验签（CVE-2026-18569）：受影响配置盘点、加固配置、验证步骤，以及 26.8.0 已发布但未包含该修复的核对方法。"
   canonical: ""
   noindex: false
 ---
@@ -29,7 +29,15 @@ seo:
 
 满足这三条时，Keycloak 的登出端点会接受**没有签名**的登出令牌。一个知道上游 issuer、broker 的 client ID，以及目标用户上游 `sub`（或上游会话 `sid`）的人，可以把该用户在 Keycloak 里的全部会话强制登出，并撤销其离线会话。这就是 **CVE-2026-18569**。
 
-**版本现状（核对日期 2026-09-25）**：当前稳定版 **26.7.4**（2026-09-16 发布）仍然受影响；修复 PR [#52171](https://github.com/keycloak/keycloak/pull/52171) 在 `main` 上仍为 open，没有进入任何已发布版本，修复内容登记在升级说明 `changes-26_8_0.adoc`，也就是随 **26.8.0** 发布。上游 `main` 的 `pom.xml` 仍是 `999.0.0-SNAPSHOT`，仓库里不存在 26.8 的 tag 或 release。
+**版本现状（核对日期 2026-10-01）**：**26.8.0 已于 2026-10-01 发布，但这个修复没有进去。** 修复 PR [#52171](https://github.com/keycloak/keycloak/pull/52171) 目前仍为 open（未 merge）；核对 `26.8.0` 标签源码，`TokenManager.validateLogoutTokenAgainstIdpProvider()` 仍然是旧签名——直接调用 `oidcIdp.validateToken(encodedLogoutToken)`，没有传入强制验签参数，因此 26.8.0 发布说明与新版本升级指南（`changes-26_8_0.adoc`）里都没有 CVE-2026-18569 的条目。**受影响版本范围应当理解为「26.8.0 及更早」，升级到 26.8.0 不会自动修复它。**
+
+这一点直接影响升级判断：**不能把「升级版本」当成这条 CVE 的缓解措施**。在修复合入并随某个补丁版本发布之前，唯一的缓解方式仍然是打开上游 IdP 的 *Validate Signatures* 并配好公钥或 JWKS（下一节给配置方式），并且要接受由此带来的上游登录链路回归成本。修复的源码改法与验证顺序见下文，落地前请先确认目标版本是否真的包含它。
+
+```bash
+# 判定你部署的版本是否已包含修复（返回旧签名 = 仍受影响）
+curl -s https://raw.githubusercontent.com/keycloak/keycloak/<VERSION>/services/src/main/java/org/keycloak/protocol/oidc/TokenManager.java \
+  | grep -A2 "validateLogoutTokenAgainstIdpProvider(Stream<OIDCIdentityProvider> oidcIdps"
+```
 
 **适用**：Keycloak 26.x，realm 中启用了 OIDC 身份代理；需要在升级前确认自己是否受影响，或正在判断「到底要不要给上游 IdP 配公钥」。
 
@@ -90,7 +98,7 @@ protected boolean verify(JWSInput jws) {
 
 这个早退**不区分令牌类型**。ID token / access token 保留这条旁路是历史设计（代理场景下上游不一定方便提供公钥），但登出令牌被同一行捎带放过了：只要 IdP 关着验签，一个 header 为 `alg=none`、签名段为空的伪造登出令牌就能走完校验。而 OIDC Back-Channel Logout 1.0 要求 Logout Token 必须签名，并明确禁止 `alg=none`——Keycloak 自己的升级说明也是这么写的。
 
-26.8 的改法是给这条路径单独加参数，不再共用那个早退：
+26.8 计划中的改法是给这条路径单独加参数，不再共用那个早退（**核对日期 2026-10-01：该 PR 仍未合入，以下代码不在 26.8.0 中**）：
 
 ```java
 // TokenManager.validateLogoutTokenAgainstIdpProvider()（26.8）
@@ -241,9 +249,9 @@ kubectl -n iam exec deploy/keycloak -- sh -c \
 
 - [GHSA-pcf4-9g97-7cpf / CVE-2026-18569](https://github.com/advisories/GHSA-pcf4-9g97-7cpf)（公告，2026-08-04，severity low）
 - [keycloak#51381：CVE-2026-18569 原始描述](https://github.com/keycloak/keycloak/issues/51381)（endpoint、前置条件；标签 `priority/important`、`backport/26.6`、`backport/26.7`）
-- [PR #52171 Fix for CVE-2026-18569](https://github.com/keycloak/keycloak/pull/52171)（截至 2026-09-25 open；含 `OIDCIdentityProvider`、`TokenManager`、`KeycloakOIDCIdentityProvider`、Admin UI 文案与 `changes-26_8_0.adoc` 的完整 diff）
+- [PR #52171 Fix for CVE-2026-18569](https://github.com/keycloak/keycloak/pull/52171)（核对日期 2026-10-01：仍为 open，未进入 26.8.0；含 `OIDCIdentityProvider`、`TokenManager`、`KeycloakOIDCIdentityProvider`、Admin UI 文案的完整 diff）
 - Keycloak `main` 源码：[`LogoutEndpoint.backchannelLogout()`](https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/protocol/oidc/endpoints/LogoutEndpoint.java)、[`TokenManager.verifyLogoutToken()` / `validateLogoutTokenAgainstIdpProvider()`](https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/protocol/oidc/TokenManager.java)、[`OIDCIdentityProvider.verify()` / `validateToken()`](https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/broker/oidc/OIDCIdentityProvider.java)、[`LogoutTokenValidationCode`](https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/protocol/oidc/LogoutTokenValidationCode.java)、[`OIDCIdentityProviderConfig.isValidateSignature()`](https://github.com/keycloak/keycloak/blob/main/services/src/main/java/org/keycloak/broker/oidc/OIDCIdentityProviderConfig.java)
 - [OpenID Connect Back-Channel Logout 1.0](https://openid.net/specs/openid-connect-backchannel-1_0.html)：Logout Token 必须签名、禁止 `alg=none`
-- [Keycloak 26.7.4 Release Notes](https://github.com/keycloak/keycloak/releases/tag/26.7.4)（当前稳定版，2026-09-16）
+- [Keycloak 26.8.0 Release Notes](https://github.com/keycloak/keycloak/releases/tag/26.8.0)（当前稳定版，2026-10-01；其中不含 CVE-2026-18569 修复）
 
 相关章节：[IAM 单点登出排错]({{< relref "blog/keycloak-single-logout" >}})、[身份联邦与身份代理]({{< relref "docs/core-capabilities/identity-federation-brokering" >}})、[IAM 会话管理]({{< relref "docs/advanced-topics/iam-session-management" >}})、[Keycloak 26.7.4 安全补丁解读]({{< relref "docs/solution-blogs/keycloak-26-7-4-security-patch" >}})

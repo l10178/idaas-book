@@ -184,6 +184,8 @@ kc.sh start --spi-connections-jpa--quarkus--migration-strategy=manual \
 - **`persistent-user-sessions` 被禁用时的部署，升级会丢会话**：除离线会话（offline session）外的所有用户会话都会丢失，用户必须重新登录。该特性在 26.0.0 之前默认禁用，所以从 25.x 一路升上来的环境要特别确认当前是否开着。
 - **升级过程中正在进行的认证流程会中断**：正在进行中的登录、改密、重置密码流程只存在内部缓存里，节点重启后这些用户要从头走一遍。窗口内用户会看到登录页重来，这不是故障。
 
+版本专属的破坏性变更清单要单独过一遍，因为通用升级流程看不到它们：26.8.0 的逐条影响面、升级前检查项与验证命令整理在 [Keycloak 26.8.0 升级：IAM 破坏性变更排查]({{< relref "keycloak-26-8-upgrade-breaking-changes" >}})。其中几条会改变运行时行为而不是阻断启动，例如 IdP mapper 默认不再授予管理角色、禁用客户端退出令牌受众、X.509 用户认证强制要求 CA Subject DN——这些在「镜像换掉、健康检查通过」之后才会暴露。
+
 主题是另一类必须跟着升的东西：自定义主题的分支要拷到新安装的 `themes` 目录，然后逐个对比官方基线主题的模板、消息键和样式差异——官方建议用 diff 工具比对 `login.css` 一类的文件，而不是凭印象判断「应该没变」。消息键的回归要单独看：中文包里缺的 key 会静默回退英文，升级后新增的功能（Credential Offer、DID、Organization 相关）往往正是缺翻译的那一批，核对方法见 [Keycloak 中文界面与邮件本地化排错]({{< relref "keycloak-localization-chinese-ui-email" >}})。
 
 ## 6. 把它接进流水线的判定逻辑

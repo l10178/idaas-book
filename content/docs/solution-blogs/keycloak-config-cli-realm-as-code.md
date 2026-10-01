@@ -148,9 +148,9 @@ JavaScript 求值是独立的 opt-in 开关，需要同时打开 `import.var-sub
 
 ## 版本与兼容：v6.5.1 没有测到 Keycloak 26.7
 
-kc-cli 最新发布是 **v6.5.1（2026-05-22）**，README 的口径是「支持 Keycloak 最近 4 个版本」。而 tag `v6.5.1` 的 CI 矩阵实际覆盖的是：21.1.2、22.0.4、23.0.7、24.0.5、25.0.1、26.0.5、26.1.0、**26.5.5**——最高到 26.5.5。Keycloak 当前稳定版是 **26.7.4（2026-09-16）**。
+kc-cli 最新发布是 **v6.5.1（2026-05-22）**，README 的口径是「支持 Keycloak 最近 4 个版本」。而 tag `v6.5.1` 的 CI 矩阵实际覆盖的是：21.1.2、22.0.4、23.0.7、24.0.5、25.0.1、26.0.5、26.1.0、**26.5.5**——最高到 26.5.5。Keycloak 当前稳定版是 **26.8.0（2026-10-01）**。
 
-也就是说 26.6.x 和 26.7.x 都不在 kc-cli v6.5.1 的测试矩阵里。源码中还保留了按版本编译的兼容 profile（`-Ppre-keycloak26-4`、`-Ppre-keycloak26`、`-Ppre-keycloak23`、`-Ppre-keycloak22`），说明不同 Keycloak 版本需要不同的构建产物，不存在「一个 jar 通用」这回事。
+也就是说 26.6.x、26.7.x、26.8.x 都不在 kc-cli v6.5.1 的测试矩阵里，而 26.8.0 又引入了多处默认行为变更（Full Scope Allowed 告警、`view-clients` 不再返回 secret、登录失败入库），这些都是声明式导入直接会碰到的面——差距还在扩大，见 [Keycloak 26.8.0 升级：IAM 破坏性变更与检查清单]({{< relref "keycloak-26-8-upgrade-breaking-changes" >}})。源码中还保留了按版本编译的兼容 profile（`-Ppre-keycloak26-4`、`-Ppre-keycloak26`、`-Ppre-keycloak23`、`-Ppre-keycloak22`），说明不同 Keycloak 版本需要不同的构建产物，不存在「一个 jar 通用」这回事。
 
 本书的建议：镜像钉到与你的 Keycloak 版本匹配的完整 tag；升级 Keycloak 小版本时，kc-cli 也要一起在预发验证；如果在 26.7.x 上遇到 Admin API 行为差异，先怀疑 kc-cli 尚未覆盖该版本，再怀疑自己的配置文件。
 
