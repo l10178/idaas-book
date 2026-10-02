@@ -177,7 +177,7 @@ grant_type=authorization_code&code=xxx&...
 
 上面七条变化都不涉及「客户端要求一个特定受众」的问题，而这一点在生产里越来越常见。RFC 8707（Resource Indicators for OAuth 2.0，2020-02）定义了 `resource` 参数：客户端在授权请求和 token 请求里声明自己要访问的资源，授权服务器据此把 access token 的 `aud` 收窄到该资源，避免同一个 realm 里为 A 服务签发的 token 被拿去打 B 服务。
 
-它不属于 OAuth 2.1 草案，但 MCP 授权规范（2025-06-18 起）把它列为 MUST，所以 IAM 团队在 2026 年会频繁遇到「客户端已经带了 `resource`，授权服务器却不按它设置 `aud`」的兼容问题。Keycloak 的现状是：26.7.4 官方文档仍标 RFC 8707 为 *Not supported*，另有一个实验特性 `resource-indicators`（26.6.0 起可用，`Profile.Feature` 类型为 `EXPERIMENTAL`），其源码语义是**过滤**已有 `aud` 而非追加。落地细节、校验规则实测与回滚顺序见 [Keycloak 作为 MCP 授权服务器：IAM audience 绑定与 resource indicators 落地]({{< relref "keycloak-mcp-authorization-server" >}})。
+它不属于 OAuth 2.1 草案，但 MCP 授权规范（2025-06-18 起）把它列为 MUST，且 2026-07-28 版要求客户端**无论授权服务器是否支持都要带** `resource`，所以 IAM 团队会频繁遇到「客户端已经带了 `resource`，授权服务器却不按它设置 `aud`」的兼容问题。Keycloak 的口径跟着版本变：26.7.4 官方指南把 RFC 8707 标为 *Not supported*，26.8.0 改成 *Experimental* 并补上了配置说明；特性本身从 26.6.0 起就在发布版里（`Profile.Feature.RESOURCE_INDICATORS`，三个 tag 均为 `EXPERIMENTAL`），其源码语义是**过滤**已有 `aud` 而非追加。落地细节、校验规则实测与回滚顺序见 [Keycloak 作为 MCP 授权服务器：IAM audience 绑定与 resource indicators 落地]({{< relref "keycloak-mcp-authorization-server" >}})。
 
 ## 对 IAM 系统和运维意味着什么
 
