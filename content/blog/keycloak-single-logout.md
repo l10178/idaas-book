@@ -122,6 +122,8 @@ signout_redirect_url = https://idp.example.com/realms/corp/protocol/openid-conne
 
 回跳地址里同样不能出现 `state`、`code` 等保留参数（与上面第 5 条同一套 forbidden params 检查）。完整的 Grafana 接入配置、角色映射与排错顺序见 [Grafana 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/grafana-keycloak-oidc-sso.md" >}})。
 
+Jenkins 这类插件式客户端则没有统一的登出约定：oic-auth 用 `logoutFromOpenidProvider` 决定 Jenkins 登出时是否顺带结束 Keycloak 会话，开启后回跳地址必须提前登记在客户端的 Valid post logout redirect URIs 里（插件用的是固定路径 `${JENKINS_ROOT_URL}/OicLogout`），漏登记时表现为「登录正常、登出 400」。字段语义与回滚步骤见 [Jenkins 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/keycloak-jenkins-oidc-sso.md" >}})。
+
 ## 为什么 Keycloak 会返回 400 或停在确认页
 
 下面是 Keycloak `LogoutEndpoint` 的实际判定，症状可以直接对照：

@@ -113,14 +113,17 @@ gitlab_rails['omniauth_block_auto_created_users'] = false
 
 ## Jenkins
 
-Jenkins 用 [OAuth2 / OIDC 插件][jenkins-oidc] 或 [Keycloak 插件][jenkins-keycloak]。推荐 Keycloak 插件（更贴合）：
+Jenkins 接 Keycloak 用 [OAuth2 / OIDC 插件（oic-auth）][jenkins-oidc]，不是同名的 [Keycloak 插件][jenkins-keycloak]——后者的配置入口是把 `keycloak.json` 粘进 Jenkins，插件页挂着三条安全公告（CSRF、session fixation 影响 2.3.0 及更早，open redirect 影响 2.4.1 及更早），且 2023-05 之后停更到 2026-09 才恢复发布。oic-auth 从 discovery 文档取端点、claim 用 JMESPath 映射，可被 JCasC 声明式管理：
 
-1. 安装 **Keycloak Authentication Plugin**。
-2. Manage Jenkins → Configure Global Security → Security Realm = Keycloak。
-3. 填 Keycloak URL、Realm、Client ID/Secret。
-4. 角色策略：用 Keycloak Realm 角色映射 Jenkins 角色（`admin`/`develop`/`read`）。
+1. 安装 **OpenID Connect Authentication** 插件（4.727 起要求 Jenkins ≥ 2.539）。
+2. Keycloak 侧建 client：Client authentication `ON`，Valid redirect URIs 填 `${JENKINS_ROOT_URL}/securityRealm/finishLogin`，并把 `${JENKINS_ROOT_URL}/OicLogout` 加进 Valid post logout redirect URIs。
+3. Manage Jenkins → Security → Security Realm = OpenID Connect，填 well-known 地址与 client secret；`groupsFieldName` 用 `realm_access.roles`，或改用自建 `Group Membership` mapper 输出的用户组 claim。
+4. 授权仍在 Jenkins 侧：在 Matrix/Project-based 策略里新建与 claim 值**逐字符一致**的组并勾权限——插件只负责把组名挂到用户身上，不会自动建组或授权。
 
-> CI 场景的「机器账号」用 Service Account + Client Credentials，不要给流水线人工账号。
+> 认证方式一改，Jenkins 原有的数据库 / LDAP 登录同时失效，切换前先配好 `escapeHatch` 兜底。
+> CI 场景的「机器账号」用 Service Account + Client Credentials，不要给流水线人工账号；Jenkins 的远程调用用 API token，oic-auth 下密码登录不工作。
+
+字段语义、`groups` claim 的两种来源（`microprofile-jwt` 里的 `groups` 是 realm 角色）、userinfo 与 ID token 的取值顺序、报错对照表与回滚步骤见 [Jenkins 接入 Keycloak OIDC：IAM 单点登录与组权限映射排错]({{< relref "keycloak-jenkins-oidc-sso" >}})。
 
 ## Kubernetes / NGINX Ingress
 
