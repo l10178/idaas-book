@@ -133,7 +133,7 @@ graph TD
 | 推荐协议 | **OIDC**（几乎所有现代 DevOps 工具都支持 OIDC） |
 | 配置方式 | oauth2-proxy 作为反向代理前置，或各工具原生 OIDC 集成 |
 | 为什么不是 SAML | 配置成本高——每个工具的 SAML metadata 都要维护，内部环境没必要承受这个复杂度 |
-| 特殊注意 | 一些老工具（如 Jenkins 旧版）可能需要 SAML 插件，考虑升级或替换 |
+| 特殊注意 | Jenkins 走 oic-auth 的 OIDC 插件即可，不必用 SAML 插件；但该插件要求 Jenkins ≥ 2.539，老实例要先升级，组权限也需在 Jenkins 侧另建同名组，见 [Jenkins 接入 Keycloak OIDC]({{< relref "docs/solution-blogs/keycloak-jenkins-oidc-sso.md" >}}) |
 
 ### 场景 3：移动 App 需要登录
 
