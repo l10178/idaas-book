@@ -256,7 +256,7 @@ Harbor 原生支持 OIDC（Configuration → Authentication → OIDC）：
 
 ## MinIO
 
-MinIO 支持 OIDC（`mc` 或环境变量）：
+MinIO 原生支持 OIDC，但它的授权模型和上面的软件不一样：**不认 `groups`，也不认 `realm_access.roles`，只认一个 claim**，把 claim 的值当成 MinIO 本机的策略名去比对。所以 Keycloak 侧要产出的不是「角色映射」，而是一个策略名 claim。
 
 ```bash
 mc admin config set myminio identity_openid \
@@ -264,12 +264,11 @@ mc admin config set myminio identity_openid \
   client_id="minio" \
   client_secret="SECRET" \
   claim_name="policy" \
-  claim_prefix="" \
-  scopes="openid,profile"
+  scopes="openid,profile,email"
 mc admin service restart myminio
 ```
 
-通过自定义 `policy` claim（Protocol Mapper 输出）或 Keycloak 角色到 MinIO policy 的映射，控制对 bucket 的访问。
+三个边界值得先记下：claim 必须出现在 **ID token** 里（mapper 的 *Add to ID token* 打开即可，access token 里有没有它 MinIO 不关心）；`claim_prefix` 已废弃但拼接逻辑仍在，旧教程里的 `claim_prefix="customer1/"` 会让 MinIO 去找 `customer1/policy`；如果所有 SSO 用户共用一套权限，改用 `role_policy` 更省事，Keycloak 侧不需要任何 mapper。claim 名与策略名的对应关系、`role_policy` 与 `claim_name` 的互斥边界、`Invalid parameter: redirect_uri` 与 `policy claim missing` 的完整定位路径见 [MinIO 接入 Keycloak OIDC：IAM 策略映射与 SSO 排错]({{< relref "keycloak-minio-oidc-policy-mapping" >}})。
 
 ## Nextcloud
 
