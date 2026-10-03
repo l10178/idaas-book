@@ -94,10 +94,15 @@ gitlab_rails['omniauth_providers'] = [
       client_auth_method: "basic",
       uid_field: "preferred_username",
       send_scope_to_token_endpoint: true,
+      pkce: true,
       client_options: {
         identifier: "gitlab",
         secret: "SECRET",
-        redirect_uri: "https://gitlab.example.com/users/auth/openid_connect/callback"
+        redirect_uri: "https://gitlab.example.com/users/auth/openid_connect/callback",
+        gitlab: {
+          groups_attribute: "groups",
+          required_groups: ["/platform/gitlab-users"]
+        }
       }
     }
   }
@@ -108,8 +113,13 @@ gitlab_rails['omniauth_block_auto_created_users'] = false
 
 要点：
 
-- Keycloak Client 的 `redirect_uri` 精确填 `https://gitlab.example.com/users/auth/openid_connect/callback`。
-- 通过 `groups` claim 映射 GitLab Group/角色，实现按域控制权限。
+- Keycloak Client 的 `redirect_uri` 精确填 `https://gitlab.example.com/users/auth/openid_connect/callback`；GitLab 只与 HTTPS 的 Keycloak 通信。
+- scope 里不要加 `groups`：Keycloak 没有同名 client scope，未知 scope 会在授权端点直接 400。组是否出现在 claim 里由 mapper 开关决定。
+- 组相关键（`groups_attribute`、`required_groups`、`external_groups`、`admin_groups`）**必须写在 `client_options.gitlab` 里**，写到 `args` 顶层不会被读取，而且没有任何日志或报错。
+- `groups` claim 的值必须与 IdP 返回的字符串逐字符相等：Keycloak 的 `Group Membership` mapper 默认 `full.path=true`，输出是 `/platform/gitlab-users` 这种带前导斜杠的路径。
+- 组门禁属于 Premium/Ultimate 能力；Free/CE 上这些键不生效且无提示。OIDC 也**不会**把 IdP 组同步成 GitLab 组——组同步要走 Group SAML 或 SCIM。
+
+完整配置边界、验证顺序、报错对照与回滚见 [GitLab 接入 Keycloak OIDC：IAM 单点登录与 required_groups 静默失效]({{< relref "docs/solution-blogs/keycloak-gitlab-oidc-sso" >}})。
 
 ## Jenkins
 

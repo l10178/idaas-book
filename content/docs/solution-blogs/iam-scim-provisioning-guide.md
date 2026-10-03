@@ -205,6 +205,8 @@ Azure AD 默认的属性映射不包括企业扩展属性（如 `department`、`
 
 配置 Azure AD 的 Scope 时，确保勾选了 "Sync only assigned users and groups" 且用户从应用中被移除时触发 Deprovisioning。
 
+**一个常见的期待错位：认证协议不会同步组。** SSO/OIDC 只把「组声明」放进 token 供应用做门禁或角色标记，是否把用户真正加入下游应用的组、组成员何时回收，属于 SCIM（或产品自带的组同步机制，例如 GitLab Group SAML 的 group sync）负责。以 GitLab 为例，官方明确说明 OIDC 的组配置只用于登录门禁与外部用户/管理员/审计员标记，不会把用户自动加入 GitLab 组——细节见 [GitLab 接入 Keycloak OIDC]({{< relref "keycloak-gitlab-oidc-sso" >}})。把这两件事混在一起排错，会一直在正确的链路上找不到问题。
+
 ## IAM SCIM 排错清单
 
 SCIM 集成最常见的失败点不在协议本身，而在配置和操作层面。
