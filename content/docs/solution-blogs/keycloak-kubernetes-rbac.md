@@ -1,6 +1,6 @@
 ---
 title: "Keycloak 直连 Kubernetes OIDC 认证 — API Server 集成与 RBAC 绑定 | IDaaS Book"
-description: "Keycloak 作为 Kubernetes 集群 OIDC Provider 的完整配置指南，覆盖 kube-apiserver 参数、客户端配置、groups claim 映射、kubelogin 接入与常见排错"
+description: "Keycloak 作为 Kubernetes 集群 OIDC Provider 的 IAM 认证配置指南：kube-apiserver 参数、Keycloak 客户端与 groups claim 映射、kubelogin 接入、RBAC 授权绑定与常见排错"
 date: 2026-07-11T00:00:00+08:00
 lastmod: 2026-07-11T00:00:00+08:00
 draft: false
@@ -256,6 +256,8 @@ kubectl config use-context <oidc-context>
 | 适用规模 | 1-3 个集群，单一身份源 | 多个集群或多身份源 |
 
 详细对比见 [IAM 协议选型与身份架构决策指南]({{< relref "../advanced-topics/iam-protocol-selection-guide" >}})。
+
+把 Keycloak 的组声明直接当作授权主体（映射成 RBAC 的 `subjects`），是 K8s 与多数应用的分界点：Harbor、GitLab 这类产品只把组用于登录门禁或用户角色标记，不会因为你在组里就自动给你应用的组权限（参见 [Harbor 接入 Keycloak OIDC]({{< relref "keycloak-harbor-oidc-sso" >}}) 与 [GitLab 接入 Keycloak OIDC]({{< relref "keycloak-gitlab-oidc-sso" >}})）。迁移到 K8s 时最容易被这条差异绊住：IdP 侧配好组，不等于集群里已经有对应的 RBAC 绑定。
 
 ## 延伸阅读
 

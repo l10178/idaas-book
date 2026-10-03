@@ -221,7 +221,7 @@ oic-auth 只把组名交给 Jenkins，**不会自动创建组，也不会自动�
 
 几个必须记住的细节：
 
-- **名字逐字符比较**，大小写和空格都算：claim 里是 `/platform/ci`，Jenkins 里建 `platform/ci` 就是不匹配。
+- **名字逐字符比较**，大小写和空格都算：claim 里是 `/platform/ci`，Jenkins 里建 `platform/ci` 就是不匹配。这条不是 Jenkins 特有的：GitLab 的 `required_groups` 同样是逐字符比较，而且组键还必须嵌在 `client_options.gitlab` 里——放错层级连日志都不会写（见 [GitLab 接入 Keycloak OIDC]({{< relref "keycloak-gitlab-oidc-sso" >}})）。
 - Jenkins 有内置组 `Authenticated Users`，用来给「所有能登录的人」一个最小权限（通常是 `Overall/Read`）。把管理员权限放在自定义组上，不要放在它上面。
 - 两套建模二选一，别混用：
   - **角色驱动**：`groupsFieldName: realm_access.roles`，Jenkins 组名 = Keycloak realm 角色名。配置最少，但角色通常还承担 Keycloak 内部授权职责，语义容易混。
@@ -302,4 +302,4 @@ Security Realm 一改，Jenkins 原有的数据库/LDAP 登录方式就同时不
 - [Keycloak Server Administration Guide](https://www.keycloak.org/docs/latest/server_admin/index.html)（客户端与 client scope 概念、Evaluate 预览 claim）与 Keycloak 管理控制台文案（`pkceRequiredHelp`、`downloadAdapterConfig`）
 - [JMESPath Specification](https://jmespath.org/specification.html)（带引号标识符语法）
 
-相关章节：[Keycloak IAM 第三方软件集成指南]({{< relref "../keycloak/integrations/index" >}})、[Argo CD 接入 Keycloak OIDC]({{< relref "keycloak-argocd-oidc-sso" >}})、[Grafana 接入 Keycloak OIDC]({{< relref "grafana-keycloak-oidc-sso" >}})、[Harbor 接入 Keycloak OIDC]({{< relref "keycloak-harbor-oidc-sso" >}})、[Keycloak Adapter 弃用迁移指南]({{< relref "keycloak-adapter-migration" >}})、[Keycloak 直连 K8s OIDC]({{< relref "keycloak-kubernetes-rbac" >}})。
+相关章节：[Keycloak IAM 第三方软件集成指南]({{< relref "../keycloak/integrations/index" >}})、[Argo CD 接入 Keycloak OIDC]({{< relref "keycloak-argocd-oidc-sso" >}})、[Grafana 接入 Keycloak OIDC]({{< relref "grafana-keycloak-oidc-sso" >}})、[Harbor 接入 Keycloak OIDC]({{< relref "keycloak-harbor-oidc-sso" >}})、[GitLab 接入 Keycloak OIDC]({{< relref "keycloak-gitlab-oidc-sso" >}})、[Keycloak Adapter 弃用迁移指南]({{< relref "keycloak-adapter-migration" >}})、[Keycloak 直连 K8s OIDC]({{< relref "keycloak-kubernetes-rbac" >}})。
