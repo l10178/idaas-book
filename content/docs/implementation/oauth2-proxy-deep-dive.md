@@ -25,6 +25,8 @@ toc: true
 - **入口层统一**：Ingress/反向代理层统一拦截，不用每个服务自己实现 OAuth 回调、Token 刷新、Session 管理。
 - **Provider 无关**：同一个 oauth2-proxy 可以对接 Keycloak、Azure AD、GitHub、Google、Dex 等几十种 Provider，切换 Provider 不影响后端。
 
+边界同样要说清楚：认证通过只代表「允许进门」，不代表后端要求的角色、scope、资源权限已经验证（`pass_access_token` 默认关闭，见下文）。应用若自带 OIDC 客户端且有自己的授权模型，就该直连 IdP，而不是在它前面再叠一层代理——例如 MinIO 的控制台从 ID token 的 `policy` claim 里读策略名，多前置一个认证代理只会多出两套会话和两个回调地址，排错成本远高于收益，见 [MinIO 接入 Keycloak OIDC：IAM 策略映射与 SSO 排错]({{< relref "keycloak-minio-oidc-policy-mapping" >}})。
+
 ## 架构概览
 
 ```mermaid

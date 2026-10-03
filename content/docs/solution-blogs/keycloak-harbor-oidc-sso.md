@@ -176,7 +176,7 @@ if remote.hasGroupClaim {
 }
 ```
 
-**userinfo 优先，ID token 兜底。** Harbor 官方文档写的是「组 claim 必须映射进 ID token」，但源码的实际顺序是 userinfo 在前、ID token 在后。两处都开最稳：只留 userinfo 时，一旦 userinfo 调用失败（证书、网络、scope 不含 openid）就会退到 ID token，而如果 ID token 里也没有，就是无提示的「没有组」。所以第 2.2 节建议两个开关都保持 `ON`。
+**userinfo 优先，ID token 兜底。** Harbor 官方文档写的是「组 claim 必须映射进 ID token」，但源码的实际顺序是 userinfo 在前、ID token 在后。两处都开最稳：只留 userinfo 时，一旦 userinfo 调用失败（证书、网络、scope 不含 openid）就会退到 ID token，而如果 ID token 里也没有，就是无提示的「没有组」。所以第 2.2 节建议两个开关都保持 `ON`。作为对照，MinIO 是另一个极端：它只从 ID token 取 claim，userinfo 仅在开启 `claim_userinfo` 时用于**补缺且不覆盖**——同一个 Keycloak 里，「Harbor 能读到、MinIO 读不到」的 claim 是常见现象，两者的差异与定位路径见 [MinIO 接入 Keycloak OIDC：IAM 策略映射与 SSO 排错]({{< relref "keycloak-minio-oidc-policy-mapping" >}})。
 
 **claim 名字对不上时的日志行为不一致。** 源码里找不到 claim 时只在 key 非空的情况下打 warning：
 
